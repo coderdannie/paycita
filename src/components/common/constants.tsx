@@ -6,6 +6,7 @@ import {
   PayRollIcon,
   SettingsIcon,
 } from '@/src/assets/Icons';
+import { MyAttendanceRecord } from '@/src/types/attendance';
 
 export const sidebarData = [
   {
@@ -75,5 +76,79 @@ export const sidebarData = [
     sec: <SettingsIcon fill="#692E9F" />,
     hover: <SettingsIcon fill="#692E9F" />,
     path: '/settings',
+  },
+];
+
+export const attendanceCount: { title: string; value: string }[] = [
+  {
+    title: 'Total  Working Days',
+    value: '21',
+  },
+  {
+    title: 'Days Present',
+    value: '21',
+  },
+  {
+    title: 'Days Absences',
+    value: '21',
+  },
+];
+
+export const myAttendanceTableData: MyAttendanceRecord[] = [
+  {
+    date: 'Wed, 29 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
+  },
+  {
+    date: 'Tue, 28 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
+  },
+  {
+    date: 'Mon, 27 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
+  },
+  {
+    date: 'Fri, 24 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Absent',
+  },
+  {
+    date: 'Thu, 23 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
+  },
+  {
+    date: 'Wed, 22 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
+  },
+  {
+    date: 'Tue, 21 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Absent',
+  },
+  {
+    date: 'Mon, 20 Jan 2025',
+    clockIn: '08:20',
+    clockOut: '17:46',
+    location: 'Lagos',
+    status: 'Present',
   },
 ];

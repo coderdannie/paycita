@@ -46,8 +46,8 @@ export default function RootLayout({
               {/* Scrollable Children */}
               <div
                 className={cn(
-                  'flex-1 pb-6 max-w-[1177px] ',
-                  'px-6 pt-[22px] hide-sidebar:px-5 hide-sidebar:mt-24'
+                  'flex-1 pb-6 max-w-[1277px] ',
+                  'px-6  pt-24 hide-sidebar:px-5 hide-sidebar:mt-24'
                 )}
               >
                 {children}

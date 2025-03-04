@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+Chrome,
+Safari,
+and Opera ::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 8px;
+  background-color: #3b2770;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3b2770;
+}
+
+/* Firefox */
+/* For Firefox 64+ */
+* {
+  scrollbar-color: #3b2770 rgba(0, 0, 0, 0.05);
+  scrollbar-width: thin;
+}
+
+/* For Firefox 63 and below */
+* {
+  scrollbar-color: #3b2770 rgba(0, 0, 0, 0.05);
+}
+
+/* Microsoft Edge and IE */
+* {
+  -ms-overflow-style: none; /* Hide the scrollbar in IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 8px;
+  background-color: #3b2770;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #3b2770;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,4 +103,8 @@
 
 body {
   font-family: var(--font-primary);
+}
+
+.select-trigger svg {
+  display: none !important;
 }
