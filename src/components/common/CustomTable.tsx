@@ -36,7 +36,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
 }) => {
   return (
     <div className="relative w-full overflow-x-auto">
-      <div className="w-full overflow-scroll max-h-96 rounded-lg border">
+      <div className="w-full overflow-scroll min-h-86 rounded-lg border">
         <Table className="w-full capitalize font-semibold min-w-[600px]">
           {/* Table Header */}
           <TableHeader className="bg-[#F9FAFB]">
@@ -61,7 +61,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                             height={16}
                           />
                         </SelectTrigger>
-                        <SelectContent className=" z-50">
+                        <SelectContent className=" z-50 bg-white">
                           {header.filterOptions.map((option, i) => (
                             <SelectItem key={i} value={option}>
                               {option}

@@ -5,3 +5,7 @@ export type MyAttendanceRecord = {
   location: string;
   status: 'Present' | 'Absent';
 };
+export type SingleValue = {
+  value: string;
+  label: string;
+};
