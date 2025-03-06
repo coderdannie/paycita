@@ -4,7 +4,7 @@ import { IoMenuSharp } from 'react-icons/io5';
 
 const Header = () => {
   return (
-    <header className="h-[70px] w-full flex max-999:justify-between justify-end bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] px-[30px]">
+    <header className="h-[70px] fixed top-0 left-0 w-full flex max-999:justify-between justify-end bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] px-[30px]">
       <button className=" max-999:block hidden">
         <IoMenuSharp className="text-primary text-3xl" />
       </button>
