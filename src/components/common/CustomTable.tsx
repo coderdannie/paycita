@@ -27,23 +27,34 @@ interface CustomTableProps {
   isLoading?: boolean; // Loading state
   skeletonRows?: number; // Number of skeleton rows to show during loading
   children?: React.ReactNode; // Table body content provided by the parent
+  center?: boolean; // Optional prop to center the headers
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
   headers,
   isLoading = false,
   children,
+  center = false, // Default to false if not provided
 }) => {
   return (
     <div className="relative w-full overflow-x-auto">
-      <div className="w-full overflow-scroll min-h-86 rounded-lg border">
+      <div className="w-full overflow-auto min-h-86 rounded-lg border border-[#E4E7EC]">
         <Table className="w-full capitalize font-semibold min-w-[600px]">
           {/* Table Header */}
           <TableHeader className="bg-[#F9FAFB]">
             <TableRow>
               {headers.map((header, index) => (
-                <TableHead key={index} className="relative min-w-[150px] py-2">
-                  <div className="flex items-center gap-2">
+                <TableHead
+                  key={index}
+                  className={`relative min-w-[150px] py-2 ${
+                    center ? 'text-center' : ''
+                  }`}
+                >
+                  <div
+                    className={`flex items-center ${
+                      center ? 'justify-center' : ''
+                    } gap-2`}
+                  >
                     <span className="text-sm text-[#1D2939] font-semibold truncate">
                       {header.label}
                     </span>
@@ -61,7 +72,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                             height={16}
                           />
                         </SelectTrigger>
-                        <SelectContent className=" z-50 bg-white">
+                        <SelectContent className="z-50 bg-white">
                           {header.filterOptions.map((option, i) => (
                             <SelectItem key={i} value={option}>
                               {option}

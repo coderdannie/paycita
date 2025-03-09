@@ -1,10 +1,10 @@
-'use client'
-import React, { useState, useRef } from "react";
-import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import CalendarIcon from "../../../assets/calendar.svg";
-import PlaneIcon from "../../../assets/Vector.svg";
-import SpiralCalendar from "../../../assets/Spiralcalendar.svg";
+'use client';
+import React, { useState, useRef } from 'react';
+import Image from 'next/image';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import CalendarIcon from '../../../../assets/calendar.svg';
+import PlaneIcon from '../../../../assets/Vector.svg';
+import SpiralCalendar from '../../../../assets/Spiralcalendar.svg';
 
 const ScrollableEvent = ({ title, time }: { title: string; time: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,13 +37,14 @@ const ScrollableEvent = ({ title, time }: { title: string; time: string }) => {
           style={{ transform: `translateY(${scrollY}px)` }}
           onMouseDown={(e) => {
             e.preventDefault();
-            const onMouseMove = (moveEvent: MouseEvent) => handleDrag(moveEvent);
+            const onMouseMove = (moveEvent: MouseEvent) =>
+              handleDrag(moveEvent);
             const onMouseUp = () => {
-              document.removeEventListener("mousemove", onMouseMove);
-              document.removeEventListener("mouseup", onMouseUp);
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
             };
-            document.addEventListener("mousemove", onMouseMove);
-            document.addEventListener("mouseup", onMouseUp);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
           }}
         />
       </div>
