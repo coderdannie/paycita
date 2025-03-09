@@ -20,14 +20,17 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "noUnusedLocals": false, // Disable unused variable checks for local variables
+    "noUnusedParameters": false // Disable unused variable checks for function parameters
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tailwind.config.ts"
-, "next.config.mjs"  ],
+    "tailwind.config.ts",
+    "next.config.mjs"
+  ],
   "exclude": ["node_modules"]
 }

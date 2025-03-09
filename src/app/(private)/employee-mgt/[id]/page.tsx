@@ -1,15 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { employeeDetailsTabs } from '@/src/components/common/constants';
 import PersonalInfo from '@/src/components/data/EmployeeMgt/Tabs/PersonalInfo';
 import EmployeeDetail from '@/src/components/data/EmployeeMgt/Tabs/EmployeeDetails';
 import Attendance from '@/src/components/data/EmployeeMgt/Tabs/Attendance';
 import PayrollHistory from '@/src/components/data/EmployeeMgt/Tabs/PaymentHistory';
 import LeaveHistory from '@/src/components/data/EmployeeMgt/Tabs/LeaveHistory';
-import { useState } from 'react';
 
 const EmployeeDetails = () => {
   const [tab, setTab] = useState(employeeDetailsTabs[0]);
+
   return (
     <div>
       <div className="flex text-xs gap-1">

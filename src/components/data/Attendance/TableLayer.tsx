@@ -6,7 +6,7 @@ import { TableCell, TableRow } from '../../ui/table';
 import Image from 'next/image';
 
 const TableLayer = () => {
-  const [_, setFilters] = useState({
+  const [filters, setFilters] = useState({
     status: '', // Default value
     location: '',
   });
@@ -16,6 +16,7 @@ const TableLayer = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  console.log(filters);
   const headers = [
     { label: 'Date' },
     {

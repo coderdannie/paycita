@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import CalendarIcon from '../../../../assets/calendar.svg';
 import PlaneIcon from '../../../../assets/Vector.svg';
-import SpiralCalendar from '../../../../assets/Spiralcalendar.svg';
+import SpiralCalendar from '../../../../assets/SpiralCalendar.svg';
 
 const ScrollableEvent = ({ title, time }: { title: string; time: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
