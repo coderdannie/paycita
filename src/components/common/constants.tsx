@@ -152,3 +152,10 @@ export const myAttendanceTableData: MyAttendanceRecord[] = [
     status: 'Present',
   },
 ];
+export const employeeDetailsTabs = [
+  'Personal Info',
+  'Employee Details',
+  'Attendance',
+  'Payroll History',
+  'Leave History',
+];

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import Sidebar from '../components/Layouts/AuthLayout/Sidebar';
 import '../styles/authenticatedLayoutStyles.css';
 import Header from '../components/Layouts/AuthLayout/Header';
+import { Providers } from './Providers';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -24,37 +25,38 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} antialiased`}>
-        <div className="h-screen overflow-hidden">
+      <body className={`${manrope.variable} antialiased  `}>
+        <Providers>
           {/* Main Grid */}
+
           <main
             className={cn(
-              'grid h-full bg-[#F4F5F6]',
+              'grid bg-[#F4F5F6]',
               'mobile-col [grid-template-columns:252px_1fr]'
             )}
           >
             {/* Sidebar */}
-            <div className="h-full w-fit overflow-y-auto hide-sidebar">
+            <div className="h-screen overflow-y-auto hide-sidebar">
               <Sidebar />
             </div>
 
             {/* Right Side Content */}
-            <div className="h-full flex flex-col overflow-y-auto">
+            <div className="h-screen flex flex-col ">
               {/* Header */}
               <Header />
 
               {/* Scrollable Children */}
               <div
                 className={cn(
-                  'flex-1 pb-6 max-w-[1277px] ',
-                  'px-6  pt-24 hide-sidebar:px-5 hide-sidebar:mt-24'
+                  'flex-1 pb-6 max-w-[1277px] bg-[#F4F5F6]',
+                  'px-6 pt-24 hide-sidebar:px-5 hide-sidebar:mt-24'
                 )}
               >
                 {children}
               </div>
             </div>
           </main>
-        </div>
+        </Providers>
       </body>
     </html>
   );

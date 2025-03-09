@@ -4,7 +4,7 @@ import { IoMenuSharp } from 'react-icons/io5';
 
 const Header = () => {
   return (
-    <header className="h-[70px] fixed top-0 left-0 w-full flex max-999:justify-between justify-end bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] px-[30px]">
+    <header className="h-[70px] fixed top-0 left-0 w-full flex max-999:justify-between justify-end bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] z-30 px-[30px]">
       <button className=" max-999:block hidden">
         <IoMenuSharp className="text-primary text-3xl" />
       </button>
@@ -13,7 +13,7 @@ const Header = () => {
 
         <button className="relative h-fit">
           <HiOutlineBell size={28} className=" text-[#808191] font-semibold" />
-          <span className="absolute top-0 right-0 transform  w-2.5 h-2.5  bg-red-500 rounded-full"></span>
+          <span className="absolute top-0 right-0 transform  w-2.5 h-2.5   rounded-full"></span>
         </button>
 
         {/* User Profile */}
