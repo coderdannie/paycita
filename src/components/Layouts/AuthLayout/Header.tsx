@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import { HiOutlineBell } from 'react-icons/hi2';
-import { IoMenuSharp } from 'react-icons/io5';
+import Image from "next/image";
+import { HiOutlineBell } from "react-icons/hi2";
+import { IoMenuSharp } from "react-icons/io5";
 
 const Header = () => {
   return (
@@ -11,24 +11,27 @@ const Header = () => {
       <div className="flex items-center gap-[20px] ">
         {/* Notification Bell */}
 
+      <div className="flex items-center gap-5">
+        {/* Notification Bell */}
         <button className="relative h-fit">
           <HiOutlineBell size={28} className=" text-[#808191] font-semibold" />
           <span className="absolute top-0 right-0 transform  w-2.5 h-2.5   rounded-full"></span>
         </button>
 
         {/* User Profile */}
-        <div className="flex items-center gap-[10px]">
+        <div className="flex items-center gap-3">
           <Image
             src="/assets/avatar.jpeg"
             alt="User profile"
-            className="w-[40px] aspect-square  rounded-full object-cover object-top"
-            width={100}
-            height={100}
+            className="w-10 h-10 rounded-full object-cover object-top"
+            width={40}
+            height={40}
           />
-          <span className="text-[#11142D] font-semibold font-sm">
+          <span className="text-[#11142D] font-medium text-sm">
             Hawkins Maru
           </span>
         </div>
+      </div>
       </div>
     </header>
   );
