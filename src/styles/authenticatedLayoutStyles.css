@@ -21,6 +21,10 @@
     display: none;
   }
 }
+.login {
+  grid-template-columns: 1fr;
+}
+
 @media (max-width: 999.1px) {
   .show-header {
     display: block;
@@ -30,5 +34,8 @@
 @media (min-width: 999px) {
   .show-header {
     display: none;
+  }
+  .login {
+    grid-template-columns: 531px auto;
   }
 }

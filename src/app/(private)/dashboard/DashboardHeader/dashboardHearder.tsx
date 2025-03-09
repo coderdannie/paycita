@@ -1,7 +1,7 @@
-"use client";
-import React, { useState } from "react";
-import Image from "next/image";
-import FrameIcon from "../../../assets/Frame.svg";
+'use client';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import FrameIcon from '../../../../assets/Frame.svg';
 
 const ToggleSwitch = ({
   isToggled,
@@ -21,7 +21,7 @@ const ToggleSwitch = ({
       <div className="w-11 h-6 bg-[#F0EAF5] rounded-full relative transition-colors">
         <div
           className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform transform shadow-md ${
-            isToggled ? "bg-[#692E9F] translate-x-5" : "bg-white"
+            isToggled ? 'bg-[#692E9F] translate-x-5' : 'bg-white'
           }`}
         ></div>
       </div>
@@ -64,7 +64,7 @@ const DashboardHeader = () => {
                 <div className="mt-2 w-full bg-gray-700 rounded-full h-2.5">
                   <div
                     className="bg-purple-600 h-2.5 rounded-full"
-                    style={{ width: "50%" }}
+                    style={{ width: '50%' }}
                   ></div>
                 </div>
               </div>

@@ -36,6 +36,7 @@ type CustomFormFieldProps<T extends FieldValues> = {
   label?: string;
   textarea?: boolean; // Add textarea prop
   rows?: number; // Add rows prop for textarea
+  auth?: boolean; // Add auth prop
 };
 
 export function CustomFormField<T extends FieldValues>({
@@ -54,6 +55,7 @@ export function CustomFormField<T extends FieldValues>({
   label,
   textarea = false, // Default to false
   rows = 3, // Default rows for textarea
+  auth = false, // Default to false
 }: CustomFormFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -91,10 +93,18 @@ export function CustomFormField<T extends FieldValues>({
                   onBlur={onBlur}
                   readOnly={readOnly}
                   rows={rows}
-                  className={`w-full p-2 border-2  text-sm  text-[#1D2939] bg-white
-                    ${error ? 'border-red-500' : 'border-[#E4E7EC]'}
-                    focus:outline-none focus:border-transparent focus:ring-0 
-                    focus-visible:ring-0 focus-visible:border-transparent rounded-[9px] resize-y`}
+                  className={`w-full p-2 border-2 text-sm text-[#1D2939] bg-white
+                    ${
+                      error
+                        ? 'border-red-500'
+                        : auth
+                        ? 'border-[#34006A]'
+                        : 'border-[#E4E7EC]'
+                    }
+                    focus:outline-none focus:ring-0 
+                    focus-visible:ring-0 ${
+                      auth ? 'rounded-[123px]' : 'rounded-[9px]'
+                    } resize-y`}
                 />
               ) : (
                 <Input
@@ -112,21 +122,30 @@ export function CustomFormField<T extends FieldValues>({
                   onFocus={onFocus}
                   onBlur={onBlur}
                   readOnly={readOnly}
-                  className={`w-full border-2 h-[40px] text-[#34006A] bg-white
-                    ${error ? 'border-red-500' : 'border-[#E4E7EC]'}
-                    focus:outline-none focus:border-transparent focus:ring-0 
-                    focus-visible:ring-0 focus-visible:border-transparent rounded-[9px]`}
+                  className={`w-full border-2 text-[#34006A] bg-white
+                    ${
+                      error
+                        ? 'border-red-500'
+                        : auth
+                        ? 'border-[#CBD5E1]'
+                        : 'border-[#E4E7EC]'
+                    }
+                    ${auth ? 'h-[48px]' : 'h-[40px]'}
+                    focus:outline-none focus:ring-0 
+                    focus-visible:ring-0 ${
+                      auth ? 'rounded-[123px]' : 'rounded-[9px]'
+                    }`}
                 />
               )}
               {isPassword && showPasswordToggle && !textarea && (
                 <div
-                  className="absolute right-2 text-lg top-5 cursor-pointer"
+                  className="absolute right-2 text-lg top-4 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? (
-                    <FaEye color="#4F4F4F" />
+                    <FaEye color="#CBD5E1" />
                   ) : (
-                    <BiHide color="#4F4F4F" />
+                    <BiHide color="#CBD5E1" />
                   )}
                 </div>
               )}
@@ -168,7 +187,7 @@ export function CustomFormSelect<T extends FieldValues>({
           <FormControl>
             <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger
-                className={`   bg-white ${
+                className={`bg-white ${
                   error ? 'border-red-500' : 'border-[#E4E7EC]'
                 }`} // Apply error styling
               >

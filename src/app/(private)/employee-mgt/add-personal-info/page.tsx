@@ -111,6 +111,7 @@ const PersonalInfo = () => {
   };
 
   function onSubmit(values: userDetailsSchemaType) {
+    console.log(values);
     router.push('/employee-mgt/employee-details');
   }
   return (
