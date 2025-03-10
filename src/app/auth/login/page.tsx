@@ -20,7 +20,7 @@ const Login = () => {
 
   const {
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = form;
 
   // Form submission handler
