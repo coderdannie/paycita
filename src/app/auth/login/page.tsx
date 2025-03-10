@@ -20,7 +20,7 @@ const Login = () => {
 
   const {
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = form;
 
   // Form submission handler
@@ -69,7 +69,6 @@ const Login = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={!isValid}
             className="w-full h-[48px] font-bold  bg-primary text-white py-2 rounded-full mt-6 "
           >
             Login
