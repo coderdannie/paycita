@@ -10,72 +10,84 @@ import { MyAttendanceRecord } from '@/src/types/attendance';
 
 export const sidebarData = [
   {
-    title: 'Dashboard',
-    path: '/dashboard',
+    title: "Dashboard",
+    path: "/dashboard",
     icon: <DashboardIcon fill="#344054" />,
     sec: <DashboardIcon fill="#692E9F" />,
     hover: <DashboardIcon fill="#692E9F" />,
   },
   {
-    title: 'Attendance',
+    title: "Attendance",
     icon: <AttendanceIcon fill="#344054" />,
     sec: <AttendanceIcon fill="#692E9F" />,
     hover: <AttendanceIcon fill="#692E9F" />,
-    path: '/attendance',
+    path: "/attendance",
     sub: [
       {
         id: 1,
-        name: 'My Attendance',
-        path: '/attendance/my-attendance',
+        name: "My Attendance",
+        path: "/attendance/my-attendance",
       },
       {
         id: 2,
-        name: 'Employee Attendance ',
-        path: '/attendance/employee-attendance',
+        name: "Employee Attendance ",
+        path: "/attendance/employee-attendance",
       },
     ],
   },
   {
-    title: 'Payroll',
+    title: "Payroll",
     icon: <PayRollIcon fill="#344054" />,
     sec: <PayRollIcon fill="#692E9F" />,
     hover: <PayRollIcon fill="#692E9F" />,
-    path: '/payroll',
+    path: "/payroll",
     sub: [
       {
         id: 1,
-        name: 'My Payroll',
-        path: '/payroll/my-payroll',
+        name: "My Payroll",
+        path: "/payroll/my-payroll",
       },
       {
         id: 2,
-        name: 'Employee Payroll',
-        path: '/payroll/employee-payroll',
+        name: "Employee Payroll",
+        path: "/payroll/employee-payroll",
       },
     ],
   },
 
   {
-    title: 'Employee Management',
+    title: "Employee Management",
     icon: <EmployeeMgtIcon fill="#344054" />,
     sec: <EmployeeMgtIcon fill="#692E9F" />,
     hover: <EmployeeMgtIcon fill="#692E9F" />,
-    path: '/employee-mgt',
+    path: "/employee-mgt",
   },
   {
-    title: 'Leave Management',
+    title: "Leave Management",
     icon: <LeaveMgtIcon fill="#344054" />,
     sec: <LeaveMgtIcon fill="#692E9F" />,
     hover: <LeaveMgtIcon fill="#692E9F" />,
-    path: '/leave-mgt',
+    path: "/leave-mgt",
+    sub: [
+      {
+        id: 1,
+        name: "My Leave",
+        path: "/leave-mgt/my-leave",
+      },
+      {
+        id: 2,
+        name: "Leave Request",
+        path: "/leave-mgt/leave-request",
+      },
+    ],
   },
 
   {
-    title: 'Settings',
+    title: "Settings",
     icon: <SettingsIcon fill="#344054" />,
     sec: <SettingsIcon fill="#692E9F" />,
     hover: <SettingsIcon fill="#692E9F" />,
-    path: '/settings',
+    path: "/settings",
   },
 ];
 
