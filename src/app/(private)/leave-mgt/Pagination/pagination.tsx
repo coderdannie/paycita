@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -22,8 +21,9 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex items-center justify-center space-x-2 mt-6">
+      {/* Previous button */}
       <button
-        className="px-2 flex items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
+        className="px-4 py-2 flex items-center justify-center text-[#98A2B3] hover:text-gray-700 disabled:opacity-50 border rounded-md"
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
@@ -33,11 +33,11 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Page 1 */}
       <button
-        className={`w-8 h-8 flex items-center justify-center text-sm font-medium
+        className={`w-12 h-12 flex items-center justify-center text-sm font-medium rounded-md border
           ${
             currentPage === 1
-              ? "bg-gray-800 text-white"
-              : "text-gray-700 hover:bg-gray-100"
+              ? "border border-[#E4E7EC] bg-white text-[#1D2939]"
+              : "text-[#667085] hover:bg-gray-100"
           }`}
         onClick={() => handlePageChange(1)}
       >
@@ -49,8 +49,8 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${
             currentPage === 2
-              ? "bg-gray-800 text-white"
-              : "text-gray-700 hover:bg-gray-100"
+              ? "border border-[#E4E7EC] bg-white text-[#1D2939]"
+              : "text-[#667085] hover:bg-gray-100"
           }`}
         onClick={() => handlePageChange(2)}
       >
@@ -62,8 +62,8 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${
             currentPage === 3
-              ? "bg-gray-800 text-white"
-              : "text-gray-700 hover:bg-gray-100"
+              ? "bg-[#E4E7EC] text-[#1D2939]"
+              : "text-[#667085] hover:bg-gray-100"
           }`}
         onClick={() => handlePageChange(3)}
       >
@@ -75,23 +75,21 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${
             currentPage === 4
-              ? "bg-gray-800 text-white"
-              : "text-gray-700 hover:bg-gray-100"
+              ? "bg-[#E4E7EC] text-[#1D2939] "
+              : "text-[#667085] hover:bg-gray-100"
           }`}
         onClick={() => handlePageChange(4)}
       >
         4
       </button>
 
-      {/* Ellipsis - only show if totalPages > 4 */}
-      {totalPages > 4 && (
-        <span className="w-8 h-8 flex items-center justify-center text-gray-500">
-          ...
-        </span>
-      )}
+      <span className="w-8 h-8 flex items-center justify-center text-gray-500">
+        ...
+      </span>
 
+      {/* Next button */}
       <button
-        className="px-2 flex items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
+        className="px-4 py-2 flex items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50 border rounded-md"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >

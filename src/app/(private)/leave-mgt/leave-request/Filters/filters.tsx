@@ -1,15 +1,6 @@
-export interface LeaveRequest {
-  id: number;
-  requestDate: string;
-  employeeName: string;
-  leaveType: string;
-  leaveDate: string;
-  duration: number;
-  status: "Pending" | "Approved" | "Rejected";
-}
-
 // src/components/Filters/Filters.tsx
 import React from "react";
+import { Search, ChevronsUpDown } from "lucide-react";
 
 interface FiltersProps {
   onSearchChange: (value: string) => void;
@@ -26,20 +17,7 @@ const Filters: React.FC<FiltersProps> = ({
     <div className="flex space-x-4 mb-6">
       <div className="relative w-1/3">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg
-            className="w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            ></path>
-          </svg>
+          <Search className="w-5 h-5 text-gray-400" />
         </div>
         <input
           type="text"
@@ -48,7 +26,6 @@ const Filters: React.FC<FiltersProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-
       <div className="w-1/6 relative">
         <select
           className="w-full px-4 py-2 border border-gray-200 rounded-lg appearance-none bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -62,23 +39,9 @@ const Filters: React.FC<FiltersProps> = ({
           <option value="Unpaid Leave">Unpaid Leave</option>
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-            ></path>
-          </svg>
+          <ChevronsUpDown className="w-4 h-4" />
         </div>
       </div>
-
       <div className="w-1/6 relative">
         <select
           className="w-full px-4 py-2 border border-gray-200 rounded-lg appearance-none bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -90,20 +53,7 @@ const Filters: React.FC<FiltersProps> = ({
           <option value="Rejected">Rejected</option>
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-            ></path>
-          </svg>
+          <ChevronsUpDown className="w-4 h-4" />
         </div>
       </div>
     </div>

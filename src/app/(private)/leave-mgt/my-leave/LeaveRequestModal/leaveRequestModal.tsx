@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Calendar, ChevronDown, Check } from "lucide-react";
 
 interface LeaveRequestModalProps {
@@ -23,7 +23,17 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showYearDropdown, setShowYearDropdown] = useState(false);
 
-  // Generate a list of years (from 50 years in the past to 50 years in the future)
+
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 101 }, (_, i) => currentYear - 50 + i);
 
@@ -88,22 +98,19 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const monthName = currentMonth.toLocaleString("default", { month: "long" });
-
-    // Get days in month
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
 
-    // Create days array
     const days: (number | null)[] = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null); // Empty cells for days before the first of the month
+      days.push(null); 
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
 
-    // Create weeks array from days
+
     const weeks: (number | null)[][] = [];
     let week: (number | null)[] = [];
 
@@ -213,12 +220,12 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-50 overflow-auto">
       <div
-        className="absolute inset-0 bg-black bg-opacity-30 pointer-events-auto"
+        className="fixed inset-0 bg-black bg-opacity-30"
         onClick={onClose}
       ></div>
-      <div className="absolute top-0 right-0 bottom-0 w-[350px] bg-white shadow-xl pointer-events-auto flex flex-col h-[96%] my-4 mx-4 rounded-xl border border-gray-200">
+      <div className="absolute top-0 right-0 bottom-0 w-[350px] bg-white shadow-xl flex flex-col h-[96%] my-4 mx-4 rounded-xl border border-gray-200">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-medium">Add new Leave Request</h2>
           <button

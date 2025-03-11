@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import Pagination from "../../Pagination/pagination";
 import { Info, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Leave {
   id: number;
@@ -53,11 +54,11 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
   };
 
   return (
-    <div className="mt-6">
+    <div className={cn("mt-6 w-full", "hide-sidebar:px-4")}>
       <h2 className="text-lg font-semibold text-gray-700 mb-4">
         Leave History
       </h2>
-      <div className="bg-white rounded-lg shadow-sm">
+      <div className="rounded-lg shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full table-fixed">
             <colgroup>
@@ -69,7 +70,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
               <col style={{ width: "15%" }} />
               <col style={{ width: "5%" }} />
             </colgroup>
-            <thead>
+            <thead className="bg-white">
               <tr className="border-b">
                 <th className="py-3 px-4 text-left text-sm text-gray-500 font-medium">
                   <input
@@ -98,7 +99,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
                 <th className="py-3 px-4 text-center text-sm text-gray-500 font-medium"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white">
               {paginatedLeaves.map((leave) => (
                 <tr key={leave.id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4">

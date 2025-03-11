@@ -163,7 +163,7 @@ const Page: React.FC = () => {
   ).length;
 
   return (
-    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="container">
       <div className="flex justify-end mb-6">
         <LeaveRequestButton onOpen={handleOpenLeaveRequest} />
       </div>
