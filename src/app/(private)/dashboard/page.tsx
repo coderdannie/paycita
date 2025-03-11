@@ -1,3 +1,4 @@
+"use client";
 import DashboardHeader from "./DashboardHeader/dashboardHearder";
 import EmployeeTable from "./EmployeeTable/employeeTable";
 import EventsCard from "./EventsCard/eventsCard";
