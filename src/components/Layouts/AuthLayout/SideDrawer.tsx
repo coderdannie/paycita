@@ -46,9 +46,9 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
                 {sidebarData.map((item) => (
                   <div key={item.title} className="mb-2">
                     <div
-                      className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 ${
+                      className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${
                         pathname.includes(item.path)
-                          ? 'bg-[#F0EAF5] text-primary'
+                          ? 'bg-[#F0EAF5] text-primary before:content-[""] before:absolute before:top-0 before:right-[10px] before:h-[50%] before:translate-y-[45%] before:w-[4px] before:bg-primary'
                           : 'bg-transparent text-[#616161] hover:bg-[#F0EAF5]'
                       }`}
                       onClick={() => {

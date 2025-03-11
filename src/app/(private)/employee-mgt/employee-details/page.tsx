@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoMdArrowBack } from 'react-icons/io';
@@ -32,6 +33,11 @@ const EmployeeDetails = () => {
       employmentType: '',
       locationType: '',
       hireDate: '',
+      basicSalary: '', // New field
+      taxStatus: '', // New field
+      taxNumber: '', // New field
+      taxMethod: '', // New field
+      taxSalary: '', // New field
     },
   });
 
@@ -56,6 +62,7 @@ const EmployeeDetails = () => {
   const onSubmit = (values: EmployeeDetailsSchemaType) => {
     console.log(values); // Handle form submission
   };
+  console.log(errors);
 
   return (
     <div>
@@ -88,15 +95,7 @@ const EmployeeDetails = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
-            <CustomFormField
-              name="employeeNumber"
-              control={control}
-              label="Employee Number"
-              placeholder="Enter employee number"
-              error={errors.employeeNumber?.message}
-            />
             <div className="grid md:grid-cols-2 gap-5 pb-5 mt-5 ">
-              {' '}
               {/* Employee Name */}
               <CustomFormField
                 name="employeeName"
@@ -117,8 +116,8 @@ const EmployeeDetails = () => {
               <CustomFormSelect
                 name="jobLevel"
                 control={control}
-                items={['Entry', 'Mid', 'Senior', 'Executive']}
-                labelText="Job Level"
+                items={['Staff', 'Mid', 'Senior', 'Executive']}
+                labelText="Role"
                 holder="Select job level"
                 error={errors.jobLevel?.message}
               />
@@ -185,6 +184,54 @@ const EmployeeDetails = () => {
                 )}
               </div>
             </div>
+
+            {/* Payroll & Tax Section */}
+            <h4 className="font-semibold text-[#1D2939] mt-8">Payroll & Tax</h4>
+            <div className="grid md:grid-cols-2 gap-5 pb-5 mt-5">
+              {/* Basic Salary */}
+              <CustomFormField
+                name="basicSalary"
+                control={control}
+                label="Basic Salary"
+                placeholder="Enter basic salary"
+                error={errors.basicSalary?.message}
+              />
+              {/* Tax Status */}
+              <CustomFormSelect
+                name="taxStatus"
+                control={control}
+                items={['Taxable', 'Non-Taxable']}
+                labelText="Tax Status"
+                holder="Select tax status"
+                error={errors.taxStatus?.message}
+              />
+              {/* Tax Number */}
+              <CustomFormField
+                name="taxNumber"
+                control={control}
+                label="Tax Number"
+                placeholder="Enter tax number"
+                error={errors.taxNumber?.message}
+              />
+              {/* Tax Method */}
+              <CustomFormSelect
+                name="taxMethod"
+                control={control}
+                items={['Monthly', 'Quarterly', 'Annually']}
+                labelText="Tax Method"
+                holder="Select tax method"
+                error={errors.taxMethod?.message}
+              />
+              {/* Tax Salary */}
+              <CustomFormField
+                name="taxSalary"
+                control={control}
+                label="Tax Salary"
+                placeholder="Enter tax salary"
+                error={errors.taxSalary?.message}
+              />
+            </div>
+
             {/* Submit Button */}
             <div className="flex gap-4 md:justify-end h-[40px]">
               <button
@@ -209,4 +256,5 @@ const EmployeeDetails = () => {
     </div>
   );
 };
+
 export default EmployeeDetails;

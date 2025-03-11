@@ -48,14 +48,14 @@ export function CustomFormField<T extends FieldValues>({
   onFocus,
   onBlur,
   onChange,
-  error,
+  error, // Error prop for validation messages
   icon,
   value,
   readOnly = false,
   label,
-  textarea = false, // Default to false
-  rows = 3, // Default rows for textarea
-  auth = false, // Default to false
+  textarea = false,
+  rows = 3,
+  auth = false,
 }: CustomFormFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -151,7 +151,8 @@ export function CustomFormField<T extends FieldValues>({
               )}
             </div>
           </FormControl>
-          <FormMessage>{error}</FormMessage>
+          <FormMessage className="text-red-500">{error}</FormMessage>{' '}
+          {/* Display error message */}
         </FormItem>
       )}
     />
