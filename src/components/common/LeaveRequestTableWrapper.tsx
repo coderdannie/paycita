@@ -1,7 +1,7 @@
 "use client";
+import Pagination from "@/src/app/(private)/leave-mgt/Pagination/pagination";
 import React, { useState } from "react";
-import Pagination from "@/src/app/leave-mgt/Pagination/pagination";
-import LeaveRequestTable from "@/src/app/leave-mgt/leave-request/LeaveRequestTable/leaveRequestTable";
+
 
 interface LeaveRequest {
   id: number;
@@ -35,7 +35,30 @@ const LeaveRequestTableWrapper: React.FC<LeaveRequestTableWrapperProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      <LeaveRequestTable requests={paginatedRequests} />
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>Request Date</th>
+            <th>Employee Name</th>
+            <th>Leave Type</th>
+            <th>Leave Date</th>
+            <th>Duration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedRequests.map((request) => (
+            <tr key={request.id}>
+              <td>{request.requestDate}</td>
+              <td>{request.employeeName}</td>
+              <td>{request.leaveType}</td>
+              <td>{request.leaveDate}</td>
+              <td>{request.duration}</td>
+              <td>{request.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}
@@ -46,5 +69,4 @@ const LeaveRequestTableWrapper: React.FC<LeaveRequestTableWrapperProps> = ({
     </div>
   );
 };
-
 export default LeaveRequestTableWrapper;

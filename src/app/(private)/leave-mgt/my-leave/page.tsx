@@ -126,11 +126,10 @@ const Page: React.FC = () => {
     startDate: string,
     endDate: string
   ) => {
-    // Calculate duration based on the start and end dates
     const start = new Date(startDate);
     const end = new Date(endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
 
     const newLeave: Leave = {
       id: leaveData.length + 1,
@@ -138,7 +137,7 @@ const Page: React.FC = () => {
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
       duration: diffDays,
-      status: "Approved", // Default status as Approved for demo
+      status: "Approved", 
     };
 
     setLeaveData([newLeave, ...leaveData]);
@@ -157,7 +156,7 @@ const Page: React.FC = () => {
   const usedLeaves = leaveData.filter(
     (leave) => leave.status === "Approved"
   ).length;
-  const pendingLeaves = 0; // For demo, no pending leaves
+  const pendingLeaves = 0; 
   const rejectedLeaves = leaveData.filter(
     (leave) => leave.status === "Rejected"
   ).length;

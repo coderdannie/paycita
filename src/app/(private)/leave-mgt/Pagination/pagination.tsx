@@ -31,7 +31,6 @@ const Pagination: React.FC<PaginationProps> = ({
         <span className="ml-1">Prev</span>
       </button>
 
-      {/* Page 1 */}
       <button
         className={`w-12 h-12 flex items-center justify-center text-sm font-medium rounded-md border
           ${
@@ -44,7 +43,6 @@ const Pagination: React.FC<PaginationProps> = ({
         1
       </button>
 
-      {/* Page 2 */}
       <button
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${
@@ -57,7 +55,6 @@ const Pagination: React.FC<PaginationProps> = ({
         2
       </button>
 
-      {/* Page 3 */}
       <button
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${
@@ -70,7 +67,6 @@ const Pagination: React.FC<PaginationProps> = ({
         3
       </button>
 
-      {/* Page 4 */}
       <button
         className={`w-8 h-8 flex items-center justify-center text-sm font-medium
           ${

@@ -16,19 +16,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   title,
   actionLabel,
 }) => {
-  // Don't render anything if modal is closed
   if (!isOpen) return null;
 
-  // Use createPortal to mount the modal directly to the document body
-  // This completely separates it from your component tree, preventing layout shifts
   return createPortal(
     <div
       className="fixed inset-0 z-50"
       style={{
-        isolation: "isolate", // Creates a new stacking context for better z-index handling
+        isolation: "isolate",
       }}
     >
-      {/* Dark overlay */}
       <div
         className="fixed inset-0 bg-black bg-opacity-30"
         onClick={onCancel}

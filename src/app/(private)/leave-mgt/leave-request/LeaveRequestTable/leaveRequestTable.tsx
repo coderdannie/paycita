@@ -1,4 +1,4 @@
-// src/components/LeaveRequestTable/leaveRequestTable.tsx
+
 import React, { useState } from "react";
 import { ChevronsUpDown, Info, Trash2 } from "lucide-react";
 import { LeaveRequestType } from "../types";
@@ -6,6 +6,7 @@ import LeaveDetailsModal from "../Modals/LeaveDetailsModal";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import { useToast } from "../contexts/ToastContext";
 import Pagination from "../../Pagination/pagination";
+
 
 interface LeaveRequestTableProps {
   requests: LeaveRequestType[];
@@ -206,7 +207,6 @@ const LeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
         </div>
       </div>
 
-      {/* Pagination added below the table */}
       <div className="mt-4">
         <Pagination
           currentPage={currentPage}
@@ -215,7 +215,6 @@ const LeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
         />
       </div>
 
-      {/* Leave Details Modal */}
       <LeaveDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
@@ -224,7 +223,6 @@ const LeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
         onReject={handleInitiateReject}
       />
 
-      {/* Approve Confirmation Modal */}
       <ConfirmationModal
         isOpen={isApproveModalOpen}
         onCancel={() => setIsApproveModalOpen(false)}
@@ -232,8 +230,7 @@ const LeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
         title="Approve leave request?"
         actionLabel="Confirm"
       />
-
-      {/* Reject Confirmation Modal */}
+  
       <ConfirmationModal
         isOpen={isRejectModalOpen}
         onCancel={() => setIsRejectModalOpen(false)}

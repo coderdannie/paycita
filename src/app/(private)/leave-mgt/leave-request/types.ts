@@ -1,4 +1,4 @@
-// src/types.ts
+
 export interface LeaveRequestType {
   id: number;
   requestDate: string;
