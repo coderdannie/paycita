@@ -1,10 +1,8 @@
-// LeaveHistory/leaveHistory.tsx
 "use client";
-
 import React, { useState } from "react";
-import Pagination from "../../Pagination/pagination";
 import { Info, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Pagination from "../../Pagination/pagination";
 
 interface Leave {
   id: number;
@@ -149,7 +147,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
       </div>
       <div className="mt-4">
         <Pagination
-          currentPage={currentPage}
+                  currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />

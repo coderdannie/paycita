@@ -113,7 +113,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
   );
 };
 
-// Helper function to format date
+
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
