@@ -27,7 +27,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-md p-6 relative">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Edit User Information</h2>
@@ -90,7 +90,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
           <button
             onClick={onSave}
-            className="w-full bg-purple-600 text-white py-3 rounded-md hover:bg-purple-700 mt-4"
+            className="w-full bg-purple-700 text-white py-3 rounded-md hover:bg-purple-800 mt-4"
           >
             Save Changes
           </button>

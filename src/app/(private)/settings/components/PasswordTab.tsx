@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
 import PasswordResetModal from "./modals/PasswordResetModal";
-
+import { Pencil } from "lucide-react";
 
 const PasswordTab: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,10 +18,13 @@ const PasswordTab: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
+          className="bg-[#692E9F] text-white text-[.95rem]  px-4 py-2 rounded-[.4rem] hover:bg-purple-800 flex items-center"
         >
-          <FiEdit className="mr-2" />
           Reset password
+          <Pencil
+            size={18}
+            className="text-[#692E9F] bg-white rounded-[.4rem] p-[.1rem] ml-2"
+          />
         </button>
       </div>
 

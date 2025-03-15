@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface ConfirmationModalProps {
@@ -16,31 +16,33 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   title,
   actionLabel,
 }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50"
-      style={{
-        isolation: "isolate",
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="fixed inset-0 bg-black bg-opacity-30"
         onClick={onCancel}
         aria-hidden="true"
       />
 
-      {/* Modal content */}
       <div
-        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl w-full max-w-md mx-4"
-        style={{
-          zIndex: 51,
-          maxHeight: "calc(100vh - 2rem)",
-          overflowY: "auto",
-        }}
+        className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6"
+        style={{ zIndex: 51, maxHeight: "90vh", overflowY: "auto" }}
       >
-        <div className="p-6 flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <div className="w-16 h-16 bg-[#692E9F] rounded-full flex items-center justify-center mb-4">
             <span className="text-white font-extrabold text-3xl">?</span>
           </div>

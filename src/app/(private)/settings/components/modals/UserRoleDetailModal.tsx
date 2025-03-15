@@ -44,12 +44,12 @@ const UserRoleDetailModal: React.FC<UserRoleDetailModalProps> = ({
               </button>
               <div>
                 <span className="text-sm">Settings / User Role / </span>
-                <span className="text-purple-700">{role.name}</span>
+                <span className="text-[#692E9F]">{role.name}</span>
               </div>
             </div>
             <button
               onClick={onEditClick}
-              className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
+              className="bg-[#692E9F] text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
             >
               <FiEdit className="mr-2" />
               Edit Role

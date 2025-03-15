@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title = "Settings" }) => {
       </Head>
       <main className="container mx-auto p-4">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
-        {children}
+        <div className="bg-white p-6 rounded-lg shadow-sm">{children}</div>
       </main>
     </div>
   );
