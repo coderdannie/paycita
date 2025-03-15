@@ -4,7 +4,7 @@ import Filters from "./Filters/filters";
 
 import { LeaveRequestType } from "./types";
 import { ToastProvider } from "./contexts/ToastContext";
-import LeaveRequestTable from "./LeaveRequestTable/leaveRequestTable";
+import EmployeeLeaveRequestTable from "./EmployeeLeaveRequestTable/employeeLeaveRequestTable";
 
 const LeaveRequest: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -93,13 +93,13 @@ const LeaveRequest: React.FC = () => {
   return (
     <ToastProvider>
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Leave Request</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Employee Leave Request</h1>
         <Filters
           onSearchChange={setSearchTerm}
           onTypeChange={setLeaveTypeFilter}
           onStatusChange={setStatusFilter}
         />
-        <LeaveRequestTable
+        <EmployeeLeaveRequestTable
           requests={filteredRequests}
           onStatusUpdate={handleStatusUpdate}
           currentPage={currentPage}

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
-import { FiUpload, FiTrash2, FiEdit } from "react-icons/fi";
 import EditProfileModal from "./modals/EditProfileModal";
-
+import { Pencil } from "lucide-react";
 
 interface ProfileData {
   firstName: string;
@@ -21,7 +20,6 @@ const ProfileTab: React.FC = () => {
     phoneNumber: "081279354621",
     profileImage: null,
   });
-
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -74,7 +72,6 @@ const ProfileTab: React.FC = () => {
   };
 
   const handleSaveChanges = () => {
-    // typically send the updated profileData to your API
     console.log("Saving profile data:", profileData);
 
     setIsModalOpen(false);
@@ -82,71 +79,75 @@ const ProfileTab: React.FC = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center">
-          <div className="w-24 h-24 rounded-full border border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50">
+      <div className="flex flex-col items-start mb-8">
+        <div className="flex justify-between items-center w-full mb-6">
+          <div className="w-20 h-20 rounded-full border border-[#667085] overflow-hidden flex items-center justify-center bg-gray-50">
             {profileData.profileImage ? (
               <Image
                 src={profileData.profileImage}
                 alt="Profile"
-                width={96}
-                height={96}
+                width={80}
+                height={80}
                 className="w-full h-full object-cover"
               />
             ) : (
               <div className="w-full h-full bg-gray-200"></div>
             )}
           </div>
-          <div className="ml-4">
-            <button
-              className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 mb-2 flex items-center"
-              {...getRootProps()}
-            >
-              <FiUpload className="mr-2" />
-              <input {...getInputProps()} />
-              Upload
-            </button>
-            <button
-              onClick={deleteImage}
-              className="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center"
-            >
-              <FiTrash2 className="mr-2" />
-              Delete
-            </button>
-          </div>
+          <button
+            onClick={handleOpenModal}
+            className="bg-[#692E9F] text-white text-[.9rem]  px-4 py-2 rounded-[.4rem] hover:bg-purple-800 flex items-center gap-2"
+          >
+            Edit Profile
+            <Pencil
+              size={18}
+              className="text-[#692E9F] bg-white rounded-[.4rem] p-[.1rem]"
+            />
+          </button>
         </div>
-        <button
-          onClick={handleOpenModal}
-          className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
-        >
-          <FiEdit className="mr-2" />
-          Edit Profile
-        </button>
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={deleteImage}
+            className="border border-[#667085] text-sm text-[#667085] px-4 py-1 rounded-[.4rem] hover:bg-gray-50"
+          >
+            Delete
+          </button>
+          <button
+            className="bg-[#692E9F] text-white text-sm  px-4 py-2 rounded-[.4rem] hover:bg-purple-800"
+            {...getRootProps()}
+          >
+            <input {...getInputProps()} />
+            Upload
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6">
         <div>
-          <label className="block text-sm text-gray-500 mb-1">First Name</label>
-          <p className="text-gray-800">{profileData.firstName}</p>
+          <label className="block text-sm text-gray-500 mb-0.5">
+            First Name
+          </label>
+          <p className="text-gray-800 font-medium">{profileData.firstName}</p>
         </div>
         <div>
-          <label className="block text-sm text-gray-500 mb-1">Last name</label>
-          <p className="text-gray-800">{profileData.lastName}</p>
+          <label className="block text-sm text-gray-500 mb-0.5">
+            Last name
+          </label>
+          <p className="text-gray-800 font-medium">{profileData.lastName}</p>
         </div>
         <div>
-          <label className="block text-sm text-gray-500 mb-1">
+          <label className="block text-sm text-gray-500 mb-0.5">
             Email Address
           </label>
-          <p className="text-gray-800">{profileData.email}</p>
+          <p className="text-gray-800 font-medium">{profileData.email}</p>
         </div>
         <div>
-          <label className="block text-sm text-gray-500 mb-1">
+          <label className="block text-sm text-gray-500 mb-0.5">
             Phone Number
           </label>
-          <p className="text-gray-800">{profileData.phoneNumber}</p>
+          <p className="text-gray-800 font-medium">{profileData.phoneNumber}</p>
         </div>
       </div>
-
 
       <EditProfileModal
         isOpen={isModalOpen}

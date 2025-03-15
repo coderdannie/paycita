@@ -2,6 +2,7 @@ import {
   AttendanceIcon,
   DashboardIcon,
   EmployeeMgtIcon,
+  EventIcon,
   LeaveMgtIcon,
   PayRollIcon,
   SettingsIcon,
@@ -71,15 +72,22 @@ export const sidebarData = [
     sub: [
       {
         id: 1,
-        name: "My Leave",
-        path: "/leave-mgt/my-leave",
+        name: "My Leave Request",
+        path: "/leave-mgt/my-leave-request",
       },
       {
         id: 2,
-        name: "Leave Request",
-        path: "/leave-mgt/leave-request",
+        name: "Employee Leave Request",
+        path: "/leave-mgt/employee-leave-request",
       },
     ],
+  },
+  {
+    title: "Event",
+    icon: <EventIcon fill="#344054" />,
+    sec: <EventIcon fill="#692E9F" />,
+    hover: <EventIcon fill="#692E9F" />,
+    path: "/event",
   },
 
   {

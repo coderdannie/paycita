@@ -26,7 +26,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab }) => {
             key={tab.name}
             className={`mr-8 py-4 px-1 relative ${
               activeTab === tab.key
-                ? "text-purple-700 font-medium border-b-2 border-purple-700"
+                ? "text-[#692E9F] font-medium border-b-2 border-[#692E9F]"
                 : "text-gray-500 hover:text-purple-600"
             }`}
           >

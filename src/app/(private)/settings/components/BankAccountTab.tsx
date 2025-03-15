@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
 import BankDetailsModal from "./modals/BankDetailsModal";
-
+import { Pencil } from "lucide-react";
 
 interface BankDetails {
   bankName: string;
@@ -48,10 +47,15 @@ const BankAccountTab: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center ml-4"
+          className="bg-[#692E9F] text-white text-[.9rem] px-4 py-2 rounded-[.4rem] hover:bg-purple-800 inline-flex items-center whitespace-nowrap"
         >
-          <FiEdit className="mr-2" />
-          Edit Details
+          <span className="mr-2">Edit Details</span>
+          <div className="flex-shrink-0">
+            <Pencil
+              size={16}
+              className="bg-white text-[#692E9F] rounded-sm p-0.5 min-w-[16px]"
+            />
+          </div>
         </button>
       </div>
 

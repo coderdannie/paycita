@@ -26,7 +26,7 @@ const UserRoleDetail: React.FC<UserRoleDetailProps> = ({ roleId }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="mb-6">
-        <div className="text-sm text-purple-600 mb-4">
+        <div className="text-sm text-[#692E9F] mb-4">
           <Link href="/settings" className="hover:underline">
             Settings
           </Link>{" "}
@@ -46,7 +46,7 @@ const UserRoleDetail: React.FC<UserRoleDetailProps> = ({ roleId }) => {
           </div>
           <Link
             href={`/settings/user-role/${roleId}/edit`}
-            className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
+            className="bg-[#692E9F] text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center"
           >
             <FiEdit className="mr-2" />
             Edit Role

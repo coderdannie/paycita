@@ -82,7 +82,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="mb-6">
-        <div className="text-sm text-purple-600 mb-4">
+        <div className="text-sm text-[#692E9F] mb-4">
           <Link href="/settings" className="hover:underline">
             Settings
           </Link>{" "}
@@ -140,7 +140,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
           <div className="flex items-center">
             <div
               className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-                role.status === "Active" ? "bg-purple-700" : "bg-gray-300"
+                role.status === "Active" ? "bg-[#692E9F]" : "bg-gray-300"
               }`}
               onClick={() =>
                 setRole({
@@ -189,7 +189,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                     onChange={(e) =>
                       handlePermissionChange(menuName, "view", e.target.checked)
                     }
-                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                    className="w-5 h-5 text-[#692E9F] rounded focus:ring-purple-500"
                   />
                 </td>
                 <td className="px-4 py-4 text-center">
@@ -199,7 +199,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                     onChange={(e) =>
                       handlePermissionChange(menuName, "edit", e.target.checked)
                     }
-                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                    className="w-5 h-5 text-[#692E9F] rounded focus:ring-purple-500"
                   />
                 </td>
                 <td className="px-4 py-4 text-center">
@@ -213,7 +213,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                         e.target.checked
                       )
                     }
-                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                    className="w-5 h-5 text-[#692E9F] rounded focus:ring-purple-500"
                   />
                 </td>
               </tr>
@@ -233,7 +233,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
         </Link>
         <button
           onClick={handleSave}
-          className="px-4 py-2 bg-purple-700 text-white rounded-md hover:bg-purple-800"
+          className="px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800"
         >
           Update
         </button>

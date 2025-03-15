@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { FiEdit, FiTrash2, FiInfo, FiPlus } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiInfo, FiPlus, FiSearch } from "react-icons/fi";
 import Link from "next/link";
+import { ChevronsUpDown } from "lucide-react";
 
 interface UserRole {
   id: string;
@@ -66,7 +67,7 @@ const UserRoleTab: React.FC = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div className="relative w-full md:w-80">
           <input
             type="text"
@@ -76,66 +77,50 @@ const UserRoleTab: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
           />
           <div className="absolute left-3 top-2.5 text-gray-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <FiSearch className="h-5 w-5" />
           </div>
         </div>
         <Link
           href="/settings/user-role/add"
-          className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 flex items-center ml-4"
+          className="bg-[#692E9F] text-white text-[1rem] px-4 py-2 rounded-md hover:bg-purple-800 flex items-center justify-center whitespace-nowrap w-full md:w-auto"
         >
-          <FiPlus className="mr-2" />
-          Add User Role
+          <span>Add User Role</span>
+          <FiPlus className="ml-2" />
         </Link>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full border-collapse border border-gray-700 rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-50 border-b">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-sm font-medium text-[gray-600]">
                 Role Name
-                <span className="ml-1 inline-block">↓</span>
-              </th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-600">
-                Actions
+                <ChevronsUpDown className="ml-1 inline-block text-[#98A2B3]" />
               </th>
             </tr>
           </thead>
           <tbody>
             {filteredRoles.map((role) => (
               <tr key={role.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-4 text-gray-700">{role.name}</td>
-                <td className="px-4 py-4">
-                  <div className="flex justify-center space-x-2">
+                <td className="px-4 py-4 text-gray-700 flex justify-between items-center">
+                  {role.name}
+                  <div className="flex space-x-2">
                     <Link
                       href={`/settings/user-role/${role.id}`}
-                      className="p-1.5 rounded-full hover:bg-gray-100"
+                      className="p-1.5 rounded-[.5rem] border border-gray-200 hover:bg-gray-100"
                       title="View details"
                     >
-                      <FiInfo className="w-5 h-5 text-gray-500" />
+                      <FiInfo className="w-4 h-4 text-gray-500" />
                     </Link>
                     <Link
                       href={`/settings/user-role/${role.id}/edit`}
-                      className="p-1.5 rounded-full hover:bg-gray-100"
+                      className="p-1.5 rounded-[.5rem]  border hover:bg-gray-100"
                       title="Edit role"
                     >
                       <FiEdit className="w-5 h-5 text-gray-500" />
                     </Link>
                     <button
-                      className="p-1.5 rounded-full hover:bg-gray-100"
+                      className="p-1.5 rounded-[.5rem] border hover:bg-gray-100"
                       title="Delete role"
                     >
                       <FiTrash2 className="w-5 h-5 text-gray-500" />
@@ -150,4 +135,5 @@ const UserRoleTab: React.FC = () => {
     </div>
   );
 };
+
 export default UserRoleTab;

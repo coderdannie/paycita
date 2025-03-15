@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ChevronsUpDown, Info, Trash2 } from "lucide-react";
 import { LeaveRequestType } from "../types";
-import LeaveDetailsModal from "../Modals/LeaveDetailsModal";
+import LeaveDetailsModal from "../Modals/EmployeeLeaveDetailsModal";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import { useToast } from "../contexts/ToastContext";
 import Pagination from "../../Pagination/pagination";
@@ -16,7 +16,7 @@ interface LeaveRequestTableProps {
   onPageChange: (page: number) => void;
 }
 
-const LeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
+const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
   requests,
   onStatusUpdate,
   currentPage,
@@ -252,4 +252,4 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-export default LeaveRequestTable;
+export default EmployeeLeaveRequestTable;

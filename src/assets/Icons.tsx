@@ -127,6 +127,25 @@ export const LeaveMgtIcon = ({ fill }: IconProps) => (
   </svg>
 );
 
+export const EventIcon = ({ fill }: IconProps) => (
+  <svg
+    width="18"
+    height="19"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="3" y="5" width="18" height="16" rx="2" fill={fill} />
+    <rect x="7" y="1" width="2" height="4" fill={fill} />
+    <rect x="15" y="1" width="2" height="4" fill={fill} />
+    <circle cx="8" cy="12" r="1" fill="white" />
+    <circle cx="12" cy="12" r="1" fill="white" />
+    <circle cx="16" cy="12" r="1" fill="white" />
+    <circle cx="8" cy="16" r="1" fill="white" />
+    <circle cx="12" cy="16" r="1" fill="white" />
+    <circle cx="16" cy="16" r="1" fill="white" />
+  </svg>
+);
 export const SettingsIcon = ({ fill }: IconProps) => (
   <svg
     width="18"
@@ -141,3 +160,4 @@ export const SettingsIcon = ({ fill }: IconProps) => (
     />
   </svg>
 );
+
