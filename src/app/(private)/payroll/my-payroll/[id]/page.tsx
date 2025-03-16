@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import EmployeeDetails from '../../../../../components/data/Payroll/Tabs/EmployeeDetails';
 import PayrollDetails from '../../../../../components/data/Payroll/Tabs/PayrollDetail';
 import { MdArrowBackIos } from 'react-icons/md';
+import { useRouter } from 'next/navigation';
 
 const PayrollDetail = () => {
   const [activeTab, setActiveTab] = useState('employee'); // 'employee' or 'payroll'
 
+  const router = useRouter();
   return (
     <div className="p-4 bg-white  rounded-xl shadow">
       <div className="flex items-center  gap-2 mb-4">
-        <button>
+        <button onClick={() => router.back()}>
           <MdArrowBackIos />
         </button>
         <h2 className="text-2xl font-semibold ">Detail Payroll</h2>

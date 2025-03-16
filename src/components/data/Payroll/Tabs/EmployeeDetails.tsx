@@ -56,7 +56,7 @@ const EmployeeDetails = () => {
         </div>
       </div>
       <div className="bg-white rounded-lg ">
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           {compensationDetails.map((detail, index) => (
             <div
               key={index}
