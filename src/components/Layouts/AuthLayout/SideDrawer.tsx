@@ -37,9 +37,14 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
         } lg:translate-x-0`}
       >
         <div className="flex flex-col justify-between h-full">
-          <div className="mt-[50px]">
-            <div className="bg-white sticky top-0 pl-5 pt-4">
-              {/* <Logo /> */}
+          <div className="mt-[40px]">
+            <div className=" sticky top-0 pl-5 ">
+              <Image
+                src="/assets/logo.jpg"
+                alt="paycita logo"
+                width={100}
+                height={100}
+              />
             </div>
             <div className="">
               <div className="flex-1">
