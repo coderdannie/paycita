@@ -26,8 +26,15 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col justify-between fixed z-50 w-[252px] bg-white h-screen">
-      <div className="mt-[50px]">
-        <div className="bg-white sticky top-0 pl-5 pt-4">{/* <Logo /> */}</div>
+      <div className="mt-[40px]">
+        <div className=" sticky top-0 pl-5 ">
+          <Image
+            src="/assets/logo.jpg"
+            alt="paycita logo"
+            width={100}
+            height={100}
+          />
+        </div>
         <div className="">
           <div className="flex-1">
             {sidebarData.map((item) => (
