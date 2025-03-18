@@ -62,3 +62,12 @@ export const resumptionDetailsSchema = z.object({
 export type ResumptionDetailsSchemaType = z.infer<
   typeof resumptionDetailsSchema
 >;
+
+export const topupSchema = z.object({
+  networkProvider: z.string().min(1, 'Network provider is required'),
+  phoneNumber: z.string().min(10, 'Phone number must be at least 10 digits'),
+  amount: z.string().min(1, 'Amount is required').optional(),
+  dataPlan: z.string().min(1, 'Data plan is required').optional(),
+});
+
+export type TopupSchemaType = z.infer<typeof topupSchema>;

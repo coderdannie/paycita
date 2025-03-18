@@ -1,0 +1,84 @@
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+
+interface Transaction {
+  'Transaction ID': string;
+  'Transaction Type': string;
+  Provider: string;
+  Amount: string;
+  Date: string;
+  Status: string;
+}
+
+interface TransactionsTableProps {
+  tableData: Transaction[];
+}
+
+const TransactionsTable: React.FC<TransactionsTableProps> = ({ tableData }) => {
+  const headers = [
+    {
+      label: 'Transaction ID',
+    },
+    {
+      label: 'Transaction Type',
+    },
+    {
+      label: 'Provider',
+    },
+    {
+      label: 'Amount',
+    },
+    {
+      label: 'Date',
+    },
+    {
+      label: 'Status',
+    },
+  ];
+
+  return (
+    <div className="mt-5">
+      {' '}
+      <CustomTable headers={headers} center={true}>
+        {tableData?.length ? (
+          tableData.map((row, rowIndex) => (
+            <TableRow key={rowIndex} className=" text-center text-sm">
+              <TableCell className="py-5">{row['Transaction ID']}</TableCell>
+              <TableCell>{row['Transaction Type']}</TableCell>
+              <TableCell>{row['Provider']}</TableCell>
+              <TableCell>{row['Amount']}</TableCell>
+              <TableCell>{row['Date']}</TableCell>
+              <TableCell>
+                <span
+                  className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
+                  ${
+                    row['Status'] === 'Successful'
+                      ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                      : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
+                  }
+                `}
+                >
+                  {row['Status']}
+                </span>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={headers.length} className="text-center py-6">
+              <div className="flex flex-col items-center">
+                <p className="text-lg font-semibold text-gray-700">
+                  No Transaction Records
+                </p>
+                <p className="text-sm text-gray-500">
+                  Transactions will appear here.
+                </p>
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
+      </CustomTable>
+    </div>
+  );
+};
+export default TransactionsTable;

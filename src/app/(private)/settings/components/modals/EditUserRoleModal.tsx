@@ -24,7 +24,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
   isOpen,
   onClose,
   role,
-  onSave,
+  // onSave,
 }) => {
   // Default menu items
   const defaultMenuItems = React.useMemo(
@@ -103,7 +103,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
   };
 
   const handleSubmit = () => {
-    -formState;
+    // -formState;
   };
 
   return (
