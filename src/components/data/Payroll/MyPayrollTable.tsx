@@ -57,7 +57,7 @@ const MyPayrollTable: React.FC<MyPayrollTableProps> = ({ headers, hidden }) => {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/payroll/my-payroll/${1}`}
+                    href={`/payroll/employee-payroll/${1}`}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
                   >
                     <Image

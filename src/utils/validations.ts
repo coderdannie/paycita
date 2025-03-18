@@ -54,3 +54,11 @@ export const loginSchema = z.object({
 });
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;
+
+export const resumptionDetailsSchema = z.object({
+  clockIn: z.string().min(1, { message: 'Employee Number is required' }),
+  clockOut: z.string().min(1, { message: 'Employee Name is required' }),
+});
+export type ResumptionDetailsSchemaType = z.infer<
+  typeof resumptionDetailsSchema
+>;

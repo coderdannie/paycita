@@ -1,5 +1,5 @@
-import React from "react";
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 
 interface SettingsTabsProps {
   activeTab: string;
@@ -7,14 +7,19 @@ interface SettingsTabsProps {
 
 const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab }) => {
   const tabs = [
-    { name: "Profile", path: "/settings/profile", key: "profile" },
-    { name: "Password", path: "/settings/password", key: "password" },
+    { name: 'Profile', path: '/settings/profile', key: 'profile' },
+    { name: 'Password', path: '/settings/password', key: 'password' },
     {
-      name: "Bank Account",
-      path: "/settings/bank-account",
-      key: "bank-account",
+      name: 'Bank Account',
+      path: '/settings/bank-account',
+      key: 'bank-account',
     },
-    { name: "User Role", path: "/settings/user-role", key: "user-role" },
+    { name: 'User Role', path: '/settings/user-role', key: 'user-role' },
+    {
+      name: 'Resumption Time',
+      path: '/settings/resumption-time',
+      key: 'resumption-time',
+    },
   ];
 
   return (
@@ -26,8 +31,8 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab }) => {
             key={tab.name}
             className={`mr-8 py-4 px-1 relative ${
               activeTab === tab.key
-                ? "text-[#692E9F] font-medium border-b-2 border-[#692E9F]"
-                : "text-gray-500 hover:text-purple-600"
+                ? 'text-[#692E9F] font-medium border-b-2 border-[#692E9F]'
+                : 'text-gray-500 hover:text-purple-600'
             }`}
           >
             {tab.name}
