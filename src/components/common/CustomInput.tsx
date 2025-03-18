@@ -203,7 +203,7 @@ export function CustomFormSelect<T extends FieldValues>({
               </SelectContent>
             </Select>
           </FormControl>
-          <FormMessage>{error}</FormMessage>
+          <FormMessage className="text-red-500">{error}</FormMessage>
         </FormItem>
       )}
     />

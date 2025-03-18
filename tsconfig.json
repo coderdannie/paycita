@@ -21,6 +21,7 @@
     "paths": {
       "@/*": ["./*"]
     },
+
     "noUnusedLocals": false, // Disable unused variable checks for local variables
     "noUnusedParameters": false // Disable unused variable checks for function parameters
   },

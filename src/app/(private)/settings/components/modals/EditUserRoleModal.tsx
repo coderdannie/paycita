@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { FiArrowLeft } from "react-icons/fi";
+import React, { useState, useEffect } from 'react';
+import { FiArrowLeft } from 'react-icons/fi';
 
 interface UserRole {
   id: string;
   name: string;
-  status: "Active" | "Inactive";
+  status: 'Active' | 'Inactive';
   permissions: {
     [key: string]: {
       view: boolean;
@@ -18,29 +18,31 @@ interface EditUserRoleModalProps {
   isOpen: boolean;
   onClose: () => void;
   role: UserRole | null;
-  -: (role: UserRole) => void;
+  onSave: (role: UserRole) => void;
 }
-
 const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
   isOpen,
   onClose,
   role,
-  onSave,
+  // onSave,
 }) => {
   // Default menu items
-  const defaultMenuItems = React.useMemo(() => [
-    "Dashboard",
-    "Attendance",
-    "Payroll",
-    "Purchase Request",
-    "Employee Management",
-    "Leave Management",
-  ], []);
+  const defaultMenuItems = React.useMemo(
+    () => [
+      'Dashboard',
+      'Attendance',
+      'Payroll',
+      'Purchase Request',
+      'Employee Management',
+      'Leave Management',
+    ],
+    []
+  );
 
   const [formState, setFormState] = useState<{
     id: string;
     name: string;
-    status: "Active" | "Inactive";
+    status: 'Active' | 'Inactive';
     permissions: {
       [key: string]: {
         view: boolean;
@@ -49,9 +51,9 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
       };
     };
   }>({
-    id: "",
-    name: "",
-    status: "Active",
+    id: '',
+    name: '',
+    status: 'Active',
     permissions: defaultMenuItems.reduce((acc, menu) => {
       acc[menu] = { view: false, edit: false, delete: false };
       return acc;
@@ -70,9 +72,9 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
     } else {
       // For new role
       setFormState({
-        id: "",
-        name: "",
-        status: "Active",
+        id: '',
+        name: '',
+        status: 'Active',
         permissions: defaultMenuItems.reduce((acc, menu) => {
           acc[menu] = { view: false, edit: false, delete: false };
           return acc;
@@ -85,7 +87,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
 
   const handlePermissionChange = (
     menuName: string,
-    permissionType: "view" | "edit" | "delete",
+    permissionType: 'view' | 'edit' | 'delete',
     value: boolean
   ) => {
     setFormState((prev) => ({
@@ -101,7 +103,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
   };
 
   const handleSubmit = () => {
-    -(formState);
+    // -formState;
   };
 
   return (
@@ -118,7 +120,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
             </button>
             <div className="text-gray-600">
               <span className="text-sm">
-                {role ? "Edit Role" : "Add User Role"}
+                {role ? 'Edit Role' : 'Add User Role'}
               </span>
             </div>
           </div>
@@ -147,25 +149,25 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
                   <div className="flex items-center">
                     <div
                       className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full ${
-                        formState.status === "Active"
-                          ? "bg-purple-700"
-                          : "bg-gray-200"
+                        formState.status === 'Active'
+                          ? 'bg-purple-700'
+                          : 'bg-gray-200'
                       }`}
                       onClick={() =>
                         setFormState({
                           ...formState,
                           status:
-                            formState.status === "Active"
-                              ? "Inactive"
-                              : "Active",
+                            formState.status === 'Active'
+                              ? 'Inactive'
+                              : 'Active',
                         })
                       }
                     >
                       <span
                         className={`inline-block w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
-                          formState.status === "Active"
-                            ? "translate-x-6"
-                            : "translate-x-1"
+                          formState.status === 'Active'
+                            ? 'translate-x-6'
+                            : 'translate-x-1'
                         }`}
                       />
                     </div>
@@ -212,7 +214,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
                           onChange={(e) =>
                             handlePermissionChange(
                               menuName,
-                              "view",
+                              'view',
                               e.target.checked
                             )
                           }
@@ -226,7 +228,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
                           onChange={(e) =>
                             handlePermissionChange(
                               menuName,
-                              "edit",
+                              'edit',
                               e.target.checked
                             )
                           }
@@ -240,7 +242,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
                           onChange={(e) =>
                             handlePermissionChange(
                               menuName,
-                              "delete",
+                              'delete',
                               e.target.checked
                             )
                           }
@@ -264,7 +266,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
                 onClick={handleSubmit}
                 className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800"
               >
-                {role ? "Update" : "Save"}
+                {role ? 'Update' : 'Save'}
               </button>
             </div>
           </div>
@@ -272,4 +274,5 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
       </div>
     </div>
   );
-};export default EditUserRoleModal;
+};
+export default EditUserRoleModal;
