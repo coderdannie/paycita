@@ -18,7 +18,7 @@ interface EditUserRoleModalProps {
   isOpen: boolean;
   onClose: () => void;
   role: UserRole | null;
-  onSave: (role: UserRole) => void;
+  -: (role: UserRole) => void;
 }
 
 const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
@@ -101,7 +101,7 @@ const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({
   };
 
   const handleSubmit = () => {
-    onSave(formState);
+    -(formState);
   };
 
   return (
