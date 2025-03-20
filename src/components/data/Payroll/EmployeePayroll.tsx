@@ -16,7 +16,7 @@ interface MyPayrollTableProps {
   hidden?: boolean;
 }
 
-const SinglePayrollDetails: React.FC<MyPayrollTableProps> = ({
+const EmployeePayroll: React.FC<MyPayrollTableProps> = ({
   headers,
   hidden,
 }) => {
@@ -34,7 +34,7 @@ const SinglePayrollDetails: React.FC<MyPayrollTableProps> = ({
               <TableCell className="py-5">
                 <div className="flex gap-6">
                   <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{' '}
-                  Jan 2025
+                  Feb 2025
                 </div>
               </TableCell>
               <TableCell>$3,000 </TableCell>
@@ -60,7 +60,7 @@ const SinglePayrollDetails: React.FC<MyPayrollTableProps> = ({
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/payroll/my-payroll/${1}`}
+                    href={`/payroll/employee-payroll/${1}`}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
                   >
                     <Image
@@ -103,4 +103,4 @@ const SinglePayrollDetails: React.FC<MyPayrollTableProps> = ({
   );
 };
 
-export default SinglePayrollDetails;
+export default EmployeePayroll;

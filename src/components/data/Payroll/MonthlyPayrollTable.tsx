@@ -25,6 +25,7 @@ const MonthlyPayrollTable: React.FC = () => {
     {
       label: 'Take Home Pay',
     },
+    { label: '' },
   ];
   return (
     <div className="mt-[20px]">
@@ -45,12 +46,15 @@ const MonthlyPayrollTable: React.FC = () => {
               <TableCell>$600</TableCell>
               <TableCell>$0.00</TableCell>
               <TableCell>$0.00</TableCell>
-              <TableCell>$0.00</TableCell>
+              <TableCell>
+                $0.00
+                <div className="flex"></div>
+              </TableCell>
 
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/payroll/my-payroll/${1}`}
+                    href={`/payroll/employee-payroll/employee-details`}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
                   >
                     <Image
