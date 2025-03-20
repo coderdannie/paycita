@@ -31,7 +31,7 @@ const MyPayrollTable: React.FC<MyPayrollTableProps> = ({ headers, hidden }) => {
               <TableCell className="py-5">
                 <div className="flex gap-6">
                   <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{' '}
-                  Jan 2025
+                  Feb 2025
                 </div>
               </TableCell>
               <TableCell>$3,000 </TableCell>

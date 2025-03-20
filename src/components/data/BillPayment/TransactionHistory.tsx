@@ -5,6 +5,7 @@ interface Transaction {
   'Transaction ID': string;
   'Transaction Type': string;
   Provider: string;
+  phoneNo: string;
   Amount: string;
   Date: string;
   Status: string;
@@ -24,6 +25,9 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ tableData }) => {
     },
     {
       label: 'Provider',
+    },
+    {
+      label: 'Phone Number',
     },
     {
       label: 'Amount',
@@ -46,6 +50,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ tableData }) => {
               <TableCell className="py-5">{row['Transaction ID']}</TableCell>
               <TableCell>{row['Transaction Type']}</TableCell>
               <TableCell>{row['Provider']}</TableCell>
+              <TableCell>{row.phoneNo}</TableCell>
               <TableCell>{row['Amount']}</TableCell>
               <TableCell>{row['Date']}</TableCell>
               <TableCell>
