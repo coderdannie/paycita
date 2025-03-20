@@ -2,7 +2,6 @@
 
 import MyPayrollTable from '@/src/components/data/Payroll/MyPayrollTable';
 import { useRouter } from 'next/navigation';
-import { FaFileArrowDown } from 'react-icons/fa6';
 
 const MyPayroll = () => {
   const router = useRouter();
@@ -46,11 +45,10 @@ const MyPayroll = () => {
           </h2>
         </div>
         <button
-          className="flex items-center gap-2 bg-primary text-white h-[40px] px-4 rounded-md  text-sm"
+          className=" bg-primary text-white h-[40px] px-4 rounded-md  text-sm"
           onClick={() => router.push('/payroll/payslips')}
         >
-          <FaFileArrowDown />
-          <span>Download as PDF</span>
+          Generate Payslip
         </button>
       </div>
       <MyPayrollTable headers={headers} />
