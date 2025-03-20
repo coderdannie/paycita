@@ -1,5 +1,5 @@
 'use client';
-import SinglePayrollDetails from '@/src/components/data/Payroll/SinglePayrollDetails';
+
 import SearchInput from '@/src/components/ui/SearchInput';
 import { useState } from 'react';
 import {
@@ -9,33 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select';
+import MonthlyPayrollTable from '@/src/components/data/Payroll/MonthlyPayrollTable';
+import { AiOutlinePlus } from 'react-icons/ai';
+import GeneratePayroll from '@/src/components/modals/GeneatePayroll';
 
 const SingleTablePayroll = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const headers = [
-    {
-      label: 'Period',
-    },
-    {
-      label: 'Base Salary',
-    },
-    {
-      label: 'Allowance',
-    },
-    {
-      label: 'Deductions',
-    },
-    {
-      label: 'Take Home Pay',
-    },
-
-    {
-      label: '',
-    },
-  ];
 
   const [status, setStatus] = useState('This Month');
 
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div>
       <div className="flex  justify-between flex-wrap items-center gap-6 mt-10 ">
@@ -60,15 +43,16 @@ const SingleTablePayroll = () => {
             </SelectContent>
           </Select>
         </div>
-        {/* <button
+        <button
           className="flex items-center gap-2 bg-primary text-white h-[40px] px-4 rounded-md  text-sm"
           onClick={() => setIsOpen(true)}
         >
           <span>Generate Payroll</span>
           <AiOutlinePlus />
-        </button> */}
+        </button>
       </div>
-      <SinglePayrollDetails headers={headers} hidden />
+      <MonthlyPayrollTable />
+      <GeneratePayroll isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 };
