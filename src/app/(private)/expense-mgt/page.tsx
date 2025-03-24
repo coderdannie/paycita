@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import ExpenseMgtTable from '@/src/components/data/ExpenseMgt/ExpenseMgtTable';
 import AddExpenseDrawer from '@/src/components/modals/AddExpenseDrawer';
+import ExpenseMgtDetailDrawer from '@/src/components/modals/ExpenseDetailsDrawer';
 
 const ExpenseMgt = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isShow, setIsShow] = useState(false);
   const tableData = [
     {
       requestID: '#0036',
@@ -33,8 +35,12 @@ const ExpenseMgt = () => {
           </button>
         </div>
       </div>
-      <ExpenseMgtTable tableData={tableData} />
+      <ExpenseMgtTable tableData={tableData} setIsShow={setIsShow} />
       <AddExpenseDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <ExpenseMgtDetailDrawer
+        isOpen={isShow}
+        onClose={() => setIsShow(false)}
+      />
     </>
   );
 };
