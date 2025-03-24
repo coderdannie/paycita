@@ -5,6 +5,7 @@ import TopUpModal from '@/src/components/modals/TopUpModal';
 import SearchInput from '@/src/components/ui/SearchInput';
 import { PiSlidersHorizontal } from 'react-icons/pi';
 import TransactionsTable from '@/src/components/data/BillPayment/TransactionHistory';
+import BillsFilter from '@/src/components/modals/BillsFilter';
 const data = [
   {
     'Transaction ID': 'XN12375DFGT...',
@@ -37,6 +38,7 @@ const data = [
 const BillPayment = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isShow, setIsShow] = useState(false);
 
   return (
     <>
@@ -56,7 +58,7 @@ const BillPayment = () => {
               </div>
               <button
                 className="flex h-[40px] px-[10px] gap-1 border-2 rounded-lg border-primary font-semibold text-sm items-center text-primary"
-                //   onClick={() => setIsDrawerOpen(true)}
+                onClick={() => setIsShow(true)}
               >
                 <span>Filter</span> <PiSlidersHorizontal size={24} />
               </button>
@@ -74,6 +76,7 @@ const BillPayment = () => {
       ) : (
         <NoTransaction setIsOpen={() => setIsOpen(true)} />
       )}
+      <BillsFilter isOpen={isShow} onClose={() => setIsShow(false)} />
     </>
   );
 };

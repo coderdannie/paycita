@@ -65,9 +65,27 @@ const PaySlips = () => {
             <div className="flex-1 p-4 mb-4 md:mb-0 md:mr-4">
               <h2 className="font-semibold mb-4">Earnings</h2>
               <div className="border-b border-[#E4E7EC] pt-2 pb-5 flex justify-between">
-                <p>Basic salary</p>
+                <p>Gross Salary </p>
                 <p className="text-right">$3,000</p>
               </div>
+
+              <table className="w-full">
+                <tbody>
+                  <tr className="border border-[#E4E7EC]">
+                    <td className="py-2 pl-4">Basic</td>
+                    <td className="py-2 text-right pr-1">$1,000</td>
+                  </tr>
+                  <tr className="border border-[#E4E7EC]">
+                    <td className="py-2 pl-4">Housing </td>
+                    <td className="py-2 text-right pr-[6px]">$1,000</td>
+                  </tr>
+                  <tr className="border border-[#E4E7EC]">
+                    <td className="py-2 pl-4">Transport</td>
+                    <td className="py-2 text-right pr-[6px]">$1,600</td>
+                  </tr>
+                  ng
+                </tbody>
+              </table>
               <div className="py-5 flex justify-between">
                 <p>Allowance</p>
                 <p className="text-right">$600</p>
