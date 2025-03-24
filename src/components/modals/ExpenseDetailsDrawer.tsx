@@ -27,8 +27,6 @@ interface ExpenseDetails {
   total_cost: number;
   created_at: string;
   expected_delivery_date?: string;
-  finance_manager_status: string;
-  managment_status: string;
   items: ExpenseItem[];
   description?: string;
 }
