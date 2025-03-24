@@ -123,14 +123,20 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
               <div className="min-h-[276px] border border-[#E4E7EC] rounded-md overflow-hidden">
                 <Table>
                   <TableHeader className="bg-[#F9FAFB]">
-                    <TableRow className="text-[#1D2939] font-semibold">
-                      <TableHead className="w-[30%]">Item</TableHead>
-                      <TableHead className="w-[30%]">Description</TableHead>
-                      <TableHead className="w-[10%] text-center">Qty</TableHead>
-                      <TableHead className="w-[10%] text-center">
+                    <TableRow>
+                      <TableHead className="w-[30%] text-[#1D2939] font-semibold">
+                        Item
+                      </TableHead>
+                      <TableHead className="w-[30%] text-[#1D2939] font-semibold text-center">
+                        Description
+                      </TableHead>
+                      <TableHead className="w-[10%] text-[#1D2939] font-semibold text-center">
+                        Qty
+                      </TableHead>
+                      <TableHead className="w-[10%] text-[#1D2939] font-semibold text-center">
                         Unit Price
                       </TableHead>
-                      <TableHead className="w-[10%] text-center">
+                      <TableHead className="w-[10%] text-center text-[#1D2939] font-semibold">
                         Total Cost
                       </TableHead>
                       <TableHead className="w-[10%]"></TableHead>
