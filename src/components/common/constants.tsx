@@ -4,6 +4,7 @@ import {
   DashboardIcon,
   EmployeeMgtIcon,
   EventIcon,
+  ExpenseIcon,
   LeaveMgtIcon,
   PayRollIcon,
   SettingsIcon,
@@ -63,6 +64,13 @@ export const sidebarData = [
     sec: <EmployeeMgtIcon fill="#692E9F" />,
     hover: <EmployeeMgtIcon fill="#692E9F" />,
     path: '/employee-mgt',
+  },
+  {
+    title: 'Expense Management',
+    icon: <ExpenseIcon fill="#344054" />,
+    sec: <ExpenseIcon fill="#692E9F" />,
+    hover: <ExpenseIcon fill="#692E9F" />,
+    path: '/expense-mgt',
   },
   {
     title: 'Leave Management',
