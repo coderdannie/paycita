@@ -6,18 +6,15 @@ export const userDetailsSchema = z.object({
   phoneNumber: z
     .string()
     .min(1, { message: 'Phone Number is required' })
-    .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }), // 10-15 digit validation
-
+    .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
   gender: z.string().min(1, { message: 'Gender is required' }),
   maritalStatus: z.string().min(1, { message: 'Marital Status is required' }),
-
   address: z.object({
     country: z.string().min(1, { message: 'Country is required' }),
     residentialAddress: z
       .string()
       .min(1, { message: 'Residential Address is required' }),
   }),
-
   emergencyContact: z.object({
     fullName: z
       .string()
@@ -28,22 +25,24 @@ export const userDetailsSchema = z.object({
       .min(1, { message: 'Phone Number is required' })
       .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
   }),
-  guarantor: z
-    .object({
-      fullName: z
-        .string()
-        .min(1, { message: 'Guarantor Full Name is required' }),
-      address: z.string().min(1, { message: 'Guarantor Address is required' }),
-      phoneNumber: z
-        .string()
-        .min(1, { message: 'Guarantor Phone Number is required' })
-        .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
-      relationship: z
-        .string()
-        .min(1, { message: 'Guarantor Relationship is required' }),
-    })
-    .optional(), // Guarantor is optional
+  guarantors: z
+    .array(
+      z.object({
+        fullName: z.string().min(1, { message: 'Full Name is required' }),
+        address: z.string().min(1, { message: 'Address is required' }),
+        phoneNumber: z
+          .string()
+          .min(1, { message: 'Phone Number is required' })
+          .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
+        relationship: z
+          .string()
+          .min(1, { message: 'Relationship is required' }),
+      })
+    )
+    .min(2, { message: 'Exactly two guarantors are required' })
+    .max(2, { message: 'Maximum two guarantors allowed' }),
 });
+
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({

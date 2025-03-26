@@ -23,6 +23,16 @@ import {
   CustomFormSelect,
 } from '@/src/components/common/CustomInput';
 
+const relationshipOptions = [
+  'Spouse',
+  'Parent',
+  'Sibling',
+  'Child',
+  'Friend',
+  'Relative',
+  'Colleague',
+  'Other',
+];
 const PersonalInfo = () => {
   const router = useRouter();
   const form = useForm<userDetailsSchemaType>({
@@ -42,7 +52,10 @@ const PersonalInfo = () => {
         relationship: '',
         phoneNumber: '',
       },
-      guarantor: undefined,
+      guarantors: [
+        { fullName: '', address: '', phoneNumber: '', relationship: '' },
+        { fullName: '', address: '', phoneNumber: '', relationship: '' },
+      ],
     },
   });
   const { control, formState } = form;
@@ -294,16 +307,7 @@ const PersonalInfo = () => {
                 <CustomFormSelect
                   name="emergencyContact.relationship"
                   control={control}
-                  items={[
-                    'Spouse',
-                    'Parent',
-                    'Sibling',
-                    'Child',
-                    'Friend',
-                    'Relative',
-                    'Colleague',
-                    'Other',
-                  ]}
+                  items={relationshipOptions}
                   labelText="Relationship"
                   holder="Select Relationship"
                   error={errors.emergencyContact?.relationship?.message}
@@ -319,9 +323,20 @@ const PersonalInfo = () => {
                 />
               </div>
             </div>
-            <div className="pb-5 mt-5 border-[#E4E7EC]">
+            {/* Guarantors Section */}
+            <div className="pb-2 mt-5 border-[#E4E7EC]">
               <div className="flex justify-between items-center">
-                <h4 className="font-semibold text-[#1D2939]">Guarantor</h4>
+                <div>
+                  {' '}
+                  <h4 className="font-semibold text-[#1D2939]">
+                    Guarantors (Required: 2)
+                  </h4>
+                  {errors.guarantors?.message && (
+                    <p className="text-red-500 text-sm mb-4">
+                      {errors.guarantors.message}
+                    </p>
+                  )}
+                </div>
                 {!showGuarantorFields && (
                   <button
                     type="button"
@@ -333,53 +348,87 @@ const PersonalInfo = () => {
                   </button>
                 )}
               </div>
-
-              {showGuarantorFields && (
-                <div className="grid md:grid-cols-2 gap-5 mt-5">
-                  <CustomFormField
-                    label="Full Name"
-                    name="guarantor.fullName"
-                    control={control}
-                    placeholder="Enter full name"
-                    error={errors?.guarantor?.fullName?.message}
-                  />
-
-                  <CustomFormField
-                    label="Address"
-                    name="guarantor.address"
-                    control={control}
-                    placeholder="Enter address"
-                    error={errors?.guarantor?.address?.message}
-                  />
-
-                  <CustomFormField
-                    label="Phone Number"
-                    name="guarantor.phoneNumber"
-                    control={control}
-                    placeholder="Enter phone number"
-                    error={errors?.guarantor?.phoneNumber?.message}
-                  />
-
-                  <CustomFormSelect
-                    name="guarantor.relationship"
-                    control={control}
-                    items={[
-                      'Spouse',
-                      'Parent',
-                      'Sibling',
-                      'Child',
-                      'Friend',
-                      'Relative',
-                      'Colleague',
-                      'Other',
-                    ]}
-                    labelText="Relationship"
-                    holder="Select Relationship"
-                    error={errors?.guarantor?.relationship?.message}
-                  />
-                </div>
-              )}
             </div>
+            {showGuarantorFields && (
+              <div className="pb-5 mt-1 border-[#E4E7EC]">
+                {/* Guarantor 1 */}
+                <div className="mt-6">
+                  <h5 className="font-medium text-[#1D2939] mb-4">
+                    Guarantor 1
+                  </h5>
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <CustomFormField
+                      label="Full Name"
+                      name="guarantors.0.fullName"
+                      control={control}
+                      placeholder="Enter full name"
+                      error={errors.guarantors?.[0]?.fullName?.message}
+                    />
+                    <CustomFormField
+                      label="Address"
+                      name="guarantors.0.address"
+                      control={control}
+                      placeholder="Enter address"
+                      error={errors.guarantors?.[0]?.address?.message}
+                    />
+                    <CustomFormField
+                      label="Phone Number"
+                      name="guarantors.0.phoneNumber"
+                      control={control}
+                      placeholder="Enter phone number"
+                      error={errors.guarantors?.[0]?.phoneNumber?.message}
+                    />
+                    <CustomFormSelect
+                      name="guarantors.0.relationship"
+                      control={control}
+                      items={relationshipOptions}
+                      labelText="Relationship"
+                      holder="Select Relationship"
+                      error={errors.guarantors?.[0]?.relationship?.message}
+                    />
+                  </div>
+                </div>
+
+                {/* Guarantor 2 */}
+                <div className="mt-8">
+                  <h5 className="font-medium text-[#1D2939] mb-4">
+                    Guarantor 2
+                  </h5>
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <CustomFormField
+                      label="Full Name"
+                      name="guarantors.1.fullName"
+                      control={control}
+                      placeholder="Enter full name"
+                      error={errors.guarantors?.[1]?.fullName?.message}
+                    />
+                    <CustomFormField
+                      label="Address"
+                      name="guarantors.1.address"
+                      control={control}
+                      placeholder="Enter address"
+                      error={errors.guarantors?.[1]?.address?.message}
+                    />
+                    <CustomFormField
+                      label="Phone Number"
+                      name="guarantors.1.phoneNumber"
+                      control={control}
+                      placeholder="Enter phone number"
+                      error={errors.guarantors?.[1]?.phoneNumber?.message}
+                    />
+                    <CustomFormSelect
+                      name="guarantors.1.relationship"
+                      control={control}
+                      items={relationshipOptions}
+                      labelText="Relationship"
+                      holder="Select Relationship"
+                      error={errors.guarantors?.[1]?.relationship?.message}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-4 md:justify-end h-[40px]">
               <button
                 type="button"

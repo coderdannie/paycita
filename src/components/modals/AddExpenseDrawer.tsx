@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
+import { expenseHeaders } from '../common/constants';
 
 interface ExpenseItem {
   id: string;
@@ -124,22 +125,14 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                 <Table>
                   <TableHeader className="bg-[#F9FAFB]">
                     <TableRow>
-                      <TableHead className="w-[30%] text-[#1D2939] font-semibold">
-                        Item
-                      </TableHead>
-                      <TableHead className="w-[30%] text-[#1D2939] font-semibold text-center">
-                        Description
-                      </TableHead>
-                      <TableHead className="w-[10%] text-[#1D2939] font-semibold text-center">
-                        Qty
-                      </TableHead>
-                      <TableHead className="w-[10%] text-[#1D2939] font-semibold text-center">
-                        Unit Price
-                      </TableHead>
-                      <TableHead className="w-[10%] text-center text-[#1D2939] font-semibold">
-                        Total Cost
-                      </TableHead>
-                      <TableHead className="w-[10%]"></TableHead>
+                      {expenseHeaders.map((dat, i) => (
+                        <TableHead
+                          key={i}
+                          className="min-w-[100px] md:min-w-0 text-[#1D2939] font-semibold"
+                        >
+                          {dat}
+                        </TableHead>
+                      ))}
                     </TableRow>
                   </TableHeader>
                   <TableBody className="mt-4">

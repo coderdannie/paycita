@@ -203,3 +203,12 @@ export const employeeDetailsTabs = [
 ];
 
 export const ITEMS = ['Id card', 'Laptop', 'Accommodation', 'Phone'];
+
+export const expenseHeaders = [
+  'Item',
+  'Description',
+  'Qty',
+  'Unit Price',
+  'Total Cost',
+  '',
+];
