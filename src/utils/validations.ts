@@ -47,9 +47,10 @@ export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({
   employeeNumber: z.string().min(1, { message: 'Employee Number is required' }),
-  employeeName: z.string().min(1, { message: 'Employee Name is required' }),
   jobTitle: z.string().min(1, { message: 'Job Title is required' }),
   jobLevel: z.string().min(1, { message: 'Job Level is required' }),
+  department: z.string().min(1, { message: 'Department is required' }),
+  email: z.string().email({ message: 'Invalid email address' }),
   employmentType: z.string().min(1, { message: 'Employment Type is required' }),
   locationType: z.string().min(1, { message: 'Location Type is required' }),
   hireDate: z.string().min(1, { message: 'Hire Date is required' }), // Assuming hire date is a string (e.g., YYYY-MM-DD)

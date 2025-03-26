@@ -26,6 +26,7 @@ const EmployeeDetails = () => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isOfficeLetter, setIsOfficeLetter] = useState(false);
 
   const handleCheckboxChange = (item: string) => {
     setSelectedItems(
@@ -40,7 +41,7 @@ const EmployeeDetails = () => {
     resolver: zodResolver(employeeDetailsSchema),
     defaultValues: {
       employeeNumber: '',
-      employeeName: '',
+      department: '',
       jobTitle: '',
       jobLevel: '',
       employmentType: '',
@@ -51,6 +52,7 @@ const EmployeeDetails = () => {
       taxNumber: '',
       taxMethod: '',
       pensionCompany: '',
+      email: '',
     },
   });
 
@@ -76,6 +78,10 @@ const EmployeeDetails = () => {
     console.log(values); // Handle form submission
   };
   console.log(errors);
+
+  const handleCheckChange = (checked: boolean) => {
+    setIsOfficeLetter(checked);
+  };
 
   return (
     <div>
@@ -109,14 +115,6 @@ const EmployeeDetails = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
             <div className="grid md:grid-cols-2 gap-5 pb-5 mt-5 ">
-              {/* Employee Name */}
-              <CustomFormField
-                name="employeeName"
-                control={control}
-                label="Employee Name"
-                placeholder="Enter employee name"
-                error={errors.employeeName?.message}
-              />
               {/* Job Title */}
               <CustomFormField
                 name="jobTitle"
@@ -151,6 +149,15 @@ const EmployeeDetails = () => {
                 labelText="Location Type"
                 holder="Select location type"
                 error={errors.locationType?.message}
+              />
+              {/* Department */}
+              <CustomFormSelect
+                name="department"
+                control={control}
+                items={['Finance', 'Administration']}
+                labelText="Department"
+                holder="Select employee job title"
+                error={errors.department?.message}
               />
               {/* Hire Date */}
               <div className="w-full box">
@@ -196,6 +203,14 @@ const EmployeeDetails = () => {
                   </p>
                 )}
               </div>
+              {/* Company email */}
+              <CustomFormField
+                name="email"
+                control={control}
+                label="Company email"
+                placeholder="Enter Company Email"
+                error={errors.email?.message}
+              />
             </div>
 
             {/* Payroll & Tax Section */}
@@ -268,6 +283,20 @@ const EmployeeDetails = () => {
                   Selected: {selectedItems.join(', ')}
                 </div>
               )}
+            </div>
+            <div className="flex items-center w-full gap-1 mt-5 pt-5 border-t border-[#E4E7EC]">
+              <Checkbox
+                id="isOfficeLetter"
+                className="bg-white"
+                checked={isOfficeLetter}
+                onCheckedChange={handleCheckChange}
+              />
+              <label
+                htmlFor="isOfficeLetter"
+                className="text-[#1e2228] text-sm font-medium"
+              >
+                Do you want to attach offer letter?
+              </label>
             </div>
             {/* Submit Button */}
             <div className="flex gap-4 md:justify-end h-[40px]">
