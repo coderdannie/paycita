@@ -28,6 +28,21 @@ export const userDetailsSchema = z.object({
       .min(1, { message: 'Phone Number is required' })
       .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
   }),
+  guarantor: z
+    .object({
+      fullName: z
+        .string()
+        .min(1, { message: 'Guarantor Full Name is required' }),
+      address: z.string().min(1, { message: 'Guarantor Address is required' }),
+      phoneNumber: z
+        .string()
+        .min(1, { message: 'Guarantor Phone Number is required' })
+        .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
+      relationship: z
+        .string()
+        .min(1, { message: 'Guarantor Relationship is required' }),
+    })
+    .optional(), // Guarantor is optional
 });
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
@@ -39,11 +54,11 @@ export const employeeDetailsSchema = z.object({
   employmentType: z.string().min(1, { message: 'Employment Type is required' }),
   locationType: z.string().min(1, { message: 'Location Type is required' }),
   hireDate: z.string().min(1, { message: 'Hire Date is required' }), // Assuming hire date is a string (e.g., YYYY-MM-DD)
-  basicSalary: z.string().min(1, { message: 'Basic Salary is required' }), // New field
-  taxStatus: z.string().min(1, { message: 'Tax Status is required' }), // New field
-  taxNumber: z.string().min(1, { message: 'Tax Number is required' }), // New field
-  taxMethod: z.string().min(1, { message: 'Tax Method is required' }), // New field
-  taxSalary: z.string().min(1, { message: 'Tax Salary is required' }), // New field
+  basicSalary: z.string().min(1, { message: 'Basic Salary is required' }),
+  taxStatus: z.string().min(1, { message: 'Tax Status is required' }),
+  taxNumber: z.string().min(1, { message: 'Tax Number is required' }),
+  taxMethod: z.string().min(1, { message: 'Tax Method is required' }),
+  pensionCompany: z.string().min(1, { message: 'Pension Company is required' }),
 });
 
 export type EmployeeDetailsSchemaType = z.infer<typeof employeeDetailsSchema>;

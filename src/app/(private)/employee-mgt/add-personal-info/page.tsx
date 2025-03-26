@@ -8,6 +8,7 @@ import {
   userDetailsSchema,
   userDetailsSchemaType,
 } from '@/src/utils/validations';
+import { FaPlus } from 'react-icons/fa6';
 
 import { Form } from '@/src/components/ui/form';
 import Calendar from 'react-calendar';
@@ -41,6 +42,7 @@ const PersonalInfo = () => {
         relationship: '',
         phoneNumber: '',
       },
+      guarantor: undefined,
     },
   });
   const { control, formState } = form;
@@ -48,6 +50,7 @@ const PersonalInfo = () => {
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [showGuarantorFields, setShowGuarantorFields] = useState(false);
 
   const handleDateChange = (
     value: Date | Date[] | [Date | null, Date | null] | null
@@ -114,6 +117,11 @@ const PersonalInfo = () => {
     console.log(values);
     router.push('/employee-mgt/employee-details');
   }
+
+  const handleAddGuarantor = () => {
+    setShowGuarantorFields(true);
+  };
+
   return (
     <div>
       <div className="flex items-center gap-1">
@@ -310,6 +318,67 @@ const PersonalInfo = () => {
                   error={errors?.emergencyContact?.phoneNumber?.message}
                 />
               </div>
+            </div>
+            <div className="pb-5 mt-5 border-[#E4E7EC]">
+              <div className="flex justify-between items-center">
+                <h4 className="font-semibold text-[#1D2939]">Guarantor</h4>
+                {!showGuarantorFields && (
+                  <button
+                    type="button"
+                    className="text-primary flex gap-2 items-center text-sm font-semibold"
+                    onClick={handleAddGuarantor}
+                  >
+                    Add Guarantor
+                    <FaPlus />
+                  </button>
+                )}
+              </div>
+
+              {showGuarantorFields && (
+                <div className="grid md:grid-cols-2 gap-5 mt-5">
+                  <CustomFormField
+                    label="Full Name"
+                    name="guarantor.fullName"
+                    control={control}
+                    placeholder="Enter full name"
+                    error={errors?.guarantor?.fullName?.message}
+                  />
+
+                  <CustomFormField
+                    label="Address"
+                    name="guarantor.address"
+                    control={control}
+                    placeholder="Enter address"
+                    error={errors?.guarantor?.address?.message}
+                  />
+
+                  <CustomFormField
+                    label="Phone Number"
+                    name="guarantor.phoneNumber"
+                    control={control}
+                    placeholder="Enter phone number"
+                    error={errors?.guarantor?.phoneNumber?.message}
+                  />
+
+                  <CustomFormSelect
+                    name="guarantor.relationship"
+                    control={control}
+                    items={[
+                      'Spouse',
+                      'Parent',
+                      'Sibling',
+                      'Child',
+                      'Friend',
+                      'Relative',
+                      'Colleague',
+                      'Other',
+                    ]}
+                    labelText="Relationship"
+                    holder="Select Relationship"
+                    error={errors?.guarantor?.relationship?.message}
+                  />
+                </div>
+              )}
             </div>
             <div className="flex gap-4 md:justify-end h-[40px]">
               <button

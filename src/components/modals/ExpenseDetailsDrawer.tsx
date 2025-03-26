@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '../../components/ui/table';
-import StatusStepper from '../data/ExpenseMgt/Stepper';
+import StatusStepper from '../common/Stepper';
 
 interface ExpenseItem {
   id: string;

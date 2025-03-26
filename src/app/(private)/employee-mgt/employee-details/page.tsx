@@ -18,10 +18,23 @@ import Calendar from 'react-calendar';
 import { FiCalendar } from 'react-icons/fi';
 import { formatDate } from '@/src/utils/helper';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
+import { ITEMS } from '@/src/components/common/constants';
+import { Checkbox } from '@/src/components/ui/checkbox';
 
 const EmployeeDetails = () => {
   const router = useRouter();
   const [showCalendar, setShowCalendar] = useState(false);
+
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  const handleCheckboxChange = (item: string) => {
+    setSelectedItems(
+      (prev) =>
+        prev.includes(item)
+          ? prev.filter((i) => i !== item) // Uncheck
+          : [...prev, item] // Check
+    );
+  };
 
   const form = useForm<EmployeeDetailsSchemaType>({
     resolver: zodResolver(employeeDetailsSchema),
@@ -33,11 +46,11 @@ const EmployeeDetails = () => {
       employmentType: '',
       locationType: '',
       hireDate: '',
-      basicSalary: '', // New field
-      taxStatus: '', // New field
-      taxNumber: '', // New field
-      taxMethod: '', // New field
-      taxSalary: '', // New field
+      basicSalary: '',
+      taxStatus: '',
+      taxNumber: '',
+      taxMethod: '',
+      pensionCompany: '',
     },
   });
 
@@ -222,16 +235,40 @@ const EmployeeDetails = () => {
                 holder="Select tax method"
                 error={errors.taxMethod?.message}
               />
-              {/* Tax Salary */}
-              <CustomFormField
-                name="taxSalary"
+              {/* Pension Company*/}
+              <CustomFormSelect
+                name="pensionCompany"
                 control={control}
-                label="Tax Salary"
-                placeholder="Enter tax salary"
-                error={errors.taxSalary?.message}
+                items={['ARM Pensions']}
+                labelText="Pension Company"
+                holder="Select Company"
+                error={errors.pensionCompany?.message}
               />
             </div>
+            <div className="space-y-3">
+              <h3 className="font-medium">Select Required Items</h3>
+              {ITEMS.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={item}
+                    checked={selectedItems.includes(item)}
+                    onCheckedChange={() => handleCheckboxChange(item)}
+                  />
+                  <label
+                    htmlFor={item}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {item.trim()}{' '}
+                  </label>
+                </div>
+              ))}
 
+              {selectedItems.length > 0 && (
+                <div className="mt-4 text-sm text-muted-foreground">
+                  Selected: {selectedItems.join(', ')}
+                </div>
+              )}
+            </div>
             {/* Submit Button */}
             <div className="flex gap-4 md:justify-end h-[40px]">
               <button
