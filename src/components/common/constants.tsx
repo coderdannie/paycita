@@ -8,6 +8,7 @@ import {
   LeaveMgtIcon,
   PayRollIcon,
   SettingsIcon,
+  ProcurementIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -57,7 +58,13 @@ export const sidebarData = [
       },
     ],
   },
-
+  {
+    title: 'Procurement',
+    icon: <ProcurementIcon fill="#344054" />,
+    sec: <ProcurementIcon fill="#692E9F" />,
+    hover: <ProcurementIcon fill="#692E9F" />,
+    path: '/procurement',
+  },
   {
     title: 'Employee Management',
     icon: <EmployeeMgtIcon fill="#344054" />,
@@ -193,4 +200,15 @@ export const employeeDetailsTabs = [
   'Attendance',
   'Payroll History',
   'Leave History',
+];
+
+export const ITEMS = ['Id card', 'Laptop', 'Accommodation', 'Phone'];
+
+export const expenseHeaders = [
+  'Item',
+  'Description',
+  'Qty',
+  'Unit Price',
+  'Total Cost',
+  '',
 ];
