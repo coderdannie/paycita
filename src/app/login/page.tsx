@@ -29,7 +29,8 @@ const Login = () => {
 
 	// Form submission handler
 	function onSubmit(values: LoginSchemaType) {
-		console.log(values);
+		// console.log(values);
+		//@ts-ignore
 		handleLogin(values);
 		// router.push('/dashboard');
 	}

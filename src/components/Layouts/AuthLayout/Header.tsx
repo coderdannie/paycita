@@ -35,7 +35,7 @@ const Header = () => {
 					{/* User Profile */}
 					<div className='flex items-center gap-3'>
 						<Image
-							src={user.company_logo}
+							src={user.company_logo || ""}
 							alt='User profile'
 							className='w-10 h-10 rounded-full object-cover object-top shadow'
 							width={40}

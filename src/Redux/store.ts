@@ -6,13 +6,13 @@ import dashboardReducer, { DashboardState } from "./features/dashboardSlice";
 
 const createNoopStorage = () => {
 	return {
-		getItem(_key: string) {
+		getItem() {
 			return Promise.resolve(null);
 		},
-		setItem(_key: string, _value: string) {
+		setItem() {
 			return Promise.resolve();
 		},
-		removeItem(_key: string) {
+		removeItem() {
 			return Promise.resolve();
 		},
 	};

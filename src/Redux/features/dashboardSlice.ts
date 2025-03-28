@@ -1,5 +1,5 @@
 import { EmployeeAttendanceData } from "@/src/types/attendance";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface DashboardState {
 	employeeAttendance: EmployeeAttendanceData[];
