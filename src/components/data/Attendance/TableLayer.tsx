@@ -16,7 +16,7 @@ const TableLayer = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  console.log(filters);
+
   const headers = [
     { label: 'Date' },
     {
