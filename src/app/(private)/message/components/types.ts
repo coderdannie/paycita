@@ -12,9 +12,8 @@ export interface Message {
   content: string;
   timestamp: Date;
   type: "sent" | "received";
-  status: "sent" | "delivered" | "read"; 
+  status: "sent" | "delivered" | "read";
 }
-
 
 export interface ChatContextType {
   users: User[];

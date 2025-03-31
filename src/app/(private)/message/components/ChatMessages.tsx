@@ -3,14 +3,14 @@ import { format, isToday, isYesterday } from "date-fns";
 import { useChat } from "./chatContext";
 import { FaCheck } from "react-icons/fa";
 
-export const ChatMessages: React.FC = () => {
+export const ChatMessages = () => {
   const { currentChat, conversations } = useChat();
 
   const groupedMessages = useMemo(() => {
     if (!currentChat) return {};
 
     const messages = conversations[currentChat.id] || [];
-    const groups: { [key: string]: typeof messages } = {};
+    const groups: Record<string, typeof messages> = {};
 
     messages.forEach((message) => {
       const messageDate = message.timestamp;
@@ -36,24 +36,24 @@ export const ChatMessages: React.FC = () => {
   if (!currentChat) return null;
 
   return (
-    <div className="flex-grow overflow-y-auto p-4 space-y-4">
+    <div className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
         <div key={date}>
-          <div className="text-center text-gray-500 my-4">
-            <span className="bg-white px-3 py-1 rounded-full text-sm">
+          <div className="text-center text-gray-500 my-2 sm:my-4">
+            <span className="bg-white px-3 py-1 rounded-full text-xs sm:text-sm">
               {date}
             </span>
           </div>
           {dayMessages.map((message) => (
             <div
               key={message.id}
-              className={`flex flex-col mb-4 ${
+              className={`flex flex-col mb-2 sm:mb-4 ${
                 message.type === "sent" ? "items-end" : "items-start"
               }`}
             >
               <div
                 className={`
-                  max-w-xs p-3 rounded-lg relative
+                  max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative
                   ${
                     message.type === "sent"
                       ? "bg-purple-600 text-white"
@@ -63,7 +63,7 @@ export const ChatMessages: React.FC = () => {
               >
                 {message.content}
 
-                {/* Position message status indicators at the bottom right of the message */}
+
                 {message.type === "sent" && (
                   <div className="absolute bottom-1 right-2">
                     {message.status === "sent" && !currentChat.isOnline && (
@@ -93,7 +93,7 @@ export const ChatMessages: React.FC = () => {
             </div>
           ))}
         </div>
-      ))}
+      ))}{" "}
     </div>
   );
 };

@@ -113,7 +113,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
     });  }, []);
 
   const addNewChat = useCallback((user: User) => {
-    // Only add if not already in chat list
+    
     setChatList((prev) => {
       if (!prev.some((existingUser) => existingUser.id === user.id)) {
         return [...prev, user];
@@ -121,7 +121,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
       return prev;
     });
 
-    // Ensure conversations exist for this user
+    
     setConversations((prev) => {
       if (!prev[user.id]) {
         return {
@@ -163,7 +163,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         content: content.trim(),
         timestamp: new Date(),
         type: "sent",
-        status: "sent", // Initial status is sent
+        status: "sent", 
       };
 
       setConversations((prev) => ({

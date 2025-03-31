@@ -4,7 +4,7 @@ import { FaPlus, FaSearch, FaCheck } from "react-icons/fa";
 import { BiMessageRoundedDots } from "react-icons/bi";
 import { AddNewChatModal } from "./AddNewChatModal";
 
-export const ChatSidebar: React.FC = () => {
+export const ChatSidebar = ({ onChatSelect }) => {
   const { chatList, currentChat, selectChat, isInitialState, conversations } =
     useChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,18 +14,23 @@ export const ChatSidebar: React.FC = () => {
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleChatSelect = (user) => {
+    selectChat(user);
+    if (onChatSelect) onChatSelect(); // Toggle view on mobile when chat is selected
+  };
+
   if (isInitialState && chatList.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
         <div className="text-center space-y-4 px-4">
-          {/* Message icon in dark blue/navy background */}
+          
           <div className="mx-auto flex justify-center mb-4">
             <div>
               <BiMessageRoundedDots size={40} />
             </div>
           </div>
 
-          {/* Text exactly as in image */}
+       
           <div className="text-[#171717] font-semibold text-lg">
             No Messages Yet
           </div>
@@ -34,7 +39,7 @@ export const ChatSidebar: React.FC = () => {
             seamlessly
           </div>
 
-          {/* Purple button with plus icon */}
+          
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-[#692E9F] text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center justify-center mx-auto mt-4"
@@ -96,7 +101,7 @@ export const ChatSidebar: React.FC = () => {
           return (
             <div
               key={user.id}
-              onClick={() => selectChat(user)}
+              onClick={() => handleChatSelect(user)}
               className={`flex items-center p-4 cursor-pointer mb-1 mx-2 rounded-lg relative 
                 ${
                   isSelected ? "bg-[#692E9F] text-white" : "hover:bg-gray-100"
@@ -145,7 +150,7 @@ export const ChatSidebar: React.FC = () => {
                   </span>
                 )}
 
-                {/* Message status indicators positioned directly under the time */}
+                
                 {lastMessage && lastMessage.type === "sent" && (
                   <div className="flex justify-end">
                     {lastMessage.status === "sent" && !user.isOnline && (

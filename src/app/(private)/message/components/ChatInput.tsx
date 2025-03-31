@@ -1,14 +1,14 @@
-import { FormEvent, useState } from "react";
+import {  useState } from "react";
 import { FaAt } from "react-icons/fa";
 import { useChat } from "./chatContext";
 import SendIcon from "../../../../assets/Send.svg";
 import Image from "next/image";
 
-export const ChatInput: React.FC = () => {
+export const ChatInput = () => {
   const { currentChat, sendMessage } = useChat();
   const [message, setMessage] = useState("");
 
-  const handleSendMessage = (e?: FormEvent) => {
+  const handleSendMessage = (e) => {
     if (e) {
       e.preventDefault();
     }
@@ -23,7 +23,7 @@ export const ChatInput: React.FC = () => {
   return (
     <form
       onSubmit={handleSendMessage}
-      className="bg-white border-t p-4 flex items-center w-full"
+      className="bg-white border-t p-2 sm:p-4 flex items-center w-full"
     >
       <div className="relative flex-grow">
         <input
@@ -31,7 +31,7 @@ export const ChatInput: React.FC = () => {
           placeholder="Send your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full pr-20 py-2 pl-4 focus:outline-none"
+          className="w-full pr-16 py-2 pl-3 sm:pl-4 rounded-full border focus:outline-none focus:ring-1 focus:ring-purple-500"
         />
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center">
           <FaAt className="text-gray-400 mr-2" />
