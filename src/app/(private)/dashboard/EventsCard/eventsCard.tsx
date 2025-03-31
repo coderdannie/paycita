@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import CalendarIcon from "../../../../assets/calendar.svg";
 import PlaneIcon from "../../../../assets/Vector.svg";
 import SpiralCalendar from "../../../../assets/SpiralCalendar.svg";
+import SendIcon from "../../../../assets/send.svg";
 
 const EventIndicator = ({ title, time }: { title: string; time: string }) => {
   return (
@@ -72,7 +73,7 @@ const EventsCard = () => {
             Tomorrow
           </h3>
           <div className="space-y-2 pb-4">
-            <EventIndicator title="No Upcoming Events" time="" />
+            <EventIndicator title="Daily Standup" time="08:00 AM to 09:00 PM" />
           </div>
         </div>
         <div>
@@ -86,8 +87,38 @@ const EventsCard = () => {
             />
             Leave
           </h3>
-          <div className="bg-[#F7F8FA] p-3 rounded-lg">
-            <p className="text-sm text-gray-500">No leave available</p>
+          <EventIndicator title="Bahamas" time="20 days left" />
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+            <Image
+              src={CalendarIcon}
+              alt="Birthday"
+              width={16}
+              height={16}
+              className="mr-2 text-gray-600"
+            />
+            Birthday Anniversary
+          </h3>
+          <div className="bg-[#F7F8FA] p-3 rounded-lg flex items-center justify-between relative">
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/profile.jpg"
+                alt="Cameron Williamson"
+                width={32}
+                height={32}
+                className="rounded-full"
+              />
+              <div>
+                <p className="text-sm font-medium text-gray-800">
+                  Cameron Williamson
+                </p>
+                <p className="text-xs text-gray-500">Human Resources</p>
+              </div>
+            </div>
+            <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+              <Image src={SendIcon} alt="Send" width={20} height={20} />
+            </button>
           </div>
         </div>
       </CardContent>
