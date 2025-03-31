@@ -16,6 +16,13 @@ const TableLayer = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Filter the data based on filters
+  const filteredData = myAttendanceTableData?.filter(row => {
+    if (filters.location && filters.location !== 'All') {
+      return row.location === filters.location;
+    }
+    return true;
+  });
 
   const headers = [
     { label: 'Date' },
@@ -42,8 +49,8 @@ const TableLayer = () => {
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers}>
-        {myAttendanceTableData?.length ? (
-          myAttendanceTableData.map((row, rowIndex) => (
+        {filteredData?.length ? (
+          filteredData.map((row, rowIndex) => (
             <TableRow key={rowIndex} className="text-[#1D2939] text-sm">
               <TableCell className="py-5">{row.date}</TableCell>
               <TableCell>{row.clockIn}</TableCell>
@@ -86,5 +93,4 @@ const TableLayer = () => {
       </CustomTable>
     </div>
   );
-};
-export default TableLayer;
+};export default TableLayer;
