@@ -14,3 +14,26 @@ export const formatDate = (
     year: 'numeric',
   });
 };
+
+export const updateDateTime = () => {
+  const now = new Date();
+  const options = {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  };
+  const formattedDateTime = now
+    .toLocaleString(
+      'en-US',
+      //@ts-ignore
+      options
+    )
+    .replace(/,([^,]*)$/, ' -$1')
+    .replace(' AM', 'am')
+    .replace(' PM', 'pm');
+  return formattedDateTime;
+};

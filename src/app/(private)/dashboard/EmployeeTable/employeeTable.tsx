@@ -1,76 +1,40 @@
-"use client";
-import React, { useState, useCallback, useMemo } from "react";
-import { Search, Info, ChevronsUpDown, Settings2 } from "lucide-react";
-import FilterModal from "./FilterModal/filterModal";
-
-interface Employee {
-  id: number;
-  name: string;
-  jobTitle: string;
-  jobLevel: string;
-  status: string;
-}
+'use client';
+import React, { useState, useCallback } from 'react';
+// import { Search, Info, ChevronsUpDown, Settings2 } from 'lucide-react';
+import { Search, Settings2 } from 'lucide-react';
+import FilterModal from './FilterModal/filterModal';
+import { useDashboardSelector } from '@/src/Redux/selectors';
+import { Employee } from '@/src/types/dashboard';
+import { useDashboard } from '@/src/context/dashboardContext';
+import CustomTable from '@/src/components/common/CustomTable';
+import { TableCell, TableRow } from '@/src/components/ui/table';
+import Image from 'next/image';
 
 const EmployeeTable = () => {
-  const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { isDashboardDetailsFetching } = useDashboard();
+
+  const { dashboardDetails } = useDashboardSelector();
+  const employees = dashboardDetails?.employee as Employee[];
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [jobLevelFilter, setJobLevelFilter] = useState("All Level");
-  const [statusFilter, setStatusFilter] = useState("All Status");
+  const [jobLevelFilter, setJobLevelFilter] = useState('All Level');
+  const [statusFilter, setStatusFilter] = useState('All Status');
 
-  const employees = useMemo<Employee[]>(
-    () => [
-      {
-        id: 1,
-        name: "Sarah Johnson",
-        jobTitle: "Product Development",
-        jobLevel: "Staff",
-        status: "Active",
-      },
-      {
-        id: 2,
-        name: "James Martinez",
-        jobTitle: "Front-end Developer",
-        jobLevel: "Manager",
-        status: "On Leave",
-      },
-      {
-        id: 3,
-        name: "Emily Lee",
-        jobTitle: "UI/UX Designer",
-        jobLevel: "Staff",
-        status: "Active",
-      },
-      {
-        id: 4,
-        name: "Chris Thompson",
-        jobTitle: "Backend Developer",
-        jobLevel: "Manager",
-        status: "On Leave",
-      },
-      {
-        id: 5,
-        name: "Alexandra Davis",
-        jobTitle: "Product Manager",
-        jobLevel: "Staff",
-        status: "Active",
-      },
-    ],
-    []
-  );
+  // const toggleEmployeeSelect = useCallback((id: string) => {
+  //   setSelectedEmployees((prev) =>
+  //     prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
+  //   );
+  // }, []);
 
-  const toggleEmployeeSelect = useCallback((id: number) => {
-    setSelectedEmployees((prev) =>
-      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
-    );
-  }, []);
+  // const isAllSelected = selectedEmployees.length === employees.length;
 
-  const isAllSelected = selectedEmployees.length === employees.length;
-
-  const toggleSelectAll = useCallback(() => {
-    setSelectedEmployees(isAllSelected ? [] : employees.map((emp) => emp.id));
-  }, [isAllSelected, employees]);
+  // const toggleSelectAll = useCallback(() => {
+  //   setSelectedEmployees(
+  //     isAllSelected ? [] : employees.map((emp) => emp.employee_status)
+  //   );
+  // }, [isAllSelected, employees]);
 
   const toggleFilterModal = useCallback(() => {
     setIsFilterModalOpen((prev) => !prev);
@@ -81,34 +45,40 @@ const EmployeeTable = () => {
   }, [toggleFilterModal]);
 
   const resetFilters = useCallback(() => {
-    setJobLevelFilter("All Level");
-    setStatusFilter("All Status");
+    setJobLevelFilter('All Level');
+    setStatusFilter('All Status');
   }, []);
 
   const filteredEmployees = employees.filter((emp) => {
-    const matchesSearch = emp.name
+    const matchesSearch = emp.full_name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesJobLevel =
-      jobLevelFilter === "All Level" || emp.jobLevel === jobLevelFilter;
+      jobLevelFilter === 'All Level' || emp.job_level === jobLevelFilter;
     const matchesStatus =
-      statusFilter === "All Status" || emp.status === statusFilter;
+      statusFilter === 'All Status' || emp.employee_status === statusFilter;
 
     return matchesSearch && matchesJobLevel && matchesStatus;
   });
 
+  const headers = [
+    { label: 'Name' },
+    { label: 'Job Title' },
+    { label: 'Job Level' },
+    { label: 'Status' },
+  ];
   return (
-    <div className="bg-white shadow rounded-lg w-full max-w-4xl mx-auto relative overflow-hidden">
+    <div className="bg-white h-full shadow rounded-lg w-full max-w-4xl mx-auto relative overflow-hidden">
       <div className="p-4 flex flex-col">
         <div className="flex justify-between items-center mt-[1rem] mb-[3rem]">
-          <h2 className="text-[1.3rem] font-medium">Employee</h2>
+          <h2 className="text-[1.3rem] font-medium text-black">Employee</h2>
         </div>
         <div className="flex items-center justify-between space-x-2">
           <div className="relative flex-grow max-w-xs">
             <input
               type="text"
               placeholder="Search employee name"
-              className="w-full pl-10 pr-3 py-2 border rounded-lg"
+              className="w-full pl-10 pr-3 py-2 border rounded-lg text-black "
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -126,6 +96,65 @@ const EmployeeTable = () => {
         </div>
       </div>
       <div className="p-4 mt-[.5rem] overflow-x-auto">
+        <CustomTable
+          headers={headers}
+          center
+          isLoading={isDashboardDetailsFetching}
+        >
+          {filteredEmployees.length ? (
+            filteredEmployees.map((row, rowIndex) => (
+              <TableRow
+                key={rowIndex}
+                className=" text-black font-normal text-sm"
+              >
+                <TableCell className="py-5">
+                  <div className="flex items-center gap-3">
+                    <div className="border-2 border-[#E4E7EC] w-5 aspect-square rounded bg-white"></div>
+                    {row.full_name}
+                  </div>{' '}
+                </TableCell>
+                <TableCell>{row.job_title}</TableCell>
+                <TableCell className="text-center">{row.job_level}</TableCell>
+                <TableCell>
+                  <span
+                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
+                    ${
+                      row?.employee_status === 'Active'
+                        ? 'text-[#00AA4F] border border-[#89D8A9]'
+                        : 'text-[#FFA80A] border border-[#FFD384]'
+                    }
+                  `}
+                  >
+                    {row.employee_status}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={headers.length} className="text-center py-6">
+                <div className="flex flex-col items-center">
+                  <Image
+                    src="/assets/emptystate.svg"
+                    alt="No Attendance Records"
+                    className="w-20 h-20 mb-4"
+                    width={30}
+                    height={30}
+                  />
+                  <p className="text-lg font-semibold text-gray-700">
+                    No Employee Record Yet
+                  </p>
+                  {/* <p className="text-sm text-gray-500">
+                  Clock in and out to track your attendance
+                </p> */}
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </CustomTable>
+      </div>
+
+      {/* <div className="p-4 mt-[.5rem] overflow-x-auto">
         <table className="w-full rounded-3xl border border-gray-200">
           <thead className="bg-gray-50 border-b">
             <tr>
@@ -162,34 +191,34 @@ const EmployeeTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredEmployees.map((employee) => (
-              <tr key={employee.id} className="hover:bg-gray-50">
+            {filteredEmployees.map((employee, i) => (
+              <tr key={i} className="hover:bg-gray-50">
                 <td className="p-4">
                   <input
                     type="checkbox"
                     className="form-checkbox h-4 w-4 text-gray-500"
-                    checked={selectedEmployees.includes(employee.id)}
-                    onChange={() => toggleEmployeeSelect(employee.id)}
+                    checked={selectedEmployees.includes(employee.full_name)}
+                    onChange={() => toggleEmployeeSelect(employee.full_name)}
                   />
                 </td>
                 <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee.name}
+                  {employee?.full_name}
                 </td>
                 <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee.jobTitle}
+                  {employee?.job_title}
                 </td>
                 <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee.jobLevel}
+                  {employee?.job_level}
                 </td>
                 <td className="p-4 text-[1rem] whitespace-nowrap">
                   <span
                     className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded ${
-                      employee.status === "Active"
-                        ? "text-[#00AA4F] border border-[#89D8A9]"
-                        : "text-[#FFA80A] border border-[#FFD384]"
+                      employee?.employee_status === 'Active'
+                        ? 'text-[#00AA4F] border border-[#89D8A9]'
+                        : 'text-[#FFA80A] border border-[#FFD384]'
                     }`}
                   >
-                    {employee.status}
+                    {employee?.employee_status}
                   </span>
                 </td>
                 <td className="p-4">
@@ -202,7 +231,7 @@ const EmployeeTable = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
 
       {/* Filter Modal */}
       <FilterModal
