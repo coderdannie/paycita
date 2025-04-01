@@ -9,6 +9,7 @@ import {
   PayRollIcon,
   SettingsIcon,
   ProcurementIcon,
+  MessageIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -111,6 +112,13 @@ export const sidebarData = [
     sec: <BillsPaymentIcon fill="#692E9F" />,
     hover: <BillsPaymentIcon fill="#692E9F" />,
     path: '/bill-payment',
+  },
+  {
+    title: 'Message',
+    icon: <MessageIcon fill="#344054" />,
+    sec: <MessageIcon fill="#692E9F" />,
+    hover: <MessageIcon fill="#692E9F" />,
+    path: '/message',
   },
   {
     title: 'Settings',
