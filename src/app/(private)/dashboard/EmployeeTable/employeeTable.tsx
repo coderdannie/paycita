@@ -49,14 +49,14 @@ const EmployeeTable = () => {
     setStatusFilter('All Status');
   }, []);
 
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesSearch = emp.full_name
+  const filteredEmployees = employees?.filter((emp) => {
+    const matchesSearch = emp?.full_name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesJobLevel =
-      jobLevelFilter === 'All Level' || emp.job_level === jobLevelFilter;
+      jobLevelFilter === 'All Level' || emp?.job_level === jobLevelFilter;
     const matchesStatus =
-      statusFilter === 'All Status' || emp.employee_status === statusFilter;
+      statusFilter === 'All Status' || emp?.employee_status === statusFilter;
 
     return matchesSearch && matchesJobLevel && matchesStatus;
   });
@@ -101,8 +101,8 @@ const EmployeeTable = () => {
           center
           isLoading={isDashboardDetailsFetching}
         >
-          {filteredEmployees.length ? (
-            filteredEmployees.map((row, rowIndex) => (
+          {filteredEmployees?.length ? (
+            filteredEmployees?.map((row, rowIndex) => (
               <TableRow
                 key={rowIndex}
                 className=" text-black font-normal text-sm"
@@ -110,11 +110,11 @@ const EmployeeTable = () => {
                 <TableCell className="py-5">
                   <div className="flex items-center gap-3">
                     <div className="border-2 border-[#E4E7EC] w-5 aspect-square rounded bg-white"></div>
-                    {row.full_name}
+                    {row?.full_name}
                   </div>{' '}
                 </TableCell>
-                <TableCell>{row.job_title}</TableCell>
-                <TableCell className="text-center">{row.job_level}</TableCell>
+                <TableCell>{row?.job_title}</TableCell>
+                <TableCell className="text-center">{row?.job_level}</TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
@@ -125,7 +125,7 @@ const EmployeeTable = () => {
                     }
                   `}
                   >
-                    {row.employee_status}
+                    {row?.employee_status}
                   </span>
                 </TableCell>
               </TableRow>
