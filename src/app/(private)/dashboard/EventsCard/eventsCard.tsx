@@ -66,7 +66,8 @@ const EventsCard = () => {
   const tomorrowEvents = events?.event_tomorrow as Event[] | undefined;
   const leave = events?.leave as LeaveInfo | undefined;
   const { isDashboardDetailsFetching } = useDashboard();
-  const isLeaveHasValue = Object.values(events?.leave).some((value) => value);
+  const isLeaveHasValue =
+    events?.leave && Object.values(events?.leave).some((value) => value);
 
   return (
     <Card className="bg-white w-full h-full shadow-sm border-gray-100 rounded-xl p-4">
@@ -121,7 +122,7 @@ const EventsCard = () => {
               <p className=" text-gray-500">No event available for today</p>
             )}
 
-            {events?.event_tomorrow && events.event_tomorrow.length > 0 ? (
+            {events?.event_tomorrow && events?.event_tomorrow.length > 0 ? (
               <div className="mb-4">
                 <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
                   <Image
