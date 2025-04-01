@@ -14,7 +14,7 @@ export const ChatMessages = () => {
 
     messages.forEach((message) => {
       const messageDate = message.timestamp;
-      let dateKey;
+      let dateKey: string;
 
       if (isToday(messageDate)) {
         dateKey = "Today";
@@ -39,8 +39,8 @@ export const ChatMessages = () => {
     <div className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
         <div key={date}>
-          <div className="text-center text-gray-500 my-2 sm:my-4">
-            <span className="bg-white px-3 py-1 rounded-full text-xs sm:text-sm">
+          <div className="text-center text-[#FFFFFF] my-2 sm:my-4">
+            <span className="bg-[#344054] px-3 py-[.5rem] rounded-[.8rem] text-xs sm:text-sm">
               {date}
             </span>
           </div>
@@ -56,13 +56,12 @@ export const ChatMessages = () => {
                   max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative
                   ${
                     message.type === "sent"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-[#692E9F] text-white"
                       : "bg-gray-200 text-black"
                   }
                 `}
               >
                 {message.content}
-
 
                 {message.type === "sent" && (
                   <div className="absolute bottom-1 right-2">

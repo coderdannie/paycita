@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useChat } from "./chatContext";
+import { useChat, User } from "./chatContext";
 import { FaPlus, FaSearch, FaCheck } from "react-icons/fa";
-import { BiMessageRoundedDots } from "react-icons/bi";
 import { AddNewChatModal } from "./AddNewChatModal";
+import { MessageIcon } from "@/src/assets/Icons";
 
 export const ChatSidebar = ({ onChatSelect }) => {
   const { chatList, currentChat, selectChat, isInitialState, conversations } =
@@ -14,23 +14,21 @@ export const ChatSidebar = ({ onChatSelect }) => {
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleChatSelect = (user) => {
+  const handleChatSelect = (user: User) => {
     selectChat(user);
-    if (onChatSelect) onChatSelect(); // Toggle view on mobile when chat is selected
+    if (onChatSelect) onChatSelect(); 
   };
 
   if (isInitialState && chatList.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
         <div className="text-center space-y-4 px-4">
-          
           <div className="mx-auto flex justify-center mb-4">
             <div>
-              <BiMessageRoundedDots size={40} />
+              <MessageIcon fill="#344054" className="w-[35px] h-[35px]" />
             </div>
           </div>
 
-       
           <div className="text-[#171717] font-semibold text-lg">
             No Messages Yet
           </div>
@@ -39,10 +37,9 @@ export const ChatSidebar = ({ onChatSelect }) => {
             seamlessly
           </div>
 
-          
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#692E9F] text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center justify-center mx-auto mt-4"
+            className="bg-[#692E9F] text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center justify-center mx-auto mt-4"
           >
             <span className="mr-2">+</span> Start a conversation
           </button>
@@ -57,7 +54,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b flex justify-between items-center">
+      <div className="p-4 flex justify-between items-center">
         <h2 className="text-xl font-semibold">Chats</h2>
         <button
           onClick={() => setIsModalOpen(true)}
@@ -69,7 +66,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
       </div>
 
       {!isModalOpen && (
-        <div className="p-4 border-b">
+        <div className="p-4">
           <div className="relative">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -77,7 +74,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
               placeholder="Search employee name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none"
             />
           </div>
         </div>
@@ -102,13 +99,12 @@ export const ChatSidebar = ({ onChatSelect }) => {
             <div
               key={user.id}
               onClick={() => handleChatSelect(user)}
-              className={`flex items-center p-4 cursor-pointer mb-1 mx-2 rounded-lg relative 
-                ${
-                  isSelected ? "bg-[#692E9F] text-white" : "hover:bg-gray-100"
-                }`}
+              className={`flex items-center rounded-lg p-4 cursor-pointer mb-1 mx-2 ${
+                isSelected ? "bg-[#692E9F] text-white" : "hover:bg-gray-100"
+              }`}
             >
               {isSelected && (
-                <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#692E9F] rounded-r-lg"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#692E9F]"></div>
               )}
 
               {/* User avatar placeholder */}
@@ -150,7 +146,6 @@ export const ChatSidebar = ({ onChatSelect }) => {
                   </span>
                 )}
 
-                
                 {lastMessage && lastMessage.type === "sent" && (
                   <div className="flex justify-end">
                     {lastMessage.status === "sent" && !user.isOnline && (

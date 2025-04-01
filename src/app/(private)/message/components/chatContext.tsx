@@ -21,7 +21,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   type: "sent" | "received";
-  status: "sent" | "delivered" | "read"; // Added status field
+  status: "sent" | "delivered" | "read";
 }
 
 interface ChatContextType {

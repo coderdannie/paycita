@@ -6,7 +6,19 @@ import CalendarIcon from "../../../../assets/calendar.svg";
 import PlaneIcon from "../../../../assets/Vector.svg";
 import SpiralCalendar from "../../../../assets/SpiralCalendar.svg";
 import SendIcon from "../../../../assets/send.svg";
+import EventProfile from "../../../../assets/eventProfile.svg";
 
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * A component that renders an event indicator, which is a vertical line that spans
+ * the height of the parent component and is colored in a specific way to represent
+ * the event type. The component also includes two lines of text: the first line is
+ * the title of the event, and the second line is the time of the event.
+ *
+ * @param {{ title: string, time: string }} props
+ * @returns {JSX.Element}
+ */
+/******  d0d957d3-63d7-4e36-944e-9aaaff53c400  *******/
 const EventIndicator = ({ title, time }: { title: string; time: string }) => {
   return (
     <div className="bg-[#F7F8FA] p-1 rounded-lg flex space-x-3 items-center relative w-full">
@@ -100,25 +112,34 @@ const EventsCard = () => {
             />
             Birthday Anniversary
           </h3>
-          <div className="bg-[#F7F8FA] p-3 rounded-lg flex items-center justify-between relative">
-            <div className="flex items-center space-x-3">
-              <Image
-                src="/profile.jpg"
-                alt="Cameron Williamson"
-                width={32}
-                height={32}
-                className="rounded-full"
+          <div className="bg-[#F7F8FA] p-1 rounded-lg flex space-x-3 items-center relative w-full">
+            <div className="relative flex flex-col items-center w-3 h-16">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-full bg-[#9B73BF]/20 rounded-full" />
+              <div
+                className="w-3 h-12 bg-[#9B73BF] rounded-full relative"
+                style={{ top: "2px" }}
               />
-              <div>
-                <p className="text-sm font-medium text-gray-800">
-                  Cameron Williamson
-                </p>
-                <p className="text-xs text-gray-500">Human Resources</p>
-              </div>
             </div>
-            <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
-              <Image src={SendIcon} alt="Send" width={20} height={20} />
-            </button>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center space-x-3">
+                <Image
+                  src={EventProfile}
+                  alt="Cameron Williamson"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    Cameron Williamson
+                  </p>
+                  <p className="text-xs text-gray-500">Human Resources</p>
+                </div>
+              </div>
+              <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+                <Image src={SendIcon} alt="Send" width={20} height={20} />
+              </button>
+            </div>
           </div>
         </div>
       </CardContent>

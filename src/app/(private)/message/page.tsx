@@ -35,7 +35,8 @@ export default function MessagePage() {
 
   return (
     <ChatProvider>
-      <div className="flex h-[calc(100vh-70px)] mt-[70px] overflow-hidden">
+      {/* Use absolute positioning to make the chat area fixed within the dashboard */}
+      <div className="absolute inset-0 mt-[70px] flex overflow-hidden">
         {/* Chat sidebar - fixed width on desktop, full width on mobile when visible */}
         <div
           className={`${

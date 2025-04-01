@@ -12,7 +12,7 @@ export const ChatHeader = ({ onBackClick }) => {
       {onBackClick && (
         <button
           onClick={onBackClick}
-          className="mr-3 text-gray-600 hover:text-purple-600"
+          className="mr-3 text-gray-600 hover:text-gray-800"
           aria-label="Back to chat list"
         >
           <FaArrowLeft />

@@ -221,12 +221,18 @@ export const ProcurementIcon = ({ fill }: IconProps) => {
     </svg>
   );
 };
-export const MessageIcon = ({ fill }: IconProps) => {
+export const MessageIcon = ({
+  fill = "#000",
+  width = 16,
+  height = 16,
+  className = "",
+}: IconProps) => {
   return (
     <svg
-      width="16"
-      height="16"
+      width={width}
+      height={height}
       viewBox="0 0 16 16"
+      className={className}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -237,4 +243,3 @@ export const MessageIcon = ({ fill }: IconProps) => {
     </svg>
   );
 };
-
