@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSearch, FaUserCircle } from "react-icons/fa";
 import { useChat } from "./chatContext";
-import { User } from "./types";
 
-export const AddNewChatModal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+
+export const AddNewChatModal = ({ isOpen, onClose }) => {
   const { users, addNewChat } = useChat();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -20,14 +29,35 @@ export const AddNewChatModal: React.FC<{
       addNewChat(selectedUser);
       onClose();
       setSelectedUser(null);
+      setSearchTerm("");
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 flex">
-      <div className="w-80 bg-white border-l shadow-lg h-full rounded-lg flex flex-col">
+    <div
+      className={`fixed inset-0 z-50 flex ${
+        isMobile ? "items-end" : "items-center justify-end"
+      }`}
+    >
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black bg-opacity-40"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal */}
+      <div
+        className={`
+          relative bg-white shadow-lg flex flex-col
+          ${
+            isMobile
+              ? "w-full h-5/6 rounded-t-lg"
+              : "w-80 h-full inset-y-0 right-0 border-l"
+          }
+        `}
+      >
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold">Add New Chat</h2>
           <button
@@ -55,7 +85,7 @@ export const AddNewChatModal: React.FC<{
                 className={`flex items-center p-2 hover:bg-gray-100 cursor-pointer ${
                   selectedUser?.id === user.id ? "bg-purple-50" : ""
                 }`}
-                onClick={() => setSelectedUser(user as User)}
+                onClick={() => setSelectedUser(user)}
               >
                 <FaUserCircle className="w-10 h-10 text-gray-400 mr-3" />
                 <div className="flex-grow">
