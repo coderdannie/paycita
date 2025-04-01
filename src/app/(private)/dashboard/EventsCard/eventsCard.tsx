@@ -5,8 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import CalendarIcon from "../../../../assets/calendar.svg";
 import PlaneIcon from "../../../../assets/Vector.svg";
 import SpiralCalendar from "../../../../assets/SpiralCalendar.svg";
-import SendIcon from "../../../../assets/send.svg";
 import EventProfile from "../../../../assets/eventProfile.svg";
+import  SendIcon from "@/src/assets/Send.svg";
 
 /*************  ✨ Codeium Command ⭐  *************/
 /**
