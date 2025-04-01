@@ -8,6 +8,7 @@ import { loginUser } from "../Redux/features/authSlice";
 interface AuthContextType {
 	handleLogin: (formData: LoginDataProps) => void;
 	isLogginIn: boolean;
+	
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

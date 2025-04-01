@@ -1,6 +1,6 @@
-"use client";
-import React, { useEffect, useCallback } from "react";
-import { ChevronDown, X } from "lucide-react";
+'use client';
+import React, { useEffect, useCallback } from 'react';
+import { ChevronDown, X } from 'lucide-react';
 
 const FilterModal = ({
   isOpen,
@@ -21,19 +21,20 @@ const FilterModal = ({
   onApply: () => void;
   onReset: () => void;
 }) => {
+  const isBrowser = typeof window !== 'undefined';
 
-  const isBrowser = typeof window !== "undefined";
+  const toggleBodyClass = useCallback(
+    (shouldAdd: boolean) => {
+      if (!isBrowser) return;
 
-  const toggleBodyClass = useCallback((shouldAdd: boolean) => {
-    if (!isBrowser) return;
-
-    if (shouldAdd) {
-      document.body.classList.add("modal-open");
-    } else {
-      document.body.classList.remove("modal-open");
-    }
-  }, [isBrowser]);
-
+      if (shouldAdd) {
+        document.body.classList.add('modal-open');
+      } else {
+        document.body.classList.remove('modal-open');
+      }
+    },
+    [isBrowser]
+  );
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -52,12 +53,10 @@ const FilterModal = ({
     toggleBodyClass(isOpen);
   }, [isOpen, toggleBodyClass]);
 
-
   if (!isOpen) return null;
 
   return (
     <>
-
       <style jsx global>{`
         .modal-open {
           overflow: hidden !important;
@@ -69,7 +68,7 @@ const FilterModal = ({
         className="fixed inset-0 p-2 bg-black bg-opacity-30 flex justify-end z-50"
         onClick={handleOverlayClick}
       >
-        <div className="bg-white border rounded-[.5rem] h-full w-full max-w-sm flex flex-col">
+        <div className="bg-white text-black border rounded-[.5rem] h-full w-full max-w-sm flex flex-col">
           <div className="flex justify-between items-center p-5 border-b">
             <h3 className="text-lg font-medium">Filter</h3>
             <button

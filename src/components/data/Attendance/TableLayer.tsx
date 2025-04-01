@@ -21,18 +21,18 @@ const TableLayer = () => {
     { label: 'Date' },
     {
       label: 'Clock In',
-      filterOptions: ['All', 'New York', 'Los Angeles'],
-      onFilterChange: (value: string) => handleFilterChange('location', value),
+      // filterOptions: ['All', 'New York', 'Los Angeles'],
+      // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
       label: 'Clock Out',
-      filterOptions: ['All', 'New York', 'Los Angeles'],
-      onFilterChange: (value: string) => handleFilterChange('location', value),
+      // filterOptions: ['All', 'New York', 'Los Angeles'],
+      // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
       label: 'Location',
-      filterOptions: ['All', 'New York', 'Los Angeles'],
-      onFilterChange: (value: string) => handleFilterChange('location', value),
+      // filterOptions: ['All', 'New York', 'Los Angeles'],
+      // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
       label: 'Status',
