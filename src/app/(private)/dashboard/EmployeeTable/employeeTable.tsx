@@ -49,7 +49,7 @@ const EmployeeTable = () => {
     setStatusFilter('All Status');
   }, []);
 
-  const filteredEmployees = employees.filter((emp) => {
+  const filteredEmployees = employees?.filter((emp) => {
     const matchesSearch = emp.full_name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
