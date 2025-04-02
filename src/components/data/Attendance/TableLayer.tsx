@@ -1,28 +1,14 @@
 'use client';
-import { useState } from 'react';
+
 import CustomTable from '../../common/CustomTable';
-import { myAttendanceTableData } from '../../common/constants';
 import { TableCell, TableRow } from '../../ui/table';
 import Image from 'next/image';
+import { useDashboardSelector } from '@/src/Redux/selectors';
+import { useDashboard } from '@/src/context/dashboardContext';
+import { formatDate, formatTime } from '@/src/utils/helper';
 
 const TableLayer = () => {
-  const [filters, setFilters] = useState({
-    status: '', // Default value
-    location: '',
-  });
-
   // Function to update filters
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // Filter the data based on filters
-  const filteredData = myAttendanceTableData?.filter(row => {
-    if (filters.location && filters.location !== 'All') {
-      return row.location === filters.location;
-    }
-    return true;
-  });
 
   const headers = [
     { label: 'Date' },
@@ -46,27 +32,32 @@ const TableLayer = () => {
     },
   ];
 
+  const { attendance } = useDashboardSelector();
+  const { isAttendanceLoading } = useDashboard();
+
   return (
     <div className="mt-[20px]">
-      <CustomTable headers={headers}>
-        {filteredData?.length ? (
-          filteredData.map((row, rowIndex) => (
-            <TableRow key={rowIndex} className="text-[#1D2939] text-sm">
-              <TableCell className="py-5">{row.date}</TableCell>
-              <TableCell>{row.clockIn}</TableCell>
-              <TableCell>{row.clockOut}</TableCell>
-              <TableCell>{row.location}</TableCell>
+      <CustomTable headers={headers} isLoading={isAttendanceLoading}>
+        {attendance?.attendance?.length ? (
+          attendance?.attendance?.map((row, rowIndex) => (
+            <TableRow key={rowIndex} className="f text-sm">
+              <TableCell className="py-5">
+                {formatDate(row.created_at)}
+              </TableCell>
+              <TableCell>{formatTime(row?.clock_in)}</TableCell>
+              <TableCell>{formatTime(row?.clock_out)}</TableCell>
+              <TableCell>{row?.location}</TableCell>
               <TableCell>
                 <span
                   className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                     ${
-                      row.status === 'Present'
+                      row?.status === 'Present'
                         ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
                         : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
                     }
                   `}
                 >
-                  {row.status}
+                  {row?.status}
                 </span>
               </TableCell>
             </TableRow>
@@ -76,7 +67,7 @@ const TableLayer = () => {
             <TableCell colSpan={headers.length} className="text-center py-6">
               <div className="flex flex-col items-center">
                 <Image
-                  src="/assets/avatar.jpeg"
+                  src="/assets/emptystate.svg"
                   alt="No Attendance Records"
                   className="w-20 h-20 mb-4"
                 />
@@ -93,4 +84,5 @@ const TableLayer = () => {
       </CustomTable>
     </div>
   );
-};export default TableLayer;
+};
+export default TableLayer;

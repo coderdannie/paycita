@@ -103,7 +103,6 @@ and Opera ::-webkit-scrollbar {
 
 body {
   font-family: var(--font-primary);
-  color: #fcfcfc;
 }
 
 @layer base {

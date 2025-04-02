@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useCallback } from 'react';
-// import { Search, Info, ChevronsUpDown, Settings2 } from 'lucide-react';
+
 import { Search, Settings2 } from 'lucide-react';
 import FilterModal from './FilterModal/filterModal';
 import { useDashboardSelector } from '@/src/Redux/selectors';
@@ -11,7 +11,6 @@ import { TableCell, TableRow } from '@/src/components/ui/table';
 import Image from 'next/image';
 
 const EmployeeTable = () => {
-  // const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const { isDashboardDetailsFetching } = useDashboard();
 
@@ -21,20 +20,6 @@ const EmployeeTable = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [jobLevelFilter, setJobLevelFilter] = useState('All Level');
   const [statusFilter, setStatusFilter] = useState('All Status');
-
-  // const toggleEmployeeSelect = useCallback((id: string) => {
-  //   setSelectedEmployees((prev) =>
-  //     prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
-  //   );
-  // }, []);
-
-  // const isAllSelected = selectedEmployees.length === employees.length;
-
-  // const toggleSelectAll = useCallback(() => {
-  //   setSelectedEmployees(
-  //     isAllSelected ? [] : employees.map((emp) => emp.employee_status)
-  //   );
-  // }, [isAllSelected, employees]);
 
   const toggleFilterModal = useCallback(() => {
     setIsFilterModalOpen((prev) => !prev);
@@ -144,94 +129,12 @@ const EmployeeTable = () => {
                   <p className="text-lg font-semibold text-gray-700">
                     No Employee Record Yet
                   </p>
-                  {/* <p className="text-sm text-gray-500">
-                  Clock in and out to track your attendance
-                </p> */}
                 </div>
               </TableCell>
             </TableRow>
           )}
         </CustomTable>
       </div>
-
-      {/* <div className="p-4 mt-[.5rem] overflow-x-auto">
-        <table className="w-full rounded-3xl border border-gray-200">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-3 text-left">
-                <input
-                  type="checkbox"
-                  className="form-checkbox h-4 w-4 text-gray-500"
-                  checked={isAllSelected}
-                  onChange={toggleSelectAll}
-                />
-              </th>
-              <th className="p-3 text-left text-[.9rem] font-medium uppercase tracking-wider w-1/4 whitespace-nowrap">
-                <div className="flex items-center">
-                  Name
-                  <ChevronsUpDown className="ml-2 text-gray-400" size={16} />
-                </div>
-              </th>
-              <th className="p-3 text-left text-[.9rem] font-medium uppercase tracking-wider w-1/4 whitespace-nowrap">
-                <div className="flex items-center">
-                  Job Title
-                  <ChevronsUpDown className="ml-2 text-gray-400" size={16} />
-                </div>
-              </th>
-              <th className="p-3 text-left text-[.9rem] font-medium uppercase tracking-wider w-1/4 whitespace-nowrap">
-                <div className="flex items-center">
-                  Job Level
-                  <ChevronsUpDown className="ml-2 text-gray-400" size={16} />
-                </div>
-              </th>
-              <th className="p-3 text-left text-[.9rem] font-medium uppercase tracking-wider w-1/4 whitespace-nowrap">
-                <div className="">Status</div>
-              </th>
-              <th className="p-3"></th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredEmployees.map((employee, i) => (
-              <tr key={i} className="hover:bg-gray-50">
-                <td className="p-4">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox h-4 w-4 text-gray-500"
-                    checked={selectedEmployees.includes(employee.full_name)}
-                    onChange={() => toggleEmployeeSelect(employee.full_name)}
-                  />
-                </td>
-                <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee?.full_name}
-                </td>
-                <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee?.job_title}
-                </td>
-                <td className="p-4 text-[1rem] whitespace-nowrap">
-                  {employee?.job_level}
-                </td>
-                <td className="p-4 text-[1rem] whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded ${
-                      employee?.employee_status === 'Active'
-                        ? 'text-[#00AA4F] border border-[#89D8A9]'
-                        : 'text-[#FFA80A] border border-[#FFD384]'
-                    }`}
-                  >
-                    {employee?.employee_status}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <Info
-                    className="text-gray-400 hover:text-gray-600 border border-gray-500 rounded-md py-1"
-                    size={26}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div> */}
 
       {/* Filter Modal */}
       <FilterModal
