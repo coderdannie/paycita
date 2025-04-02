@@ -57,7 +57,7 @@ const Page = () => {
         )}
       </div>
 
-      <div className="w-full py-4  grid md:[grid-template-columns:2fr_1fr] items-center gap-4">
+      <div className="w-full py-4  grid md:[grid-template-columns:2fr_1fr] items-center gap-4 ">
         <EmployeeTable />
         <EventsCard />
       </div>

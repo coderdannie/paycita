@@ -90,7 +90,7 @@ const EventsCard = () => {
     events?.leave && Object.values(events?.leave).some((value) => value);
 
   return (
-    <Card className="bg-white w-full h-full shadow-sm border-gray-100 rounded-xl max-h-[600px] overflow-y-auto">
+    <Card className="bg-white w-full h-full shadow-sm border-gray-100 rounded-xl max-h-[800px] md:max-h-[600px] overflow-y-auto">
       <CardHeader className="pb-2">
         <div className="flex gap-2">
           <Image
