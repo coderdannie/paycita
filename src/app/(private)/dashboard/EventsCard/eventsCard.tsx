@@ -10,6 +10,7 @@ import { BirthdayCelebrant, Event } from '@/src/types/dashboard';
 import { LeaveInfo } from '@/src/types/dashboard';
 import { useDashboard } from '@/src/context/dashboardContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import Progress from '@/src/components/common/Progress';
 
 const EventIndicator = ({
   title,
@@ -28,7 +29,7 @@ const EventIndicator = ({
 }) => {
   if (loading) {
     return (
-      <div className="bg-[#F7F8FA] p-1 rounded-lg flex space-x-3 items-center relative w-full">
+      <div className="bg-[#F7F8FA] p-3 rounded-lg flex space-x-3 items-center relative w-full">
         <div className="relative flex flex-col items-center w-3 h-16">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-full bg-[#9B73BF]/20 rounded-full" />
           <div
@@ -89,7 +90,7 @@ const EventsCard = () => {
     events?.leave && Object.values(events?.leave).some((value) => value);
 
   return (
-    <Card className="bg-white w-full h-full shadow-sm border-gray-100 rounded-xl p-4">
+    <Card className="bg-white w-full h-full shadow-sm border-gray-100 rounded-xl max-h-[600px] overflow-y-auto">
       <CardHeader className="pb-2">
         <div className="flex gap-2">
           <Image
@@ -116,118 +117,135 @@ const EventsCard = () => {
           </>
         ) : (
           <>
-            {events?.event_today && events.event_today.length > 0 ? (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+            {events?.event_today && events?.event_today.length > 0 ? (
+              <section className="p-4 mt-4">
+                <h2 className="flex space-x-2">
                   <Image
                     src={CalendarIcon}
-                    alt="Calendar"
-                    width={16}
-                    height={16}
-                    className="mr-2 text-gray-600"
+                    alt="calendar"
+                    width={30}
+                    height={30}
+                    className="mb-1"
                   />
-                  Today
-                </h3>
-                {todayEvents?.map((event, i) => (
-                  <div key={i}>
-                    <div className="space-y-2 pb-4">
-                      <EventIndicator
-                        title={event?.event_name}
-                        time={event?.time}
-                        desc={event?.description}
-                        meeting={event?.meeting_link}
-                      />
+                  <span className="text-lg">Today</span>
+                </h2>
+                {todayEvents?.map((event, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 py-5 mt-3 flex items-center gap-3 px-4 justify-start rounded-lg relative"
+                  >
+                    <Progress />
+                    <div className="pl-[-2rem]">
+                      <p className="font-semibold">{event?.event_name}</p>
+                      <p className="text-sm text-gray-600">{event?.time}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {event?.description}
+                      </p>
+                      <a
+                        href={event?.meeting_link}
+                        target="blank"
+                        className="mt-2 text-pry underline text-sm"
+                      >
+                        Join Event
+                      </a>
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <p className=" text-gray-500">No event available for today</p>
-            )}
+              </section>
+            ) : null}
 
             {events?.event_tomorrow && events?.event_tomorrow.length > 0 ? (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <section className="p-4 mt-1">
+                <h2 className="flex space-x-2">
                   <Image
-                    src={CalendarIcon}
-                    alt="Calendar"
-                    width={16}
-                    height={16}
-                    className="mr-2 text-gray-600"
+                    src={SpiralCalendar}
+                    alt="calendar"
+                    width={30}
+                    height={30}
+                    className="mb-1"
                   />
-                  Tomorrow
-                </h3>
-                {tomorrowEvents?.map((event, i) => (
-                  <div key={i}>
-                    <div className="space-y-2 pb-4">
-                      <EventIndicator
-                        title={event?.event_name}
-                        time={event?.time}
-                        desc={event?.description}
-                        meeting={event?.meeting_link}
-                      />
+                  <span className="text-lg">Tomorrow</span>
+                </h2>
+                {tomorrowEvents?.map((event, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 py-5 mt-3 flex items-center gap-3 px-4 justify-start rounded-lg relative"
+                  >
+                    <Progress />
+                    <div className="pl-[-2rem]">
+                      <p className="font-semibold">{event.event_name}</p>
+                      <p className="text-sm text-gray-600">{event.time}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {event.description}
+                      </p>
+                      <button className="mt-2 text-pry underline text-sm">
+                        Join Event
+                      </button>
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <p className=" text-gray-500">No event available for tomorrow</p>
-            )}
+              </section>
+            ) : null}
 
             {events?.birthday_celebrant &&
             events?.birthday_celebrant?.length > 0 ? (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <section className="p-4 mt-1">
+                <h2 className="flex space-x-3">
                   <Image
-                    src={CalendarIcon}
-                    alt="Calendar"
-                    width={16}
-                    height={16}
-                    className="mr-2 text-gray-600"
+                    src={'/assets/cake.svg'}
+                    alt="birthday"
+                    width={30}
+                    height={30}
+                    className="mb-1"
                   />
-                  Birthday Anniversaries
-                </h3>
-                {birthdayCelebrants?.map((event, i) => (
-                  <div key={i}>
-                    <div className="space-y-2 pb-4">
-                      <EventIndicator
-                        title={event?.full_name}
-                        profilePicture={event?.profile_picture}
-                        desc={event?.department}
+                  <span className="text-lg">Birthday Anniversaries</span>
+                </h2>
+
+                {birthdayCelebrants?.map((celebrant) => (
+                  <div
+                    key={celebrant?.user_id}
+                    className="bg-gray-100 py-4 mt-3  rounded-lg px-4 flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <Image
+                        src={celebrant?.profile_picture}
+                        alt={celebrant?.full_name}
+                        className="w-10 h-10 rounded-full object-cover"
+                        width={30}
+                        height={30}
                       />
+                      <div>
+                        <p className="font-semibold">{celebrant?.full_name}</p>
+                        <p className="text-sm text-gray-600 capitalize">
+                          {celebrant?.department}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <p className=" text-gray-500">No Birthday Celebrants yet</p>
-            )}
-
+              </section>
+            ) : null}
             {isLeaveHasValue ? (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <section className="p-4 mt-1">
+                <h2 className="flex space-x-3">
                   <Image
                     src={PlaneIcon}
-                    alt="Plane"
-                    width={16}
-                    height={16}
-                    className="mr-2 text-gray-600"
+                    alt="calendar"
+                    width={30}
+                    height={30}
+                    className="mb-1"
                   />
-                  Leave
-                </h3>
-
-                <div>
-                  <div className="space-y-2 pb-4">
-                    <EventIndicator
-                      title={leave?.leave_type}
-                      time={leave?.days_left}
-                    />
+                  <span className="text-lg">Leave</span>
+                </h2>
+                <div className="bg-gray-100 py-5 mt-3 flex items-center gap-3 px-4 justify-start rounded-lg relative">
+                  <Progress />
+                  <div className="pl-[-2rem]">
+                    <p>{leave?.leave_type}</p>
+                    <p>{leave?.days_left}</p>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <p className=" text-gray-500">No leave available</p>
-            )}
+              </section>
+            ) : null}
           </>
         )}
       </CardContent>

@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils";
-import Sidebar from "@/src/components/Layouts/AuthLayout/Sidebar";
-import "../../styles/authenticatedLayoutStyles.css";
-import Header from "@/src/components/Layouts/AuthLayout/Header";
-import DashboardProvider from "@/src/context/dashboardContext";
+import { cn } from '@/lib/utils';
+import Sidebar from '@/src/components/Layouts/AuthLayout/Sidebar';
+import '../../styles/authenticatedLayoutStyles.css';
+import Header from '@/src/components/Layouts/AuthLayout/Header';
+import DashboardProvider from '@/src/context/dashboardContext';
 
 export default function RootLayout({
   children,
@@ -15,8 +15,8 @@ export default function RootLayout({
         {/* Main Grid */}
         <main
           className={cn(
-            "grid bg-[#F4F5F6]",
-            "mobile-col [grid-template-columns:252px_1fr]"
+            'grid bg-[#F4F5F6]',
+            'mobile-col [grid-template-columns:252px_1fr]'
           )}
         >
           {/* Sidebar */}
@@ -32,8 +32,8 @@ export default function RootLayout({
             {/* Children container with position relative to allow chat to be positioned absolutely */}
             <div
               className={cn(
-                "flex-1 pb-6 max-w-[1277px] bg-[#F4F5F6] relative",
-                "px-6 pt-24 hide-sidebar:px-5 hide-sidebar:mt-24"
+                'flex-1 pb-6 max-w-[1277px] bg-[#F4F5F6] relative',
+                'px-6 pt-24 hide-sidebar:px-5 hide-sidebar:mt-24'
               )}
             >
               {children}

@@ -57,13 +57,9 @@ const Page = () => {
         )}
       </div>
 
-      <div className="w-full p-4 flex flex-col md:flex-row gap-4">
-        <div className="w-full">
-          <EmployeeTable />
-        </div>
-        <div className="w-full">
-          <EventsCard />
-        </div>
+      <div className="w-full p-4  grid md:[grid-template-columns:2fr_1fr] items-center gap-4">
+        <EmployeeTable />
+        <EventsCard />
       </div>
     </div>
   );

@@ -33,7 +33,10 @@ const TableLayer = () => {
     { label: 'Job Title' },
     { label: 'Clock In' },
     { label: 'Clock Out' },
+    { label: 'Clock out comment' },
+    { label: 'Hours Worked' },
     { label: 'Location' },
+    { label: 'Overtime' },
     { label: 'Status' },
   ];
 
@@ -80,21 +83,21 @@ const TableLayer = () => {
             filteredAttendance.map((row, rowIndex) => (
               <TableRow key={rowIndex} className="text-[#1D2939] text-sm">
                 <TableCell className="py-5">
-                  <div className="flex gap-6">
-                    <div className="border-2 border-[#E4E7EC] w-5 aspect-square rounded bg-white"></div>
-                    {formatDate(row.created_at)}
-                  </div>
+                  {formatDate(row.created_at)}
                 </TableCell>
-                <TableCell>{row.employee_name}</TableCell>
-                <TableCell>{row.job_title}</TableCell>
-                <TableCell>{formatTime(row.clock_in)}</TableCell>
-                <TableCell>{formatTime(row.clock_out)}</TableCell>
-                <TableCell>{row.location}</TableCell>
+                <TableCell>{row?.employee_name}</TableCell>
+                <TableCell>{row?.job_title}</TableCell>
+                <TableCell>{formatTime(row?.clock_in)}</TableCell>
+                <TableCell>{formatTime(row?.clock_out)}</TableCell>
+                <TableCell>{row?.clock_out_comment ?? 'N/A'}</TableCell>
+                <TableCell>{row?.hours_worked ?? 'N/A'}</TableCell>
+                <TableCell>{row?.overtime}</TableCell>
+                <TableCell>{row?.location}</TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] w-[50%] text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
                     ${
-                      row.status === 'Present'
+                      row.status === 'present'
                         ? 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]'
                         : 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]'
                     }`}

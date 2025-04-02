@@ -139,7 +139,11 @@ export const attendanceCount: { title: string; value: string }[] = [
     value: '21',
   },
   {
-    title: 'Days Absences',
+    title: 'Days Absent',
+    value: '21',
+  },
+  {
+    title: 'Days late',
     value: '21',
   },
 ];
