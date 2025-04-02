@@ -29,7 +29,7 @@ const FirstLayer = () => {
           <AiFillClockCircle /> <span>Check Out 08:00:05 Hrs</span>
         </button>
       </div>
-      <div className="grid md:grid-cols-3 mt-5 gap-6">
+      <div className="grid md:grid-cols-3 mt-5 gap-6 w-full max-w-[1100px]">
         {isAttendanceLoading ? (
           [...Array(3)].map((_, i) => (
             <Skeleton key={i} className="min-h-[140px]" />
@@ -39,7 +39,7 @@ const FirstLayer = () => {
             {attendanceCount.map((data, i) => (
               <div
                 key={i}
-                className="bg-[#FCFCFC] min-h-[140px] rounded-[8px] border border-[#E4E7EC] py-6 px-[22px] grid "
+                className="bg-[#FCFCFC] min-h-[140px]  rounded-[8px] border border-[#E4E7EC] py-6 px-[22px] grid "
               >
                 <h4 className="text-[#808191] text-sm">{data?.title}</h4>
                 <p
@@ -50,7 +50,9 @@ const FirstLayer = () => {
                     ? attendance?.total_working_days
                     : i === 1
                     ? attendance?.days_present
-                    : attendance?.days_absent}
+                    : i === 2
+                    ? attendance?.days_absent
+                    : attendance?.days_late}
                 </p>
               </div>
             ))}

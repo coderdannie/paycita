@@ -81,11 +81,7 @@ const EmployeeTable = () => {
         </div>
       </div>
       <div className="p-4 mt-[.5rem] overflow-x-auto">
-        <CustomTable
-          headers={headers}
-          center
-          isLoading={isDashboardDetailsFetching}
-        >
+        <CustomTable headers={headers} isLoading={isDashboardDetailsFetching}>
           {filteredEmployees?.length ? (
             filteredEmployees?.map((row, rowIndex) => (
               <TableRow
@@ -94,12 +90,11 @@ const EmployeeTable = () => {
               >
                 <TableCell className="py-5">
                   <div className="flex items-center gap-3">
-                    <div className="border-2 border-[#E4E7EC] w-5 aspect-square rounded bg-white"></div>
                     {row?.full_name}
                   </div>{' '}
                 </TableCell>
                 <TableCell>{row?.job_title}</TableCell>
-                <TableCell className="text-center">{row?.job_level}</TableCell>
+                <TableCell>{row?.job_level}</TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 

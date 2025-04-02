@@ -51,7 +51,7 @@ const TableLayer = () => {
                 <span
                   className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                     ${
-                      row?.status === 'Present'
+                      row?.status === 'present'
                         ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
                         : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
                     }
