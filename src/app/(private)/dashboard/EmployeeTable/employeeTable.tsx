@@ -53,7 +53,7 @@ const EmployeeTable = () => {
     { label: 'Status' },
   ];
   return (
-    <div className="bg-white h-full shadow rounded-lg w-full max-w-4xl mx-auto relative overflow-hidden">
+    <div className="bg-white h-full px-1 py-6 md:px-8 shadow rounded-lg w-full max-w-4xl mx-auto relative overflow-hidden">
       <div className="p-4 flex flex-col">
         <div className="flex justify-between items-center mt-[1rem] mb-[3rem]">
           <h2 className="text-[1.3rem] font-medium text-black">Employee</h2>

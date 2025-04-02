@@ -44,7 +44,7 @@ const Page = () => {
     <div className="w-full min-h-screen bg-gray-100 flex flex-col">
       <DashboardHeader />
 
-      <div className="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="w-full py-4 grid grid-cols-1 md:grid-cols-2 gap-5">
         {isDashboardDetailsFetching ? (
           <Skeleton className="h-[290px]  rounded-xl" />
         ) : (
@@ -57,7 +57,7 @@ const Page = () => {
         )}
       </div>
 
-      <div className="w-full p-4  grid md:[grid-template-columns:2fr_1fr] items-center gap-4">
+      <div className="w-full py-4  grid md:[grid-template-columns:2fr_1fr] items-center gap-4">
         <EmployeeTable />
         <EventsCard />
       </div>

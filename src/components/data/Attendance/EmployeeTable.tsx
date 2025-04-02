@@ -35,8 +35,9 @@ const TableLayer = () => {
     { label: 'Clock Out' },
     { label: 'Clock out comment' },
     { label: 'Hours Worked' },
-    { label: 'Location' },
+
     { label: 'Overtime' },
+    { label: 'Location' },
     { label: 'Status' },
   ];
 
@@ -91,6 +92,7 @@ const TableLayer = () => {
                 <TableCell>{formatTime(row?.clock_out)}</TableCell>
                 <TableCell>{row?.clock_out_comment ?? 'N/A'}</TableCell>
                 <TableCell>{row?.hours_worked ?? 'N/A'}</TableCell>
+
                 <TableCell>{row?.overtime}</TableCell>
                 <TableCell>{row?.location}</TableCell>
                 <TableCell>
