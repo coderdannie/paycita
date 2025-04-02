@@ -88,7 +88,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           </TableHeader>
 
           {/* Table Body */}
-          <TableBody>
+          <TableBody className="font-normal">
             {isLoading ? (
               // Show Skeleton Rows if Loading
               <TableSkeleton headers={headers} />

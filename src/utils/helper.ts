@@ -37,3 +37,13 @@ export const updateDateTime = () => {
     .replace(' PM', 'pm');
   return formattedDateTime;
 };
+
+export const formatTime = (dateString: string) => {
+  const options: any = {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  };
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', options);
+};
