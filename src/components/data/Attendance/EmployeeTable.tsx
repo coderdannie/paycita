@@ -91,8 +91,9 @@ const TableLayer = () => {
                 <TableCell>{formatTime(row?.clock_out)}</TableCell>
                 <TableCell>{row?.clock_out_comment ?? 'N/A'}</TableCell>
                 <TableCell>{row?.hours_worked ?? 'N/A'}</TableCell>
-                <TableCell>{row?.overtime}</TableCell>
                 <TableCell>{row?.location}</TableCell>
+                <TableCell>{row?.overtime}</TableCell>
+
                 <TableCell>
                   <span
                     className={`py-[5px] w-[50%] text-center block px-[10px] relative border-2 rounded-md cursor-pointer 

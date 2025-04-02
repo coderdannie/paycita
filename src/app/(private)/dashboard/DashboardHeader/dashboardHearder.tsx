@@ -90,7 +90,7 @@ const DashboardHeader = () => {
       <div className={`w-full px-4 ${!isClockedIn ? 'pt-4' : 'pt-2'} pb-2`}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-[1.34rem] font-bold text-gray-800">
+            <h1 className="text-lg md:text-[1.34rem] font-bold text-gray-800">
               Welcome back, {user?.full_name || '--'}
             </h1>
             <p className="text-sm text-gray-800 pt-2">{currentDateTime}</p>
