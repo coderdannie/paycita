@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import React from 'react';
-import { TbLogin2 } from 'react-icons/tb';
+import Image from "next/image";
+import React from "react";
+import { TbLogin2 } from "react-icons/tb";
 
 const LeftSide = () => {
   return (
@@ -28,12 +28,12 @@ const LeftSide = () => {
           </p>
         </div>
         <Image
-          src={'/assets/map.png'}
+          src={"/assets/map.png"}
           alt="map"
           width={330}
           height={200}
           className="pt-7"
-          style={{ animation: 'spin 10s linear infinite' }} // 10 seconds spin
+          style={{ animation: "spin 10s linear infinite" }} // 10 seconds spin
         />
       </div>
       <div className="flex flex-1" />
