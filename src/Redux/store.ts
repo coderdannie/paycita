@@ -1,8 +1,8 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
-import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
-import authReducer, { AuthState } from './features/authSlice';
-import dashboardReducer, { DashboardState } from './features/dashboardSlice';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
+import createWebStorage from "redux-persist/lib/storage/createWebStorage";
+import authReducer, { AuthState } from "./features/authSlice";
+import dashboardReducer, { DashboardState } from "./features/dashboardSlice";
 
 const createNoopStorage = () => {
   return {
@@ -19,8 +19,8 @@ const createNoopStorage = () => {
 };
 
 const storage =
-  typeof window !== 'undefined'
-    ? createWebStorage('local')
+  typeof window !== "undefined"
+    ? createWebStorage("local")
     : createNoopStorage();
 
 const rootReducer = combineReducers({
@@ -30,7 +30,7 @@ const rootReducer = combineReducers({
 });
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
 };
 
@@ -41,7 +41,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'],
+        ignoredActions: ["persist/PERSIST"],
       },
     }),
 });

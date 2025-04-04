@@ -1,23 +1,30 @@
 "use client";
 import { createContext, useContext } from "react";
 
-interface GlobalContextType {}
+interface GlobalContextType {
+  // Define any global state or functions here
+  // For example:
+  user: null;
+}
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(
-	undefined
+  undefined
 );
 
 const GlobalProvider = ({
-	children,
+  children,
 }: Readonly<{ children: React.ReactNode }>) => {
-	const value: GlobalContextType = {};
-	return (
-		<GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
-	);
+  const value: GlobalContextType = {
+	// Initialize any global state or functions here
+	user: null,
+  };
+  return (
+    <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
+  );
 };
 
 export const useGlobalContext = () => {
-	return useContext(GlobalContext) as GlobalContextType;
+  return useContext(GlobalContext) as GlobalContextType;
 };
 
 export default GlobalProvider;
