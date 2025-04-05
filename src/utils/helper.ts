@@ -40,6 +40,7 @@ export const formatTime = (dateString: string) => {
     minute: "numeric",
     hour12: true,
   };
+
   const date = new Date(dateString);
   return date.toLocaleString("en-US", options);
 };

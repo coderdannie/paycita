@@ -35,6 +35,8 @@ const TableLayer = () => {
   const { attendance } = useDashboardSelector();
   const { isAttendanceLoading } = useDashboard();
 
+  console.log(attendance?.attendance);
+
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers} isLoading={isAttendanceLoading}>
