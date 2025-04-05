@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { useMemo } from "react";
-import Image from "next/image";
-import { TableCell, TableRow } from "../ui/table";
+import React from 'react';
+import { useMemo } from 'react';
+import Image from 'next/image';
+import { TableCell, TableRow } from '../ui/table';
 
 interface TableEmptyStateProps {
   headers: any[]; // Consider using a more specific type if possible
+  messageTitle?: string;
+  desc?: string;
 }
 
-export default function TableEmptyState({ headers }: TableEmptyStateProps) {
+export default function TableEmptyState({
+  headers,
+  messageTitle = 'No Matching Records Found',
+  desc = '      Try adjusting your search or filters',
+}: TableEmptyStateProps) {
   const renderEmptyState = useMemo(
     () => (
       <TableRow>
@@ -22,16 +28,14 @@ export default function TableEmptyState({ headers }: TableEmptyStateProps) {
               className="mb-4"
             />
             <p className="text-lg font-semibold text-gray-700">
-              No Matching Records Found
+              {messageTitle}
             </p>
-            <p className="text-sm text-gray-500">
-              Try adjusting your search or filters
-            </p>
+            <p className="text-sm text-gray-500">{desc}</p>
           </div>
         </TableCell>
       </TableRow>
     ),
-    [headers?.length]
+    [headers?.length, messageTitle, desc]
   );
 
   return renderEmptyState;

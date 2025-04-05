@@ -29,7 +29,7 @@ const MonthlyPayrollTable: React.FC = () => {
   ];
   return (
     <div className="mt-[20px]">
-      <CustomTable headers={headers} center={true}>
+      <CustomTable headers={headers} center>
         {['', '']?.length ? (
           ['', '', '', ''].map((row, rowIndex) => (
             <TableRow
