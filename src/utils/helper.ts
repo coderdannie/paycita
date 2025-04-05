@@ -38,12 +38,18 @@ export const updateDateTime = () => {
   return formattedDateTime;
 };
 
-export const formatTime = (dateString: string) => {
-  const options: any = {
+export const formatTime = (dateString: string | null | undefined): string => {
+  if (!dateString) return '';
+
+  const options: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
   };
+
   const date = new Date(dateString);
-  return date.toLocaleString('en-US', options);
+
+  if (isNaN(date.getTime())) return '';
+
+  return date.toLocaleTimeString('en-US', options);
 };
