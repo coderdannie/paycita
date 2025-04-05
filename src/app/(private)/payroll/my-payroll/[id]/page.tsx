@@ -26,7 +26,7 @@ const MyPayrollTabs = () => {
             }`}
             onClick={() => setTab(dat)}
           >
-            {dat}
+            <button>{dat}</button>
           </li>
         ))}
       </ul>

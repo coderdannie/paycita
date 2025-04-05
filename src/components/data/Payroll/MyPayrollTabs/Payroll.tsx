@@ -3,15 +3,9 @@
 import { BsFileEarmarkArrowDownFill } from 'react-icons/bs';
 
 const PaySlips = () => {
-  // const [isOpen, setIsOpen] = useState(false);
   return (
     <div>
       <div className="flex justify-end items-end flex-wrap gap-3 p-4">
-        {/* <div>
-          <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl">
-            Payslips
-          </h2>
-        </div> */}
         <div className="flex items-center gap-3">
           <button
             className="flex h-[40px] w-fit px-[10px] gap-1 border-2 rounded-lg border-primary font-semibold text-sm items-center text-primary"
