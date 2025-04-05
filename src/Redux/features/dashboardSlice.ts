@@ -1,12 +1,12 @@
 // Redux/features/dashboardSlice.ts
-import { EmployeeAttendanceData } from "@/src/types/attendance";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DashboardResponse } from "@/src/types/dashboard";
-import { initialAttendanceData } from "@/src/utils/initialData";
+import { EmployeeAttendanceData } from '@/src/types/attendance';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { DashboardResponse } from '@/src/types/dashboard';
+import { initialAttendanceData } from '@/src/utils/initialData';
 
 export interface DashboardState {
   // Add export here
-  dashboardDetails: DashboardResponse["data"] | null;
+  dashboardDetails: DashboardResponse['data'] | null;
   employeeAttendance: EmployeeAttendanceData[];
   attendance: AttendanceSummary;
   employeeAttendancePagination: Pagination;
@@ -19,20 +19,20 @@ const initialState: DashboardState = {
   employeeAttendance: [],
   employeeAttendancePagination: {} as Pagination,
   filters: {
-    page: "1", 
-    employee_name: "",
-    status: "",
-    job_title: "",
+    page: '1',
+    employee_name: '',
+    status: '',
+    job_title: '',
   },
 };
 
 const dashboardSlice = createSlice({
-  name: "dashboard",
+  name: 'dashboard',
   initialState,
   reducers: {
     updateDashboardDetails: (
       state,
-      action: PayloadAction<DashboardResponse["data"]>
+      action: PayloadAction<DashboardResponse['data']>
     ) => {
       state.dashboardDetails = action.payload;
     },
