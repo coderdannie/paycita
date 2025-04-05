@@ -16,6 +16,7 @@ import {
 import { updateDateTime } from "../utils/helper";
 import { useGetAttendance } from "../api/hooks/dashboard/useDashboard";
 import { useDashboardSelector } from "../Redux/selectors";
+import { ToastProvider } from "./ToastContext";
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -147,7 +148,7 @@ const DashboardProvider = ({
   };
   return (
     <DashboardContext.Provider value={value}>
-      {children}
+      <ToastProvider>{children}</ToastProvider>
     </DashboardContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { ToastType } from "../Toast/Toast";
-import ToastContainer from "../Toast/ToastContainer";
+import { ToastType } from "../app/(private)/leave-mgt/employee-leave-request/Toast/Toast";
+import ToastContainer from "../app/(private)/leave-mgt/employee-leave-request/Toast/ToastContainer";
 import { v4 as uuidv4 } from "uuid";
 
 interface ToastContextType {

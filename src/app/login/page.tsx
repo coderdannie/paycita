@@ -27,10 +27,7 @@ const Login = () => {
 
   // Form submission handler
   function onSubmit(values: LoginSchemaType) {
-    // console.log(values);
-    //@ts-expect-error description is optional
     handleLogin(values);
-    // router.push('/dashboard');
   }
 
   return (
