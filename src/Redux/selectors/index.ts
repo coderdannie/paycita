@@ -9,3 +9,7 @@ export const useAuthSelector = () => {
 export const useDashboardSelector = () => {
   return useSelector((state: RootState) => state.dashboard);
 };
+
+export const useUserDetailSelector = () => {
+  return useSelector((state: RootState) => state.userDetails);
+};

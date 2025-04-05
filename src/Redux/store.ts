@@ -3,6 +3,10 @@ import { persistReducer, persistStore } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import authReducer, { AuthState } from "./features/authSlice";
 import dashboardReducer, { DashboardState } from "./features/dashboardSlice";
+import UserDetailsReducer, { UserDetails } from "./features/userDetailsSlice";
+import EmployeeDetailsReducer, {
+  EmployeeDetails,
+} from "./features/employeeDetails";
 
 const createNoopStorage = () => {
   return {
@@ -26,6 +30,8 @@ const storage =
 const rootReducer = combineReducers({
   auth: authReducer,
   dashboard: dashboardReducer,
+  userDetails: UserDetailsReducer,
+  employeeDetails: EmployeeDetailsReducer,
   // more reducers
 });
 
@@ -51,6 +57,8 @@ const persistor = persistStore(store);
 export type RootState = {
   auth: AuthState;
   dashboard: DashboardState;
+  userDetails: UserDetails;
+  employeeDetails: EmployeeDetails;
 };
 
 export { store, persistor };

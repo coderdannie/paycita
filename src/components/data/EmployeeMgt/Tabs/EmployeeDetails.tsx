@@ -1,8 +1,26 @@
-import { TbEdit } from 'react-icons/tb';
-const EmployeeDetails = () => {
+import { TbEdit } from "react-icons/tb";
+const EmployeeDetails = ({
+  userDetails,
+}: {
+  userDetails: {
+    employee_number?: string;
+    full_name?: string;
+    email?: string;
+    phone_number?: string;
+    employment_type?: string;
+    bank_account_name?: string;
+    bank_account_number?: string;
+    bank_name?: string;
+    hire_date?: string;
+    status?: string;
+    job_level?: string;
+    job_location?: string;
+    job_title?: string;
+  };
+}) => {
   return (
     <div>
-      {' '}
+      {" "}
       <p className="text-[#1D2939] font-semibold text-lg">Employee Details</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {/* Basic Information */}
@@ -15,36 +33,42 @@ const EmployeeDetails = () => {
           </div>
           <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[450px]">
             <p className="flex gap-10">
-              <strong className="text-[#1D2939]">Sarah Johnson</strong>
-              <span className="text-green-600">● Active</span>
+              <strong className="text-[#1D2939]">
+                {userDetails?.full_name}
+              </strong>
+              <span className="text-green-600 capitalize">
+                ● {userDetails?.status ?? "N/A"}
+              </span>
             </p>
             <p className="text-[#667085] font-normal">
-              Employee Number: DT00123
+              Employee Number:{userDetails?.employee_number ?? "N/A"}
             </p>
             <p className="font-semibold">Name of the Business</p>
             <p className="flex gap-10 pt-5">
               <strong className="text-[#667085] font-normal">Job Title</strong>
-              Backend Developer
+              {userDetails?.job_title ?? "N/A"}
             </p>
             <p className="flex gap-10">
               <strong className="text-[#667085] font-normal">Job Level</strong>
-              Staff
+              {userDetails?.job_level ?? "N/A"}
             </p>
             <p className="flex gap-10">
               <strong className="text-[#667085] font-normal">
                 Employment Type
               </strong>
-              Contract
+              {userDetails?.employment_type ?? "N/A"}
             </p>
             <p className="flex gap-10">
               <strong className="text-[#667085] font-normal">
                 Location Type
               </strong>
-              Remote
+              {userDetails?.job_location ?? "N/A"}
             </p>
             <p className="flex gap-10">
               <strong className="text-[#667085] font-normal">Hire Date</strong>
-              <span className="font-semibold">30 Jan 2023</span>
+              <span className="font-semibold">
+                {userDetails?.hire_date ?? "N/A"}
+              </span>
             </p>
           </div>
         </div>
@@ -57,19 +81,21 @@ const EmployeeDetails = () => {
           <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">Bank Type</strong>
-              UBA
+              {userDetails?.bank_name ?? "N/A"}
             </p>
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">
                 Account Number
               </strong>
-              <span className="font-semibold">09354678829</span>
+              <span className="font-semibold">
+                {userDetails?.bank_account_number ?? "N/A"}
+              </span>
             </p>
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">
                 Account Holder Name
               </strong>
-              Sarah Johnson
+              {userDetails?.bank_account_name ?? "N/A"}
             </p>
           </div>
         </div>

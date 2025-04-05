@@ -4,9 +4,10 @@ import useApiRequest from "../api/hooks/useApiRequest";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../Redux/features/authSlice";
+import { LoginSchemaType } from "../utils/validations";
 
 interface AuthContextType {
-  handleLogin: (formData: LoginDataProps) => void;
+  handleLogin: (formData: LoginSchemaType) => void;
   isLogginIn: boolean;
 }
 
@@ -21,7 +22,7 @@ const AuthProvider = ({
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = async (formData: LoginDataProps) =>
+  const handleLogin = async (formData: LoginSchemaType) =>
     await postRequest(
       "/login",
       formData,

@@ -22,3 +22,11 @@ export const statusOptions = [
   { value: "overtime", label: "Overtime" },
   { value: "holiday", label: "Holiday" },
 ];
+
+export const levelOptions = [
+  { value: "", label: "All" },
+  { value: "staff", label: "Staff" },
+  { value: "mid", label: "Mid" },
+  { value: "senior", label: "Senior" },
+  { value: "executive", label: "Executive" },
+];

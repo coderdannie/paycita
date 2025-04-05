@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import { api2, api } from "..";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
 
 type Res = {
   data: Record<string, string>;
@@ -22,13 +22,13 @@ type UseApiRequestResult = {
 
   postRequest: (
     url: string,
-    formData: Record<string, string>,
+    formData: AxiosRequestConfig["data"],
     callback?: (data: DataProps) => void
   ) => Promise<void>;
 
   patchRequest: (
     url: string,
-    formData: Record<string, string>,
+    formData: AxiosRequestConfig["data"],
     callback?: (data: DataProps) => void
   ) => Promise<void>;
 
@@ -70,7 +70,7 @@ const useApiRequest = (): UseApiRequestResult => {
     async (
       method: "get" | "post" | "patch" | "delete",
       url: string,
-      data?: Record<string, string>,
+      data: AxiosRequestConfig["data"],
       callback?: (data: DataProps) => void
     ) => {
       // Check internet connection before making request

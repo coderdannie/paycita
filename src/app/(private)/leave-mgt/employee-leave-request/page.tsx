@@ -3,7 +3,7 @@ import React, { useState, useMemo } from "react";
 import Filters from "./Filters/filters";
 
 import { LeaveRequestType } from "./types";
-import { ToastProvider } from "./contexts/ToastContext";
+import { ToastProvider } from "../../../../context/ToastContext";
 import EmployeeLeaveRequestTable from "./EmployeeLeaveRequestTable/employeeLeaveRequestTable";
 
 const LeaveRequest: React.FC = () => {

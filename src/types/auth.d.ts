@@ -1,7 +1,3 @@
-interface LoginDataProps {
-  [key: string]: string;
-}
-
 interface LoggedInUserProps {
   birthday: boolean;
   company_logo: string;

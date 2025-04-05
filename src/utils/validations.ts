@@ -1,14 +1,14 @@
 import * as z from "zod";
 
 export const userDetailsSchema = z.object({
-  fullName: z.string().min(1, { message: "Full Name is required" }),
+  full_name: z.string().min(1, { message: "Full Name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
-  phoneNumber: z
+  phone_number: z
     .string()
     .min(1, { message: "Phone Number is required" })
     .regex(/^\d{10,15}$/, { message: "Invalid phone number" }),
   gender: z.string().min(1, { message: "Gender is required" }),
-  maritalStatus: z.string().min(1, { message: "Marital Status is required" }),
+  marital_status: z.string().min(1, { message: "Marital Status is required" }),
   address: z.object({
     country: z.string().min(1, { message: "Country is required" }),
     residentialAddress: z
@@ -16,11 +16,13 @@ export const userDetailsSchema = z.object({
       .min(1, { message: "Residential Address is required" }),
   }),
   emergencyContact: z.object({
-    fullName: z
+    emergency_contact_name: z
       .string()
       .min(1, { message: "Emergency Contact Name is required" }),
-    relationship: z.string().min(1, { message: "Relationship is required" }),
-    phoneNumber: z
+    emergency_contact_relationship: z
+      .string()
+      .min(1, { message: "Relationship is required" }),
+    emergency_contact_phone: z
       .string()
       .min(1, { message: "Phone Number is required" })
       .regex(/^\d{10,15}$/, { message: "Invalid phone number" }),
@@ -46,27 +48,37 @@ export const userDetailsSchema = z.object({
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({
-  employeeNumber: z.string().min(1, { message: "Employee Number is required" }),
-  jobTitle: z.string().min(1, { message: "Job Title is required" }),
-  jobLevel: z.string().min(1, { message: "Job Level is required" }),
-  department: z.string().min(1, { message: "Department is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  employmentType: z.string().min(1, { message: "Employment Type is required" }),
-  locationType: z.string().min(1, { message: "Location Type is required" }),
-  hireDate: z.string().min(1, { message: "Hire Date is required" }), // Assuming hire date is a string (e.g., YYYY-MM-DD)
-  basicSalary: z.string().min(1, { message: "Basic Salary is required" }),
-  taxStatus: z.string().min(1, { message: "Tax Status is required" }),
-  taxNumber: z.string().min(1, { message: "Tax Number is required" }),
-  taxMethod: z.string().min(1, { message: "Tax Method is required" }),
-  pensionCompany: z.string().min(1, { message: "Pension Company is required" }),
+  // employeeNumber: z.string().min(1, { message: "Employee Number is required" }),
+  job_title: z.string().min(1, { message: "Job Title is required" }),
+  job_level: z.string().min(1, { message: "Job Level is required" }),
+  role: z.string().min(1, { message: "Role is required" }),
+  department_id: z.number().min(1, { message: "Department is required" }),
+  company_email: z.string().email({ message: "Invalid email address" }),
+  employment_type: z
+    .string()
+    .min(1, { message: "Employment Type is required" }),
+  job_location: z.string().min(1, { message: "Location Type is required" }),
+  hire_date: z.string().min(1, { message: "Hire Date is required" }), // Assuming hire date is a string (e.g., YYYY-MM-DD)
+  salary: z.string().min(1, { message: "Basic Salary is required" }),
+  tax_status: z.string().min(1, { message: "Tax Status is required" }),
+  tax_number: z.string().min(1, { message: "Tax Number is required" }),
+
+  pension_company: z
+    .string()
+    .min(1, { message: "Pension Company is required" }),
+  offer_letter: z.string().optional(),
 });
 
 export type EmployeeDetailsSchemaType = z.infer<typeof employeeDetailsSchema>;
 
-export const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(1, { message: "Password is required" }),
-});
+export type AddEmployee = userDetailsSchemaType | EmployeeDetailsSchemaType;
+
+export const loginSchema = z
+  .object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z.string().min(1, { message: "Password is required" }),
+  })
+  .required();
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;
 
