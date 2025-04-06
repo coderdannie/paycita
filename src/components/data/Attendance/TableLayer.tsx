@@ -2,7 +2,6 @@
 
 import CustomTable from "../../common/CustomTable";
 import { TableCell, TableRow } from "../../ui/table";
- 
 
 import { formatDate, formatTime } from "@/src/utils/helper";
 import { EmployeeAttendanceData } from "@/src/types/attendance";
@@ -11,10 +10,8 @@ import TableEmptyState from "../../common/TableEmptyState";
 const TableLayer = ({
   attendance,
 }: {
-  attendance: EmployeeAttendanceData[];
+  attendance: EmployeeAttendanceData[] | AttendanceRecord[];
 }) => {
-  // Function to update filters
-
   const headers = [
     { label: "Date" },
     {

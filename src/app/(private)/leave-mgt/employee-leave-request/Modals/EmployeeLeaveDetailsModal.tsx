@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { LeaveRequestType } from "../types";
+import { formatDate } from "@/src/utils/helper";
+ 
 
 interface LeaveDetailsModalProps {
   isOpen: boolean;
@@ -118,15 +120,5 @@ const StatusBadge: React.FC<{ color: string; children: React.ReactNode }> = ({
   </span>
 );
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  // Use UTC methods to ensure consistent formatting
-  const day = date.getUTCDate();
-  const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
-  const year = date.getUTCFullYear();
-  const weekday = date.toLocaleString('en-US', { weekday: 'short', timeZone: 'UTC' });
-  
-  return `${weekday}, ${day} ${month} ${year}`;
-};
 
 export default EmployeeLeaveDetailsModal;

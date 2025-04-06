@@ -16,9 +16,9 @@ export const formatDate = (
   return `${day} ${month} ${year}`;
 };
 
-export const updateDateTime = () => {
+export const updateDateTime = (timeZone: string = 'UTC') => {
   const now = new Date();
-  // Use UTC methods to ensure consistent formatting
+  // Use the provided timeZone to ensure consistent formatting
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',
     month: 'long',
@@ -27,7 +27,7 @@ export const updateDateTime = () => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-    timeZone: 'UTC'
+    timeZone
   };
   
   const formattedDateTime = now
