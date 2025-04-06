@@ -29,9 +29,9 @@ const FirstLayer = () => {
           <AiFillClockCircle /> <span>Check Out 08:00:05 Hrs</span>
         </button>
       </div>
-      <div className="grid md:grid-cols-3 mt-5 gap-6 w-full max-w-[1100px]">
+      <div className="grid md:grid-cols-4 mt-5 gap-6 w-full">
         {isAttendanceLoading ? (
-          [...Array(3)].map((_, i) => (
+          [...Array(4)].map((_, i) => (
             <Skeleton key={i} className="min-h-[140px]" />
           ))
         ) : (
