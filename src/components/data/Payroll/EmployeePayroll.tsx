@@ -16,10 +16,7 @@ interface MyPayrollTableProps {
   hidden?: boolean;
 }
 
-const EmployeePayroll: React.FC<MyPayrollTableProps> = ({
-  headers,
-  hidden,
-}) => {
+const EmployeePayroll: React.FC<MyPayrollTableProps> = ({ headers }) => {
   const [status] = useState('Paid');
 
   return (
@@ -41,21 +38,20 @@ const EmployeePayroll: React.FC<MyPayrollTableProps> = ({
               <TableCell>$600</TableCell>
               <TableCell>$0.00</TableCell>
               <TableCell>$0.00</TableCell>
-              {!hidden && (
-                <TableCell>
-                  <span
-                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
+
+              <TableCell>
+                <span
+                  className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                       ${
                         status === 'Paid'
                           ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
                           : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
                       }
                     `}
-                  >
-                    {status}
-                  </span>
-                </TableCell>
-              )}
+                >
+                  {status}
+                </span>
+              </TableCell>
 
               <TableCell>
                 <div className="flex items-center gap-2">
@@ -70,11 +66,9 @@ const EmployeePayroll: React.FC<MyPayrollTableProps> = ({
                       height={15}
                     />
                   </Link>{' '}
-                  {!hidden && (
-                    <button className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded">
-                      <LuArrowDownToLine />
-                    </button>
-                  )}
+                  <button className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded">
+                    <LuArrowDownToLine />
+                  </button>
                 </div>
               </TableCell>
             </TableRow>
