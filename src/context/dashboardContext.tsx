@@ -114,6 +114,9 @@ const DashboardProvider = ({
   };
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
     let timeoutId: NodeJS.Timeout;
 
     const update = () => {
@@ -124,10 +127,13 @@ const DashboardProvider = ({
       timeoutId = setTimeout(update, msUntilNextMinute);
     };
 
+    // Initial update
     update();
 
     return () => {
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, []);
 
