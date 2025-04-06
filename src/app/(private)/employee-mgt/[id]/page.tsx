@@ -67,11 +67,11 @@ const EmployeeDetails = () => {
         ) : tab.includes("Employee") ? (
           <EmployeeDetail userDetails={employee?.employee} />
         ) : tab.includes("Attendance") ? (
-          <Attendance />
+          <Attendance attendance={employee?.attendance} />
         ) : tab.includes("Payroll") ? (
           <PayrollHistory />
         ) : (
-          <LeaveHistory />
+          <LeaveHistory leave={employee?.leave} />
         )}
       </div>
     </div>

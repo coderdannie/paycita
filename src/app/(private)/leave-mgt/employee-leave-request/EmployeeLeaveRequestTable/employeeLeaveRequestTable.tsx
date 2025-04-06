@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { ChevronsUpDown, Info, Trash2 } from "lucide-react";
 import { LeaveRequestType } from "../types";
@@ -244,12 +243,13 @@ const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  // Use UTC methods to ensure consistent formatting
+  const day = date.getUTCDate();
+  const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+  const year = date.getUTCFullYear();
+  const weekday = date.toLocaleString('en-US', { weekday: 'short', timeZone: 'UTC' });
+  
+  return `${weekday}, ${day} ${month} ${year}`;
 };
 
 export default EmployeeLeaveRequestTable;

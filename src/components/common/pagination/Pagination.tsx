@@ -12,12 +12,12 @@ const CustomPagination = ({
 }) => {
   return (
     <nav
-      className="flex w-full justify-between rounded-md mt-3 px-2"
+      className="flex w-full justify-center items-center gap-5 rounded-md mt-3 px-2"
       aria-label="Pagination"
     >
       <Button
         variant="ghost"
-        className={`border-2 border-gray-400 font-bold rounded-sm relative inline-flex items-center px-2 py-2 text-gray-700 text-sm hover:bg-gray-50 ${
+        className={`border-2 border-gray-200 font-bold rounded-lg relative inline-flex items-center px-2 py-4 text-gray-700 text-sm hover:bg-gray-50 ${
           currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"
         }`}
         onClick={(e) => {
@@ -31,10 +31,9 @@ const CustomPagination = ({
       >
         <span className="sr-only">Previous</span>
         <GrLinkPrevious />{" "}
-        <span className=" hidden sm:ml-3 sm:block">Previous</span>
+        <span className=" hidden sm:ml-3 sm:block">Prev</span>
       </Button>
 
-      {/* Pagination links */}
       <div className="flex gap-2">
         {[...Array(totalPages)].map((_, index) => {
           const pageNumber = index + 1;
@@ -48,10 +47,9 @@ const CustomPagination = ({
               <button
                 key={pageNumber}
                 onClick={() => goToPage(pageNumber)}
-                // href={`?page=${pageNumber}`}
-                className={`relative flex justify-center items-center   w-6 sm:h-10 sm:w-10  rounded-lg text-xs font-semibold ${
+                className={`relative flex justify-center items-center w-6 sm:h-10 sm:w-10  rounded-lg text-xs ${
                   pageNumber === currentPage
-                    ? "text-black bg-gray-200"
+                    ? "text-black bg-white border-2 border-gray-200 font-semibold"
                     : "text-gray-900 bg-gray-50 hover:bg-gray-100  focus:border-indigo-300"
                 }`}
               >
@@ -75,10 +73,9 @@ const CustomPagination = ({
         })}
       </div>
 
-      {/* Next button */}
       <Button
         variant="ghost"
-        className={`border-2 border-gray-400 font-bold relative inline-flex items-center px-2 py-2 text-gray-700 text-sm hover:bg-gray-50 ${
+        className={`border-2 border-gray-200 font-bold relative inline-flex items-center px-2 py-4 rounded-lg text-gray-700 text-sm hover:bg-gray-50 ${
           currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"
         }`}
         onClick={(e) => {

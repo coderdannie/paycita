@@ -2,27 +2,33 @@ import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import { TbEdit } from "react-icons/tb";
 
-const PersonalInfo = ({
-  user,
-}: {
-  user: {
-    full_name?: string;
-    email?: string;
-    phone_number?: string;
-    gender?: string;
-    marital_status?: string;
-    emergency_contact_name?: string;
-    emergency_contact_relationship?: string;
-    emergency_contact_phone?: string;
-    country?: string;
-    address?: string;
-    state?: string;
-    post_code?: string;
-    city?: string;
-    date_of_birth?: string;
-    profile_picture?: string;
-  };
-}) => {
+interface PersonalInfoProps {
+  full_name?: string;
+  email?: string;
+  phone_number?: string;
+  gender?: string;
+  marital_status?: string;
+  emergency_contact_name?: string;
+  emergency_contact_relationship?: string;
+  emergency_contact_phone?: string;
+  country?: string;
+  address?: string;
+  state?: string;
+  post_code?: string;
+  city?: string;
+  date_of_birth?: string;
+  profile_picture?: string;
+  guarantor_1_name?: string;
+  guarantor_1_relationship?: string;
+  guarantor_1_phone?: string;
+  guarantor_1_address?: string;
+  guarantor_2_name?: string;
+  guarantor_2_relationship?: string;
+  guarantor_2_phone?: string;
+  guarantor_2_address?: string;
+}
+
+const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
   return (
     <div>
       <p className="text-[#1D2939] font-semibold text-lg">Personal Info</p>
@@ -102,22 +108,6 @@ const PersonalInfo = ({
                 <strong className="text-[#667085] font-normal">country</strong>{" "}
                 {user?.country ?? "N/A"}
               </p>
-              <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">
-                  State/Province
-                </strong>
-                {user?.state ?? "N/A"}
-              </p>
-              <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">
-                  Post Code
-                </strong>
-                {user?.post_code ?? "N/A"}
-              </p>{" "}
-              <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">City</strong>
-                {user?.city ?? "N/A"}
-              </p>
             </div>
           </div>
           <div className="bg-white px-5 h-fit  py-6 shadow-md  rounded-lg">
@@ -145,6 +135,70 @@ const PersonalInfo = ({
                 </strong>
 
                 {user?.emergency_contact_phone ?? "N/A"}
+              </p>{" "}
+            </div>
+          </div>
+        </div>
+
+        {/* Guarantor Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="bg-white px-5  py-6 shadow-md  rounded-lg">
+            <div className="flex items-center gap-1 mb-5">
+              <h3 className="font-semibold text-[#1D2939]">Guarantor 1</h3>
+              <TbEdit className="text-primary" size={20} />
+            </div>
+            <div className="flex font-semibold text-sm flex-col justify-center space-y-2 max-w-[450px] ">
+              <p className="flex justify-between">
+                <strong className=" text-[#667085] font-normal">Name</strong>{" "}
+                {user?.guarantor_1_name ?? "N/A"}
+              </p>
+              <p className="flex justify-between">
+                <strong className="text-[#667085] font-normal">
+                  {" "}
+                  Relationship
+                </strong>{" "}
+                {user?.guarantor_1_relationship ?? "N/A"}
+              </p>{" "}
+              <p className="flex justify-between">
+                <strong className="text-[#667085] font-normal"> Address</strong>{" "}
+                {user?.guarantor_1_address ?? "N/A"}
+              </p>
+              <p className="flex justify-between">
+                <strong className=" text-[#667085] font-normal">
+                  Phone Number
+                </strong>
+
+                {user?.guarantor_1_phone ?? "N/A"}
+              </p>{" "}
+            </div>
+          </div>
+          <div className="bg-white px-5 h-fit  py-6 shadow-md  rounded-lg">
+            <div className="flex items-center gap-1 mb-5">
+              <h3 className="font-semibold text-[#1D2939]">Guarantor 2</h3>
+              <TbEdit className="text-primary" size={20} />{" "}
+            </div>
+            <div className="flex font-semibold text-sm flex-col justify-center space-y-2 max-w-[450px] ">
+              <p className="flex justify-between">
+                <strong className=" text-[#667085] font-normal">Name</strong>{" "}
+                {user?.guarantor_2_name ?? "N/A"}
+              </p>
+              <p className="flex justify-between">
+                <strong className="text-[#667085] font-normal">
+                  {" "}
+                  Relationship
+                </strong>{" "}
+                {user?.guarantor_2_relationship ?? "N/A"}
+              </p>{" "}
+              <p className="flex justify-between">
+                <strong className="text-[#667085] font-normal"> Address</strong>{" "}
+                {user?.guarantor_2_address ?? "N/A"}
+              </p>
+              <p className="flex justify-between">
+                <strong className=" text-[#667085] font-normal">
+                  Phone Number
+                </strong>
+
+                {user?.guarantor_2_phone ?? "N/A"}
               </p>{" "}
             </div>
           </div>
