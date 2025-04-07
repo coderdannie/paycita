@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import dashboardService from "@/src/service/dashboard.service";
+import dashboardService from "@/src/service/api/dashboard.service";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import { useDispatch } from "react-redux";
 import {

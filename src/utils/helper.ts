@@ -58,3 +58,29 @@ export const parseDateString = (dateString: string): Date => {
   date.setHours(0, 0, 0, 0);
   return date;
 };
+
+export const formatTimeString = (timeStr: string) => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
+
+export const formatLongCurrency = (
+  val: number,
+  symbol?: string | undefined,
+  maximumFractionDigits?: number
+) => {
+  const formattedValue = new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: maximumFractionDigits ? maximumFractionDigits : 0,
+    currencyDisplay: "code",
+  })
+    .format(Number(val?.toString().replace(/,/g, ""))) // Convert to number
+    .replace("USD", symbol ? symbol : "")
+    .trim();
+
+  return formattedValue;
+};

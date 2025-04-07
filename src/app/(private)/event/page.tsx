@@ -1,31 +1,61 @@
-'use client';
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useCallback } from "react";
 import EmptyState from "./EmptyState";
 import EventList from "./EventList";
-import Pagination from "../leave-mgt/Pagination/pagination";
 import EventModal from "./EventModal";
 import { LuPlus } from "react-icons/lu";
+import {
+  useCreateEvent,
+  useGetAllEvents,
+} from "@/src/api/hooks/events/useEvents";
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+import { useSearchParams } from "next/navigation";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { eventSchema, EventSchemaType } from "@/src/utils/validations";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
+import { useToast } from "@/src/context/ToastContext";
 
 export interface Event {
   id: string;
-  name: string;
+  event_name: string;
   date: string;
+  time: string;
   startTime: string;
   endTime: string;
-  attendees: string[];
+  participants: string[];
 }
 
 const EventsPage = () => {
+  const { addToast } = useToast();
+  const searchParams = useSearchParams();
+  const updateSearchParams = useUpdateSearchParams();
   const [showModal, setShowModal] = useState(false);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 7;
+
+  const currentPage = searchParams.get("page") || "1";
+
+  const { events, pagination, isPending } = useGetAllEvents({
+    page: currentPage.toString(),
+  });
+
+  const goToPage = useCallback(
+    (page: number) => {
+      updateSearchParams(
+        { page: page.toString() },
+        {
+          scroll: true,
+        }
+      );
+    },
+    [updateSearchParams]
+  );
 
   useEffect(() => {
     if (showModal) {
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"; 
+      document.body.style.overflow = "auto";
     }
 
     return () => {
@@ -37,21 +67,80 @@ const EventsPage = () => {
     setShowModal(!showModal);
   };
 
-  const handleCreateEvent = (event: Omit<Event, "id">) => {
-    const newEvent = {
-      ...event,
-      id: Date.now().toString(),
-    };
-    setEvents([...events, newEvent]);
-    setShowModal(false);
-  };
+  const [notificationType, setNotificationType] = useState<string>("emails");
 
-  const indexOfLastEvent = currentPage * eventsPerPage;
-  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
+  const form = useForm<EventSchemaType>({
+    resolver: zodResolver(eventSchema(notificationType)),
+    defaultValues: {
+      event_name: "",
+      emails: "",
+      description: "",
+      date: "",
+      time: "",
+      meeting_link: "",
+      notification_type: notificationType,
+      department_id: "",
+    },
+  });
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const { reset } = form;
 
+  const handleNotificationTypeChange = useCallback(
+    (type: string) => {
+      setNotificationType(type);
+      form.setValue("notification_type", type);
+    },
+    [form]
+  );
+
+  const { mutateCreateEvent, isPending: isPendingCreateEvent } =
+    useCreateEvent();
+
+  const onSubmit = useCallback(
+    (data: EventSchemaType) => {
+     
+      // const [startTime, endTime] = data.time.split("-").map((t) => t.trim());
+
+      let newEvent = {};
+
+      if (data.notification_type === "department" && data.department_id) {
+        delete data.emails;
+        newEvent = { ...data, department_id: data.department_id };
+      } else if (data.notification_type === "emails" && data.emails) {
+        delete data.department_id;
+        const emailArray = data.emails.split(",").map((e) => e.trim());
+        newEvent = { ...data, emails: emailArray };
+      } else {
+        delete data.department_id;
+        delete data.emails;
+        newEvent = { ...data };
+      }
+
+      mutateCreateEvent(newEvent, {
+        onSuccess: (res) => {
+          addToast(
+            res.data.message || "Employee Added Successfully",
+            "success"
+          );
+
+          reset();
+          setShowModal(false);
+        },
+        onError: (error) => {
+          console.error("Error creating event:", error);
+          addToast(
+            error.response.data.message || "Something went wrong",
+            "error"
+          );
+        },
+      });
+    },
+    [addToast, mutateCreateEvent, reset]
+  );
+
+  if (isPending) {
+    return <LoadingOverlay />;
+  }
   return (
     <div className="bg-gray-100 min-h-screen px-4 py-6 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -66,24 +155,33 @@ const EventsPage = () => {
           </button>
         </div>
 
-        {events.length === 0 ? (
+        {events?.length === 0 ? (
           <EmptyState onCreateEvent={toggleModal} />
         ) : (
           <>
-            <EventList events={currentEvents} />
+            <EventList events={events} />
             <div className="mt-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(events.length / eventsPerPage)}
-                onPageChange={paginate}
-              />
+              {pagination?.total_pages > 1 && (
+                <CustomPagination
+                  totalPages={pagination?.total_pages}
+                  currentPage={+currentPage}
+                  goToPage={goToPage}
+                />
+              )}
             </div>
           </>
         )}
       </div>
 
       {showModal && (
-        <EventModal onClose={toggleModal} onSubmit={handleCreateEvent} />
+        <EventModal
+          handleNotificationTypeChange={handleNotificationTypeChange}
+          guestType={notificationType}
+          form={form}
+          onClose={toggleModal}
+          onSubmit={onSubmit}
+          isPending={isPendingCreateEvent}
+        />
       )}
     </div>
   );

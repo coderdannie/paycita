@@ -7,7 +7,11 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
       queries: {
         refetchOnWindowFocus: true,
         retry: false,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 5, 
+        networkMode: "offlineFirst", 
+        // refetchOnMount: true,
+        refetchOnReconnect: true,
+
       },
     },
   });

@@ -1,5 +1,5 @@
-import { api } from "../api";
-import { AddEmployee } from "../utils/validations";
+import { api } from "../../api";
+import { AddEmployee } from "../../utils/validations";
 
 const getAttendance = (filters: {
   page: string;

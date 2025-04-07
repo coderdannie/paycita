@@ -332,7 +332,7 @@ const EmployeeDetails = () => {
                     {errors.department_id.message}
                   </p>
                 )}
-              </div>{" "}
+              </div> 
               <div className="w-full">
                 <p className="font-semibold text-sm text-[#292D32] pb-2">
                   Role
@@ -446,14 +446,7 @@ const EmployeeDetails = () => {
                   </p>
                 )}
               </div>
-              {/* <CustomFormSelect
-                name="pension_company"
-                control={control}
-                items={PENSION_COMPANIES}
-                labelText="Pension Company"
-                holder="Select Company"
-                error={errors.pension_company?.message}
-              /> */}
+           
             </div>
 
             <div className="space-y-3">
