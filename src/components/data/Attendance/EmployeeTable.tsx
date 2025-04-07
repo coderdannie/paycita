@@ -1,25 +1,25 @@
-"use client";
-import { useCallback, useMemo, useState } from "react";
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import Image from "next/image";
-import { useDashboardSelector } from "@/src/Redux/selectors";
-import { useDashboard } from "@/src/context/dashboardContext";
-import { formatDate, formatTime } from "@/src/utils/helper";
-import SearchInput from "../../ui/SearchInput";
-import { PiSlidersHorizontal } from "react-icons/pi";
-import FilterDrawer from "../../modals/FilterDrawer";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useSearchParams } from "next/navigation";
-import CustomPagination from "../../common/pagination/Pagination";
-import { useDispatch } from "react-redux";
-import { setFilters } from "@/src/Redux/features/dashboardSlice";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+'use client';
+import { useCallback, useMemo, useState } from 'react';
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import Image from 'next/image';
+import { useDashboardSelector } from '@/src/Redux/selectors';
+import { useDashboard } from '@/src/context/dashboardContext';
+import { formatDate, formatTime } from '@/src/utils/helper';
+import SearchInput from '../../ui/SearchInput';
+import { PiSlidersHorizontal } from 'react-icons/pi';
+import FilterDrawer from '../../modals/FilterDrawer';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import { useSearchParams } from 'next/navigation';
+import CustomPagination from '../../common/pagination/Pagination';
+import { useDispatch } from 'react-redux';
+import { setFilters } from '@/src/Redux/features/dashboardSlice';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   employeeFilterSchema,
   EmployeeFilterSchemaType,
-} from "@/src/utils/validations";
+} from '@/src/utils/validations';
 
 const TableLayer = () => {
   const dispatch = useDispatch();
@@ -29,10 +29,10 @@ const TableLayer = () => {
   const { isEmployeeAttendanceLoading } = useDashboard();
   const updateSearchParams = useUpdateSearchParams();
 
-  const currentPage = searchParams.get("page") || "1";
-  const status = searchParams.get("status") || "";
-  const search = searchParams.get("search") || "";
-  const title = searchParams.get("job_title") || "";
+  const currentPage = searchParams.get('page') || '1';
+  const status = searchParams.get('status') || '';
+  const search = searchParams.get('search') || '';
+  const title = searchParams.get('job_title') || '';
 
   const [searchTerm, setSearchTerm] = useState(search);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -47,24 +47,24 @@ const TableLayer = () => {
 
   const headers = useMemo(
     () => [
-      { label: "Attendance Date" },
-      { label: "Employee Name" },
-      { label: "Job Title" },
-      { label: "Clock In" },
-      { label: "Clock Out" },
-      { label: "Clock out comment" },
-      { label: "Hours Worked" },
-      { label: "Overtime" },
-      { label: "Location" },
-      { label: "Status" },
+      { label: 'Attendance Date' },
+      { label: 'Employee Name' },
+      { label: 'Job Title' },
+      { label: 'Clock In' },
+      { label: 'Clock Out' },
+      { label: 'Clock out comment' },
+      { label: 'Hours Worked' },
+      { label: 'Overtime' },
+      { label: 'Location' },
+      { label: 'Status' },
     ],
     []
   );
 
   const onSubmit = useCallback(
     (data: EmployeeFilterSchemaType) => {
-      updateSearchParams({ ...filters, ...data, page: "1" });
-      dispatch(setFilters({ ...filters, ...data, page: "1" }));
+      updateSearchParams({ ...filters, ...data, page: '1' });
+      dispatch(setFilters({ ...filters, ...data, page: '1' }));
       setIsDrawerOpen(false);
     },
     [dispatch, filters, updateSearchParams]
@@ -76,13 +76,13 @@ const TableLayer = () => {
       updateSearchParams({
         ...filters,
         employee_name: value,
-        page: "1",
+        page: '1',
       });
       dispatch(
         setFilters({
           ...filters,
           employee_name: value,
-          page: "1",
+          page: '1',
         })
       );
     },
@@ -103,11 +103,11 @@ const TableLayer = () => {
   );
 
   const handleResetFilters = useCallback(() => {
-    const resetFilters = { ...filters, status: "", job_title: "", page: "1" };
+    const resetFilters = { ...filters, status: '', job_title: '', page: '1' };
     dispatch(setFilters(resetFilters));
     updateSearchParams(resetFilters);
     setIsDrawerOpen(false);
-    form.reset({ status: "", job_title: "" });
+    form.reset({ status: '', job_title: '' });
   }, [dispatch, filters, form, updateSearchParams]);
 
   const renderEmptyState = useMemo(
@@ -140,9 +140,9 @@ const TableLayer = () => {
       <span
         className={`py-[5px] w-[50%] text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
       ${
-        status === "present"
-          ? "text-green-600 border-[#89D8A9] bg-[#F5FFFA]"
-          : "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+        status === 'present'
+          ? 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]'
+          : 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]'
       }`}
       >
         {status}
@@ -184,8 +184,8 @@ const TableLayer = () => {
                   <TableCell>{row.job_title}</TableCell>
                   <TableCell>{formatTime(row.clock_in)}</TableCell>
                   <TableCell>{formatTime(row.clock_out)}</TableCell>
-                  <TableCell>{row.clock_out_comment ?? "N/A"}</TableCell>
-                  <TableCell>{row.hours_worked ?? "N/A"}</TableCell>
+                  <TableCell>{row.clock_out_comment ?? 'N/A'}</TableCell>
+                  <TableCell>{row.hours_worked ?? 'N/A'}</TableCell>
                   <TableCell>{row.overtime}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{renderStatusBadge(row.status)}</TableCell>
