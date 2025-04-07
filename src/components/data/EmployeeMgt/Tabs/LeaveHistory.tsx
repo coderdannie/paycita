@@ -19,6 +19,7 @@ import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
 import { IoClose } from "react-icons/io5";
 export interface Leave {
+  id: number | string;
   approved_by: string;
   comment: string;
   duration: string;

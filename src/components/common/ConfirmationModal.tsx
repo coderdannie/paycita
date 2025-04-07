@@ -60,7 +60,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             {isReject 
               ? "Please provide a reason for rejection. This action cannot be undone."
               : title.toLowerCase().includes("delete")
-                ? "This leave request will be permanently deleted. This action cannot be undone."
+                ? "This will be permanently deleted. This action cannot be undone."
                 : "Once approved, the employee will be notified. This action cannot be undone."}
           </p>
           {isReject && (
