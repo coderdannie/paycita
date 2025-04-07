@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ChevronsUpDown, Info, Trash2 } from "lucide-react";
 import { LeaveRequestType } from "../types";
 import LeaveDetailsModal from "../Modals/EmployeeLeaveDetailsModal";
-import ConfirmationModal from "../Modals/ConfirmationModal";
+import ConfirmationModal from "../../../../../components/common/ConfirmationModal";
 import { useToast } from "../../../../../context/ToastContext";
 import Pagination from "../../Pagination/pagination";
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useMemo } from "react";
-import { Info } from "lucide-react";
+import { Info, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import CustomTable from "@/src/components/common/CustomTable";
@@ -15,9 +15,14 @@ import { useSearchParams } from "next/navigation";
 interface LeaveHistoryProps {
   leaves: Leave[];
   onInfoClick: (leave: Leave) => void;
+  handleDelete: (leave: Leave) => void;
 }
 
-const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
+const LeaveHistory: React.FC<LeaveHistoryProps> = ({
+  leaves,
+  onInfoClick,
+  handleDelete,
+}) => {
   const updateSearchParams = useUpdateSearchParams();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page") || 1);
@@ -65,7 +70,6 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
     return Math.ceil(leaves.length / leavesPerPage);
   }, [leaves, leavesPerPage]);
 
-  
   return (
     <div className={cn("mt-6 w-full", "hide-sidebar:px-4")}>
       <h2 className="text-lg font-semibold text-gray-700 mb-4">
@@ -101,12 +105,20 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({ leaves, onInfoClick }) => {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <button
-                    onClick={() => onInfoClick(row)}
-                    className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
-                  >
-                    <Info className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => onInfoClick(row)}
+                      className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>{" "}
+                    <button
+                      onClick={() => handleDelete(row)}
+                      className="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))
