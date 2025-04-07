@@ -1,8 +1,16 @@
+import { useAuthSelector } from "@/src/Redux/selectors";
+import { formatLongCurrency } from "@/src/utils/helper";
 import { TbEdit } from "react-icons/tb";
 const EmployeeDetails = ({
   userDetails,
 }: {
   userDetails: {
+    office_items_given: string[];
+    tax_method: string;
+    pension_company: string;
+    tax_number: string;
+    tax_status: string;
+    salary: string;
     employee_number?: string;
     full_name?: string;
     email?: string;
@@ -18,6 +26,10 @@ const EmployeeDetails = ({
     job_title?: string;
   };
 }) => {
+  const userData = useAuthSelector();
+
+  const currency = userData?.user?.currency || "NGN";
+
   return (
     <div>
       {" "}
@@ -98,6 +110,69 @@ const EmployeeDetails = ({
               {userDetails?.bank_account_name ?? "N/A"}
             </p>
           </div>
+        </div>
+
+        {/* Payroll And Tax */}
+        <div className="bg-white px-5 py-6 shadow-md rounded-lg">
+          <div className="flex items-center gap-1 mb-5">
+            <div className="font-semibold text-[#1D2939]">Payroll & Tax</div>
+            <TbEdit className="text-primary" size={20} />
+          </div>
+          <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">
+                Basic Salary
+              </strong>
+              {formatLongCurrency(+userDetails?.salary, currency) ?? "N/A"}
+            </p>
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">Tax Status</strong>
+              <span className="font-semibold">
+                {userDetails?.tax_status ?? "N/A"}
+              </span>
+            </p>
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">Tax Number</strong>
+              {userDetails?.tax_number ?? "N/A"}
+            </p>
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">Tax Method</strong>
+              {userDetails?.tax_method ?? "N/A"}
+            </p>
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">
+                Pension Company
+              </strong>
+              {userDetails?.pension_company ?? "N/A"}
+            </p>
+          </div>
+        </div>
+
+        {/* Items Given */}
+        <div className="bg-white px-5 py-6 shadow-md rounded-lg">
+          <div className="flex items-center gap-1 mb-5">
+            <div className="font-semibold text-[#1D2939]">Item given</div>
+            <TbEdit className="text-primary" size={20} />
+          </div>
+          {userDetails?.office_items_given?.length > 0 ? (
+            <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
+              {userDetails?.office_items_given?.map(
+                (item: string, index: number) => (
+                  <p key={index} className="flex gap-6">
+                    <strong className="text-[#667085] font-normal">
+                      {item}
+                    </strong>
+                  </p>
+                )
+              )}
+            </div>
+          ) : (
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">
+                No items given
+              </strong>
+            </p>
+          )}
         </div>
       </div>
     </div>

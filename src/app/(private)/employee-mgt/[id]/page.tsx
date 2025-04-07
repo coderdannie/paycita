@@ -9,6 +9,7 @@ import PayrollHistory from "@/src/components/data/EmployeeMgt/Tabs/PaymentHistor
 import LeaveHistory from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
 import { useGetEmployeeById } from "@/src/api/hooks/dashboard/useDashboard";
 import { useParams } from "next/navigation";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 
 const EmployeeDetails = () => {
   const [tab, setTab] = useState(employeeDetailsTabs[0]);
@@ -19,11 +20,7 @@ const EmployeeDetails = () => {
   const { employee, isPending } = useGetEmployeeById(employeeId || "");
 
   if (isPending) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <LoadingOverlay />;
   }
   if (!employee) {
     return (

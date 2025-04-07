@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import LeaveRequestButton from "./LeaveRequest/leaveRequest";
 import LeaveSummary from "./LeaveSummary/leaveSummary";
 import LeaveHistory from "./LeaveHistory/leaveHistory";
 import LeaveRequestModal from "./LeaveRequestModal/leaveRequestModal";
 import LeaveDetailsModal from "./LeaveDetailsModal/leaveDetailsModal";
-
-
-interface Leave {
-  id: number;
-  type: string;
-  startDate: string;
-  endDate: string;
-  duration: number;
-  status: "Approved" | "Rejected";
-}
+import { useCreateLeave, useGetAllLeave } from "@/src/api/hooks/leave/useLeave";
+import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  leaveRequestSchema,
+  LeaveRequestSchemaType,
+} from "@/src/utils/validations";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 
 interface LeaveTypeInfo {
   type: string;
@@ -28,48 +27,6 @@ const Page: React.FC = () => {
   const [showLeaveRequestModal, setShowLeaveRequestModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<Leave | null>(null);
-  const [leaveData, setLeaveData] = useState<Leave[]>([
-    {
-      id: 1,
-      type: "Annual Leave",
-      startDate: "Mar 4, 2025",
-      endDate: "Mar 13, 2025",
-      duration: 10,
-      status: "Approved",
-    },
-    {
-      id: 2,
-      type: "Sick Leave",
-      startDate: "Jan 10, 2025",
-      endDate: "Jan 12, 2025",
-      duration: 3,
-      status: "Approved",
-    },
-    {
-      id: 3,
-      type: "Personal Leave",
-      startDate: "Dec 5, 2024",
-      endDate: "Dec 7, 2024",
-      duration: 3,
-      status: "Approved",
-    },
-    {
-      id: 4,
-      type: "Maternity Leave",
-      startDate: "Sep 1, 2024",
-      endDate: "Dec 1, 2024",
-      duration: 90,
-      status: "Approved",
-    },
-    {
-      id: 5,
-      type: "Unpaid Leave",
-      startDate: "Aug 15, 2024",
-      endDate: "Aug 20, 2024",
-      duration: 6,
-      status: "Rejected",
-    },
-  ]);
 
   const leaveTypesInfo: Record<string, LeaveTypeInfo> = {
     "Annual Leave": {
@@ -104,6 +61,8 @@ const Page: React.FC = () => {
     },
   };
 
+  const { leave, isPending } = useGetAllLeave({ page: "1" });
+
   const handleOpenLeaveRequest = () => {
     setShowLeaveRequestModal(true);
   };
@@ -119,47 +78,39 @@ const Page: React.FC = () => {
 
   const handleCloseDetails = () => {
     setShowDetailsModal(false);
+    setSelectedLeave(null);
   };
 
-  const handleSubmitLeave = (
-    leaveType: string,
-    startDate: string,
-    endDate: string
-  ) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+  const { mutateCreateLeave, isPending: isPendingCreateLeave } =
+    useCreateLeave();
 
-    const newLeave: Leave = {
-      id: leaveData.length + 1,
-      type: leaveType,
-      startDate: formatDate(startDate),
-      endDate: formatDate(endDate),
-      duration: diffDays,
-      status: "Approved", 
-    };
+  const form = useForm<LeaveRequestSchemaType>({
+    resolver: zodResolver(leaveRequestSchema),
+    defaultValues: {
+      leave_type: "",
+      start_date: "",
+      end_date: "",
+    },
+  });
 
-    setLeaveData([newLeave, ...leaveData]);
-    setShowLeaveRequestModal(false);
-  };
+  const onSubmit = useCallback(
+    (data: LeaveRequestSchemaType) => {
+      mutateCreateLeave(data, {
+        onSuccess: () => {
+          form.reset();
+          setShowLeaveRequestModal(false);
+        },
+        onError: (error) => {
+          console.error("Error creating event:", error);
+        },
+      });
+    },
+    [form, mutateCreateLeave]
+  );
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const month = date.toLocaleString("default", { month: "short" });
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${month} ${day}, ${year}`;
-  };
-
-  // Calculate summary counts
-  const usedLeaves = leaveData.filter(
-    (leave) => leave.status === "Approved"
-  ).length;
-  const pendingLeaves = 0; 
-  const rejectedLeaves = leaveData.filter(
-    (leave) => leave.status === "Rejected"
-  ).length;
+  if (isPending) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <div className="container">
@@ -167,26 +118,27 @@ const Page: React.FC = () => {
         <LeaveRequestButton onOpen={handleOpenLeaveRequest} />
       </div>
       <LeaveSummary
-        used={usedLeaves}
-        pending={pendingLeaves}
-        rejected={rejectedLeaves}
+        used={leave?.approved_leave ?? "N/A"}
+        pending={leave?.pending_leave ?? "N/A"}
+        rejected={leave?.rejected_leave ?? "N/A"}
       />
-      <LeaveHistory leaves={leaveData} onInfoClick={handleOpenDetails} />
+      <LeaveHistory
+        leaves={leave?.leave_requests ?? []}
+        onInfoClick={handleOpenDetails}
+      />
 
       {showLeaveRequestModal && (
         <LeaveRequestModal
           onClose={handleCloseLeaveRequest}
-          onSubmit={handleSubmitLeave}
+          onSubmit={onSubmit}
+          form={form}
+          isPending={isPendingCreateLeave}
           leaveTypes={Object.keys(leaveTypesInfo)}
         />
       )}
 
       {showDetailsModal && selectedLeave && (
-        <LeaveDetailsModal
-          leave={selectedLeave}
-          onClose={handleCloseDetails}
-          leaveInfo={leaveTypesInfo[selectedLeave.type]}
-        />
+        <LeaveDetailsModal leave={selectedLeave} onClose={handleCloseDetails} />
       )}
     </div>
   );

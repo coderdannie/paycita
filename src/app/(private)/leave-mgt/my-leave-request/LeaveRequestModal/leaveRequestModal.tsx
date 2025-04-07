@@ -2,53 +2,60 @@
 
 import React, { useState, useEffect } from "react";
 import { X, Calendar, ChevronDown, Check } from "lucide-react";
+import { SubmitHandler, UseFormReturn } from "react-hook-form";
+import { LeaveRequestSchemaType } from "@/src/utils/validations";
+import { Spinner } from "react-activity";
 
 interface LeaveRequestModalProps {
   onClose: () => void;
-  onSubmit: (leaveType: string, startDate: string, endDate: string) => void;
+  onSubmit: SubmitHandler<LeaveRequestSchemaType>;
   leaveTypes: string[];
+  form: UseFormReturn<LeaveRequestSchemaType>;
+  isPending: boolean;
 }
 
 const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   onClose,
   onSubmit,
   leaveTypes,
+  form,
+  isPending,
 }) => {
-  const [leaveType, setLeaveType] = useState(leaveTypes[0]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const { register, handleSubmit, setValue, watch } = form;
+
   const [showDropdown, setShowDropdown] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showYearDropdown, setShowYearDropdown] = useState(false);
 
+  const leave_type = watch("leave_type");
+  const start_date = watch("start_date");
+  const end_date = watch("end_date");
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
+
+    // Set the default leave type if not set
+    if (!leave_type && leaveTypes.length > 0) {
+      setValue("leave_type", leaveTypes[0]);
+    }
 
     return () => {
       document.body.style.overflow = originalStyle;
     };
   }, []);
 
-
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 101 }, (_, i) => currentYear - 50 + i);
-
-  const handleSubmit = () => {
-    if (leaveType && startDate && endDate) {
-      onSubmit(leaveType, startDate, endDate);
-    }
-  };
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
   const selectLeaveType = (type: string) => {
-    setLeaveType(type);
+    setValue("leave_type", type);
     setShowDropdown(false);
   };
 
@@ -62,13 +69,35 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     if (showStartDatePicker) setShowStartDatePicker(false);
   };
 
+  const formatDateToLocalString = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   const handleDateSelection = (date: Date, isStartDate: boolean) => {
-    const formattedDate = date.toISOString().split("T")[0];
+    // Create a new date in local timezone to avoid timezone issues
+    const localDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+
+    // Format as YYYY-MM-DD without timezone information
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, "0");
+    const day = String(localDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+
     if (isStartDate) {
-      setStartDate(formattedDate);
+      setValue("start_date", formattedDate, { shouldValidate: true });
       setShowStartDatePicker(false);
     } else {
-      setEndDate(formattedDate);
+      setValue("end_date", formattedDate, { shouldValidate: true });
       setShowEndDatePicker(false);
     }
   };
@@ -103,13 +132,12 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
     const days: (number | null)[] = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null); 
+      days.push(null);
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
-
 
     const weeks: (number | null)[][] = [];
     let week: (number | null)[] = [];
@@ -129,6 +157,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
             <span>{monthName}</span>
             <div className="relative ml-2">
               <button
+                type="button"
                 onClick={toggleYearDropdown}
                 className="flex items-center px-2 py-1 text-sm hover:text-purple-600"
               >
@@ -156,10 +185,10 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
             </div>
           </div>
           <div className="flex">
-            <button onClick={prevMonth} className="p-1 mx-1">
+            <button type="button" onClick={prevMonth} className="p-1 mx-1">
               &lt;
             </button>
-            <button onClick={nextMonth} className="p-1 mx-1">
+            <button type="button" onClick={nextMonth} className="p-1 mx-1">
               &gt;
             </button>
           </div>
@@ -177,36 +206,28 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="grid grid-cols-7 gap-1 mt-1">
               {week.map((day, dayIndex) => {
-                const date = day ? new Date(year, month, day) : null;
-                const isSelected =
-                  date &&
-                  ((isStartDate &&
-                    startDate === date.toISOString().split("T")[0]) ||
-                    (!isStartDate &&
-                      endDate === date.toISOString().split("T")[0]));
+                if (!day) {
+                  return <div key={dayIndex} className="invisible" />;
+                }
+
+                const date = new Date(year, month, day);
+                const formattedDate = `${year}-${String(month + 1).padStart(
+                  2,
+                  "0"
+                )}-${String(day).padStart(2, "0")}`;
+                const isSelected = isStartDate
+                  ? start_date === formattedDate
+                  : end_date === formattedDate;
 
                 return (
                   <div
                     key={dayIndex}
-                    className={`
-                      ${
-                        !day
-                          ? "invisible"
-                          : "cursor-pointer text-center py-1 px-2 text-sm hover:bg-gray-100 rounded"
-                      }
-                      ${
-                        isSelected
-                          ? "bg-purple-600 text-white hover:bg-purple-700"
-                          : ""
-                      }
-                    `}
-                    onClick={() =>
-                      day &&
-                      handleDateSelection(
-                        new Date(year, month, day),
-                        isStartDate
-                      )
-                    }
+                    className={`cursor-pointer text-center py-1 px-2 text-sm hover:bg-gray-100 rounded ${
+                      isSelected
+                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                        : ""
+                    }`}
+                    onClick={() => handleDateSelection(date, isStartDate)}
                   >
                     {day}
                   </div>
@@ -229,6 +250,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-medium">Add new Leave Request</h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
           >
@@ -236,99 +258,116 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
           </button>
         </div>
 
-        <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-          {/* Leave Type Dropdown */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Leave Type
-            </label>
-            <div className="relative">
-              <button
-                type="button"
-                className="w-full flex items-center justify-between border rounded-md px-3 py-2 text-left focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
-                onClick={toggleDropdown}
-              >
-                <span>{leaveType}</span>
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              </button>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col flex-1"
+        >
+          <div className="p-4 space-y-4 flex-1 overflow-y-auto">
+            {/* Leave Type Dropdown */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Leave Type
+              </label>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-between border rounded-md px-3 py-2 text-left focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                  onClick={toggleDropdown}
+                >
+                  <span>{leave_type || "Select leave type"}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                </button>
+                <input
+                  type="hidden"
+                  {...register("leave_type", { required: true })}
+                />
 
-              {showDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md max-h-60 overflow-auto">
-                  {leaveTypes.map((type) => (
-                    <div
-                      key={type}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                      onClick={() => selectLeaveType(type)}
-                    >
-                      {type}
-                      {type === leaveType && (
-                        <Check className="w-4 h-4 text-purple-600" />
-                      )}
-                    </div>
-                  ))}
+                {showDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md max-h-60 overflow-auto">
+                    {leaveTypes.map((type) => (
+                      <div
+                        key={type}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                        onClick={() => selectLeaveType(type)}
+                      >
+                        {type}
+                        {type === leave_type && (
+                          <Check className="w-4 h-4 text-purple-600" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Start Date Picker */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Start Date
+              </label>
+              <div className="relative">
+                <div
+                  className="w-full flex items-center border rounded-md px-3 py-2 text-left cursor-pointer"
+                  onClick={toggleStartDatePicker}
+                >
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-500">
+                    {start_date
+                      ? formatDateToLocalString(start_date)
+                      : "Select date"}
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
+                <input
+                  type="hidden"
+                  {...register("start_date", { required: true })}
+                />
 
-          {/* Start Date Picker */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Start Date
-            </label>
-            <div className="relative">
-              <div
-                className="w-full flex items-center border rounded-md px-3 py-2 text-left cursor-pointer"
-                onClick={toggleStartDatePicker}
-              >
-                <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                <span className="text-gray-500">
-                  {startDate
-                    ? new Date(startDate).toLocaleDateString()
-                    : "Select date"}
-                </span>
+                {showStartDatePicker && (
+                  <div className="mt-1">{renderCalendar(true)}</div>
+                )}
               </div>
-
-              {showStartDatePicker && (
-                <div className="mt-1">{renderCalendar(true)}</div>
-              )}
             </div>
-          </div>
 
-          {/* End Date Picker */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              End Date
-            </label>
-            <div className="relative">
-              <div
-                className="w-full flex items-center border rounded-md px-3 py-2 text-left cursor-pointer"
-                onClick={toggleEndDatePicker}
-              >
-                <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                <span className="text-gray-500">
-                  {endDate
-                    ? new Date(endDate).toLocaleDateString()
-                    : "Select date"}
-                </span>
+            {/* End Date Picker */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                End Date
+              </label>
+              <div className="relative">
+                <div
+                  className="w-full flex items-center border rounded-md px-3 py-2 text-left cursor-pointer"
+                  onClick={toggleEndDatePicker}
+                >
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-500">
+                    {end_date
+                      ? formatDateToLocalString(end_date)
+                      : "Select date"}
+                  </span>
+                </div>
+                <input
+                  type="hidden"
+                  {...register("end_date", { required: true })}
+                />
+
+                {showEndDatePicker && (
+                  <div className="mt-1">{renderCalendar(false)}</div>
+                )}
               </div>
-
-              {showEndDatePicker && (
-                <div className="mt-1">{renderCalendar(false)}</div>
-              )}
             </div>
           </div>
-        </div>
 
-        <div className="p-4">
-          <button
-            onClick={handleSubmit}
-            disabled={!leaveType || !startDate || !endDate}
-            className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300"
-          >
-            Submit
-          </button>
-        </div>
+          <div className="p-4">
+            <button
+              type="submit"
+              disabled={!leave_type || !start_date || !end_date || isPending}
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+            >
+              {isPending && <Spinner className="w-4 h-4 mr-2" />} Submit
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

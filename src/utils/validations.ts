@@ -105,3 +105,40 @@ export const employeeFilterSchema = z.object({
 });
 
 export type EmployeeFilterSchemaType = z.infer<typeof employeeFilterSchema>;
+
+export const eventSchema = (notificationType: string) => {
+  return z.object({
+    event_name: z.string().min(1, { message: "Event Name is required" }),
+    description: z.string().min(1, {
+      message: "Description is required",
+    }),
+    date: z.string().min(1, { message: "Date is required" }),
+    // start_time: z.string().min(1, { message: "Start Time is required" }),
+    time: z.string().min(1, { message: "End Time is required" }),
+    meeting_link: z.string().min(1, {
+      message: "Meeting Link is required",
+    }),
+    notification_type: z.string().min(1, {
+      message: "Notification Type is required",
+    }),
+    department_id:
+      notificationType === "department"
+        ? z.string().min(1)
+        : z.string().optional(),
+
+    emails:
+      notificationType === "emails"
+        ? z.string().min(1)
+        : z.string().optional(),
+  });
+};
+
+export type EventSchemaType = z.infer<ReturnType<typeof eventSchema>>;
+
+export const leaveRequestSchema = z.object({
+  leave_type: z.string().min(1, { message: "Leave Type is required" }),
+  start_date: z.string().min(1, { message: "Start Date is required" }),
+  end_date: z.string().min(1, { message: "End Date is required" }),
+});
+
+export type LeaveRequestSchemaType = z.infer<typeof leaveRequestSchema>;

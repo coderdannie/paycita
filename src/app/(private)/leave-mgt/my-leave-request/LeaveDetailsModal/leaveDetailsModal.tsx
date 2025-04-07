@@ -2,36 +2,18 @@
 
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
-
-interface Leave {
-  id: number;
-  type: string;
-  startDate: string;
-  endDate: string;
-  duration: number;
-  status: "Approved" | "Rejected";
-}
-
-interface LeaveTypeInfo {
-  type: string;
-  totalDays?: number;
-  usedDays?: number;
-  remainingDays?: number;
-}
+import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
 
 interface LeaveDetailsModalProps {
   leave: Leave;
-  leaveInfo?: LeaveTypeInfo;
   onClose: () => void;
 }
 
 const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
   leave,
-  leaveInfo,
   onClose,
 }) => {
   useEffect(() => {
-
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
 
@@ -39,6 +21,20 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
       document.body.style.overflow = originalStyle;
     };
   }, []);
+
+  const leaveStart = leave?.start_date ? new Date(leave.start_date) : null;
+  const leaveEnd = leave?.end_date ? new Date(leave.end_date) : null;
+
+  // evaluate leave duration
+  const duration = leaveEnd ? leaveEnd.getTime() + 1 - leaveStart.getTime() : 0;
+
+  const days = Math.ceil(duration / (1000 * 60 * 60 * 24));
+  console.log(days);
+  // calculate remaining days
+  const usedDays = days - +leave.duration;
+
+  // calculate used days
+  const remainingDays = +leave.duration - usedDays;
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto">
@@ -59,29 +55,25 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
         <div className="p-4 space-y-4 flex-grow overflow-y-auto">
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Leave Type</span>
-            <span className="font-medium">{leave.type}</span>
+            <span className="font-medium">{leave.leave_type}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Total Leave Days</span>
-            <span className="font-medium">
-              {leaveInfo?.totalDays ?? 0} Days
-            </span>
+            <span className="font-medium">{leave?.duration ?? 0} Days</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Used Leave Days</span>
-            <span className="font-medium">{leaveInfo?.usedDays ?? 0} Days</span>
+            <span className="font-medium">{usedDays ?? 0} Days</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Remaining Days</span>
-            <span className="font-medium">
-              {leaveInfo?.remainingDays ?? 0} Days
-            </span>
+            <span className="font-medium">{remainingDays ?? 0} Days</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Approval Status</span>
             <span
-              className={`font-medium px-2 py-1 text-xs rounded ${
-                leave.status === "Approved"
+              className={`font-medium px-2 py-1 text-xs rounded capitalize ${
+                leave?.status?.toLowerCase() === "approved"
                   ? "border border-[#89D8A9] text-[#00AA4F] bg-[#89D8A9]/10"
                   : "border border-[#F49E9E] text-[#EA3D3D] bg-[#F49E9E]/10"
               }`}

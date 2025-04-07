@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { LeaveRequestType } from "../types";
 import { formatDate } from "@/src/utils/helper";
- 
+
 
 interface LeaveDetailsModalProps {
   isOpen: boolean;
@@ -44,13 +44,13 @@ const EmployeeLeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
 
         <div className="space-y-4">
           <DetailsRow label="Status">
-            {leaveRequest.status === "Pending" && (
+            {leaveRequest.status.toLowerCase() === "pending" && (
               <StatusBadge color="#FFA80A">Pending</StatusBadge>
             )}
-            {leaveRequest.status === "Approved" && (
+            {leaveRequest.status.toLowerCase() === "approved" && (
               <StatusBadge color="#00AA4F">Approved</StatusBadge>
             )}
-            {leaveRequest.status === "Rejected" && (
+            {leaveRequest.status.toLowerCase() === "rejected" && (
               <StatusBadge color="#EA3D3D">Rejected</StatusBadge>
             )}
           </DetailsRow>
@@ -72,7 +72,7 @@ const EmployeeLeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
           </DetailsRow>
         </div>
 
-        {leaveRequest.status === "Pending" ? (
+        {leaveRequest.status.toLowerCase() === "pending" ? (
           <div className="flex space-x-4 mt-6">
             <button
               onClick={onReject}

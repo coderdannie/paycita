@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Spinner } from "react-activity";
 import { createPortal } from "react-dom";
 
 interface ConfirmationModalProps {
@@ -7,6 +8,10 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   title: string;
   actionLabel: string;
+  isReject?: boolean;
+  comment?: string;
+  onCommentChange?: (comment: string) => void;
+  isLoading?: boolean;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -15,6 +20,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   actionLabel,
+  isReject = false,
+  comment = "",
+  onCommentChange,
+  isLoading
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -48,10 +57,27 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </div>
           <h2 className="text-xl font-bold mb-2">{title}</h2>
           <p className="text-gray-600 text-center mb-6">
-            Once approved, the employee will be notified.
-            <br />
-            This action cannot be undone.
+            {isReject 
+              ? "Please provide a reason for rejection. This action cannot be undone."
+              : title.toLowerCase().includes("delete")
+                ? "This leave request will be permanently deleted. This action cannot be undone."
+                : "Once approved, the employee will be notified. This action cannot be undone."}
           </p>
+          {isReject && (
+            <div className="w-full mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reason for Rejection
+              </label>
+              <textarea
+                value={comment}
+                onChange={(e) => onCommentChange?.(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                rows={3}
+                placeholder="Please provide a reason for rejection"
+                required
+              />
+            </div>
+          )}
           <div className="flex space-x-4 w-full">
             <button
               onClick={onCancel}
@@ -61,9 +87,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             </button>
             <button
               onClick={onConfirm}
-              className="flex-1 py-3 bg-[#692E9F] text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="flex-1 py-3 bg-[#692E9F] text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-3"
+              disabled={isLoading}
             >
-              {actionLabel}
+              {isLoading && <Spinner />}  {actionLabel}
             </button>
           </div>
         </div>
