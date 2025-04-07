@@ -1,9 +1,16 @@
 'use client';
 
 import MyPayrollTable from '@/src/components/data/Payroll/MyPayrollTable';
+import Pension from '@/src/components/data/Payroll/MyPayrollTabs/Pension';
+import Tax from '@/src/components/data/Payroll/MyPayrollTabs/Tax';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+const MY_PAYROLL_TABS = ['Payroll', 'Tax', 'Pension'];
 
 const MyPayroll = () => {
+  const [tab, setTab] = useState(MY_PAYROLL_TABS[0]);
+
   const router = useRouter();
 
   const headers = [
@@ -51,7 +58,30 @@ const MyPayroll = () => {
           Generate Payslip
         </button>
       </div>
-      <MyPayrollTable headers={headers} />
+      <ul className="pt-5  flex flex-col md:flex-row items-center gap-5 text-sm border-[#E4E7EC] border-b">
+        {MY_PAYROLL_TABS.map((dat, i) => (
+          <li
+            key={i}
+            className={`py-3 cursor-pointer ${
+              tab === dat
+                ? 'text-primary border-b-[3px] border-primary'
+                : 'text-[#667085] '
+            }`}
+            onClick={() => setTab(dat)}
+          >
+            <button>{dat}</button>
+          </li>
+        ))}
+      </ul>
+      <div className=" mt-9">
+        {tab === 'Payroll' ? (
+          <MyPayrollTable headers={headers} />
+        ) : tab === 'Tax' ? (
+          <Tax />
+        ) : (
+          <Pension />
+        )}
+      </div>
     </div>
   );
 };

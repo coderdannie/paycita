@@ -4,9 +4,14 @@ import { useState } from 'react';
 
 import GeneratePayroll from '@/src/components/modals/GeneatePayroll';
 import EmployeePayroll from '@/src/components/data/Payroll/EmployeePayroll';
+import Tax from '@/src/components/data/Payroll/EmployeePayrollTabs/Tax';
+import Pension from '@/src/components/data/Payroll/EmployeePayrollTabs/Pension';
+
+const MY_PAYROLL_TABS = ['Salary', 'Tax', 'Pension'];
 
 const EmployeePayRoll = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tab, setTab] = useState(MY_PAYROLL_TABS[0]);
 
   const headers = [
     {
@@ -47,7 +52,31 @@ const EmployeePayRoll = () => {
           Generate Payslip
         </button>
       </div>
-      <EmployeePayroll headers={headers} />
+      <ul className="pt-5  flex flex-col md:flex-row items-center gap-5 text-sm border-[#E4E7EC] border-b">
+        {MY_PAYROLL_TABS.map((dat, i) => (
+          <li
+            key={i}
+            className={`py-3 cursor-pointer ${
+              tab === dat
+                ? 'text-primary border-b-[3px] border-primary'
+                : 'text-[#667085] '
+            }`}
+            onClick={() => setTab(dat)}
+          >
+            <button>{dat}</button>
+          </li>
+        ))}
+      </ul>
+      <div className=" mt-9">
+        {tab === 'Salary' ? (
+          <EmployeePayroll headers={headers} />
+        ) : tab === 'Tax' ? (
+          <Tax />
+        ) : (
+          <Pension />
+        )}
+      </div>
+
       <GeneratePayroll isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
