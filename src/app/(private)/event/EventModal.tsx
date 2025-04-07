@@ -20,6 +20,8 @@ interface EventModalProps {
   handleNotificationTypeChange: (type: string) => void;
   guestType: string;
   isPending: boolean;
+  isEdit?: boolean;
+  isUpdating: boolean;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -29,6 +31,8 @@ const EventModal: React.FC<EventModalProps> = ({
   handleNotificationTypeChange,
   guestType,
   isPending,
+  isEdit,
+  isUpdating,
 }) => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [email, setEmail] = useState("");
@@ -116,40 +120,12 @@ const EventModal: React.FC<EventModalProps> = ({
     return true;
   };
 
-  // useEffect(() => {
-  //   const validateTimes = () => {
-  //     if (!startTime || !endTime) {
-  //       setTimeError("Both start and end times are required");
-  //       return false;
-  //     }
-
-  //     const start = new Date(`2000-01-01T${startTime}`);
-  //     const end = new Date(`2000-01-01T${endTime}`);
-
-  //     if (end <= start) {
-  //       setTimeError("End time must be after start time");
-  //       return false;
-  //     }
-
-  //     setTimeError("");
-  //     return true;
-  //   };
-
-  //   const updateTimeField = () => {
-  //     if (validateTimes()) {
-  //       form.setValue("time", `${startTime} - ${endTime}`);
-  //     }
-  //   };
-
-  //   updateTimeField();
-  // }, [startTime, endTime, form, setTimeError]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(form.formState.errors);
     let isValid = true;
 
-    if (guestType === "emails") {
+    if (guestType === "emails" && !isEdit) {
       isValid = validateEmail(email) && isValid;
     } else if (guestType === "department") {
       isValid = validateDepartment(selectedDepartment) && isValid;
@@ -164,7 +140,9 @@ const EventModal: React.FC<EventModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div ref={modalRef} className="bg-white rounded-lg w-full max-w-md">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">Create Event</h2>
+          <h2 className="text-xl font-semibold">
+            {isEdit ? "Edit Event" : "Create Event"}{" "}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -289,103 +267,113 @@ const EventModal: React.FC<EventModalProps> = ({
               </p>
             )}
           </div>
-
-          <div className="mb-4">
-            <label className="block text-xl font-medium text-gray-700 mb-3">
-              Add Guest
-            </label>
-            <div className="flex border rounded-lg overflow-hidden p-1 border-gray-200">
-              <div className="w-1/3">
-                <Select value={guestType} onValueChange={handleGuestTypeChange}>
-                  <SelectTrigger className="h-full border-0 border-r border-gray-200 rounded-none">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>
-                    <SelectItem value="emails">Email</SelectItem>
-                    <SelectItem value="department">Department</SelectItem>
-                    <SelectItem value="all">All</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {guestType === "department" ? (
-                <div className="flex-1">
-                  <select
-                    className="w-full h-full px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg appearance-none bg-transparent"
-                    value={selectedDepartment}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      console.log(value);
-                      setSelectedDepartment(value);
-                      form.setValue("department_id", value);
-                      validateDepartment(value);
-                    }}
-                    disabled={isPendingDepartment}
+          {!isEdit && (
+            <div className="mb-4">
+              <label className="block text-xl font-medium text-gray-700 mb-3">
+                Add Guest
+              </label>
+              <div className="flex border rounded-lg overflow-hidden p-1 border-gray-200">
+                <div className="w-1/3">
+                  <Select
+                    value={guestType}
+                    onValueChange={handleGuestTypeChange}
                   >
-                    <option value="">Select department</option>
-                    {departmentOptions?.map((dept) => (
-                      <option key={dept.value} value={dept.value}>
-                        {dept.label}
-                      </option>
-                    ))}
-                  </select>
-                  {departmentError && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {departmentError}
-                    </p>
-                  )}
+                    <SelectTrigger className="h-full border-0 border-r border-gray-200 rounded-none">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>
+                      <SelectItem value="emails">Email</SelectItem>
+                      <SelectItem value="department">Department</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              ) : guestType === "all" ? (
-                <div className="flex-1 flex items-center px-3 py-1 text-[#667085] text-lg">
-                  All
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col">
-                  <input
-                    type={"text"}
-                    value={email}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setEmail(value);
-                      if (guestType === "emails") {
-                        // Store the raw comma-separated string in the form
-                        form.setValue("emails", value);
-                        validateEmail(value);
+
+                {guestType === "department" ? (
+                  <div className="flex-1">
+                    <select
+                      className="w-full h-full px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg appearance-none bg-transparent"
+                      value={selectedDepartment}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        console.log(value);
+                        setSelectedDepartment(value);
+                        form.setValue("department_id", value);
+                        validateDepartment(value);
+                      }}
+                      disabled={isPendingDepartment}
+                    >
+                      <option value="">Select department</option>
+                      {departmentOptions?.map((dept) => (
+                        <option key={dept.value} value={dept.value}>
+                          {dept.label}
+                        </option>
+                      ))}
+                    </select>
+                    {departmentError && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {departmentError}
+                      </p>
+                    )}
+                  </div>
+                ) : guestType === "all" ? (
+                  <div className="flex-1 flex items-center px-3 py-1 text-[#667085] text-lg">
+                    All
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col">
+                    <input
+                      type={"text"}
+                      value={email}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setEmail(value);
+                        if (guestType === "emails") {
+                          // Store the raw comma-separated string in the form
+                          form.setValue("emails", value);
+                          validateEmail(value);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        // Allow comma key in email input
+                        if (e.key === ",") {
+                          e.stopPropagation();
+                        }
+                      }}
+                      className="flex-1 px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg"
+                      placeholder={
+                        guestType === "emails"
+                          ? "email1@example.com, email2@example.com"
+                          : "Search..."
                       }
-                    }}
-                    onKeyDown={(e) => {
-                      // Allow comma key in email input
-                      if (e.key === ",") {
-                        e.stopPropagation();
-                      }
-                    }}
-                    className="flex-1 px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg"
-                    placeholder={
-                      guestType === "emails"
-                        ? "email1@example.com, email2@example.com"
-                        : "Search..."
-                    }
-                  />
-                  {emailError && (
-                    <p className="text-red-500 text-sm mt-1">{emailError}</p>
-                  )}
+                    />
+                    {emailError && (
+                      <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+              {guestType === "emails" && (
+                <div className="text-xs text-gray-500 mt-1">
+                  Separate multiple emails with commas
                 </div>
               )}
             </div>
-            {guestType === "emails" && (
-              <div className="text-xs text-gray-500 mt-1">
-                Separate multiple emails with commas
-              </div>
-            )}
-          </div>
+          )}
 
           <button
             disabled={isPending}
             type="submit"
             className="w-full bg-[#692E9F] hover:bg-purple-800 flex items-center justify-center gap-3 text-white py-2 rounded-md"
           >
-            {isPending && <Spinner />}{" "}
-            {isPending ? "Creating Event..." : "Create Event"}
+            {(isPending || isUpdating) && <Spinner />}{" "}
+            {isPending
+              ? "Creating Event..."
+              : isUpdating
+              ? "Updating Event..."
+              : isEdit
+              ? "Update Event"
+              : "Create Event"}
           </button>
         </form>
       </div>

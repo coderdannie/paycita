@@ -6,7 +6,9 @@ import EventModal from "./EventModal";
 import { LuPlus } from "react-icons/lu";
 import {
   useCreateEvent,
+  useDeleteEvent,
   useGetAllEvents,
+  useUpdateEvent,
 } from "@/src/api/hooks/events/useEvents";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import { useSearchParams } from "next/navigation";
@@ -17,8 +19,12 @@ import { eventSchema, EventSchemaType } from "@/src/utils/validations";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { useToast } from "@/src/context/ToastContext";
 import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import ConfirmationModal from "../../../components/common/ConfirmationModal";
 
 export interface Event {
+  description: string;
+  meeting_link: string;
   id: string;
   event_name: string;
   date: string;
@@ -33,6 +39,9 @@ const EventsPage = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
   const [showModal, setShowModal] = useState(false);
+  const [isEdit, setIsEdit] = useState<Event | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const currentPage = searchParams.get("page") || "1";
 
@@ -70,9 +79,11 @@ const EventsPage = () => {
 
   const toggleModal = () => {
     setShowModal(!showModal);
+    setIsEdit(null);
+    reset();
   };
 
-  const [notificationType, setNotificationType] = useState<string>("emails");
+  const [notificationType, setNotificationType] = useState<string>("all");
 
   const form = useForm<EventSchemaType>({
     resolver: zodResolver(eventSchema(notificationType)),
@@ -98,9 +109,11 @@ const EventsPage = () => {
     [form]
   );
 
-  // const { mutate: createEvent, isPending: isCreating } = useCreateEvent();
   const { mutate: mutateCreateEvent, isPending: isPendingCreateEvent } =
     useCreateEvent();
+
+  const { mutate: mutateUpdateEvent, isPending: isPendingUpdateEvent } =
+    useUpdateEvent();
 
   const onSubmit = useCallback(
     (data: EventSchemaType) => {
@@ -119,6 +132,35 @@ const EventsPage = () => {
         delete data.department_id;
         delete data.emails;
         newEvent = { ...data };
+      }
+
+      if (isEdit) {
+        delete data.notification_type;
+        newEvent = { ...data };
+      }
+
+      if (isEdit) {
+        mutateUpdateEvent(
+          { ...newEvent, id: isEdit?.id },
+          {
+            onSuccess: (res) => {
+              addToast(
+                res.data.message || "Event Updated Successfully",
+                "success"
+              );
+              reset();
+              setShowModal(false);
+            },
+            onError: (error) => {
+              if (error instanceof AxiosError) {
+                const errorMessage =
+                  error.response?.data?.message || "Failed to update event";
+                addToast(errorMessage, "error");
+              }
+            },
+          }
+        );
+        return;
       }
 
       mutateCreateEvent(newEvent, {
@@ -140,7 +182,39 @@ const EventsPage = () => {
         },
       });
     },
-    [addToast, mutateCreateEvent, reset]
+    [addToast, isEdit, mutateCreateEvent, mutateUpdateEvent, reset]
+  );
+
+  const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+
+  const handleDelete = useCallback((event: Event) => {
+    setEventToDelete(event);
+    setIsDeleteModalOpen(true);
+  }, []);
+
+  const handleDeleteEvent = () => {
+    deleteEvent(eventToDelete?.id, {
+      onSuccess: () => {
+        toast.success("Event deleted successfully");
+        setIsDeleteModalOpen(false);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  };
+
+  const handleEdit = useCallback(
+    (leave: Event) => {
+      setShowModal(!showModal);
+      setIsEdit(leave);
+      form.setValue("event_name", leave.event_name);
+      form.setValue("description", leave.description);
+      form.setValue("date", leave.date);
+      form.setValue("time", leave.time);
+      form.setValue("meeting_link", leave.meeting_link);
+    },
+    [form, showModal]
   );
 
   if (isPending) {
@@ -164,7 +238,11 @@ const EventsPage = () => {
           <EmptyState onCreateEvent={toggleModal} />
         ) : (
           <>
-            <EventList events={events} />
+            <EventList
+              events={events}
+              onDeleteClick={handleDelete}
+              onEditClick={handleEdit}
+            />
             <div className="mt-6">
               {pagination?.total_pages > 1 && (
                 <CustomPagination
@@ -186,8 +264,22 @@ const EventsPage = () => {
           onClose={toggleModal}
           onSubmit={onSubmit}
           isPending={isPendingCreateEvent}
+          isUpdating={isPendingUpdateEvent}
+          isEdit={!!isEdit}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setEventToDelete(null);
+        }}
+        onConfirm={handleDeleteEvent}
+        title="Delete Event"
+        actionLabel="Delete"
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

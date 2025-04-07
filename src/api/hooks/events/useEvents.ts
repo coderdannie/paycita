@@ -182,3 +182,159 @@ export const useCreateEvent = () => {
     },
   });
 };
+export const useUpdateEvent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (eventData: {
+      id: string; // Make id required
+      event_name?: string;
+      description?: string;
+      date?: string;
+      time?: string;
+      meeting_link?: string;
+    }) => {
+      const response = await eventsService.updateEvent(eventData);
+      return response;
+    },
+    onMutate: async (updatedEvent) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EVENTS],
+      });
+
+      // Snapshot the previous value
+      const previousEvents = queryClient.getQueryData([
+        QUERY_KEYS.GET_ALL_EVENTS,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_EVENTS],
+        (old: {
+          data: {
+            data: Array<{ id: string }>;
+            pagination?: Pagination;
+          };
+        }) => {
+          if (!old?.data?.data) return old;
+
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              data: old.data.data.map((event) =>
+                event.id === updatedEvent.id
+                  ? { ...event, ...updatedEvent }
+                  : event
+              ),
+            },
+          };
+        }
+      );
+
+      // Return context for rollback
+      return { previousEvents };
+    },
+    onError: (err, updatedEvent, context) => {
+      // Rollback on error
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_EVENTS],
+        context?.previousEvents
+      );
+
+      // Enhanced error handling
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to update event";
+        throw new Error(errorMessage);
+      }
+      throw err;
+    },
+    onSettled: (data, error, variables) => {
+      // Invalidate both the list and the specific event query
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EVENTS],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_EVENT_BY_ID, variables.id],
+      });
+    },
+  });
+};
+
+
+export const useDeleteEvent = () => {
+    const queryClient = useQueryClient();
+  
+    return useMutation({
+      mutationFn: async (eventId: string) => {
+        const response = await eventsService.deleteEvent(eventId);
+        return response;
+      },
+      onMutate: async (eventId) => {
+        // Cancel any outgoing refetches
+        await queryClient.cancelQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_EVENTS],
+        });
+  
+        // Snapshot the previous value
+        const previousEvents = queryClient.getQueryData([QUERY_KEYS.GET_ALL_EVENTS]);
+  
+        // Optimistically remove the event from cache
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_ALL_EVENTS],
+          (old: {
+            data: {
+              data: Array<{ id: string }>;
+              pagination?: Pagination;
+            };
+          }) => {
+            if (!old?.data?.data) return old;
+            
+            return {
+              ...old,
+              data: {
+                ...old.data,
+                data: old.data.data.filter(event => event.id !== eventId),
+                // Adjust pagination if needed
+                pagination: old.data.pagination ? {
+                  ...old.data.pagination,
+                  totalItems: old.data.pagination.total_pages - 1,
+                  totalPages: Math.ceil((old.data.pagination.total_pages - 1) / old.data.pagination.per_page)
+                } : undefined
+              },
+            };
+          }
+        );
+  
+        // Return context for rollback
+        return { previousEvents, deletedEventId: eventId };
+      },
+      onError: (err, eventId, context) => {
+        // Rollback on error
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_ALL_EVENTS],
+          context?.previousEvents
+        );
+  
+        // Enhanced error handling
+        if (err instanceof AxiosError) {
+          const errorMessage = err.response?.data?.message || `Failed to delete event ${eventId}`;
+          throw new Error(errorMessage);
+        }
+        throw err;
+      },
+      onSettled: (data, error, eventId) => {
+        // Invalidate both the list and the specific event query
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_EVENTS],
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_EVENT_BY_ID, eventId],
+        });
+      },
+    });
+  };

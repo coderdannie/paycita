@@ -19,6 +19,7 @@ export const useGetAllLeave = (filters?: { page: string }) => {
       return response;
     },
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
   });
 
   const leave = data?.data?.data || [];
@@ -80,6 +81,7 @@ export const useGetEmployeeLeave = (filters?: {
       return response;
     },
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
   });
 
   const employeeLeave = data?.data?.data || [];
@@ -151,6 +153,9 @@ export const useDeleteLeaveRequest = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_EMPLOYEE_LEAVE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_LEAVE],
       });
     },
     onError: (error: {

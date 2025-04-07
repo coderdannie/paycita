@@ -13,7 +13,7 @@ import { formatDate } from "@/src/utils/helper";
 import { Info, Trash2 } from "lucide-react";
 import TableEmptyState from "@/src/components/common/TableEmptyState";
 import EmployeeLeaveDetailsModal from "./Modals/EmployeeLeaveDetailsModal";
-import ConfirmationModal from "./Modals/ConfirmationModal";
+import ConfirmationModal from "../../../../components/common/ConfirmationModal";
 import { toast } from "react-hot-toast";
 
 

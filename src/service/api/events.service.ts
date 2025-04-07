@@ -26,10 +26,26 @@ const createEvent = (data: {
 }) => {
   return api.post("/hr/event", data);
 };
+const updateEvent = (data: {
+  id?: string;
+  event_name?: string;
+  description?: string;
+  date?: string;
+  time?: string;
+  meeting_link?: string;
+}) => {
+  return api.put(`/hr/event/${data.id}`, data);
+};
+
+export const deleteEvent = (eventId: string) => {
+  return api.delete(`/hr/event/${eventId}`);
+};
 
 const eventsService = {
   getAllEvents,
   createEvent,
+  updateEvent,
+  deleteEvent,
 };
 
 export default eventsService;
