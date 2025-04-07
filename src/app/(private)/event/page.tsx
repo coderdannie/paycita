@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema, EventSchemaType } from "@/src/utils/validations";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { useToast } from "@/src/context/ToastContext";
+import { AxiosError } from "axios";
 
 export interface Event {
   id: string;
@@ -35,7 +36,11 @@ const EventsPage = () => {
 
   const currentPage = searchParams.get("page") || "1";
 
-  const { events, pagination, isPending } = useGetAllEvents({
+  const {
+    events,
+    pagination,
+    isLoading: isPending,
+  } = useGetAllEvents({
     page: currentPage.toString(),
   });
 
@@ -93,12 +98,12 @@ const EventsPage = () => {
     [form]
   );
 
-  const { mutateCreateEvent, isPending: isPendingCreateEvent } =
+  // const { mutate: createEvent, isPending: isCreating } = useCreateEvent();
+  const { mutate: mutateCreateEvent, isPending: isPendingCreateEvent } =
     useCreateEvent();
 
   const onSubmit = useCallback(
     (data: EventSchemaType) => {
-     
       // const [startTime, endTime] = data.time.split("-").map((t) => t.trim());
 
       let newEvent = {};
@@ -127,11 +132,11 @@ const EventsPage = () => {
           setShowModal(false);
         },
         onError: (error) => {
-          console.error("Error creating event:", error);
-          addToast(
-            error.response.data.message || "Something went wrong",
-            "error"
-          );
+          if (error instanceof AxiosError) {
+            const errorMessage =
+              error.response?.data?.message || "Failed to create event";
+            addToast(errorMessage, "error");
+          }
         },
       });
     },

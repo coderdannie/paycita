@@ -5,20 +5,21 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "../Redux/store";
 import GlobalProvider from "../context/appContext";
 import { Toaster } from "react-hot-toast";
-import { QueryProvider } from "../service/tanstack-query/queryProvider";
+
 import LoadingOverlay from "../components/common/LoadingOverlay";
+import { Providers } from "./Providers";
 
 const MainWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<LoadingOverlay />}>
       <Provider store={store}>
         <PersistGate loading={<LoadingOverlay />} persistor={persistor}>
-          <QueryProvider>
+          <Providers>
             <GlobalProvider>
               <Toaster position="top-right" />
               {children}
             </GlobalProvider>
-          </QueryProvider>
+          </Providers>
         </PersistGate>
       </Provider>
     </Suspense>
