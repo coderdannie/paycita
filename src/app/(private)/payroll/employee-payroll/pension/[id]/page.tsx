@@ -80,7 +80,7 @@ const ViewSinglePension = () => {
                 <TableCell className="py-3 sm:py-5">
                   <div className="flex gap-3 sm:gap-6 items-center">
                     <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>
-                    Jan 14
+                    John Doe
                   </div>
                 </TableCell>
                 <TableCell>₦25,000,000</TableCell>

@@ -1,6 +1,6 @@
 export const formatDate = (
   date: Date | string | number | null | undefined,
-  fallback: string = ""
+  fallback: string = ''
 ): string => {
   if (!date) return fallback;
 
@@ -27,9 +27,9 @@ export const updateDateTime = (timeZone: string = 'UTC') => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-    timeZone
+    timeZone,
   };
-  
+
   const formattedDateTime = now
     .toLocaleString('en-US', options)
     .replace(/,([^,]*)$/, ' -$1')
@@ -43,7 +43,7 @@ export const formatTime = (dateString: string) => {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
-    timeZone: 'UTC'
+    timeZone: 'UTC',
   };
 
   const date = new Date(dateString);
@@ -52,7 +52,7 @@ export const formatTime = (dateString: string) => {
 
 export const parseDateString = (dateString: string): Date => {
   if (!dateString) return new Date();
-  
+
   // Create date object and set time to start of day in local timezone
   const date = new Date(dateString);
   date.setHours(0, 0, 0, 0);
@@ -66,20 +66,19 @@ export const formatTimeString = (timeStr: string) => {
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
 
-
 export const formatLongCurrency = (
   val: number,
   symbol?: string | undefined,
   maximumFractionDigits?: number
 ) => {
   const formattedValue = new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: maximumFractionDigits ? maximumFractionDigits : 0,
-    currencyDisplay: "code",
+    currencyDisplay: 'code',
   })
-    .format(Number(val?.toString().replace(/,/g, ""))) // Convert to number
-    .replace("USD", symbol ? symbol : "")
+    .format(Number(val?.toString().replace(/,/g, ''))) // Convert to number
+    .replace('USD', symbol ? symbol : '')
     .trim();
 
   return formattedValue;
