@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import { X } from "lucide-react";
-import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
+import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+import { Leave } from '@/src/components/data/EmployeeMgt/Tabs/LeaveHistory';
 
 interface LeaveDetailsModalProps {
   leave: Leave;
@@ -15,7 +15,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
 }) => {
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.body.style.overflow = originalStyle;
@@ -62,7 +62,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
             <span className="font-medium">{leave?.duration ?? 0} Days</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Used Leave Days</span>
+            <span className="text-gray-500">Approved Leave Days</span>
             <span className="font-medium">{usedDays ?? 0} Days</span>
           </div>
           <div className="flex justify-between items-center">
@@ -73,9 +73,9 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
             <span className="text-gray-500">Approval Status</span>
             <span
               className={`font-medium px-2 py-1 text-xs rounded capitalize ${
-                leave?.status?.toLowerCase() === "approved"
-                  ? "border border-[#89D8A9] text-[#00AA4F] bg-[#89D8A9]/10"
-                  : "border border-[#F49E9E] text-[#EA3D3D] bg-[#F49E9E]/10"
+                leave?.status?.toLowerCase() === 'approved'
+                  ? 'border border-[#89D8A9] text-[#00AA4F] bg-[#89D8A9]/10'
+                  : 'border border-[#F49E9E] text-[#EA3D3D] bg-[#F49E9E]/10'
               }`}
             >
               {leave.status}
