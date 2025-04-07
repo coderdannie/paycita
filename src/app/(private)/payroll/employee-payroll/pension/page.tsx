@@ -35,10 +35,10 @@ const Pension = () => {
               <TableCell className="py-5">
                 <div className="flex gap-6">
                   <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{' '}
-                  Jan 14
+                  ARM Pension
                 </div>
               </TableCell>
-              <TableCell>ARM Pension </TableCell>
+              <TableCell>7 </TableCell>
               <TableCell>₦25,000,000</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

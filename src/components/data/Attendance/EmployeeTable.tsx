@@ -182,8 +182,13 @@ const TableLayer = () => {
                   </TableCell>
                   <TableCell>{row.employee_name}</TableCell>
                   <TableCell>{row.job_title}</TableCell>
-                  <TableCell>{formatTime(row.clock_in)}</TableCell>
-                  <TableCell>{formatTime(row.clock_out)}</TableCell>
+                  <TableCell>
+                    {row.clock_in ? formatTime(row.clock_in) : 'N/A'}
+                  </TableCell>
+
+                  <TableCell>
+                    {row.clock_out ? formatTime(row.clock_out) : 'N/A'}
+                  </TableCell>
                   <TableCell>{row.clock_out_comment ?? 'N/A'}</TableCell>
                   <TableCell>{row.hours_worked ?? 'N/A'}</TableCell>
                   <TableCell>{row.overtime}</TableCell>

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
 
-import { formatDate, formatTime } from "@/src/utils/helper";
-import { EmployeeAttendanceData } from "@/src/types/attendance";
-import TableEmptyState from "../../common/TableEmptyState";
+import { formatDate, formatTime } from '@/src/utils/helper';
+import { EmployeeAttendanceData } from '@/src/types/attendance';
+import TableEmptyState from '../../common/TableEmptyState';
 
 const TableLayer = ({
   attendance,
@@ -13,24 +13,24 @@ const TableLayer = ({
   attendance: EmployeeAttendanceData[] | AttendanceRecord[];
 }) => {
   const headers = [
-    { label: "Date" },
+    { label: 'Date' },
     {
-      label: "Clock In",
+      label: 'Clock In',
       // filterOptions: ['All', 'New York', 'Los Angeles'],
       // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
-      label: "Clock Out",
+      label: 'Clock Out',
       // filterOptions: ['All', 'New York', 'Los Angeles'],
       // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
-      label: "Location",
+      label: 'Location',
       // filterOptions: ['All', 'New York', 'Los Angeles'],
       // onFilterChange: (value: string) => handleFilterChange('location', value),
     },
     {
-      label: "Status",
+      label: 'Status',
     },
   ];
 
@@ -43,16 +43,20 @@ const TableLayer = ({
               <TableCell className="py-5">
                 {formatDate(row.created_at)}
               </TableCell>
-              <TableCell>{formatTime(row?.clock_in)}</TableCell>
-              <TableCell>{formatTime(row?.clock_out)}</TableCell>
+              <TableCell>
+                {row.clock_in ? formatTime(row.clock_in) : 'N/A'}
+              </TableCell>
+              <TableCell>
+                {row.clock_out ? formatTime(row.clock_out) : 'N/A'}
+              </TableCell>
               <TableCell>{row?.location}</TableCell>
               <TableCell>
                 <span
                   className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                     ${
-                      row?.status === "present"
-                        ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                        : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
+                      row?.status === 'present'
+                        ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                        : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
                     }
                   `}
                 >
