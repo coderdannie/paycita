@@ -48,7 +48,7 @@ export const useGetAllEvents = (filters?: { page: string }) => {
         };
       }
     ) => {
-      if (error instanceof Error && error.response?.status === 404)
+      if (error instanceof AxiosError && error.response?.status === 404)
         return false;
       return failureCount < 2;
     },
