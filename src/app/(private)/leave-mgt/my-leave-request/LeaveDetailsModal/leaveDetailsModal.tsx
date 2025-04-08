@@ -29,7 +29,6 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
   const duration = leaveEnd ? leaveEnd.getTime() - leaveStart.getTime() : 0;
 
   const days = Math.floor(duration / (1000 * 60 * 60 * 24)) + 1;
-  console.log(days);
   // calculate remaining days
   const usedDays = days - +leave.duration;
 
