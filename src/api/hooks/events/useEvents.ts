@@ -301,8 +301,8 @@ export const useDeleteEvent = () => {
                 // Adjust pagination if needed
                 pagination: old.data.pagination ? {
                   ...old.data.pagination,
-                  totalItems: old.data.pagination.total_pages - 1,
-                  totalPages: Math.ceil((old.data.pagination.total_pages - 1) / old.data.pagination.per_page)
+                  totalItems: old.data.pagination.total_records - 1,
+                  totalPages: Math.ceil((old.data.pagination.total_records - 1) / old.data.pagination.per_page)
                 } : undefined
               },
             };

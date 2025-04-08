@@ -1,5 +1,6 @@
 
 export interface LeaveRequestType {
+  comment?: string;
   id: number;
   requestDate: string;
   employeeName: string;

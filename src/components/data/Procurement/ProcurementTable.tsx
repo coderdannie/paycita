@@ -1,43 +1,51 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
+import Image from "next/image";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import { formatLongCurrency } from "@/src/utils/helper";
+import { Dispatch, SetStateAction } from "react";
+import { Trash2 } from "lucide-react";
 
-interface ProcurementData {
-  requestID: string;
-  itemName: string;
+export type ProcurementData = {
+  id: string;
+  procurement_number: string;
+  vendor: string;
   quantity: string;
-  totalCost: string;
-  status: 'Successful' | 'Pending' | 'Rejected' | string; // Explicit status types
-}
+  total_cost: string;
+  status: "Successful" | "Pending" | "Rejected" | string; // Explicit status types
+};
 
 interface ProcurementTableProps {
   tableData: ProcurementData[];
   setIsShow: (value: boolean) => void;
+  setProcurementId: Dispatch<SetStateAction<string>>;
+  handleDelete: (procurement: ProcurementData) => void;
 }
 
 const ProcurementTable: React.FC<ProcurementTableProps> = ({
   tableData,
   setIsShow,
+  setProcurementId,
+  handleDelete,
 }) => {
   const headers = [
-    { label: 'Request ID' },
-    { label: 'Item Name' },
-    { label: 'Quantity' },
-    { label: 'Total Cost' },
-    { label: 'Status' },
-    { label: '' },
+    { label: "Request ID" },
+    { label: "Vendor Name" },
+    // { label: "Quantity" },
+    { label: "Total Cost" },
+    { label: "Status" },
+    { label: "" },
   ];
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'Successful':
-        return 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]';
-      case 'Pending':
-        return 'text-yellow-600 border-[#F4D03F] bg-[#FEF9E7]';
+      case "Successful":
+        return "text-green-600 border-[#89D8A9] bg-[#F5FFFA]";
+      case "Pending":
+        return "text-yellow-600 border-[#F4D03F] bg-[#FEF9E7]";
       default: // For Rejected or any other status
-        return 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]';
+        return "text-red-600 border-[#F49E9E] bg-[#FFF5F5]";
     }
   };
 
@@ -47,10 +55,14 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
         {tableData?.length ? (
           tableData.map((row, rowIndex) => (
             <TableRow key={rowIndex} className="text-center text-sm">
-              <TableCell className="py-5">{row.requestID}</TableCell>
-              <TableCell>{row.itemName}</TableCell>
-              <TableCell>{row.quantity}</TableCell>
-              <TableCell>{row.totalCost}</TableCell>
+              <TableCell className="py-5">
+                {row.procurement_number ?? "N/A"}
+              </TableCell>
+              <TableCell>{row.vendor ?? "N/A"}</TableCell>
+              {/* <TableCell>{row.quantity ?? "N/A"}</TableCell> */}
+              <TableCell>
+                {formatLongCurrency(+row.total_cost) ?? "N/A"}
+              </TableCell>
               <TableCell>
                 <span
                   className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${getStatusStyle(
@@ -61,18 +73,29 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
                 </span>
               </TableCell>
               <TableCell>
-                <button
-                  className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
-                  onClick={() => setIsShow(true)}
-                  aria-label={`View details for ${row.itemName}`}
-                >
-                  <Image
-                    src="/assets/warn.svg"
-                    alt="info icon"
-                    width={15}
-                    height={15}
-                  />
-                </button>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
+                    onClick={() => {
+                      setIsShow(true);
+                      setProcurementId(row.id);
+                    }}
+                    aria-label={`View details for ${row.procurement_number}`}
+                  >
+                    <Image
+                      src="/assets/warn.svg"
+                      alt="info icon"
+                      width={15}
+                      height={15}
+                    />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(row)}
+                    className="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </TableCell>
             </TableRow>
           ))

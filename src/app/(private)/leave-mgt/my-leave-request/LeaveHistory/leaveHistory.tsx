@@ -52,6 +52,10 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
     },
 
     {
+      label: "Line Manager Status",
+    },
+
+    {
       label: "Status",
     },
     {
@@ -84,13 +88,28 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
                 className="text-[#1D2939] text-center text-sm"
               >
                 <TableCell>{row.leave_type}</TableCell>
-
                 <TableCell className="py-5">
                   {formatDate(row.start_date)}
                 </TableCell>
                 <TableCell>{formatDate(row.end_date)}</TableCell>
-
-                <TableCell>{row.duration}</TableCell>
+                <TableCell>{row.duration}</TableCell>{" "}
+                <TableCell>
+                  <span
+                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
+                                            ${
+                                              row?.line_manager_status?.toLowerCase() ===
+                                              "approved"
+                                                ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
+                                                : row?.line_manager_status?.toLowerCase() ===
+                                                  "rejected"
+                                                ? "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+                                                : "text-yellow-600 border-[#FCD34D] bg-[#FFFBEB]"
+                                            }
+                                          `}
+                  >
+                    {row?.line_manager_status || "N/A"}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
