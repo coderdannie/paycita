@@ -227,7 +227,7 @@ export const useGetExpenseTypes = () => {
 
 export const useGetSingleExpense = (id: string) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
-    queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, id],
+    queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, id],
     enabled: !!id,
     queryFn: async () => {
       const response = await expenseService.getSingleExpenses(id);
