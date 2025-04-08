@@ -59,7 +59,7 @@ export const useCreateProcurements = () => {
       });
 
       // Snapshot the previous value
-      const previousEvents = queryClient.getQueryData([
+      const previousProcurements = queryClient.getQueryData([
         QUERY_KEYS.GET_ALL_PROCUREMENTS,
       ]);
 
@@ -81,13 +81,13 @@ export const useCreateProcurements = () => {
       );
 
       // Return a context object with the snapshotted value
-      return { previousEvents };
+      return { previousProcurements };
     },
     onError: (err, newProcurement, context) => {
       // Rollback to the previous value if mutation fails
       queryClient.setQueryData(
         [QUERY_KEYS.GET_ALL_PROCUREMENTS],
-        context?.previousEvents
+        context?.previousProcurements
       );
 
       // More robust error handling
@@ -109,22 +109,22 @@ export const useCreateProcurements = () => {
   });
 };
 
-export const useDeleteEvent = () => {
+export const useDeleteProcurement = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (eventId: string) => {
-      const response = await procurementService.deleteProcurement(eventId);
+    mutationFn: async (id: string) => {
+      const response = await procurementService.deleteProcurement(id);
       return response;
     },
-    onMutate: async (eventId) => {
+    onMutate: async (procurementId) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
         queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
       });
 
       // Snapshot the previous value
-      const previousEvents = queryClient.getQueryData([
+      const previousProcurements = queryClient.getQueryData([
         QUERY_KEYS.GET_ALL_PROCUREMENTS,
       ]);
 
@@ -143,14 +143,14 @@ export const useDeleteEvent = () => {
             ...old,
             data: {
               ...old.data,
-              data: old.data.data.filter((event) => event.id !== eventId),
+              data: old.data.data.filter((event) => event.id !== procurementId),
               // Adjust pagination if needed
               pagination: old.data.pagination
                 ? {
                     ...old.data.pagination,
-                    totalItems: old.data.pagination.total_pages - 1,
+                    totalItems: old.data.pagination.total_records - 1,
                     totalPages: Math.ceil(
-                      (old.data.pagination.total_pages - 1) /
+                      (old.data.pagination.total_records - 1) /
                         old.data.pagination.per_page
                     ),
                   }
@@ -161,31 +161,31 @@ export const useDeleteEvent = () => {
       );
 
       // Return context for rollback
-      return { previousEvents, deletedEventId: eventId };
+      return { previousProcurements, deletedEventId: procurementId };
     },
-    onError: (err, eventId, context) => {
+    onError: (err, procurementId, context) => {
       // Rollback on error
       queryClient.setQueryData(
         [QUERY_KEYS.GET_ALL_PROCUREMENTS],
-        context?.previousEvents
+        context?.previousProcurements
       );
 
       // Enhanced error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || `Failed to delete event ${eventId}`;
+          err.response?.data?.message || `Failed to delete event ${procurementId}`;
         throw new Error(errorMessage);
       }
       throw err;
     },
-    onSettled: (data, error, eventId) => {
+    onSettled: (data, error, procurementId) => {
       // Invalidate both the list and the specific event query
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
         exact: false,
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_PROCUREMENTS_BY_ID, eventId],
+        queryKey: [QUERY_KEYS.GET_PROCUREMENTS_BY_ID, procurementId],
       });
     },
   });

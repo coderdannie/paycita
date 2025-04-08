@@ -22,8 +22,8 @@ const getSingleProcurement = (id: string) => {
   return api.get(`/hr/procurement/${id}`);
 };
 
-export const deleteProcurement = (eventId: string) => {
-  return api.delete(`/hr/procurement/${eventId}`);
+export const deleteProcurement = (procurementId: string) => {
+  return api.delete(`/hr/procurement/${procurementId}`);
 };
 
 export const getVendors = () => {
