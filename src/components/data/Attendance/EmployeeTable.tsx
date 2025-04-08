@@ -194,7 +194,7 @@ const TableLayer = () => {
                   <TableCell>{row.overtime}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{renderStatusBadge(row.status)}</TableCell>
-                </TableRow>
+                </TableRow> 
               ))
             : renderEmptyState}
         </CustomTable>
