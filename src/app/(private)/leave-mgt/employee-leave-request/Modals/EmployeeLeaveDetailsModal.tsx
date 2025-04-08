@@ -70,6 +70,9 @@ const EmployeeLeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
           <DetailsRow label="Duration (Days)">
             {leaveRequest.duration}
           </DetailsRow>
+          <DetailsRow label="Comment">
+            {leaveRequest.comment || "N/A"}
+          </DetailsRow>
         </div>
 
         {leaveRequest.status.toLowerCase() === "pending" ? (
@@ -106,7 +109,7 @@ const DetailsRow: React.FC<{ label: string; children: React.ReactNode }> = ({
 }) => (
   <div className="flex justify-between">
     <span className="text-gray-500">{label}</span>
-    <span className="font-medium">{children}</span>
+    <span className="font-medium max-w-60">{children}</span>
   </div>
 );
 

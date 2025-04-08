@@ -127,9 +127,7 @@ export const eventSchema = (notificationType: string) => {
         : z.string().optional(),
 
     emails:
-      notificationType === "emails"
-        ? z.string().min(1)
-        : z.string().optional(),
+      notificationType === "emails" ? z.string().min(1) : z.string().optional(),
   });
 };
 
@@ -142,3 +140,50 @@ export const leaveRequestSchema = z.object({
 });
 
 export type LeaveRequestSchemaType = z.infer<typeof leaveRequestSchema>;
+
+export const procurementItemSchema = z.object({
+  id: z.string(),
+  item: z.string().min(1, "Item is required"),
+  description: z.string().min(1, "Description is required"),
+  quantity: z
+    .union([
+      z.number(),
+      z.string().min(1, {
+        message: "Quantity must be greater than 0",
+      }),
+    ])
+    .refine((val) => Number(val) > 0, {
+      message: "Quantity must be greater than 0",
+    }),
+  price: z
+    .union([
+      z.number(),
+      z.string().min(1, {
+        message: "Unit Price must be greater than 0",
+      }),
+    ])
+    .refine((val) => Number(val) > 0, {
+      message: "Unit Price must be greater than 0",
+    }),
+  total: z.number().optional(),
+});
+
+export const procurementSchema = z.object({
+  procurement_date: z.date({ required_error: "Procurement date is required" }),
+  expected_delivery_date: z
+    .date({ required_error: "Expected delivery date is required" })
+    .superRefine((val, ctx) => {
+      if (val < new Date()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Date must be in the future",
+        });
+      }
+    }),
+  vendor_id: z.string().min(1, "Vendor is required"),
+  details: z
+    .array(procurementItemSchema)
+    .min(1, "At least one item is required"),
+});
+
+export type ProcurementForm = z.infer<typeof procurementSchema>;

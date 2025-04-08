@@ -12,7 +12,7 @@ const StatusStepper = ({ currentStatus }: { currentStatus: string }) => {
     };
 
     const currentStatusIndex =
-      statusOrder[currentStatus.toLowerCase() as keyof typeof statusOrder] || 0;
+      statusOrder[currentStatus?.toLowerCase() as keyof typeof statusOrder] || 0;
 
     return {
       completed: stepIndex <= currentStatusIndex,
