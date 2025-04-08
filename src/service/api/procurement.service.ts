@@ -23,7 +23,7 @@ const getSingleProcurement = (id: string) => {
 };
 
 export const deleteProcurement = (procurementId: string) => {
-  return api.delete(`/hr/procurement/${procurementId}`);
+  return api.delete(`/hr/delete-procurement/${procurementId}`);
 };
 
 export const getVendors = () => {

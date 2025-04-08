@@ -86,7 +86,7 @@ export const useCreateExpenses = () => {
     onError: (err, newExpense, context) => {
       // Rollback to the previous value if mutation fails
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        [QUERY_KEYS.GET_ALL_EXPENSES],
         context?.previousExpenses
       );
 
@@ -102,7 +102,7 @@ export const useCreateExpenses = () => {
     onSettled: () => {
       // Invalidate and refetch after either success or error
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
         exact: false, // Invalidate all variants
       });
     },
@@ -120,17 +120,17 @@ export const useDeleteExpense = () => {
     onMutate: async (expenseId) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
       });
 
       // Snapshot the previous value
       const previousExpenses = queryClient.getQueryData([
-        QUERY_KEYS.GET_ALL_PROCUREMENTS,
+        QUERY_KEYS.GET_ALL_EXPENSES,
       ]);
 
       // Optimistically remove the event from cache
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        [QUERY_KEYS.GET_ALL_EXPENSES],
         (old: {
           data: {
             data: Array<{ id: string }>;
@@ -166,7 +166,7 @@ export const useDeleteExpense = () => {
     onError: (err, expenseId, context) => {
       // Rollback on error
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        [QUERY_KEYS.GET_ALL_EXPENSES],
         context?.previousExpenses
       );
 
@@ -181,7 +181,7 @@ export const useDeleteExpense = () => {
     onSettled: (data, error, expenseId) => {
       // Invalidate both the list and the specific event query
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
         exact: false,
       });
       queryClient.invalidateQueries({
