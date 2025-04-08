@@ -12,7 +12,7 @@ import { Expenses } from "@/src/types/procurement";
 
 export const useGetAllExpenses = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
-    queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS, filters],
+    queryKey: [QUERY_KEYS.GET_ALL_EXPENSES, filters],
     queryFn: async () => {
       const response = await expenseService.getAllExpenses(filters);
       return response;
@@ -55,17 +55,17 @@ export const useCreateExpenses = () => {
     onMutate: async (newExpense) => {
       // Cancel any outgoing refetches to avoid overwriting optimistic update
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
       });
 
       // Snapshot the previous value
       const previousExpenses = queryClient.getQueryData([
-        QUERY_KEYS.GET_ALL_PROCUREMENTS,
+        QUERY_KEYS.GET_ALL_EXPENSES,
       ]);
 
       // Optimistically update the cache
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        [QUERY_KEYS.GET_ALL_EXPENSES],
         (old: {
           data: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
