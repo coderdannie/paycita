@@ -193,7 +193,7 @@ export const useDeleteExpense = () => {
 
 export const useGetExpenseTypes = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
-    queryKey: [QUERY_KEYS.GET_ALL_VENDORS],
+    queryKey: [QUERY_KEYS.GET_ALL_EXPENSE_TYPES],
     queryFn: async () => {
       const response = await expenseService.getExpenseType();
       return response;
