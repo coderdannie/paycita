@@ -23,6 +23,7 @@ const Procurement = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
+  const [procurementId, setProcurementId] = useState("");
   const [procurementToDelete, setProcurementToDelete] = useState<ProcurementData | null>(
     null
   );
@@ -50,7 +51,6 @@ const Procurement = () => {
     [updateSearchParams]
   );
 
-  const [procurementId, setProcurementId] = useState("");
 
   const { procurement } = useGetSingleProcurement(procurementId);
 
@@ -62,7 +62,7 @@ const Procurement = () => {
     setIsDeleteModalOpen(true);
   }, []);
 
-  const handleDeleteEvent = () => {
+  const handleDeleteProcurement = () => {
     deleteProcurement(procurementToDelete?.id, {
       onSuccess: () => {
         toast.success("Procurement deleted successfully");
@@ -121,7 +121,7 @@ const Procurement = () => {
           setIsDeleteModalOpen(false);
           setProcurementToDelete(null);
         }}
-        onConfirm={handleDeleteEvent}
+        onConfirm={handleDeleteProcurement}
         title="Delete Procurement"
         actionLabel="Delete"
         isLoading={isDeleting}
