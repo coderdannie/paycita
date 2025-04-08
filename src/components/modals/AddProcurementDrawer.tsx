@@ -32,6 +32,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { Procurement } from "@/src/types/procurement";
 import { Spinner } from "react-activity";
+import { useGetExpenseTypes } from "@/src/api/hooks/expenses/useExpenses";
 
 interface ProcurementDrawerProps {
   isOpen: boolean;
@@ -42,15 +43,12 @@ type CalendarTileArgs = TileArgs & {
   view: "month" | "year" | "decade" | "century";
 };
 
-const items = [
-  { id: "item1", name: "Item 1" },
-  { id: "item2", name: "Item 2" },
-];
-
 const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { expenseType } = useGetExpenseTypes();
+
   const { vendors } = useGetVendors();
 
   const {
@@ -188,7 +186,6 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     });
   }, [procuredItems, setValue]);
 
-  
   const totalSum = useMemo(() => {
     return procuredItems.reduce((sum, item) => {
       const quantity = item.quantity === "" ? 0 : Number(item.quantity);
@@ -198,7 +195,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   }, [procuredItems]);
 
   const handleAddItem = async () => {
-    const lastIndex = fields.length - 1; 
+    const lastIndex = fields.length - 1;
     const isValid = await trigger(`details.${lastIndex}`);
 
     if (!isValid) return;
@@ -452,10 +449,10 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                                       <SelectValue placeholder="Select item" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      {items.map((item) => (
+                                      {expenseType.map((item) => (
                                         <SelectItem
                                           key={item.id}
-                                          value={item.id}
+                                          value={item.name}
                                         >
                                           {item.name}
                                         </SelectItem>
