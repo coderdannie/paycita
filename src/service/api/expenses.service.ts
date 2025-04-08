@@ -24,7 +24,7 @@ const getSingleExpenses = (id: string) => {
 };
 
 export const deleteExpenses = (ExpensesId: string) => {
-  return api.delete(`/hr/expenses-request/${ExpensesId}`);
+  return api.delete(`/hr/delete-expenses-request/${ExpensesId}`);
 };
 
 export const getExpenseType = () => {
