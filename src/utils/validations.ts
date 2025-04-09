@@ -212,27 +212,6 @@ export const procurementSchema = z.object({
 
 export type ProcurementForm = z.infer<typeof procurementSchema>;
 
-export const loanApplicationSchema = z.object({
-  loanAmount: z.string().min(1, { message: 'Loan amount is required.' }).trim(),
-
-  repaymentPeriod: z
-    .string()
-    .min(1, { message: 'Repayment period is required.' })
-    .trim(),
-
-  loanPurpose: z
-    .string()
-    .min(1, { message: 'Loan purpose is required.' })
-    .trim(),
-
-  agreeToTerms: z.literal(true, {
-    errorMap: () => ({
-      message: 'You must agree to the terms and conditions.',
-    }),
-  }),
-});
-
-export type LoanApplicationSchemaType = z.infer<typeof loanApplicationSchema>;
 export const expenseSchema = z.object({
   details: z.array(procurementItemSchema).min(1, "At least one item is required"),
 });
