@@ -42,21 +42,18 @@ const LeaveHistoryTable = ({ leave }: { leave: Leave[] }) => {
                   {formatDate(row.request_date)}
                 </TableCell>
                 <TableCell>{row.leave_type}</TableCell>
-
                 <TableCell>
                   {formatDate(row.start_date).split(" ").slice(0, 2).join(" ")}{" "}
                   - {formatDate(row.end_date)}
                 </TableCell>
-
                 <TableCell>{row.duration} Days</TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
-                    ${
-                      row?.status?.toLowerCase() === "approved"
+                    ${row?.status?.toLowerCase() === "approved"
                         ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
                         : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
-                    }
+                      }
                   `}
                   >
                     {row?.status}
