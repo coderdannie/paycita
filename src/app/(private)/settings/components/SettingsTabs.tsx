@@ -20,6 +20,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab }) => {
       path: '/settings/resumption-time',
       key: 'resumption-time',
     },
+    {
+      name: 'Documents',
+      path: '/settings/documents',
+      key: 'documents',
+    },
   ];
 
   return (
