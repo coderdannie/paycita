@@ -119,7 +119,7 @@ export const sidebarData = [
     icon: <LoanIcon fill="#344054" />,
     sec: <LoanIcon fill="#692E9F" />,
     hover: <LoanIcon fill="#692E9F" />,
-    path: '/loan',
+    path: '/loan', 
   },
   {
     title: 'Message',

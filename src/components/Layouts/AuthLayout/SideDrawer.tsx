@@ -7,13 +7,15 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { sidebarData } from '../../common/constants';
 import Image from 'next/image';
 import logoutIcon from '../../../../public/assets/logout.svg';
+import { useAuthSelector } from '@/src/Redux/selectors';
 
 interface SidebarProps {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
 }
 
-const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
+const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {  const userData = useAuthSelector();
+  const isVisible = userData?.user?.feature?.employee_loan === "1";
   const [showMenu, setShowMenu] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +29,9 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
       setIsLoading(false);
     }, 1000);
   };
-
+  const filteredSidebarData = sidebarData.filter(item =>
+    item.title !== 'Loan' || isVisible
+  );
   return (
     <>
       {/* Side Drawer */}
@@ -48,7 +52,7 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
             </div>
             <div className="">
               <div className="flex-1">
-                {sidebarData.map((item) => (
+                {filteredSidebarData.map((item) => (
                   <div key={item.title} className="mb-2">
                     <div
                       className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${
