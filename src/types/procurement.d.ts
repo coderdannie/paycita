@@ -27,4 +27,9 @@ interface ProcurementData {
   items: ProcurementDetails[];
 }
 
-export { Procurement, ProcurementData };
+interface Expenses {
+  total_price: string;
+  details: ProcurementDetails[];
+}
+
+export { Procurement, ProcurementData, Expenses };

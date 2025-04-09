@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoClose, IoTrashBin } from 'react-icons/io5';
+import React, { useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoClose, IoTrashBin } from "react-icons/io5";
 import {
   Table,
   TableBody,
@@ -8,23 +8,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from "../../components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
-import { expenseHeaders } from '../common/constants';
-
-interface ExpenseItem {
-  id: string;
-  item: string | null;
-  description: string;
-  qty: number | '';
-  unitPrice: number | '';
-}
+} from "../../components/ui/select";
+import { expenseHeaders } from "../common/constants";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ExpenseForm, expenseSchema } from "@/src/utils/validations";
+import {
+  useCreateExpenses,
+  useGetExpenseTypes,
+} from "@/src/api/hooks/expenses/useExpenses";
+import { AxiosError } from "axios";
+import { Expenses } from "@/src/types/procurement";
+import toast from "react-hot-toast";
+import { Spinner } from "react-activity";
+import { formatLongCurrency } from "@/src/utils/helper";
+import { useAuthSelector } from "@/src/Redux/selectors";
 
 interface ExpenseDrawerProps {
   isOpen: boolean;
@@ -35,64 +40,133 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [data, setData] = useState<ExpenseItem[]>([
-    {
-      id: crypto.randomUUID(),
-      item: null,
-      description: '',
-      qty: '',
-      unitPrice: '',
-    },
-  ]);
+  const userData = useAuthSelector();
 
-  // Calculate total sum using useMemo for performance optimization
-  const totalSum = useMemo(() => {
-    return data.reduce((sum, item) => {
-      const qty = item.qty === '' ? 0 : Number(item.qty);
-      const unitPrice = item.unitPrice === '' ? 0 : Number(item.unitPrice);
-      return sum + qty * unitPrice;
-    }, 0);
-  }, [data]);
+  const currency = userData?.user?.currency || "NGN";
+
+  const { expenseType } = useGetExpenseTypes();
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    trigger,
+    reset,
+  } = useForm<ExpenseForm>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      details: [
+        {
+          id: crypto.randomUUID(),
+          item: "",
+          description: "",
+          quantity: "",
+          price: "",
+        },
+      ],
+    },
+  });
+
+  const itemsArray = watch("details");
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "details",
+  });
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onClose();
       }
     }
 
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
 
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
-  const handleAddItem = () => {
-    setData([
+  const calculateTotal = (quantity: number | "", price: number | "") => {
+    if (quantity === "" || price === "") return "0.00";
+    return (Number(quantity) * Number(price)).toFixed(2);
+  };
+
+  const procuredItems = useWatch({ control, name: "details" });
+
+  useEffect(() => {
+    procuredItems?.forEach((item, index) => {
+      const quantity = Number(item?.quantity || 0);
+      const price = Number(item?.price || 0);
+      const total = quantity * price;
+
+      if (item?.total !== total) {
+        setValue(`details.${index}.total`, total);
+      }
+    });
+  }, [procuredItems, setValue]);
+
+  const totalSum = useMemo(() => {
+    return procuredItems.reduce((sum, item) => {
+      const quantity = item.quantity === "" ? 0 : Number(item.quantity);
+      const price = item.price === "" ? 0 : Number(item.price);
+      return sum + quantity * price;
+    }, 0);
+  }, [procuredItems]);
+
+  const handleAddItem = async () => {
+    const lastIndex = fields.length - 1;
+    const isValid = await trigger(`details.${lastIndex}`);
+
+    if (!isValid) return;
+
+    append({
+      id: crypto.randomUUID(),
+      item: "",
+      description: "",
+      quantity: "",
+      price: "",
+      total: 0,
+    });
+  };
+
+  const { mutate: mutateCreateExpense, isPending } = useCreateExpenses();
+
+  const onSubmit = (data: ExpenseForm) => {
+    const expenses = data.details.map((item) => ({
+      item: item.item,
+      description: item.description,
+      quantity: item.quantity,
+      price: item.price.toString(),
+    }));
+
+    const payload = {
       ...data,
-      {
-        id: crypto.randomUUID(),
-        item: null,
-        description: '',
-        qty: '',
-        unitPrice: '',
+      details: expenses,
+      total_price: totalSum.toString(),
+    } as Expenses;
+
+    mutateCreateExpense(payload, {
+      onSuccess: (res) => {
+        toast.success(res.data.message || "Procurement created successfully");
+        reset();
+        onClose();
       },
-    ]);
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          const errorMessage =
+            error.response?.data?.message || "Failed to update event";
+          toast.error(errorMessage);
+        }
+      },
+    });
   };
-
-  const handleDeleteItem = (id: string) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-
-  const calculateTotal = (qty: number | '', unitPrice: number | '') => {
-    if (qty === '' || unitPrice === '') return '0.00';
-    return (Number(qty) * Number(unitPrice)).toFixed(2);
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -101,16 +175,16 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: 'tween', duration: 0.2 }}
+            transition={{ type: "tween", duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[930px] bg-white shadow-xl z-50 rounded-lg p-4"
           >
             <div className="flex items-center justify-between border-b border-[#E4E7EC] py-3 ">
@@ -119,149 +193,192 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                 <IoClose className="text-2xl text-[#667085]" />
               </button>
             </div>
-
-            <div className="mt-[30px] overflow-x-auto relative">
-              <div className="min-h-[276px] border border-[#E4E7EC] rounded-md overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-[#F9FAFB]">
-                    <TableRow>
-                      {expenseHeaders.map((dat, i) => (
-                        <TableHead
-                          key={i}
-                          className="min-w-[100px] md:min-w-0 text-[#1D2939] font-semibold"
-                        >
-                          {dat}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="mt-4">
-                    {data.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="w-[30%]">
-                          <Select
-                            value={item.item || ''}
-                            onValueChange={(value) => {
-                              setData(
-                                data.map((i) =>
-                                  i.id === item.id ? { ...i, item: value } : i
-                                )
-                              );
-                            }}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mt-[30px] overflow-x-auto relative">
+                <div className="min-h-[276px] border border-[#E4E7EC] rounded-md overflow-hidden">
+                  <Table>
+                    <TableHeader className="bg-[#F9FAFB]">
+                      <TableRow>
+                        {expenseHeaders.map((dat, i) => (
+                          <TableHead
+                            key={i}
+                            className="min-w-[100px] md:min-w-0 text-[#1D2939] font-semibold"
                           >
-                            <SelectTrigger className="h-[40px]">
-                              <SelectValue placeholder="Select item" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="item1">Item 1</SelectItem>
-                              <SelectItem value="item2">Item 2</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="w-[30%]">
-                          <input
-                            type="text"
-                            value={item.description}
-                            onChange={(e) => {
-                              setData(
-                                data.map((i) =>
-                                  i.id === item.id
-                                    ? { ...i, description: e.target.value }
-                                    : i
-                                )
-                              );
-                            }}
-                            className="border border-gray-300 h-[40px] w-full rounded p-2"
-                          />
-                        </TableCell>
-                        <TableCell className="w-[10%]">
-                          <input
-                            type="number"
-                            value={item.qty}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              setData(
-                                data.map((i) =>
-                                  i.id === item.id
-                                    ? {
-                                        ...i,
-                                        qty:
-                                          value === ''
-                                            ? ''
-                                            : parseInt(value) || 0,
-                                      }
-                                    : i
-                                )
-                              );
-                            }}
-                            className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
-                          />
-                        </TableCell>
-                        <TableCell className="w-[10%]">
-                          <input
-                            type="number"
-                            value={item.unitPrice}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              setData(
-                                data.map((i) =>
-                                  i.id === item.id
-                                    ? {
-                                        ...i,
-                                        unitPrice:
-                                          value === ''
-                                            ? ''
-                                            : parseFloat(value) || 0,
-                                      }
-                                    : i
-                                )
-                              );
-                            }}
-                            className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
-                          />
-                        </TableCell>
-                        <TableCell className="w-[10%] text-center">
-                          ₦ {calculateTotal(item.qty, item.unitPrice)}
-                        </TableCell>
-                        <TableCell className="w-[10%] text-center">
-                          <button
-                            onClick={() => handleDeleteItem(item.id)}
-                            className="text-red-500"
-                          >
-                            <IoTrashBin />
-                          </button>
-                        </TableCell>
+                            {dat}
+                          </TableHead>
+                        ))}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody className="mt-4">
+                      {fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                          <TableCell className="w-[30%]">
+                            <Controller
+                              name={`details.${index}.item`}
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="h-[40px]">
+                                      <SelectValue placeholder="Select item" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {expenseType?.map((item) => (
+                                        <SelectItem
+                                          key={item.id}
+                                          value={item.name}
+                                        >
+                                          {item.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  {errors.details?.[index]?.item && (
+                                    <p className="text-red-500 text-sm">
+                                      {errors.details[index].item?.message}
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell className="w-[30%]">
+                            <Controller
+                              name={`details.${index}.description`}
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  <input
+                                    {...field}
+                                    type="text"
+                                    className="border border-gray-300 h-[40px] w-full rounded p-2"
+                                  />
+                                  {errors.details?.[index]?.description && (
+                                    <p className="text-red-500 text-sm">
+                                      {
+                                        errors.details[index].description
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell className="w-[10%]">
+                            <Controller
+                              name={`details.${index}.quantity`}
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  <input
+                                    {...field}
+                                    type="number"
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === "" ? "" : parseInt(value) || 0
+                                      );
+                                    }}
+                                    className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
+                                  />
+                                  {errors.details?.[index]?.quantity && (
+                                    <p className="text-red-500 text-sm">
+                                      {errors.details[index].quantity?.message}
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell className="w-[10%]">
+                            <Controller
+                              name={`details.${index}.price`}
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  <input
+                                    {...field}
+                                    type="number"
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ""
+                                          ? ""
+                                          : parseFloat(value) || 0
+                                      );
+                                    }}
+                                    className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
+                                  />
+                                  {errors.details?.[index]?.price && (
+                                    <p className="text-red-500 text-sm">
+                                      {errors.details[index].price?.message}
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell className="w-[10%] text-center">
+                            {currency}
+                            {calculateTotal(
+                              +itemsArray[index].quantity,
+                              +itemsArray[index].price
+                            )}
+                          </TableCell>
+                          <TableCell className="w-[10%] text-center">
+                            <button
+                              onClick={() => remove(index)}
+                              className="text-red-500"
+                              type="button"
+                            >
+                              <IoTrashBin />
+                            </button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
 
+                  <button
+                    onClick={handleAddItem}
+                    type="button"
+                    className="mt-4 ml-3 bg-[#F4F5F6] p-[10px] font-semibold rounded-md text-sm text-[#344054]"
+                  >
+                    + Add Item
+                  </button>
+                </div>
                 {/* Total Sum Row */}
                 <div className="flex justify-end p-4 absolute bottom-0 right-0">
                   <div className="flex items-center gap-4">
                     <span className="font-semibold">Total:</span>
-                    <span className="font-bold">₦ {totalSum.toFixed(2)}</span>
+                    <span className="font-bold">
+                      {formatLongCurrency(totalSum, currency)}
+                    </span>
                   </div>
                 </div>
-
+              </div>
+              <div className="flex gap-4  h-[40px] absolute bottom-0 right-0 mb-5 mr-5">
                 <button
-                  onClick={handleAddItem}
-                  className="mt-4 ml-3 bg-[#F4F5F6] p-[10px] font-semibold rounded-md text-sm text-[#344054]"
+                  type="button"
+                  className="h-full  font-semibold text-primary border border-primary px-[30px] text-sm rounded-lg"
+                  onClick={onClose}
                 >
-                  + Add Item
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary px-[30px] flex items-center justify-center gap-3"
+                  disabled={isPending}
+                >
+                  {isPending && <Spinner />}
+                  Submit
                 </button>
               </div>
-            </div>
-            <div className="flex gap-4  h-[40px] absolute bottom-0 right-0 mb-5 mr-5">
-              <button
-                type="button"
-                className="h-full  font-semibold text-primary border border-primary px-[30px] text-sm rounded-lg"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button className={`btn-primary px-[30px]`}>Submit</button>
-            </div>
+            </form>
           </motion.div>
         </>
       )}
