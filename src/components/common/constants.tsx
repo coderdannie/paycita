@@ -220,6 +220,7 @@ export const employeeDetailsTabs = [
   'Attendance',
   'Payroll History',
   'Leave History',
+  'Documents',
 ];
 
 export const ITEMS = ['Id card', 'Laptop', 'Accommodation', 'Phone'];
