@@ -234,7 +234,7 @@ const EmployeeMgt = () => {
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
                 <TableCell>{row.full_name}</TableCell>
                 <TableCell>{row.email}</TableCell>
-                <TableCell>{row.job_tile ?? "N/A"}</TableCell>
+                <TableCell>{row.job_title ?? "N/A"}</TableCell>
                 <TableCell>{row.job_level ?? "N/A"}</TableCell>
                 <TableCell>{renderStatusBadge(row.status)}</TableCell>
                 <TableCell>

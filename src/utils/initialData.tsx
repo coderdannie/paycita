@@ -1,3 +1,5 @@
+
+
 export const initialUser: LoggedInUserProps = {
   birthday: false,
   company_logo: '',
@@ -8,6 +10,7 @@ export const initialUser: LoggedInUserProps = {
   id: '',
   phone_number: '',
   role: '',
+
 };
 
 export const initialAttendanceData: AttendanceSummary = {
