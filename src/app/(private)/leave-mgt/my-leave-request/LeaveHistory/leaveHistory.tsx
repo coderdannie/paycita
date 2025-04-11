@@ -92,33 +92,27 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
                   {formatDate(row.start_date)}
                 </TableCell>
                 <TableCell>{formatDate(row.end_date)}</TableCell>
-                <TableCell>{row.duration}</TableCell>{" "}
+                <TableCell>{row.duration}</TableCell>
                 <TableCell>
                   <span
-                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
-                                            ${
-                                              row?.line_manager_status?.toLowerCase() ===
-                                              "approved"
-                                                ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                                                : row?.line_manager_status?.toLowerCase() ===
-                                                  "rejected"
-                                                ? "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
-                                                : "text-yellow-600 border-[#FCD34D] bg-[#FFFBEB]"
-                                            }
-                                          `}
+                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${row?.line_manager_status?.toLowerCase() ===
+                      "approved"
+                      ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
+                      : row?.line_manager_status?.toLowerCase() ===
+                        "rejected"
+                        ? "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+                        : "text-yellow-600 border-[#FCD34D] bg-[#FFFBEB]"
+                      }`}
                   >
                     {row?.line_manager_status || "N/A"}
                   </span>
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
-                            ${
-                              row?.status?.toLowerCase() === "approved"
-                                ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                                : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
-                            }
-                          `}
+                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${row?.status?.toLowerCase() === "approved"
+                      ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
+                      : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
+                      }`}
                   >
                     {row?.status}
                   </span>
@@ -130,7 +124,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
                       className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
                     >
                       <Info className="w-4 h-4" />
-                    </button>{" "}
+                    </button>
                     <button
                       onClick={() => handleDelete(row)}
                       className="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
