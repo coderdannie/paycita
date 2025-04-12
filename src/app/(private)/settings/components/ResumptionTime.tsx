@@ -1,4 +1,7 @@
-import { useAddResumptionDate } from "@/src/api/hooks/settings/useSettings";
+import {
+  useAddResumptionDate,
+  useGetResumptionTime,
+} from "@/src/api/hooks/settings/useSettings";
 import { CustomFormField } from "@/src/components/common/CustomInput";
 import { Form } from "@/src/components/ui/form";
 import {
@@ -11,11 +14,13 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const Resumption = () => {
+  const { resumptionDate } = useGetResumptionTime();
+
   const form = useForm<ResumptionDetailsSchemaType>({
     resolver: zodResolver(resumptionDetailsSchema),
     defaultValues: {
-      resumption_time: "",
-      closing_time: "",
+      resumption_time: resumptionDate.resumption_time,
+      closing_time: resumptionDate.closing_time,
     },
   });
 

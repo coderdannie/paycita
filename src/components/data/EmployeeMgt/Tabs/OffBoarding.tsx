@@ -9,9 +9,15 @@ import { useParams, useRouter } from "next/navigation";
 const OffBoarding = ({
   itemsGiven,
   status,
+  profilePicture,
+  location,
+  title,
 }: {
   itemsGiven: string[];
   status: string;
+  profilePicture: string;
+  location: string;
+  title: string;
 }) => {
   const { id } = useParams();
   const router = useRouter();
@@ -63,7 +69,7 @@ const OffBoarding = ({
         <div>
           <div className="relative w-20 h-20 rounded-full overflow-hidden mb-4">
             <Image
-              src="/assets/doc.png"
+              src={profilePicture || "/assets/doc.png"}
               alt="Document Preview"
               fill
               style={{ objectFit: "cover" }}
@@ -72,11 +78,11 @@ const OffBoarding = ({
           <div className="flex gap-4 items-center">
             <div>
               <h4 className="text-[#667085] text-sm pb-[6px]">Location</h4>
-              <p className="font-semibold">Remote</p>
+              <p className="font-semibold">{location || "-"}</p>
             </div>
             <div>
               <h4 className="text-[#667085] text-sm pb-[6px]">Job Title</h4>
-              <p className="font-semibold">Backend Developer</p>
+              <p className="font-semibold">{title || "-"}</p>
             </div>
             <div>
               <h4 className="text-[#667085] text-sm pb-[6px]">Status</h4>
@@ -98,7 +104,6 @@ const OffBoarding = ({
         onConfirm={handleOffBoard} // Pass the offboarding handler to the drawer
         itemsGiven={itemsGiven}
         isPending={isPending}
-        
       />
     </div>
   );

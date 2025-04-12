@@ -156,7 +156,7 @@ export const useAddResumptionDate = () => {
     onSettled: () => {
       // Invalidate and refetch after either success or error
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+        queryKey: [QUERY_KEYS.GET_RESUMPTION_DATE],
         exact: false, // Invalidate all variants
       });
     },
