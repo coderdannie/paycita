@@ -11,6 +11,7 @@ import { useGetEmployeeById } from '@/src/api/hooks/dashboard/useDashboard';
 import { useParams } from 'next/navigation';
 import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 import Documents from '@/src/components/data/EmployeeMgt/Tabs/Documents';
+import OffBoarding from '@/src/components/data/EmployeeMgt/Tabs/OffBoarding';
 
 const EmployeeDetails = () => {
   const [tab, setTab] = useState(employeeDetailsTabs[0]);
@@ -70,8 +71,10 @@ const EmployeeDetails = () => {
           <PayrollHistory />
         ) : tab.includes('Leave') ? (
           <LeaveHistory leave={employee?.leave} />
-        ) : (
+        ) : tab.includes('Documents') ? (
           <Documents />
+        ) : (
+          <OffBoarding />
         )}
       </div>
     </div>
