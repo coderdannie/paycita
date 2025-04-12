@@ -14,7 +14,6 @@ import {
 } from "@/src/Redux/features/dashboardSlice";
 import { useEffect } from "react";
 import { AddEmployee } from "@/src/utils/validations";
-// import { AddEmployee } from "@/src/types/attendance";
 
 export const useGetAttendance = (filters: {
   page: string;

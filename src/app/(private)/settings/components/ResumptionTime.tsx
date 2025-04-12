@@ -1,26 +1,46 @@
-import { CustomFormField } from '@/src/components/common/CustomInput';
-import { Form } from '@/src/components/ui/form';
+import { useAddResumptionDate } from "@/src/api/hooks/settings/useSettings";
+import { CustomFormField } from "@/src/components/common/CustomInput";
+import { Form } from "@/src/components/ui/form";
 import {
   resumptionDetailsSchema,
   ResumptionDetailsSchemaType,
-} from '@/src/utils/validations';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+} from "@/src/utils/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "react-activity";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const Resumption = () => {
   const form = useForm<ResumptionDetailsSchemaType>({
     resolver: zodResolver(resumptionDetailsSchema),
     defaultValues: {
-      clockIn: '',
-      clockOut: '',
+      resumption_time: "",
+      closing_time: "",
     },
   });
 
   const { control, formState } = form;
   const { errors } = formState;
 
+  const { mutate: mutateAddResumption, isPending } = useAddResumptionDate();
+
   function onSubmit(values: ResumptionDetailsSchemaType) {
     console.log(values);
+    mutateAddResumption(
+      values as {
+        resumption_time: string;
+        closing_time: string;
+      },
+      {
+        onSuccess: (res) => {
+          toast.success(res.data.message);
+        },
+
+        onError: (err) => {
+          toast.error(err.message);
+        },
+      }
+    );
   }
 
   return (
@@ -30,22 +50,27 @@ const Resumption = () => {
           <div className="grid md:grid-cols-2 gap-5 pb-5  max-w-[800px] w-full">
             <CustomFormField
               label="Clock-In"
-              name="clockIn"
+              name="resumption_time"
               control={control}
               placeholder="7:30"
-              error={errors.clockIn?.message}
+              error={errors.resumption_time?.message}
             />
             <CustomFormField
               label="Clock-Out"
-              name="clockOut"
+              name="closing_time"
               control={control}
               placeholder="7:30"
-              error={errors.clockOut?.message}
+              error={errors.closing_time?.message}
             />
           </div>
 
           <div className="flex gap-4 md:justify-end h-[40px] absolute bottom-0 right-0">
-            <button className={`btn-primary px-[30px] `}>Update</button>
+            <button
+              disabled={isPending}
+              className={`btn-primary px-[30px] flex items-center gap-3`}
+            >
+              {isPending && <Spinner />} Update
+            </button>
           </div>
         </form>
       </Form>

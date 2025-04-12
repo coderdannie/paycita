@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { sidebarData } from '../../common/constants';
-import Image from 'next/image';
-import logoutIcon from '../../../../public/assets/logout.svg';
-import { useLogOut } from '@/src/api/hooks/useLogOut';
-import { useAuthSelector } from '@/src/Redux/selectors';
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { sidebarData } from "../../common/constants";
+import Image from "next/image";
+import logoutIcon from "../../../../public/assets/logout.svg";
+import { useLogOut } from "@/src/api/hooks/useLogOut";
+import { useAuthSelector } from "@/src/Redux/selectors";
 
 const Sidebar = () => {
   const userData = useAuthSelector();
   const isVisible = userData?.user?.feature?.employee_loan === "1";
 
   const [showMenu, setShowMenu] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<string>('');
+  const [currentIndex, setCurrentIndex] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
 
-  const logout = useLogOut();
+  const { mutateLogOut: logout } = useLogOut();
 
   const handleLogout = () => {
     setIsLoading(true);
@@ -40,19 +40,21 @@ const Sidebar = () => {
   }) => {
     if (item.sub) {
       // For items with submenus, only toggle the submenu
-      setShowMenu((prev) => prev && currentIndex === item.title ? false : true);
+      setShowMenu((prev) =>
+        prev && currentIndex === item.title ? false : true
+      );
       setCurrentIndex(item.title);
     } else {
       // For items without submenus, navigate immediately
       router.push(item.path);
       setShowMenu(false);
-      setCurrentIndex('');
+      setCurrentIndex("");
     }
   };
 
   // Filter sidebar data to exclude Loan if not visible
-  const filteredSidebarData = sidebarData.filter(item =>
-    item.title !== 'Loan' || isVisible
+  const filteredSidebarData = sidebarData.filter(
+    (item) => item.title !== "Loan" || isVisible
   );
 
   return (
@@ -73,10 +75,11 @@ const Sidebar = () => {
           {filteredSidebarData.map((item) => (
             <div key={item.title} className="mb-2">
               <div
-                className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${pathname.includes(item.path)
-                  ? 'bg-[#F0EAF5] text-primary before:content-[""] before:absolute before:top-0 before:right-[10px] before:h-[50%] before:translate-y-[45%] before:w-[4px] before:bg-primary'
-                  : 'bg-transparent text-[#616161] hover:bg-[#F0EAF5]'
-                  }`}
+                className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${
+                  pathname.includes(item.path)
+                    ? 'bg-[#F0EAF5] text-primary before:content-[""] before:absolute before:top-0 before:right-[10px] before:h-[50%] before:translate-y-[45%] before:w-[4px] before:bg-primary'
+                    : "bg-transparent text-[#616161] hover:bg-[#F0EAF5]"
+                }`}
                 onClick={() => handleMainMenuClick(item)}
               >
                 <span className="mr-4">
@@ -99,10 +102,11 @@ const Sidebar = () => {
                     <Link
                       key={subItem.id}
                       href={subItem.path}
-                      className={`py-2 px-3 rounded-lg text-sm flex items-center gap-2 ${pathname.includes(subItem.path)
-                        ? 'text-primary'
-                        : 'text-[#757575] hover:text-primary'
-                        }`}
+                      className={`py-2 px-3 rounded-lg text-sm flex items-center gap-2 ${
+                        pathname.includes(subItem.path)
+                          ? "text-primary"
+                          : "text-[#757575] hover:text-primary"
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent event bubbling to parent
                         // setShowMenu(false); // Close the submenu after selection

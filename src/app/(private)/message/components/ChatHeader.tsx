@@ -21,7 +21,7 @@ export const ChatHeader = ({ onBackClick }) => {
       <div className="flex items-center">
         <FaUserCircle className="w-10 h-10 text-gray-400 mr-3" />
         <div>
-          <div className="font-semibold">{currentChat.name}</div>
+          <div className="font-semibold">{currentChat.full_name}</div>
           <div className="flex items-center">
             <div
               className={`w-2 h-2 ${

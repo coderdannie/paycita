@@ -71,7 +71,7 @@ const EmployeeDetails = () => {
         ) : tab.includes('Leave') ? (
           <LeaveHistory leave={employee?.leave} />
         ) : (
-          <Documents />
+          <Documents documents={employee?.document} />
         )}
       </div>
     </div>

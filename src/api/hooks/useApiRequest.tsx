@@ -111,7 +111,7 @@ const useApiRequest = (): UseApiRequestResult => {
         if (callback) callback(responseData);
       } catch (error) {
         const errorData: ErrorDataProps = error?.response?.data || {};
-        console.error(errorData);
+        console?.error(errorData);
         setIsSuccess(false);
         const msg =
           errorData?.message || errorData?.error || "Something went wrong";

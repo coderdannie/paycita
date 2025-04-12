@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { BsUpload } from 'react-icons/bs';
-import { RiErrorWarningLine } from 'react-icons/ri';
-import Image from 'next/image';
-import ViewDocDetailsDrawer from '../../modals/ViewDocDetailsDrawer';
+import React, { useState } from "react";
+import { BsUpload } from "react-icons/bs";
+import { RiErrorWarningLine } from "react-icons/ri";
+import Image from "next/image";
+import ViewDocDetailsDrawer from "../../modals/ViewDocDetailsDrawer";
 
 interface Document {
   name: string;
@@ -28,7 +28,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
       console.warn(`Cannot download ${name}: Document not yet uploaded.`);
       return;
     }
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = name;
     document.body.appendChild(link);
@@ -53,7 +53,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
       imageUrl: document.imageUrl,
       fileType:
         document.fileType ||
-        (document.name.endsWith('.pdf') ? 'PDF File' : 'Unknown File'),
+        (document.name.endsWith(".pdf") ? "PDF File" : "Unknown File"),
       size: document.size,
       uploadedBy: document.uploadedBy,
       uploadDate: document.uploadDate,
@@ -70,11 +70,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
     <div>
       {title && (
         <h4 className="text-[#3A3A3ACC] pb-4 ">
-          {title}{' '}
+          {title}{" "}
           <span className="font-semibold">
             ({documents.filter((doc) => doc.uploaded).length}/{documents.length}
             )
-          </span>{' '}
+          </span>{" "}
         </h4>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -83,18 +83,18 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
             key={index}
             className={`border rounded-md shadow-sm p-4 flex items-center justify-between ${
               !doc.uploaded
-                ? 'border-[#FF4D4F] bg-[#FFF4F4]'
-                : 'border-[#E1E3EB] bg-white'
+                ? "border-[#FF4D4F] bg-[#FFF4F4]"
+                : "border-[#E1E3EB] bg-white"
             }`}
           >
             <div className="flex items-center gap-2">
               <Image
                 src={
                   doc.uploaded
-                    ? '/assets/file.svg'
-                    : '/assets/question-mark.svg'
+                    ? "/assets/file.svg"
+                    : "/assets/question-mark.svg"
                 }
-                alt={doc.uploaded ? 'file icon' : 'not uploaded icon'}
+                alt={doc.uploaded ? "file icon" : "not uploaded icon"}
                 width={doc.uploaded ? 30 : 20}
                 height={doc.uploaded ? 30 : 20}
               />
