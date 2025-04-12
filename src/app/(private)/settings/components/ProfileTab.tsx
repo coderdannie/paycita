@@ -140,7 +140,7 @@ const ProfileTab: React.FC = () => {
       <EditProfileModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        formData={profile}
+        formData={profileData}
         onChange={handleInputChange}
         onSave={handleSaveChanges}
       />
