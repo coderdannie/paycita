@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FaSearch, FaUserCircle } from "react-icons/fa";
 import { useChat } from "./chatContext";
 
-
 export const AddNewChatModal = ({ isOpen, onClose }) => {
-  const { users, addNewChat } = useChat();
-  const [searchTerm, setSearchTerm] = useState("");
+  const { users, addNewChat, setSearchTerm, searchTerm } = useChat();
+  // const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -19,10 +18,6 @@ export const AddNewChatModal = ({ isOpen, onClose }) => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleAddChat = () => {
     if (selectedUser) {
@@ -79,7 +74,7 @@ export const AddNewChatModal = ({ isOpen, onClose }) => {
             />
           </div>
           <div className="mt-4 max-h-64 overflow-y-auto flex-grow">
-            {filteredUsers.map((user) => (
+            {users?.map((user) => (
               <div
                 key={user.id}
                 className={`flex items-center p-2 hover:bg-gray-100 cursor-pointer ${
@@ -89,8 +84,8 @@ export const AddNewChatModal = ({ isOpen, onClose }) => {
               >
                 <FaUserCircle className="w-10 h-10 text-gray-400 mr-3" />
                 <div className="flex-grow">
-                  <div className="font-medium">{user.name}</div>
-                  <div className="text-sm text-gray-500">{user.department}</div>
+                  <div className="font-medium">{user.full_name}</div>
+                  <div className="text-sm text-gray-500">{user.job_title}</div>
                 </div>
               </div>
             ))}

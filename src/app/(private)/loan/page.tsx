@@ -1,16 +1,48 @@
-'use client';
+"use client";
 
-import TableLayer from '@/src/components/data/Loan/TableLayer';
-import { Button } from '@/src/components/ui/button';
-import SearchInput from '@/src/components/ui/SearchInput';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+import { useGetAllLoan } from "@/src/api/hooks/loan/useLoan";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import TableLayer from "@/src/components/data/Loan/TableLayer";
+import { Button } from "@/src/components/ui/button";
+import SearchInput from "@/src/components/ui/SearchInput";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 
 const Loan = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const updateSearchParams = useUpdateSearchParams();
+  const currentPage = searchParams.get("page") || "1";
+  const [searchTerm, setSearchTerm] = useState("");
 
   const router = useRouter();
 
+  const {
+    loans,
+    pagination,
+    isLoading: isPending,
+  } = useGetAllLoan({
+    page: currentPage.toString(),
+  });
+
+  console.log(loans);
+
+  const goToPage = useCallback(
+    (page: number) => {
+      updateSearchParams(
+        { page: page.toString() },
+        {
+          scroll: true,
+        }
+      );
+    },
+    [updateSearchParams]
+  );
+
+  if (isPending) {
+    return <LoadingOverlay />;
+  }
   return (
     <div>
       <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl">Loan</h2>
@@ -22,11 +54,20 @@ const Loan = () => {
             setValue={setSearchTerm}
           />
         </div>
-        <Button onClick={() => router.push('/loan/request')}>
+        <Button onClick={() => router.push("/loan/request")}>
           Create Loan
         </Button>
       </div>
-      <TableLayer />
+      <TableLayer loans={loans} />{" "}
+      <div className="mt-6">
+        {pagination?.total_pages > 1 && (
+          <CustomPagination
+            totalPages={pagination?.total_pages}
+            currentPage={+currentPage}
+            goToPage={goToPage}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { FiX } from "react-icons/fi";
-
-interface BankDetails {
-  bankName: string;
-  accountNumber: string;
-  accountName: string;
-}
+import { BankDetails } from "../BankAccountTab";
 
 interface BankDetailsModalProps {
   isOpen: boolean;
@@ -73,8 +68,8 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                   Select Your Bank
                 </label>
                 <select
-                  name="bankName"
-                  value={formData.bankName}
+                  name="bank_name"
+                  value={formData.bank_name}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
                   required
@@ -92,8 +87,8 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  name="accountNumber"
-                  value={formData.accountNumber}
+                  name="bank_account_number"
+                  value={formData.bank_account_number}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
                   required
@@ -105,8 +100,8 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  name="accountName"
-                  value={formData.accountName}
+                  name="bank_account_name"
+                  value={formData.bank_account_name}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
                   required
