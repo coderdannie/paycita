@@ -5,11 +5,13 @@ import Image from "next/image";
 import { HiOutlineBell } from "react-icons/hi2";
 import { IoMenuSharp } from "react-icons/io5";
 import SideDrawer from "./SideDrawer";
-import { useAuthSelector } from "@/src/Redux/selectors";
+
+import { useGetAllProfileSettings } from "@/src/api/hooks/settings/useSettings";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { user } = useAuthSelector();
+
+  const { profile = {} } = useGetAllProfileSettings();
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -35,7 +37,7 @@ const Header = () => {
           {/* User Profile */}
           <div className="flex items-center gap-3">
             <Image
-              src={user?.company_logo || ""}
+              src={profile?.profile_picture ?? "/assets/doc.png"}
               alt="User profile"
               className="w-10 h-10 rounded-full object-cover object-top shadow"
               width={40}
@@ -43,7 +45,7 @@ const Header = () => {
               priority
             />
             <span className="text-[#11142D] font-medium text-sm">
-              {user?.full_name}
+              {profile?.full_name}
             </span>
           </div>
         </div>

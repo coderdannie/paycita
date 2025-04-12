@@ -1,18 +1,18 @@
-'use client';
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoClose } from 'react-icons/io5';
-import Image from 'next/image';
+"use client";
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoClose } from "react-icons/io5";
+import Image from "next/image";
 
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
   documentInfo?: {
-    imageUrl?: string;
-    fileType?: string;
-    size?: string;
-    uploadedBy?: string;
-    uploadDate?: string;
+    imageUrl?: string; // URL of the document
+    fileType?: string; // Type of the file (e.g., PDF, Image)
+    size?: string; // File size
+    uploadedBy?: string; // Who uploaded the file
+    uploadDate?: string; // When the file was uploaded
   };
 }
 
@@ -23,14 +23,14 @@ const ViewDocDetailsDrawer: React.FC<DrawerProps> = ({
 }) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === "Escape") onClose();
     };
 
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'auto';
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
     };
   }, [isOpen, onClose]);
 
@@ -49,17 +49,17 @@ const ViewDocDetailsDrawer: React.FC<DrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: 'tween', duration: 0.2 }}
+            transition={{ type: "tween", duration: 0.2 }}
             className="fixed inset-0 bg-black z-50"
             onClick={onClose}
           />
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-[350px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
@@ -72,41 +72,58 @@ const ViewDocDetailsDrawer: React.FC<DrawerProps> = ({
 
             {/* Content */}
             <div className="p-6 flex-grow overflow-y-auto">
-              {!imageUrl && (
+              {/* Document Preview */}
+              {fileType?.toLowerCase().includes("image") && imageUrl ? (
                 <div className="relative w-full h-40 rounded-md overflow-hidden mb-4">
                   <Image
-                    src="/assets/doc.png"
-                    alt="Document Preview"
                     fill
-                    style={{ objectFit: 'cover' }}
+                    src={imageUrl}
+                    alt="Document Preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : fileType?.toLowerCase().includes("pdf") && imageUrl ? (
+                <div className="relative w-full h-40 rounded-md overflow-hidden mb-4">
+                  <iframe
+                    src={imageUrl}
+                    title="PDF Preview"
+                    className="w-full h-full"
+                  />
+                </div>
+              ) : (
+                <div className="relative w-full h-40 rounded-md overflow-hidden mb-4">
+                  <Image
+                    fill
+                    src="/assets/doc.png"
+                    alt="Document Placeholder"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
 
+              {/* Document Details */}
+              <div className="mb-3 flex items-center gap-8">
+                <h6 className="text-sm font-medium text-[#344054]">File Type</h6>
+                <p className="text-sm text-[#1D2939]">{fileType || "N/A"}</p>
+              </div>
+
+              <div className="mb-3 flex items-center gap-8">
+                <h6 className="text-sm font-medium text-[#344054]">Size</h6>
+                <p className="text-sm text-[#1D2939]">{size || "N/A"}</p>
+              </div>
+
               <div className="mb-3 flex items-center gap-8">
                 <h6 className="text-sm font-medium text-[#344054]">
-                  File Type
-                </h6>
-                <p className="text-sm text-[#1D2939]">{fileType || 'N/A'}</p>
-              </div>
-
-              <div className="mb-3 flex items-center gap-8 ">
-                <h6 className="text-sm font-medium text-[#344054] 1">Size</h6>
-                <p className="text-sm text-[#1D2939]">{size || 'N/A'}</p>
-              </div>
-
-              <div className="mb-3 flex items-center gap-8 ">
-                <h6 className="text-sm font-medium text-[#344054] ">
                   Uploaded by
                 </h6>
-                <p className="text-sm text-[#1D2939]">{uploadedBy || 'N/A'}</p>
+                <p className="text-sm text-[#1D2939]">{uploadedBy || "N/A"}</p>
               </div>
 
-              <div className="mb-3 flex items-center gap-8 ">
-                <h6 className="text-sm font-medium text-[#344054] ">
+              <div className="mb-3 flex items-center gap-8">
+                <h6 className="text-sm font-medium text-[#344054]">
                   Upload Date
                 </h6>
-                <p className="text-sm text-[#1D2939]">{uploadDate || 'N/A'}</p>
+                <p className="text-sm text-[#1D2939]">{uploadDate || "N/A"}</p>
               </div>
             </div>
           </motion.div>
@@ -115,4 +132,5 @@ const ViewDocDetailsDrawer: React.FC<DrawerProps> = ({
     </AnimatePresence>
   );
 };
+
 export default ViewDocDetailsDrawer;

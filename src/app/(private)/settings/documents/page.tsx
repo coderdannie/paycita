@@ -3,10 +3,14 @@
 import DocumentList from "@/src/components/data/EmployeeMgt/DocumentList";
 import Layout from "../components/Layout";
 import SettingsTabs from "../components/SettingsTabs";
-import { useGetEmployeeById } from "@/src/api/hooks/dashboard/useDashboard";
-import { useAuthSelector } from "@/src/Redux/selectors";
+
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { useMemo } from "react";
+import {
+  useGetAllProfileSettings,
+  useUploadDocument,
+} from "@/src/api/hooks/settings/useSettings";
+import toast from "react-hot-toast";
 
 interface Document {
   name: string;
@@ -16,11 +20,32 @@ interface Document {
 }
 
 const Documents = () => {
-  const userData = useAuthSelector();
-  const { employee, isPending } = useGetEmployeeById(userData?.user?.id);
+  const { profile = {}, isLoading: isPending } = useGetAllProfileSettings();
+
+  const { mutate: uploadDocument } = useUploadDocument();
+
+  const handleDocumentUpload = (file: File, documentName: string) => {
+    const formattedDocumentName = documentName
+      .toLowerCase()
+      .replace(/\s+/g, "_");
+
+    const formData = new FormData();
+    formData.append(formattedDocumentName, file);
+    formData.append("document_name", formattedDocumentName); // Include the transformed name as metadata
+
+    uploadDocument(formData, {
+      onSuccess: () => {
+        toast.success("Document Updated Successfully");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        console.error(`Failed to upload ${formattedDocumentName}:`, error);
+      },
+    });
+  };
 
   const { totalDocuments, uploadedCount, documentGroups } = useMemo(() => {
-    const documents = employee?.documents || {};
+    const documents = profile || {};
 
     const applicationDocuments: Document[] = [
       {
@@ -88,7 +113,7 @@ const Documents = () => {
         { title: "Guarantors Identification", documents: guarantorDocuments2 },
       ],
     };
-  }, [employee?.documents]);
+  }, [profile]);
 
   if (isPending) {
     return <LoadingOverlay />;
@@ -106,7 +131,11 @@ const Documents = () => {
 
         {documentGroups.map((group, index) => (
           <div key={index} className={index > 0 ? "mt-6" : ""}>
-            <DocumentList title={group.title} documents={group.documents} />
+            <DocumentList
+              title={group.title}
+              documents={group.documents}
+              onUpload={handleDocumentUpload}
+            />
           </div>
         ))}
       </div>

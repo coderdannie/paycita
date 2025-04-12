@@ -37,7 +37,7 @@ export const useGetAllProfileSettings = () => {
     isSuccess,
     isLoading: isPending && !isFetching, // Distinguish between initial load and background refresh
     isFetching,
-    profile: data?.data?.data || [],
+    profile: data?.data?.data || {},
     pagination: data?.data?.pagination || {},
     rawData: data, // Provide access to raw response if needed
   };
@@ -99,8 +99,6 @@ export const useUpdateProfilePicture = () => {
 };
 
 export const useChangePassword = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (passwordData: {
       old_password: string;
@@ -109,62 +107,15 @@ export const useChangePassword = () => {
       const response = await settingsService.changePassword(passwordData);
       return response;
     },
-    onMutate: async (newProfile) => {
-      // Cancel any outgoing refetches to avoid overwriting optimistic update
-      await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
-      });
-
-      // Snapshot the previous value
-      const previousChat = queryClient.getQueryData([
-        QUERY_KEYS.GET_ALL_PROFILE,
-      ]);
-
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROFILE],
-        (old: {
-          data: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data: any[];
-          };
-        }) => {
-          const newData = { ...old };
-          if (newData?.data?.data) {
-            newData.data.data = [newProfile, ...newData.data.data];
-          }
-          return newData;
-        }
-      );
-
-      // Return a context object with the snapshotted value
-      return { previousChat };
-    },
-    onError: (err, newProfile, context) => {
-      // Rollback to the previous value if mutation fails
-      queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_PROFILE],
-        context?.previousChat
-      );
-
-      // More robust error handling
-      if (err instanceof AxiosError) {
-        const errorMessage =
-          err.response?.data?.message || "Failed to create chat";
-        throw new Error(errorMessage);
-      } else {
-        throw err;
-      }
-    },
-    onSettled: () => {
-      // Invalidate and refetch after either success or error
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
-        exact: false, // Invalidate all variants
-      });
+    onError: (err: AxiosError) => {
+      const errorMessage =
+        (err.response?.data as { message?: string })?.message ||
+        "Failed to change password";
+      throw new Error(errorMessage);
     },
   });
 };
+
 export const useAddResumptionDate = () => {
   const queryClient = useQueryClient();
 
@@ -243,4 +194,59 @@ export const useGetResumptionTime = () => {
     pagination: data?.data?.pagination || {},
     rawData: data,
   };
+};
+
+export const useUploadDocument = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentData: FormData) => {
+      const response = await settingsService.uploadDocuments(documentData);
+      return response.data; // Return the actual response data
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+
+      const previousProfile = queryClient.getQueryData([
+        QUERY_KEYS.GET_ALL_PROFILE,
+      ]);
+
+      return { previousProfile };
+    },
+    onSuccess: (data) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      queryClient.setQueryData([QUERY_KEYS.GET_ALL_PROFILE], (oldData: any) => {
+        return {
+          ...oldData,
+          data: {
+            ...oldData?.data,
+            documents: data.documents, // Update the documents in the profile
+          },
+        };
+      });
+    },
+    onError: (err, newDocument, context) => {
+      if (context?.previousProfile) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_ALL_PROFILE],
+          context.previousProfile
+        );
+      }
+
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to upload document";
+        throw new Error(errorMessage);
+      } else {
+        throw err;
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+    },
+  });
 };

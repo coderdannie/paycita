@@ -12,7 +12,10 @@ import { useAuthSelector } from "@/src/Redux/selectors";
 
 const Sidebar = () => {
   const userData = useAuthSelector();
+
   const isVisible = userData?.user?.feature?.employee_loan === "1";
+
+  const companyLogo = userData?.user?.company_logo;
 
   const [showMenu, setShowMenu] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<string>("");
@@ -60,12 +63,14 @@ const Sidebar = () => {
   return (
     <div className="flex flex-col justify-between fixed z-50 w-[252px] bg-white h-screen overflow-hidden">
       {/* Fixed Header */}
-      <div className="sticky top-0 bg-white z-10 pt-[40px] pl-5 pb-4">
+      <div className="sticky top-0 bg-white z-10 pt-[40px] pl-5 pb-4 max-h-32">
         <Image
-          src="/assets/logo.jpg"
-          alt="paycita logo"
+          src={companyLogo || "/assets/logo.jpg"}
+          alt="logo"
           width={100}
           height={100}
+          className="w-24 h-24 object-contain"
+          priority
         />
       </div>
 
@@ -134,7 +139,13 @@ const Sidebar = () => {
           </div>
         ) : (
           <div className="flex items-center text-sm text-[#344054] justify-center gap-2 w-full">
-            <Image src={logoutIcon} alt="logout icon" />
+            <Image
+              width={100}
+              height={100}
+              src={logoutIcon}
+              alt="logout icon"
+              className="w-auto h-auto"
+            />
             <p>Logout</p>
           </div>
         )}

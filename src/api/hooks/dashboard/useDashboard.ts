@@ -203,3 +203,45 @@ export const useGetEmployeeById = (id: string) => {
     isPending,
   };
 };
+
+export const useOffBoardEmployee = () => {
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: offBoardEmployee,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (data: { items: string[]; employee_id: string }) => {
+      const response = await dashboardService.offBoardEmployee(data);
+      return response;
+    },
+    onSuccess: () => {
+      // Refetch the employee list or any relevant queries after successful offboarding
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+      });
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      console.error("Error offboarding employee:", error.response.data.message);
+    },
+  });
+
+  return {
+    offBoardEmployee, // Mutation function to trigger the offboarding
+    isPending, // Loading state
+    isSuccess, // Success state
+    isError, // Error state
+  };
+};
+

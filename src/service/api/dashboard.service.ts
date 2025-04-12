@@ -106,6 +106,12 @@ const getEmployeeById = (id: string) => {
   return api.get(`/hr/employee/${id}`);
 };
 
+const offBoardEmployee = (data: { items: string[]; employee_id: string }) => {
+  return api.delete("/hr/employee-offboarding", {
+    data,
+  });
+};
+
 const dashboardService = {
   getAttendance,
   addEmployee,
@@ -114,6 +120,7 @@ const dashboardService = {
   getGivenItems,
   getAllEmployees,
   getEmployeeById,
+  offBoardEmployee,
 };
 
 export default dashboardService;

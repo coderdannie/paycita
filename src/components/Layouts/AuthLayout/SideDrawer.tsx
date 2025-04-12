@@ -46,7 +46,7 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
         } lg:translate-x-0 overflow-y-auto`}
       >
         <div className="flex flex-col justify-between h-full">
-          <div className="sticky z-40 top-0 pl-5 pt-[40px] bg-white h-[140px] flex items-center">
+          <div className="sticky z-40 top-0 pl-5 pt-[40px] bg-white h-[140px] flex items-center max-h-32">
             {" "}
             {/* Sticky logo container */}
             <Image
@@ -54,7 +54,7 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
               alt="paycita logo"
               width={100}
               height={100}
-              className="object-contain"
+              className="w-24 h-24 object-contain"
             />
           </div>
           <div className="mt-0">

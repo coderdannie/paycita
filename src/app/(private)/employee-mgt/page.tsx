@@ -166,7 +166,7 @@ const EmployeeMgt = () => {
   const renderStatusBadge = useCallback(
     (status: string) => (
       <span
-        className={`py-[5px] w-[50%] text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
+        className={`py-[5px]  text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
         ${
           status?.toLowerCase() === "active"
             ? "text-green-600 border-[#89D8A9] bg-[#F5FFFA]"
@@ -236,7 +236,9 @@ const EmployeeMgt = () => {
                 <TableCell>{row.email}</TableCell>
                 <TableCell>{row.job_title ?? "N/A"}</TableCell>
                 <TableCell>{row.job_level ?? "N/A"}</TableCell>
-                <TableCell>{renderStatusBadge(row.status)}</TableCell>
+                <TableCell>
+                  {renderStatusBadge(row.status?.replace("_", " "))}
+                </TableCell>
                 <TableCell>
                   <Link
                     href={`/employee-mgt/${row.id}`}
