@@ -197,7 +197,7 @@ export function CustomFormSelect<T extends FieldValues>({
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   {Array.isArray(items) &&
-                    items.map((item) => (
+                    items?.map((item) => (
                       <SelectItem key={item} value={item}>
                         {item}
                       </SelectItem>

@@ -1,30 +1,139 @@
-import React, { useState } from "react";
-import { FiX } from "react-icons/fi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import * as z from "zod";
+import { FiX, FiCheck } from "react-icons/fi";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
+import { Input } from "@/src/components/ui/input";
+import { useChangePassword } from "@/src/api/hooks/settings/useSettings";
+import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+
+// Enhanced password validation schema
+const passwordResetSchema = z
+  .object({
+    old_password: z.string().min(8, {
+      message: "Old password must be at least 8 characters.",
+    }),
+    new_password: z
+      .string()
+      .min(8, {
+        message: "Password must be at least 8 characters.",
+      })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter.",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter.",
+      })
+      .regex(/[0-9]/, {
+        message: "Password must contain at least one number.",
+      })
+      .regex(/[^A-Za-z0-9]/, {
+        message: "Password must contain at least one special character.",
+      }),
+    confirm_password: z.string().min(8, {
+      message: "Confirm password must be at least 8 characters.",
+    }),
+  })
+  .refine((data) => data.new_password === data.confirm_password, {
+    message: "Passwords don't match",
+    path: ["confirm_password"],
+  });
+
+type PasswordResetFormValues = z.infer<typeof passwordResetSchema>;
 
 interface PasswordResetModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface PasswordValidation {
+  minLength: boolean;
+  hasUpperCase: boolean;
+  hasLowerCase: boolean;
+  hasNumber: boolean;
+  hasSpecialChar: boolean;
+}
+
 const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [formData, setFormData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  const form = useForm<PasswordResetFormValues>({
+    resolver: zodResolver(passwordResetSchema),
+    defaultValues: {
+      old_password: "",
+      new_password: "",
+      confirm_password: "",
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const { mutate: mutateChangePassword, isPending } = useChangePassword();
+  const newPassword = useWatch({
+    control: form.control,
+    name: "new_password",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle password reset logic here
-    onClose();
+  const [passwordValidation, setPasswordValidation] =
+    useState<PasswordValidation>({
+      minLength: false,
+      hasUpperCase: false,
+      hasLowerCase: false,
+      hasNumber: false,
+      hasSpecialChar: false,
+    });
+
+  useEffect(() => {
+    if (!newPassword) {
+      setPasswordValidation({
+        minLength: false,
+        hasUpperCase: false,
+        hasLowerCase: false,
+        hasNumber: false,
+        hasSpecialChar: false,
+      });
+      return;
+    }
+
+    setPasswordValidation({
+      minLength: newPassword.length >= 8,
+      hasUpperCase: /[A-Z]/.test(newPassword),
+      hasLowerCase: /[a-z]/.test(newPassword),
+      hasNumber: /[0-9]/.test(newPassword),
+      hasSpecialChar: /[^A-Za-z0-9]/.test(newPassword),
+    });
+  }, [newPassword]);
+
+  const onSubmit = async (data: PasswordResetFormValues) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirm_password, ...payload } = data;
+
+    mutateChangePassword(
+      payload as {
+        old_password: string;
+        new_password: string;
+      },
+      {
+        onSuccess: (res) => {
+          toast.success(res.data.message);
+          form.reset();
+          onClose();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+          console.error("Error changing password:", error);
+        },
+      }
+    );
   };
 
   if (!isOpen) return null;
@@ -52,53 +161,116 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
             <p className="mb-4 text-sm text-gray-600">
               Reset your account password
             </p>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Old Password
-                </label>
-                <input
-                  type="password"
-                  name="oldPassword"
-                  value={formData.oldPassword}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
-                />
-              </div>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+            <div className="mb-4 text-sm text-gray-600">
+              <p>Password requirements:</p>
+              <ul className="space-y-1 mt-1">
+                <li className="flex items-center">
+                  {passwordValidation.minLength ? (
+                    <FiCheck className="text-green-500 mr-2" />
+                  ) : (
+                    <span className="w-5 mr-2"></span>
+                  )}
+                  Minimum 8 characters
+                </li>
+                <li className="flex items-center">
+                  {passwordValidation.hasUpperCase ? (
+                    <FiCheck className="text-green-500 mr-2" />
+                  ) : (
+                    <span className="w-5 mr-2"></span>
+                  )}
+                  At least one uppercase letter (A-Z)
+                </li>
+                <li className="flex items-center">
+                  {passwordValidation.hasLowerCase ? (
+                    <FiCheck className="text-green-500 mr-2" />
+                  ) : (
+                    <span className="w-5 mr-2"></span>
+                  )}
+                  At least one lowercase letter (a-z)
+                </li>
+                <li className="flex items-center">
+                  {passwordValidation.hasNumber ? (
+                    <FiCheck className="text-green-500 mr-2" />
+                  ) : (
+                    <span className="w-5 mr-2"></span>
+                  )}
+                  At least one number (0-9)
+                </li>
+                <li className="flex items-center">
+                  {passwordValidation.hasSpecialChar ? (
+                    <FiCheck className="text-green-500 mr-2" />
+                  ) : (
+                    <span className="w-5 mr-2"></span>
+                  )}
+                  At least one special character
+                </li>
+              </ul>
+            </div>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                Reset Password
-              </button>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="old_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Old Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your old password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your new password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="confirm_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Confirm your new password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500 text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? "Updating..." : "Reset Password"}
+                </Button>
+              </form>
+            </Form>
           </div>
         </div>
       </div>

@@ -72,7 +72,7 @@ const EmployeeDetails = () => {
         ) : tab.includes('Leave') ? (
           <LeaveHistory leave={employee?.leave} />
         ) : tab.includes('Documents') ? (
-          <Documents />
+               <Documents documents={employee?.document} />
         ) : (
           <OffBoarding />
         )}

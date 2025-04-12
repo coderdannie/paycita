@@ -3,23 +3,21 @@ import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import EditProfileModal from "./modals/EditProfileModal";
 import { Pencil } from "lucide-react";
-
-interface ProfileData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  profileImage?: string | null;
-}
+import {
+  useGetAllProfileSettings,
+  useUpdateProfilePicture,
+} from "@/src/api/hooks/settings/useSettings";
+import toast from "react-hot-toast";
 
 const ProfileTab: React.FC = () => {
-  const [profileData, setProfileData] = useState<ProfileData>({
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.johnson@email.com",
-    phoneNumber: "081279354621",
-    profileImage: null,
-  });
+  const { profile } = useGetAllProfileSettings();
+
+  const firstName = profile?.full_name?.split(" ")[0] || "";
+  const lastName = profile?.full_name?.split(" ")[1] || "";
+
+  const { mutate: mutateUploadProfilePicture } = useUpdateProfilePicture();
+
+  const [profileData, setProfileData] = useState<ProfileSettings>(profile);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,11 +29,25 @@ const ProfileTab: React.FC = () => {
       reader.onload = () => {
         setProfileData({
           ...profileData,
-          profileImage: reader.result as string,
+          profile_picture: reader.result as string,
         });
       };
 
       reader.readAsDataURL(file);
+
+      const formData = new FormData();
+      formData.append("profile_picture", file);
+
+      mutateUploadProfilePicture(formData, {
+        onSuccess: (res) => {
+          toast.success(
+            res.data.message || "Profile picture uploaded successfully"
+          );
+        },
+        onError: (error) => {
+          toast.error(error.message || "Error uploading profile picture:");
+        },
+      });
     }
   };
 
@@ -50,7 +62,7 @@ const ProfileTab: React.FC = () => {
   const deleteImage = () => {
     setProfileData({
       ...profileData,
-      profileImage: null,
+      profile_picture: null,
     });
   };
 
@@ -82,9 +94,9 @@ const ProfileTab: React.FC = () => {
       <div className="flex flex-col items-start mb-8">
         <div className="flex justify-between items-center w-full mb-6">
           <div className="w-20 h-20 rounded-full border border-[#667085] overflow-hidden flex items-center justify-center bg-gray-50">
-            {profileData.profileImage ? (
+            {profileData.profile_picture ? (
               <Image
-                src={profileData.profileImage}
+                src={profileData.profile_picture}
                 alt="Profile"
                 width={80}
                 height={80}
@@ -127,13 +139,13 @@ const ProfileTab: React.FC = () => {
           <label className="block text-sm text-gray-500 mb-0.5">
             First Name
           </label>
-          <p className="text-gray-800 font-medium">{profileData.firstName}</p>
+          <p className="text-gray-800 font-medium">{firstName}</p>
         </div>
         <div>
           <label className="block text-sm text-gray-500 mb-0.5">
             Last name
           </label>
-          <p className="text-gray-800 font-medium">{profileData.lastName}</p>
+          <p className="text-gray-800 font-medium">{lastName}</p>
         </div>
         <div>
           <label className="block text-sm text-gray-500 mb-0.5">
@@ -145,7 +157,9 @@ const ProfileTab: React.FC = () => {
           <label className="block text-sm text-gray-500 mb-0.5">
             Phone Number
           </label>
-          <p className="text-gray-800 font-medium">{profileData.phoneNumber}</p>
+          <p className="text-gray-800 font-medium">
+            {profileData.phone_number}
+          </p>
         </div>
       </div>
 

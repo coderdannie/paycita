@@ -1,16 +1,21 @@
+import { useGetAllEmployees } from "@/src/api/hooks/dashboard/useDashboard";
+import { useSearchParams } from "next/navigation";
 import React, {
   createContext,
   useState,
   useContext,
   ReactNode,
   useCallback,
+  useMemo,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export interface User {
+  job_title: string;
+  full_name: string;
   id: string;
-  name: string;
-  department: string;
   profilePicture?: string;
   isOnline: boolean;
 }
@@ -39,37 +44,39 @@ interface ChatContextType {
     messageId: string,
     status: Message["status"]
   ) => void;
+  setSearchTerm: Dispatch<SetStateAction<string>>;
+  searchTerm: string;
 }
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "Emery Korsgard",
-    department: "Project Manager",
-    isOnline: true,
-  },
-  {
-    id: "2",
-    name: "Jason Statham",
-    department: "Marketing",
-    isOnline: true,
-  },
-  {
-    id: "3",
-    name: "Jakob Saris",
-    department: "Human Resources",
-    isOnline: false,
-  },
-  {
-    id: "4",
-    name: "Sarah Johnson",
-    department: "Sales",
-    isOnline: true,
-  },
-];
+// const mockUsers: User[] = [
+//   {
+//     id: "1",
+//     name: "Emery Korsgard",
+//     department: "Project Manager",
+//     isOnline: true,
+//   },
+//   {
+//     id: "2",
+//     name: "Jason Statham",
+//     department: "Marketing",
+//     isOnline: true,
+//   },
+//   {
+//     id: "3",
+//     name: "Jakob Saris",
+//     department: "Human Resources",
+//     isOnline: false,
+//   },
+//   {
+//     id: "4",
+//     name: "Sarah Johnson",
+//     department: "Sales",
+//     isOnline: true,
+//   },
+// ];
 
 export const ChatContext = createContext<ChatContextType>({
-  users: mockUsers,
+  users: {} as User[],
   conversations: {},
   chatList: [],
   isInitialState: true,
@@ -79,12 +86,39 @@ export const ChatContext = createContext<ChatContextType>({
   sendMessage: () => {},
   setIsInitialState: () => {},
   updateMessageStatus: () => {},
+  setSearchTerm: () => {},
+  searchTerm: "",
 });
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [users] = useState<User[]>(mockUsers);
+  const searchParams = useSearchParams();
+
+  const currentPage = searchParams.get("page") || "1";
+  const search = searchParams.get("search") || "";
+  const title = searchParams.get("job_title") || "";
+  const status = searchParams.get("status") || "";
+  const jobLevel = searchParams.get("job_level") || "";
+
+  const [searchTerm, setSearchTerm] = useState(search);
+
+  const filters = useMemo(
+    () => ({
+      page: currentPage,
+      employee_name: searchTerm,
+      job_title: title,
+      status: status,
+      job_level: jobLevel,
+    }),
+    [currentPage, jobLevel, searchTerm, status, title]
+  );
+
+  const { employees } = useGetAllEmployees(filters);
+
+  console.log("employees", employees);
+
+  const [users] = useState<User[]>(employees);
   const [currentChat, setCurrentChat] = useState<User>();
   const [chatList, setChatList] = useState<User[]>([]);
   const [conversations, setConversations] = useState<Record<string, Message[]>>(
@@ -110,10 +144,10 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         ...prev,
         [user.id]: updatedConversation,
       };
-    });  }, []);
+    });
+  }, []);
 
   const addNewChat = useCallback((user: User) => {
-    
     setChatList((prev) => {
       if (!prev.some((existingUser) => existingUser.id === user.id)) {
         return [...prev, user];
@@ -121,7 +155,6 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
       return prev;
     });
 
-    
     setConversations((prev) => {
       if (!prev[user.id]) {
         return {
@@ -163,7 +196,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         content: content.trim(),
         timestamp: new Date(),
         type: "sent",
-        status: "sent", 
+        status: "sent",
       };
 
       setConversations((prev) => ({
@@ -199,6 +232,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         sendMessage,
         setIsInitialState,
         updateMessageStatus,
+        setSearchTerm,
+        searchTerm,
       }}
     >
       {children}
