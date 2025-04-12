@@ -81,9 +81,9 @@ const ProfileTab: React.FC = () => {
       <div className="flex flex-col items-start mb-8">
         <div className="flex justify-between items-center w-full mb-6">
           <div className="w-20 h-20 rounded-full border border-[#667085] overflow-hidden flex items-center justify-center bg-gray-50">
-            {profile.profile_picture ? (
+            {profileData.profile_picture ? (
               <Image
-                src={profile.profile_picture}
+                src={profileData.profile_picture}
                 alt="Profile"
                 width={80}
                 height={80}

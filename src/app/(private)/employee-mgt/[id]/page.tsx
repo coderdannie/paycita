@@ -75,7 +75,7 @@ const EmployeeDetails = () => {
           <Documents documents={employee?.document} />
         ) : (
           <OffBoarding
-            itemsGiven={employee?.employee?.office_items_given ?? {}}
+            itemsGiven={employee?.employee?.office_items_given ?? []}
             status={employee?.employee?.status}
           />
         )}
