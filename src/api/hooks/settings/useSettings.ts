@@ -244,3 +244,58 @@ export const useGetResumptionTime = () => {
     rawData: data,
   };
 };
+
+export const useUploadDocument = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentData: FormData) => {
+      const response = await settingsService.uploadDocuments(documentData);
+      return response.data; // Return the actual response data
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+
+      const previousProfile = queryClient.getQueryData([
+        QUERY_KEYS.GET_ALL_PROFILE,
+      ]);
+
+      return { previousProfile };
+    },
+    onSuccess: (data) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      queryClient.setQueryData([QUERY_KEYS.GET_ALL_PROFILE], (oldData: any) => {
+        return {
+          ...oldData,
+          data: {
+            ...oldData?.data,
+            documents: data.documents, // Update the documents in the profile
+          },
+        };
+      });
+    },
+    onError: (err, newDocument, context) => {
+      if (context?.previousProfile) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_ALL_PROFILE],
+          context.previousProfile
+        );
+      }
+
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to upload document";
+        throw new Error(errorMessage);
+      } else {
+        throw err;
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+    },
+  });
+};

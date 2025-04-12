@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { BsUpload } from "react-icons/bs";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { AiOutlineCloudUpload } from "react-icons/ai"; // New upload icon
 import Image from "next/image";
 import ViewDocDetailsDrawer from "../../modals/ViewDocDetailsDrawer";
 
@@ -20,22 +21,14 @@ interface Document {
 interface DocumentListProps {
   title?: string;
   documents: Document[];
+  onUpload?: (file: File, documentName: string) => void; // New upload handler prop
 }
 
-const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
-  const handleDownload = (url: string | undefined, name: string) => {
-    if (!url) {
-      console.warn(`Cannot download ${name}: Document not yet uploaded.`);
-      return;
-    }
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
+const DocumentList: React.FC<DocumentListProps> = ({
+  title,
+  documents,
+  onUpload,
+}) => {
   const [isDocInfoOpen, setIsDocInfoOpen] = useState(false);
   const [selectedDocumentInfo, setSelectedDocumentInfo] = useState<
     | {
@@ -48,22 +41,59 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
     | undefined
   >(undefined);
 
+  const handleDownload = (url: string | undefined, name: string) => {
+    if (!url) {
+      console.warn(`Cannot download ${name}: Document not yet uploaded.`);
+      return;
+    }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleInfoClick = (document: Document) => {
     setSelectedDocumentInfo({
-      imageUrl: document.imageUrl,
-      fileType:
-        document.fileType ||
-        (document.name.endsWith(".pdf") ? "PDF File" : "Unknown File"),
+      imageUrl: document.url,
+      fileType: document.fileType || getFileTypeFromUrl(document.url),
       size: document.size,
       uploadedBy: document.uploadedBy,
       uploadDate: document.uploadDate,
     });
+
     setIsDocInfoOpen(true);
+  };
+
+  const getFileTypeFromUrl = (url?: string): string => {
+    if (!url) return "Unknown File";
+    const extension = url.split(".").pop()?.toLowerCase();
+    if (
+      ["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension || "")
+    ) {
+      return "Image File";
+    }
+    if (extension === "pdf") {
+      return "PDF File";
+    }
+    return "Unknown File";
   };
 
   const handleCloseDocInfo = () => {
     setIsDocInfoOpen(false);
     setSelectedDocumentInfo(undefined);
+  };
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    documentName: string
+  ) => {
+    const file = e.target.files?.[0];
+    if (file && onUpload) {
+      onUpload(file, documentName);
+    }
   };
 
   return (
@@ -95,8 +125,10 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
                     : "/assets/question-mark.svg"
                 }
                 alt={doc.uploaded ? "file icon" : "not uploaded icon"}
-                width={doc.uploaded ? 30 : 20}
-                height={doc.uploaded ? 30 : 20}
+                width={30}
+                height={30}
+                style={{ width: "auto", height: "auto" }} // Ensure aspect ratio is maintained
+                className="object-contain"
               />
               <div>
                 <h4 className="font-medium text-sm">{doc.name}</h4>
@@ -112,8 +144,22 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              {!doc.uploaded ? (
-                <RiErrorWarningLine className="w-5 h-5 font-semibold text-[#FF4D4F]" />
+              {!doc.uploaded && onUpload ? (
+                <>
+                  <label
+                    htmlFor={`upload-${index}`}
+                    className="text-gray-600 hover:text-purple-700 focus:outline-none cursor-pointer"
+                    aria-label={`Upload ${doc.name}`}
+                  >
+                    <AiOutlineCloudUpload className="w-5 h-5 font-semibold" />
+                  </label>
+                  <input
+                    id={`upload-${index}`}
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, doc.name)}
+                  />
+                </>
               ) : (
                 <>
                   <button
@@ -124,7 +170,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ title, documents }) => {
                     <BsUpload className="w-4 h-4 font-semibold" />
                   </button>
                   <button
-                    onClick={() => handleInfoClick(doc)} // Call handleInfoClick here
+                    onClick={() => handleInfoClick(doc)}
                     className="text-gray-600 hover:text-purple-700 focus:outline-none"
                     aria-label={`View info about ${doc.name}`}
                   >

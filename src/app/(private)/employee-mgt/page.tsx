@@ -236,7 +236,9 @@ const EmployeeMgt = () => {
                 <TableCell>{row.email}</TableCell>
                 <TableCell>{row.job_title ?? "N/A"}</TableCell>
                 <TableCell>{row.job_level ?? "N/A"}</TableCell>
-                <TableCell>{renderStatusBadge(row.status)}</TableCell>
+                <TableCell>
+                  {renderStatusBadge(row.status?.replace("_", " "))}
+                </TableCell>
                 <TableCell>
                   <Link
                     href={`/employee-mgt/${row.id}`}

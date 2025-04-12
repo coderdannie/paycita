@@ -14,7 +14,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab }) => {
       path: "/settings/bank-account",
       key: "bank-account",
     },
-    { name: "User Role", path: "/settings/user-role", key: "user-role" },
+    // { name: "User Role", path: "/settings/user-role", key: "user-role" },
     {
       name: "Resumption Time",
       path: "/settings/resumption-time",

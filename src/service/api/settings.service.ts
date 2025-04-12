@@ -23,12 +23,17 @@ const getResumptionTime = () => {
   return api.get(`/hr/resumption_time`);
 };
 
+const uploadDocuments = (data: FormData) => {
+  return api2.post("/hr/upload-document", data);
+};
+
 const settingsService = {
   getAllProfileSettings,
   updateProfilePicture,
   changePassword,
   addResumptionDate,
   getResumptionTime,
+  uploadDocuments,
 };
 
 export default settingsService;
