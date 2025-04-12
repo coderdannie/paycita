@@ -1,16 +1,23 @@
-import { useAddResumptionDate } from "@/src/api/hooks/settings/useSettings";
+import {
+  useAddResumptionDate,
+  useGetResumptionTime,
+} from "@/src/api/hooks/settings/useSettings";
 import { CustomFormField } from "@/src/components/common/CustomInput";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { Form } from "@/src/components/ui/form";
 import {
   resumptionDetailsSchema,
   ResumptionDetailsSchemaType,
 } from "@/src/utils/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { Spinner } from "react-activity";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const Resumption = () => {
+  const { resumptionDate } = useGetResumptionTime();
+
   const form = useForm<ResumptionDetailsSchemaType>({
     resolver: zodResolver(resumptionDetailsSchema),
     defaultValues: {
@@ -25,7 +32,6 @@ const Resumption = () => {
   const { mutate: mutateAddResumption, isPending } = useAddResumptionDate();
 
   function onSubmit(values: ResumptionDetailsSchemaType) {
-    console.log(values);
     mutateAddResumption(
       values as {
         resumption_time: string;
@@ -35,7 +41,6 @@ const Resumption = () => {
         onSuccess: (res) => {
           toast.success(res.data.message);
         },
-
         onError: (err) => {
           toast.error(err.message);
         },
@@ -43,11 +48,26 @@ const Resumption = () => {
     );
   }
 
+  useEffect(() => {
+    if (resumptionDate) {
+      form.setValue("resumption_time", resumptionDate.resumption_time);
+      form.setValue("closing_time", resumptionDate.closing_time);
+    }
+  }, [form, resumptionDate]);
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <LoadingOverlay />
+      </div>
+    );
+  }
+
   return (
     <div className="h-[300px] relative">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid md:grid-cols-2 gap-5 pb-5  max-w-[800px] w-full">
+          <div className="grid md:grid-cols-2 gap-5 pb-5 max-w-[800px] w-full">
             <CustomFormField
               label="Clock-In"
               name="resumption_time"
@@ -77,4 +97,5 @@ const Resumption = () => {
     </div>
   );
 };
+
 export default Resumption;

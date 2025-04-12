@@ -77,6 +77,9 @@ const EmployeeDetails = () => {
           <OffBoarding
             itemsGiven={employee?.employee?.office_items_given ?? []}
             status={employee?.employee?.status}
+            profilePicture={employee?.employee?.profile_picture}
+            location={employee?.employee?.job_location}
+            title={employee?.employee?.job_title}
           />
         )}
       </div>
