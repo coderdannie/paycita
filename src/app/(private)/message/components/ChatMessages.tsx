@@ -73,39 +73,49 @@ export const ChatMessages = () => {
           </div>
 
           {/* Messages */}
-          {dayMessages.map((message, index) => (
-            <div
-              key={message.id}
-              ref={
-                index === dayMessages.length - 1 ? lastMessageRef : undefined
-              } // Attach ref to the last message
-              className={`flex flex-col mb-2 sm:mb-4 ${
-                message.sender_id !== currentChat.user_id
-                  ? "items-end"
-                  : "items-start"
-              }`}
-            >
+          {dayMessages.map(
+            (
+              message: {
+                id: string;
+                sender_id: string;
+                message: string;
+                created_at: string;
+              },
+              index: number
+            ) => (
               <div
-                className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative ${
+                key={message.id}
+                ref={
+                  index === dayMessages.length - 1 ? lastMessageRef : undefined
+                } // Attach ref to the last message
+                className={`flex flex-col mb-2 sm:mb-4 ${
                   message.sender_id !== currentChat.user_id
-                    ? "bg-[#692E9F] text-white"
-                    : "bg-gray-200 text-black"
+                    ? "items-end"
+                    : "items-start"
                 }`}
               >
-                {message.message}
+                <div
+                  className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative ${
+                    message.sender_id !== currentChat.user_id
+                      ? "bg-[#692E9F] text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                >
+                  {message.message}
 
-                {/* Message Status */}
-                {message.sender_id !== currentChat.user_id && (
-                  <div className="absolute bottom-1 right-2">
-                    <FaCheck className="text-blue-500" size={10} />
-                  </div>
-                )}
+                  {/* Message Status */}
+                  {message.sender_id !== currentChat.user_id && (
+                    <div className="absolute bottom-1 right-2">
+                      <FaCheck className="text-blue-500" size={10} />
+                    </div>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  {format(new Date(message.created_at), "p")}
+                </span>
               </div>
-              <span className="text-xs text-gray-500 mt-1">
-                {format(new Date(message.created_at), "p")}
-              </span>
-            </div>
-          ))}
+            )
+          )}
         </div>
       ))}
     </div>

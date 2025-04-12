@@ -27,7 +27,7 @@ export interface Message {
   created_at: string | number | Date;
   message: string;
   id: string;
-  userId: string;
+  user_id: string;
   content: string;
   timestamp: Date;
   type: "sent" | "received";
@@ -176,7 +176,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
       const messageId = uuidv4();
       const newMessage: Message = {
         id: messageId,
-        userId: currentChat.id,
+        user_id: currentChat.user_id,
         content: content.trim(),
         timestamp: new Date(),
         type: "sent",
