@@ -1,17 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useChat, User } from "./chatContext";
-import { FaPlus, FaSearch, FaCheck } from "react-icons/fa";
+import { FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { AddNewChatModal } from "./AddNewChatModal";
 import { MessageIcon } from "@/src/assets/Icons";
+import Image from "next/image";
+import { useGetAllChat } from "@/src/api/hooks/chat/useChatQuery";
 
 export const ChatSidebar = ({ onChatSelect }) => {
-  const { chatList, currentChat, selectChat, isInitialState, conversations } =
-    useChat();
+  const { allChats } = useGetAllChat();
+
+  const transformedChats = allChats.map(
+    (chat: {
+      chat_id: string;
+      user_id: {
+        id: string;
+        full_name: string;
+        email: string;
+        profile_picture: string;
+      };
+      created_at: string;
+    }) => ({
+      chat_id: chat?.chat_id,
+      user_id: chat?.user_id?.id,
+      full_name: chat?.user_id?.full_name,
+      email: chat?.user_id?.email,
+      profile_picture: chat?.user_id?.profile_picture,
+      created_at: chat?.created_at,
+    })
+  );
+
+  const { currentChat, selectChat, isInitialState, conversations } = useChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredChatUsers = chatList.filter((user) =>
-    user?.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Load the persisted chat from localStorage on mount
+  useEffect(() => {
+    const savedChat = localStorage.getItem("selectedChat");
+    if (savedChat) {
+      const parsedChat = JSON.parse(savedChat);
+      selectChat(parsedChat);
+    }
+  }, [selectChat]);
+
+  // Save the selected chat to localStorage whenever it changes
+  useEffect(() => {
+    if (currentChat) {
+      localStorage.setItem("selectedChat", JSON.stringify(currentChat));
+    }
+  }, [currentChat]);
+
+  const filteredChatUsers = transformedChats?.filter(
+    (user: { full_name: string }) =>
+      user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChatSelect = (user: User) => {
@@ -19,7 +59,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
     if (onChatSelect) onChatSelect();
   };
 
-  if (isInitialState && chatList.length === 0) {
+  if (isInitialState && transformedChats?.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
         <div className="text-center space-y-4 px-4">
@@ -80,24 +120,22 @@ export const ChatSidebar = ({ onChatSelect }) => {
         </div>
       )}
 
-      <AddNewChatModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-
       <div className="flex-grow overflow-y-auto">
-        {filteredChatUsers.map((user) => {
+        {filteredChatUsers.map((user: User) => {
           // Get the last message for this user
           const lastMessage =
-            conversations[user.id] && conversations[user.id].length > 0
-              ? conversations[user.id][conversations[user.id].length - 1]
+            conversations[user.chat_id] &&
+            conversations[user.chat_id].length > 0
+              ? conversations[user.chat_id][
+                  conversations[user.chat_id].length - 1
+                ]
               : null;
 
-          const isSelected = currentChat?.id === user.id;
+          const isSelected = currentChat?.chat_id === user.chat_id;
 
           return (
             <div
-              key={user.id}
+              key={user.chat_id}
               onClick={() => handleChatSelect(user)}
               className={`flex items-center rounded-lg p-4 cursor-pointer mb-1 mx-2 ${
                 isSelected ? "bg-[#692E9F] text-white" : "hover:bg-gray-100"
@@ -109,7 +147,19 @@ export const ChatSidebar = ({ onChatSelect }) => {
 
               {/* User avatar placeholder */}
               <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 flex-shrink-0">
-                {/* Avatar content */}
+                {user.profile_picture ? (
+                  <Image
+                    width={40}
+                    height={40}
+                    src={user.profile_picture}
+                    alt={user.full_name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gray-300 flex items-center justify-center">
+                    <FaUser className="text-gray-500" />
+                  </div>
+                )}
               </div>
 
               <div className="flex-grow">
@@ -124,9 +174,9 @@ export const ChatSidebar = ({ onChatSelect }) => {
                   }`}
                 >
                   {lastMessage
-                    ? lastMessage.content.length > 30
-                      ? lastMessage.content.substring(0, 30) + "..."
-                      : lastMessage.content
+                    ? lastMessage.message.length > 30
+                      ? lastMessage.message.substring(0, 30) + "..."
+                      : lastMessage.message
                     : "No messages yet"}
                 </div>
               </div>
@@ -139,48 +189,22 @@ export const ChatSidebar = ({ onChatSelect }) => {
                   >
                     {Math.floor(
                       (new Date().getTime() -
-                        new Date(lastMessage.timestamp).getTime()) /
+                        new Date(lastMessage.created_at).getTime()) /
                         60000
                     )}{" "}
                     m Ago
                   </span>
-                )}
-
-                {lastMessage && lastMessage.type === "sent" && (
-                  <div className="flex justify-end">
-                    {lastMessage.status === "sent" && !user.isOnline && (
-                      <FaCheck className="text-blue-500" size={14} />
-                    )}
-                    {(lastMessage.status === "delivered" ||
-                      (lastMessage.status === "sent" && user.isOnline)) && (
-                      <div className="flex">
-                        <FaCheck className="text-gray-400" size={14} />
-                        <FaCheck className="text-gray-400 -ml-1" size={14} />
-                      </div>
-                    )}
-                    {lastMessage.status === "read" && (
-                      <div className="flex">
-                        <FaCheck className="text-blue-500" size={14} />
-                        <FaCheck className="text-blue-500 -ml-1" size={14} />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {!isSelected && (
-                  <div className="mt-1">
-                    {user.isOnline ? (
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    ) : (
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    )}
-                  </div>
                 )}
               </div>
             </div>
           );
         })}
       </div>
+
+      <AddNewChatModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

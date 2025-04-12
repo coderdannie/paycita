@@ -1,6 +1,7 @@
 import React from "react";
-import { FaUserCircle, FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { useChat } from "./chatContext";
+import Image from "next/image";
 
 export const ChatHeader = ({ onBackClick }) => {
   const { currentChat } = useChat();
@@ -19,7 +20,13 @@ export const ChatHeader = ({ onBackClick }) => {
         </button>
       )}
       <div className="flex items-center">
-        <FaUserCircle className="w-10 h-10 text-gray-400 mr-3" />
+        <Image
+          src={currentChat?.profile_picture}
+          alt={currentChat?.full_name}
+          width={40}
+          height={40}
+          className="w-10 h-10 rounded-full mr-3"
+        />
         <div>
           <div className="font-semibold">{currentChat.full_name}</div>
           <div className="flex items-center">

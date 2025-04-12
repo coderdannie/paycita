@@ -1,20 +1,36 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { FaAt } from "react-icons/fa";
 import { useChat } from "./chatContext";
 import SendIcon from "../../../../assets/Send.svg";
 import Image from "next/image";
+import { useComposeChat } from "@/src/api/hooks/chat/useChatQuery";
 
 export const ChatInput = () => {
   const { currentChat, sendMessage } = useChat();
   const [message, setMessage] = useState("");
 
+  const { mutate: mutateComposeMessage } = useComposeChat();
+
   const handleSendMessage = (e) => {
     if (e) {
       e.preventDefault();
     }
+
+    const payload = {
+      chat_id: currentChat?.chat_id,
+      message: message,
+    };
     if (message.trim()) {
-      sendMessage(message);
-      setMessage("");
+      mutateComposeMessage(payload, {
+        onSuccess: () => {
+          console.log("Message sent successfully");
+          sendMessage(message);
+          setMessage("");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      });
     }
   };
 

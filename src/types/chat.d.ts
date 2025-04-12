@@ -7,10 +7,6 @@ interface Chat {
 }
 
 interface ComposeChat {
-  chat_id: string;
-  sender_id: string;
-  message: string;
-  updated_at: string;
-  created_at: string;
-  id: string;
+  chat_id: string; 
+  message: string; 
 }
