@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import BankDetailsModal from "./modals/BankDetailsModal";
 import { Pencil } from "lucide-react";
+import { useGetAllProfileSettings } from "@/src/api/hooks/settings/useSettings";
 
-interface BankDetails {
-  bankName: string;
-  accountNumber: string;
-  accountName: string;
+export interface BankDetails {
+  bank_account_name: string;
+  bank_account_number: string;
+  bank_name: string;
 }
 
 const BankAccountTab: React.FC = () => {
-  const [bankDetails, setBankDetails] = useState<BankDetails>({
-    bankName: "UBA",
-    accountNumber: "09354678829",
-    accountName: "Sarah Johnson",
-  });
+  const { profile } = useGetAllProfileSettings();
+  const [bankDetails, setBankDetails] = useState<BankDetails>(profile);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,19 +28,23 @@ const BankAccountTab: React.FC = () => {
             <label className="block text-sm text-gray-500 mb-1">
               Bank Name
             </label>
-            <p className="text-gray-800">{bankDetails.bankName}</p>
+            <p className="text-gray-800">{bankDetails.bank_name ?? "N/A"}</p>
           </div>
           <div>
             <label className="block text-sm text-gray-500 mb-1">
               Account Number
             </label>
-            <p className="text-gray-800">{bankDetails.accountNumber}</p>
+            <p className="text-gray-800">
+              {bankDetails.bank_account_number ?? "N/A"}
+            </p>
           </div>
           <div>
             <label className="block text-sm text-gray-500 mb-1">
               Account Name
             </label>
-            <p className="text-gray-800">{bankDetails.accountName}</p>
+            <p className="text-gray-800">
+              {bankDetails.bank_account_name ?? "N/A"}
+            </p>
           </div>
         </div>
         <button

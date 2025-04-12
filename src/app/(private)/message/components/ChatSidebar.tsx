@@ -11,12 +11,12 @@ export const ChatSidebar = ({ onChatSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredChatUsers = chatList.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    user?.full_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChatSelect = (user: User) => {
     selectChat(user);
-    if (onChatSelect) onChatSelect(); 
+    if (onChatSelect) onChatSelect();
   };
 
   if (isInitialState && chatList.length === 0) {
@@ -116,7 +116,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
                 <div
                   className={`font-medium ${isSelected ? "text-white" : ""}`}
                 >
-                  {user.name}
+                  {user.full_name}
                 </div>
                 <div
                   className={`text-sm truncate ${

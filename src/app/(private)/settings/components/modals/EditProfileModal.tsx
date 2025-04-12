@@ -1,18 +1,10 @@
 import React from "react";
 import { FiX } from "react-icons/fi";
 
-interface ProfileData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  profileImage?: string | null;
-}
-
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  formData: ProfileData;
+  formData: ProfileSettings;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSave: () => void;
 }
@@ -48,8 +40,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <label className="block mb-1 font-medium">First</label>
             <input
               type="text"
-              name="firstName"
-              value={formData.firstName}
+              name="first_name"
+              value={formData.first_name}
               onChange={onChange}
               className="w-full border rounded-md px-3 py-2"
             />
@@ -59,8 +51,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <label className="block mb-1 font-medium">Last</label>
             <input
               type="text"
-              name="lastName"
-              value={formData.lastName}
+              name="last_name"
+              value={formData.last_name}
               onChange={onChange}
               className="w-full border rounded-md px-3 py-2"
             />
@@ -81,8 +73,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <label className="block mb-1 font-medium">Phone Number</label>
             <input
               type="text"
-              name="phoneNumber"
-              value={formData.phoneNumber}
+              name="phone_number"
+              value={formData.phone_number}
               onChange={onChange}
               className="w-full border rounded-md px-3 py-2"
             />

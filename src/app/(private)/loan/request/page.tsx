@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import {
   CustomFormField,
   CustomFormSelect,
-} from '@/src/components/common/CustomInput';
+} from "@/src/components/common/CustomInput";
 import {
   loanApplicationSchema,
   LoanApplicationSchemaType,
-} from '@/src/utils/validations';
+} from "@/src/utils/validations";
 import {
   Form,
   FormControl,
@@ -15,27 +15,39 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/src/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Textarea } from '@/src/components/ui/textarea';
-import { Checkbox } from '@/src/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-
-const REPAYMENT_PERIOD = ['3 Months', '4 Months'] as string[];
+} from "@/src/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Textarea } from "@/src/components/ui/textarea";
+import { Checkbox } from "@/src/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import {
+  useGetRepaymentPeriod,
+  useRequestLoan,
+} from "@/src/api/hooks/loan/useLoan";
+import { useToast } from "@/src/context/ToastContext";
+import { Loan } from "@/src/types/loan";
+import { Spinner } from "react-activity";
 
 const LoanRequest = () => {
+  const { addToast } = useToast();
   const router = useRouter();
+
+  const { repaymentPeriod } = useGetRepaymentPeriod();
+
+  const { mutate: mutateRequestLoan, isPending: isPendingCreateEvent } =
+    useRequestLoan();
+
   const form = useForm<LoanApplicationSchemaType>({
     resolver: zodResolver(loanApplicationSchema),
     defaultValues: {
-      loanAmount: '',
-      repaymentPeriod: '',
-      loanPurpose: '',
-      agreeToTerms: true,
+      amount: "",
+      loan_payment_plan: "",
+      loan_purpose: "",
+      salary_deduction_agreement: true,
     },
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
   const {
@@ -45,8 +57,15 @@ const LoanRequest = () => {
   } = form;
 
   const onSubmit = (values: LoanApplicationSchemaType) => {
-    console.log(values); // Handle your form submission here
-    router.back();
+    mutateRequestLoan(values as Loan, {
+      onSuccess: (res) => {
+        addToast(res.data.message || "Loan Requested Successfully", "success");
+        router.push("/loan");
+      },
+      onError: (error) => {
+        addToast(error.message, "error");
+      },
+    });
   };
 
   return (
@@ -59,24 +78,27 @@ const LoanRequest = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="pt-4">
             <div className="grid gap-5 pb-5 mt-5">
               <CustomFormField
-                name="loanAmount"
+                name="amount"
                 control={control}
                 label="Loan Amount"
                 placeholder="Enter Amount"
-                error={errors.loanAmount?.message}
+                error={errors.amount?.message}
               />
+
               <CustomFormSelect
-                name="repaymentPeriod"
+                name="loan_payment_plan"
                 control={control}
-                items={REPAYMENT_PERIOD}
+                items={repaymentPeriod.map(
+                  (item: { name: string }) => item.name
+                )}
                 labelText="Repayment Period"
                 holder="Select repayment period"
-                error={errors.repaymentPeriod?.message}
+                error={errors.loan_payment_plan?.message}
               />
 
               <FormField
                 control={control}
-                name="loanPurpose"
+                name="loan_purpose"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="capitalize font-semibold text-sm text-[#1D2939]">
@@ -90,7 +112,7 @@ const LoanRequest = () => {
                       />
                     </FormControl>
                     <FormMessage className="text-red-500">
-                      {errors.loanPurpose?.message}
+                      {errors.loan_purpose?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -100,7 +122,7 @@ const LoanRequest = () => {
               <div className="flex justify-between items-center">
                 <FormField
                   control={control}
-                  name="agreeToTerms"
+                  name="salary_deduction_agreement"
                   render={({ field }) => (
                     <FormItem className="flex items-center space-x-2 rounded-md pr-2">
                       <FormControl>
@@ -117,7 +139,7 @@ const LoanRequest = () => {
                         Salary Deduction Agreement
                       </FormLabel>
                       <FormMessage className="text-red-500">
-                        {errors.agreeToTerms?.message}
+                        {errors.salary_deduction_agreement?.message}
                       </FormMessage>
                     </FormItem>
                   )}
@@ -129,10 +151,10 @@ const LoanRequest = () => {
             </div>
             <Button
               type="submit"
-              className="grid disabled:bg-gray-400 ml-auto"
-              disabled={!isValid}
+              className="flex items-center justify-center gap-3 disabled:bg-gray-400 ml-auto"
+              disabled={!isValid || isPendingCreateEvent}
             >
-              Request
+              {isPendingCreateEvent && <Spinner />} Request
             </Button>
           </form>
         </Form>
