@@ -5,6 +5,7 @@ import { AddNewChatModal } from "./AddNewChatModal";
 import { MessageIcon } from "@/src/assets/Icons";
 import Image from "next/image";
 import { useGetAllChat } from "@/src/api/hooks/chat/useChatQuery";
+import { formatTimeAgo } from "@/src/utils/helper";
 
 export const ChatSidebar = ({ onChatSelect }) => {
   const { allChats } = useGetAllChat();
@@ -29,7 +30,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
     })
   );
 
-  const { currentChat, selectChat, isInitialState, conversations } = useChat();
+  const { currentChat, selectChat, conversations } = useChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -55,11 +56,13 @@ export const ChatSidebar = ({ onChatSelect }) => {
   );
 
   const handleChatSelect = (user: User) => {
-    selectChat(user);
-    if (onChatSelect) onChatSelect();
+    if (currentChat?.chat_id !== user.chat_id) {
+      selectChat(user);
+      if (onChatSelect) onChatSelect();
+    }
   };
 
-  if (isInitialState && transformedChats?.length === 0) {
+  if (transformedChats?.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
         <div className="text-center space-y-4 px-4">
@@ -187,12 +190,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
                       isSelected ? "text-white/80" : "text-gray-500"
                     }`}
                   >
-                    {Math.floor(
-                      (new Date().getTime() -
-                        new Date(lastMessage.created_at).getTime()) /
-                        60000
-                    )}{" "}
-                    m Ago
+                    {formatTimeAgo(lastMessage.updated_at)}
                   </span>
                 )}
               </div>

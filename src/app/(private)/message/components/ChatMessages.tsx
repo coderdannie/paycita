@@ -1,68 +1,76 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { useChat } from "./chatContext";
-import { FaCheck } from "react-icons/fa";
-import { useGetSingleChat } from "@/src/api/hooks/chat/useChatQuery";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 
 export const ChatMessages = () => {
-  const { currentChat } = useChat();
-  const { singleChat, isLoading } = useGetSingleChat(
-    currentChat?.chat_id || ""
+  const { currentChat, conversations, isLoading } = useChat();
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Get conversations for the current chat
+  const currentChatConversations = useMemo(
+    () => conversations[currentChat?.chat_id] || [],
+    [conversations, currentChat?.chat_id]
   );
 
-  // Ref for the last message
-  const lastMessageRef = useRef<HTMLDivElement | null>(null);
-
+  // Group messages by date
   const groupedMessages = useMemo(() => {
-    if (!singleChat?.messages) return {};
+    if (!currentChatConversations.length) return {};
 
-    const groups: Record<string, typeof singleChat.messages> = {};
+    const groups: Record<string, typeof currentChatConversations> = {};
 
-    singleChat.messages.forEach((message) => {
+    currentChatConversations.forEach((message) => {
       const messageDate = new Date(message.created_at);
-      let dateKey: string;
+      const dateKey = isToday(messageDate)
+        ? "Today"
+        : isYesterday(messageDate)
+        ? "Yesterday"
+        : format(messageDate, "MMMM d, yyyy");
 
-      if (isToday(messageDate)) {
-        dateKey = "Today";
-      } else if (isYesterday(messageDate)) {
-        dateKey = "Yesterday";
-      } else {
-        dateKey = format(messageDate, "MMMM d, yyyy");
-      }
-
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
+      if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(message);
     });
 
     return groups;
-  }, [singleChat]);
+  }, [currentChatConversations]);
 
-  // Scroll to the last message when messages change
+  // Removed redundant scrolling logic
+
   useEffect(() => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView();
-    }
-  }, [singleChat]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentChatConversations]);
 
-  if (isLoading) {
-    return <LoadingOverlay />;
+  // If no chat is selected, show a placeholder
+  if (!currentChat) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Select a chat to start messaging
+      </div>
+    );
   }
 
-  if (!currentChat) return null;
-
-  if (singleChat?.messages?.length === 0) {
+  // If messages are loading, show a loading indicator
+  if (isLoading) {
     return (
-      <div className="flex-grow flex justify-center items-end p-4 text-gray-500">
-        <p>No messages yet. Start the conversation!</p>
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Loading messages...
+      </div>
+    );
+  }
+
+  // If there are no messages, show a placeholder
+  if (!currentChatConversations.length) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        No messages yet. Start the conversation!
       </div>
     );
   }
 
   return (
-    <div className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
+    <div
+      ref={null}
+      className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
+    >
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
         <div key={date}>
           {/* Date Header */}
@@ -73,51 +81,32 @@ export const ChatMessages = () => {
           </div>
 
           {/* Messages */}
-          {dayMessages.map(
-            (
-              message: {
-                id: string;
-                sender_id: string;
-                message: string;
-                created_at: string;
-              },
-              index: number
-            ) => (
+          {dayMessages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex flex-col mb-2 sm:mb-4 ${
+                message.sender_id === currentChat?.user_id
+                  ? "items-start"
+                  : "items-end"
+              }`}
+            >
               <div
-                key={message.id}
-                ref={
-                  index === dayMessages.length - 1 ? lastMessageRef : undefined
-                } // Attach ref to the last message
-                className={`flex flex-col mb-2 sm:mb-4 ${
-                  message.sender_id !== currentChat.user_id
-                    ? "items-end"
-                    : "items-start"
+                className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg ${
+                  message.sender_id === currentChat?.user_id
+                    ? "bg-gray-200 text-black"
+                    : "bg-[#692E9F] text-white"
                 }`}
               >
-                <div
-                  className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative ${
-                    message.sender_id !== currentChat.user_id
-                      ? "bg-[#692E9F] text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
-                  {message.message}
-
-                  {/* Message Status */}
-                  {message.sender_id !== currentChat.user_id && (
-                    <div className="absolute bottom-1 right-2">
-                      <FaCheck className="text-blue-500" size={10} />
-                    </div>
-                  )}
-                </div>
-                <span className="text-xs text-gray-500 mt-1">
-                  {format(new Date(message.created_at), "p")}
-                </span>
+                {message.message}
               </div>
-            )
-          )}
+              <span className="text-xs text-gray-500 mt-1">
+                {format(new Date(message.updated_at), "p")}
+              </span>
+            </div>
+          ))}
         </div>
       ))}
+      <div ref={bottomRef} />
     </div>
   );
 };

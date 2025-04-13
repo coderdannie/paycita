@@ -1,225 +1,188 @@
-import { useGetAllColleagues } from "@/src/api/hooks/chat/useChatQuery";
-
 import React, {
   createContext,
   useState,
   useContext,
   ReactNode,
   useCallback,
-  Dispatch,
-  SetStateAction,
+  useEffect,
+  useRef,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { subscribeToChannel } from "@/src/service/api/pusher.service";
+import { playReceivedSound, playSentSound } from "@/src/utils/audio";
+import { useGetSingleChat } from "@/src/api/hooks/chat/useChatQuery";
+import isEqual from "lodash.isequal";
 
 export interface User {
-  email: ReactNode;
-  profile_picture: string;
+  sender_id: string;
   chat_id: string;
   user_id: string;
-  job_title: string;
   full_name: string;
-  id: string;
-  profilePicture?: string;
+  profile_picture: string;
   isOnline: boolean;
 }
 
 export interface Message {
-  created_at: string | number | Date;
-  message: string;
+  updated_at: string 
+  sender_id: string;
   id: string;
   user_id: string;
-  content: string;
-  timestamp: Date;
+  message: string;
+  created_at: string;
   type: "sent" | "received";
   status: "sent" | "delivered" | "read";
 }
 
 interface ChatContextType {
-  users: User[];
   currentChat?: User;
   conversations: Record<string, Message[]>;
   chatList: User[];
-  isInitialState: boolean;
   selectChat: (user: User) => void;
   addNewChat: (user: User) => void;
-  sendMessage: (content: string) => void;
-  setIsInitialState: (state: boolean) => void;
-  updateMessageStatus: (
-    userId: string,
-    messageId: string,
-    status: Message["status"]
-  ) => void;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
-  searchTerm: string;
+  sendMessage: (content: string) => Promise<void>;
+  isLoading: boolean;
 }
 
-// const mockUsers: User[] = [
-//   {
-//     id: "1",
-//     name: "Emery Korsgard",
-//     department: "Project Manager",
-//     isOnline: true,
-//   },
-//   {
-//     id: "2",
-//     name: "Jason Statham",
-//     department: "Marketing",
-//     isOnline: true,
-//   },
-//   {
-//     id: "3",
-//     name: "Jakob Saris",
-//     department: "Human Resources",
-//     isOnline: false,
-//   },
-//   {
-//     id: "4",
-//     name: "Sarah Johnson",
-//     department: "Sales",
-//     isOnline: true,
-//   },
-// ];
-
 export const ChatContext = createContext<ChatContextType>({
-  users: {} as User[],
   conversations: {},
   chatList: [],
-  isInitialState: true,
-  currentChat: undefined,
   selectChat: () => {},
   addNewChat: () => {},
-  sendMessage: () => {},
-  setIsInitialState: () => {},
-  updateMessageStatus: () => {},
-  setSearchTerm: () => {},
-  searchTerm: "",
+  sendMessage: async () => {},
+  isLoading: false,
 });
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const { colleagues } = useGetAllColleagues();
-
-  const [users] = useState<User[]>(colleagues);
-  const [currentChat, setCurrentChat] = useState<User>();
+  const [currentChat, setCurrentChat] = useState<User | null>(null);
   const [chatList, setChatList] = useState<User[]>([]);
   const [conversations, setConversations] = useState<Record<string, Message[]>>(
     {}
   );
-  const [isInitialState, setIsInitialState] = useState(true);
+
+  const prevMessagesRef = useRef<Record<string, Message[]>>({});
+  const { singleChat, isLoading } = useGetSingleChat(currentChat?.chat_id);
+
+  // Update conversations when singleChat data changes
+  useEffect(() => {
+    if (!singleChat?.messages || !currentChat?.chat_id) return;
+
+    const chatId = currentChat.chat_id;
+    const newMessages = singleChat.messages;
+    const prevMessages = prevMessagesRef.current[chatId] || [];
+
+    // Only update if messages have changed
+    if (!isEqual(prevMessages, newMessages)) {
+      prevMessagesRef.current[chatId] = newMessages;
+      setConversations((prev) => ({
+        ...prev,
+        [chatId]: newMessages,
+      }));
+    }
+  }, [singleChat?.messages, currentChat?.chat_id]);
 
   const selectChat = useCallback((user: User) => {
     setCurrentChat(user);
-    setIsInitialState(false);
+  }, []);
 
-    // Mark all received messages as read when selecting a chat
+  // Mark messages as read in a separate effect
+  useEffect(() => {
+    if (!currentChat?.chat_id) return;
+
     setConversations((prev) => {
-      const userConversation = prev[user.chat_id] || [];
-      const updatedConversation = userConversation.map((message) => {
-        if (message.type === "received" && message.status !== "read") {
-          return { ...message, status: "read" as const };
-        }
-        return message;
-      });
+      const chatMessages = prev[currentChat.chat_id] || [];
+      const hasUnreadMessages = chatMessages.some(
+        (message) => message.type === "received" && message.status !== "read"
+      );
+
+      if (!hasUnreadMessages) return prev;
+
+      const updatedMessages = chatMessages.map((message) =>
+        message.type === "received" && message.status !== "read"
+          ? { ...message, status: "read" as const }
+          : message
+      );
 
       return {
         ...prev,
-        [user.chat_id]: updatedConversation,
+        [currentChat.chat_id]: updatedMessages,
       };
     });
-  }, []);
+  }, [currentChat?.chat_id]);
 
   const addNewChat = useCallback((user: User) => {
-    setChatList((prev) => {
-      if (!prev.some((existingUser) => existingUser.chat_id === user.chat_id)) {
-        return [...prev, user];
-      }
-      return prev;
-    });
+    setChatList((prev) =>
+      prev.some((existingUser) => existingUser.chat_id === user.chat_id)
+        ? prev
+        : [...prev, user]
+    );
 
-    setConversations((prev) => {
-      if (!prev[user.chat_id]) {
-        return {
-          ...prev,
-          [user.chat_id]: [],
-        };
-      }
-      return prev;
-    });
+    setConversations((prev) => ({
+      ...prev,
+      [user.chat_id]: prev[user.chat_id] || [],
+    }));
   }, []);
 
-  const updateMessageStatus = useCallback(
-    (userId: string, messageId: string, status: Message["status"]) => {
-      setConversations((prev) => {
-        const userConversation = prev[userId] || [];
-        const updatedConversation = userConversation.map((message) => {
-          if (message.id === messageId) {
-            return { ...message, status };
-          }
-          return message;
-        });
+  const sendMessage = async (content: string) => {
+    if (!currentChat || !content.trim()) return;
 
-        return {
+    const messageId = uuidv4();
+    const newMessage: Message = {
+      id: messageId,
+      user_id: currentChat.user_id,
+      message: content.trim(),
+      created_at: new Date().toISOString(),
+      type: "sent",
+      status: "sent",
+      updated_at: new Date().toISOString(),
+      sender_id: currentChat.sender_id
+    };
+
+    setConversations((prev) => ({
+      ...prev,
+      [currentChat.chat_id]: [...(prev[currentChat.chat_id] || []), newMessage],
+    }));
+
+    playSentSound();
+  };
+
+  useEffect(() => {
+    if (!currentChat?.chat_id) return;
+
+    const unsubscribe = subscribeToChannel(
+      currentChat.user_id,
+      currentChat.chat_id,
+      (data) => {
+        if (data.message.sender_id !== currentChat.user_id) {
+          playReceivedSound();
+        }
+
+        setConversations((prev) => ({
           ...prev,
-          [userId]: updatedConversation,
-        };
-      });
-    },
-    []
-  );
-
-  const sendMessage = useCallback(
-    (content: string) => {
-      if (!currentChat || !content.trim()) return;
-      const messageId = uuidv4();
-      const newMessage: Message = {
-        id: messageId,
-        user_id: currentChat.user_id,
-        content: content.trim(),
-        timestamp: new Date(),
-        type: "sent",
-        status: "sent",
-        created_at: "",
-        message: "",
-      };
-
-      setConversations((prev) => ({
-        ...prev,
-        [currentChat.id]: [...(prev[currentChat.id] || []), newMessage],
-      }));
-
-      // Simulate message delivery if user is online
-      if (currentChat.isOnline) {
-        setTimeout(() => {
-          updateMessageStatus(currentChat.id, messageId, "delivered");
-
-          // Simulate message being read after some time
-          setTimeout(() => {
-            updateMessageStatus(currentChat.id, messageId, "read");
-          }, 3000);
-        }, 1000);
+          [currentChat.chat_id]: [
+            ...(prev[currentChat.chat_id] || []),
+            data.message,
+          ],
+        }));
       }
-    },
-    [currentChat, updateMessageStatus]
-  );
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [currentChat?.chat_id, currentChat?.user_id]);
 
   return (
     <ChatContext.Provider
       value={{
-        users,
         currentChat,
         conversations,
         chatList,
-        isInitialState,
         selectChat,
         addNewChat,
         sendMessage,
-        setIsInitialState,
-        updateMessageStatus,
-        setSearchTerm,
-        searchTerm,
+        isLoading,
       }}
     >
       {children}
