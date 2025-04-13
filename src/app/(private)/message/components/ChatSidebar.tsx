@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useChat, User } from "./chatContext";
+import React, { useState, useEffect, useMemo } from "react";
+
 import { FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { AddNewChatModal } from "./AddNewChatModal";
 import { MessageIcon } from "@/src/assets/Icons";
 import Image from "next/image";
 import { useGetAllChat } from "@/src/api/hooks/chat/useChatQuery";
 import { formatTimeAgo } from "@/src/utils/helper";
+import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatSidebar = ({ onChatSelect }) => {
+  const { currentChat, selectChat, conversations } = useDashboard();
   const { allChats } = useGetAllChat();
 
   const transformedChats = allChats.map(
@@ -30,7 +32,6 @@ export const ChatSidebar = ({ onChatSelect }) => {
     })
   );
 
-  const { currentChat, selectChat, conversations } = useChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -55,7 +56,23 @@ export const ChatSidebar = ({ onChatSelect }) => {
       user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleChatSelect = (user: User) => {
+  // Sort chat users by their last message timestamp
+  const sortedChatUsers = useMemo(() => {
+    return [...filteredChatUsers].sort((a, b) => {
+      const lastMessageA =
+        conversations[a.chat_id]?.[conversations[a.chat_id]?.length - 1];
+      const lastMessageB =
+        conversations[b.chat_id]?.[conversations[b.chat_id]?.length - 1];
+
+      // If no messages, use chat creation time
+      const timeA = lastMessageA?.updated_at || a.created_at;
+      const timeB = lastMessageB?.updated_at || b.created_at;
+
+      return new Date(timeB).getTime() - new Date(timeA).getTime();
+    });
+  }, [filteredChatUsers, conversations]);
+
+  const handleChatSelect = (user: ChatUser) => {
     if (currentChat?.chat_id !== user.chat_id) {
       selectChat(user);
       if (onChatSelect) onChatSelect();
@@ -124,7 +141,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
       )}
 
       <div className="flex-grow overflow-y-auto">
-        {filteredChatUsers.map((user: User) => {
+        {sortedChatUsers.map((user: ChatUser) => {
           // Get the last message for this user
           const lastMessage =
             conversations[user.chat_id] &&
@@ -202,6 +219,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
       <AddNewChatModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        allChats={transformedChats}
       />
     </div>
   );

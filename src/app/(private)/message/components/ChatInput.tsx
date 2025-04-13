@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { FaAt } from "react-icons/fa";
-import { useChat } from "./chatContext";
+ 
 import SendIcon from "../../../../assets/Send.svg";
 import Image from "next/image";
 import { useComposeChat } from "@/src/api/hooks/chat/useChatQuery";
+import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatInput = () => {
-  const { currentChat, sendMessage } = useChat();
+  const { currentChat, sendMessage } = useDashboard();
   const [message, setMessage] = useState("");
 
   const { mutate: mutateComposeMessage } = useComposeChat();
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: { preventDefault: () => void }) => {
     if (e) {
       e.preventDefault();
     }

@@ -37,3 +37,18 @@ export const subscribeToChannel = (
     console.error(`Error subscribing to channel ${channelName}:`, error);
   }
 };
+
+export const subscribeToUserPresence = (
+  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onPresenceChange: (data: any) => void
+) => {
+  const channel = pusher.subscribe(`presence-user-${userId}`);
+
+  channel.bind("presence", onPresenceChange);
+
+  return () => {
+    channel.unbind("presence", onPresenceChange);
+    pusher.unsubscribe(`presence-user-${userId}`);
+  };
+};

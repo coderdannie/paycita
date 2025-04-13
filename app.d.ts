@@ -40,6 +40,26 @@ interface User {
   profile_picture: string;
 }
 
+interface ChatUser {
+  sender_id: string;
+  chat_id: string;
+  user_id: string;
+  full_name: string;
+  profile_picture: string;
+  isOnline?: boolean;
+}
+
+interface ChatMessage {
+  updated_at: string;
+  sender_id: string;
+  id: string;
+  user_id: string;
+  message: string;
+  created_at: string;
+  type: "sent" | "received";
+  status: "sent" | "delivered" | "read";
+}
+
 interface UserProfileProps {
   user: User;
   token: string;
