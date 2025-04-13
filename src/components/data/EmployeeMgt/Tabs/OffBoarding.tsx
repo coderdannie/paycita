@@ -93,7 +93,6 @@ const OffBoarding = ({
         <button
           className="py-[10px] px-4 h-fit text-white text-sm font-semibold bg-[#EA3D3D] rounded-md"
           onClick={() => setIsOpen(true)}
-          // disabled={isPending} // Disable button while offboarding is in progress
         >
           {"Off Boarding"}
         </button>
@@ -101,7 +100,7 @@ const OffBoarding = ({
       <OffBoardingDrawer
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        onConfirm={handleOffBoard} // Pass the offboarding handler to the drawer
+        onConfirm={handleOffBoard}
         itemsGiven={itemsGiven}
         isPending={isPending}
       />

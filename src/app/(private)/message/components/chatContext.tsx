@@ -1,18 +1,21 @@
-import { useGetAllEmployees } from "@/src/api/hooks/dashboard/useDashboard";
-import { useSearchParams } from "next/navigation";
+import { useGetAllColleagues } from "@/src/api/hooks/chat/useChatQuery";
+
 import React, {
   createContext,
   useState,
   useContext,
   ReactNode,
   useCallback,
-  useMemo,
   Dispatch,
   SetStateAction,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export interface User {
+  email: ReactNode;
+  profile_picture: string;
+  chat_id: string;
+  user_id: string;
   job_title: string;
   full_name: string;
   id: string;
@@ -21,8 +24,10 @@ export interface User {
 }
 
 export interface Message {
+  created_at: string | number | Date;
+  message: string;
   id: string;
-  userId: string;
+  user_id: string;
   content: string;
   timestamp: Date;
   type: "sent" | "received";
@@ -93,32 +98,11 @@ export const ChatContext = createContext<ChatContextType>({
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const currentPage = searchParams.get("page") || "1";
-  const search = searchParams.get("search") || "";
-  const title = searchParams.get("job_title") || "";
-  const status = searchParams.get("status") || "";
-  const jobLevel = searchParams.get("job_level") || "";
+  const { colleagues } = useGetAllColleagues();
 
-  const [searchTerm, setSearchTerm] = useState(search);
-
-  const filters = useMemo(
-    () => ({
-      page: currentPage,
-      employee_name: searchTerm,
-      job_title: title,
-      status: status,
-      job_level: jobLevel,
-    }),
-    [currentPage, jobLevel, searchTerm, status, title]
-  );
-
-  const { employees } = useGetAllEmployees(filters);
-
-  console.log("employees", employees);
-
-  const [users] = useState<User[]>(employees);
+  const [users] = useState<User[]>(colleagues);
   const [currentChat, setCurrentChat] = useState<User>();
   const [chatList, setChatList] = useState<User[]>([]);
   const [conversations, setConversations] = useState<Record<string, Message[]>>(
@@ -132,7 +116,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
 
     // Mark all received messages as read when selecting a chat
     setConversations((prev) => {
-      const userConversation = prev[user.id] || [];
+      const userConversation = prev[user.chat_id] || [];
       const updatedConversation = userConversation.map((message) => {
         if (message.type === "received" && message.status !== "read") {
           return { ...message, status: "read" as const };
@@ -142,24 +126,24 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
 
       return {
         ...prev,
-        [user.id]: updatedConversation,
+        [user.chat_id]: updatedConversation,
       };
     });
   }, []);
 
   const addNewChat = useCallback((user: User) => {
     setChatList((prev) => {
-      if (!prev.some((existingUser) => existingUser.id === user.id)) {
+      if (!prev.some((existingUser) => existingUser.chat_id === user.chat_id)) {
         return [...prev, user];
       }
       return prev;
     });
 
     setConversations((prev) => {
-      if (!prev[user.id]) {
+      if (!prev[user.chat_id]) {
         return {
           ...prev,
-          [user.id]: [],
+          [user.chat_id]: [],
         };
       }
       return prev;
@@ -192,11 +176,13 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
       const messageId = uuidv4();
       const newMessage: Message = {
         id: messageId,
-        userId: currentChat.id,
+        user_id: currentChat.user_id,
         content: content.trim(),
         timestamp: new Date(),
         type: "sent",
         status: "sent",
+        created_at: "",
+        message: "",
       };
 
       setConversations((prev) => ({

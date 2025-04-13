@@ -1,20 +1,24 @@
 import { api } from "../../api";
 
-const getAllChat = (filters?: { page: string }) => {
-  const queryParams = new URLSearchParams();
+const getAllChat = () => {
+  // const queryParams = new URLSearchParams();
 
-  if (
-    filters.page !== null &&
-    filters.page !== undefined &&
-    filters.page !== ""
-  ) {
-    queryParams.append("page", filters.page);
-  }
+  // if (
+  //   filters.page !== null &&
+  //   filters.page !== undefined &&
+  //   filters.page !== ""
+  // ) {
+  //   queryParams.append("page", filters.page);
+  // }
 
-  return api.get(`/hr/get-all-chats?${queryParams.toString()}`);
+  return api.get(`/hr/get-all-chats`);
 };
 
-const initializeChat = (data: Chat) => {
+const getAllColleagues = () => {
+  return api.get("/hr/get-all-colleagues");
+};
+
+const initializeChat = (data: { user_2_id: string }) => {
   return api.post("/hr/initiate-chat", data);
 };
 const composeChat = (data: ComposeChat) => {
@@ -30,6 +34,7 @@ export const deleteChat = (ChatId: string) => {
 
 const chatService = {
   getAllChat,
+  getAllColleagues,
   initializeChat,
   composeChat,
   getSingleChat,

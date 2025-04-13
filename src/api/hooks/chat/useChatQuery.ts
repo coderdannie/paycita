@@ -9,11 +9,11 @@ import chatService from "@/src/service/api/chat.service";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import { AxiosError } from "axios";
 
-export const useGetAllChat = (filters?: { page: string }) => {
+export const useGetAllChat = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
-    queryKey: [QUERY_KEYS.GET_ALL_CHAT, filters],
+    queryKey: [QUERY_KEYS.GET_ALL_CHAT],
     queryFn: async () => {
-      const response = await chatService.getAllChat(filters);
+      const response = await chatService.getAllChat();
       return response;
     },
     placeholderData: keepPreviousData,
@@ -37,7 +37,7 @@ export const useGetAllChat = (filters?: { page: string }) => {
     isSuccess,
     isLoading: isPending && !isFetching, // Distinguish between initial load and background refresh
     isFetching,
-    chats: data?.data?.data || [],
+    allChats: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
     rawData: data, // Provide access to raw response if needed
   };
@@ -47,7 +47,7 @@ export const useInitiateChat = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (chatData: Chat) => {
+    mutationFn: async (chatData: { user_2_id: string }) => {
       const response = await chatService.initializeChat(chatData);
       return response;
     },
@@ -117,7 +117,7 @@ export const useComposeChat = () => {
     onMutate: async (newChat) => {
       // Cancel any outgoing refetches to avoid overwriting optimistic update
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_CHAT],
+        queryKey: [QUERY_KEYS.GET_SINGLE_CHAT],
       });
 
       // Snapshot the previous value
@@ -125,7 +125,7 @@ export const useComposeChat = () => {
 
       // Optimistically update the cache
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_CHAT],
+        [QUERY_KEYS.GET_SINGLE_CHAT],
         (old: {
           data: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,7 +146,7 @@ export const useComposeChat = () => {
     onError: (err, newChat, context) => {
       // Rollback to the previous value if mutation fails
       queryClient.setQueryData(
-        [QUERY_KEYS.GET_ALL_CHAT],
+        [QUERY_KEYS.GET_SINGLE_CHAT],
         context?.previousChat
       );
 
@@ -162,7 +162,7 @@ export const useComposeChat = () => {
     onSettled: () => {
       // Invalidate and refetch after either success or error
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_CHAT],
+        queryKey: [QUERY_KEYS.GET_SINGLE_CHAT],
         exact: false, // Invalidate all variants
       });
     },
@@ -282,4 +282,37 @@ export const useDeleteChatRequest = () => {
       });
     },
   });
+};
+
+export const useGetAllColleagues = () => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_COLLEAGUES],
+    queryFn: async () => {
+      const response = await chatService.getAllColleagues();
+      return response;
+    },
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        return false; // Do not retry on 404 errors
+      }
+      return failureCount < 2; // Retry up to 2 times for other errors
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    colleagues: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
 };
