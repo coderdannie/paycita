@@ -38,14 +38,7 @@ export const ChatMessages = () => {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
-  }, [currentChatConversations]);
-
-  // Add this effect to scroll to bottom when chat changes
-  useEffect(() => {
-    if (currentChat) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [currentChat]);
+  }, [currentChatConversations, currentChat]);
 
   // If no chat is selected, show a placeholder
   if (!currentChat) {
@@ -76,7 +69,6 @@ export const ChatMessages = () => {
 
   return (
     <div
-      ref={null}
       className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
     >
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (

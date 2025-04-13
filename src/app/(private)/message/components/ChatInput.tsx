@@ -12,7 +12,7 @@ export const ChatInput = () => {
 
   const { mutate: mutateComposeMessage } = useComposeChat();
 
-  const handleSendMessage = (e: { preventDefault: () => void }) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     if (e) {
       e.preventDefault();
     }
