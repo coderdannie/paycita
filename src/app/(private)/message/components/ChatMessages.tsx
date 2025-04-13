@@ -4,7 +4,7 @@ import { useChat } from "./chatContext";
 
 export const ChatMessages = () => {
   const { currentChat, conversations, isLoading } = useChat();
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   // Get conversations for the current chat
   const currentChatConversations = useMemo(
@@ -33,22 +33,10 @@ export const ChatMessages = () => {
     return groups;
   }, [currentChatConversations]);
 
-  // Scroll to the bottom when messages change
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }
-    }, 0); // small delay to ensure DOM updates are done
-
-    return () => clearTimeout(timeout);
-  }, [currentChatConversations]);
-
-  const bottomRef = useRef<HTMLDivElement>(null);
+  // Removed redundant scrolling logic
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView();
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentChatConversations]);
 
   // If no chat is selected, show a placeholder
@@ -80,7 +68,7 @@ export const ChatMessages = () => {
 
   return (
     <div
-      ref={chatContainerRef}
+      ref={null}
       className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
     >
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
