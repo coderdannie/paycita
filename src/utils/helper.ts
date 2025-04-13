@@ -1,6 +1,6 @@
 export const formatDate = (
   date: Date | string | number | null | undefined,
-  fallback: string = ''
+  fallback: string = ""
 ): string => {
   if (!date) return fallback;
 
@@ -10,44 +10,44 @@ export const formatDate = (
 
   // Format date in local timezone
   const day = dateObj.getDate();
-  const month = dateObj.toLocaleString('en-US', { month: 'short' });
+  const month = dateObj.toLocaleString("en-US", { month: "short" });
   const year = dateObj.getFullYear();
 
   return `${day} ${month} ${year}`;
 };
 
-export const updateDateTime = (timeZone: string = 'UTC') => {
+export const updateDateTime = (timeZone: string = "UTC") => {
   const now = new Date();
   // Use the provided timeZone to ensure consistent formatting
   const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     hour12: true,
     timeZone,
   };
 
   const formattedDateTime = now
-    .toLocaleString('en-US', options)
-    .replace(/,([^,]*)$/, ' -$1')
-    .replace(' AM', 'am')
-    .replace(' PM', 'pm');
+    .toLocaleString("en-US", options)
+    .replace(/,([^,]*)$/, " -$1")
+    .replace(" AM", "am")
+    .replace(" PM", "pm");
   return formattedDateTime;
 };
 
 export const formatTime = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = {
-    hour: 'numeric',
-    minute: 'numeric',
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
-    timeZone: 'UTC',
+    timeZone: "UTC",
   };
 
   const date = new Date(dateString);
-  return date.toLocaleString('en-US', options);
+  return date.toLocaleString("en-US", options);
 };
 
 export const parseDateString = (dateString: string): Date => {
@@ -60,10 +60,10 @@ export const parseDateString = (dateString: string): Date => {
 };
 
 export const formatTimeString = (timeStr: string) => {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
   const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
 };
 
 export const formatLongCurrency = (
@@ -72,14 +72,41 @@ export const formatLongCurrency = (
   maximumFractionDigits?: number
 ) => {
   const formattedValue = new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: 'USD',
+    style: "currency",
+    currency: "USD",
     maximumFractionDigits: maximumFractionDigits ? maximumFractionDigits : 0,
-    currencyDisplay: 'code',
+    currencyDisplay: "code",
   })
-    .format(Number(val?.toString().replace(/,/g, ''))) // Convert to number
-    .replace('USD', symbol ? symbol : '')
+    .format(Number(val?.toString().replace(/,/g, ""))) // Convert to number
+    .replace("USD", symbol ? symbol : "")
     .trim();
 
   return formattedValue;
+};
+
+export const formatTimeAgo = (date: string | Date): string => {
+  const now = new Date().getTime();
+  const time = new Date(date).getTime();
+  const diff = now - time;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) {
+    return `${seconds}s ago`;
+  } else if (minutes < 60) {
+    return `${minutes}m ago`;
+  } else if (hours < 24) {
+    return `${hours}h ago`;
+  } else if (days < 7) {
+    return `${days}d ago`;
+  } else {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
 };

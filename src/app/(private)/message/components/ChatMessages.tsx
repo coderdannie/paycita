@@ -1,86 +1,79 @@
-import React, { useMemo, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { useChat } from "./chatContext";
-import { FaCheck } from "react-icons/fa";
-import { useGetSingleChat } from "@/src/api/hooks/chat/useChatQuery";
-import { subscribeToChannel } from "@/src/service/api/pusher.service";
 
 export const ChatMessages = () => {
-  const { currentChat, conversations } = useChat();
-  const { singleChat } = useGetSingleChat(currentChat?.chat_id || "");
-
-  // Ref for the last message
-  const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const { currentChat, conversations, isLoading } = useChat();
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Get conversations for the current chat
+  const currentChatConversations = useMemo(
+    () => conversations[currentChat?.chat_id] || [],
+    [conversations, currentChat?.chat_id]
+  );
+
+  // Group messages by date
   const groupedMessages = useMemo(() => {
-    if (!singleChat?.messages) return {};
+    if (!currentChatConversations.length) return {};
 
-    const groups: Record<string, typeof singleChat.messages> = {};
+    const groups: Record<string, typeof currentChatConversations> = {};
 
-    singleChat.messages.forEach((message) => {
+    currentChatConversations.forEach((message) => {
       const messageDate = new Date(message.created_at);
-      let dateKey: string;
+      const dateKey = isToday(messageDate)
+        ? "Today"
+        : isYesterday(messageDate)
+        ? "Yesterday"
+        : format(messageDate, "MMMM d, yyyy");
 
-      if (isToday(messageDate)) {
-        dateKey = "Today";
-      } else if (isYesterday(messageDate)) {
-        dateKey = "Yesterday";
-      } else {
-        dateKey = format(messageDate, "MMMM d, yyyy");
-      }
-
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
+      if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(message);
     });
 
     return groups;
-  }, [singleChat]);
-
-  // Subscribe to Pusher events for this chat
-  useEffect(() => {
-    if (!currentChat?.chat_id) return;
-
-    const unsubscribe = subscribeToChannel(
-      `chat-${currentChat.chat_id}`,
-      "message-status",
-      (data) => {
-        // Update message status (read, delivered, etc.)
-        // Implementation depends on your message status tracking logic
-        console.log("Message status updated:", data);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [currentChat?.chat_id]);
-
-  // Scroll to the last message when messages change
-  useEffect(() => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView();
-    }
-  }, [singleChat]);
-
-  // Scroll to bottom when new messages arrive
-  const currentChatConversations = conversations[currentChat?.chat_id];
-
-  useLayoutEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
   }, [currentChatConversations]);
 
-  if (!currentChat) return null;
+  // Scroll to the bottom when messages change
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
+    }, 0); // small delay to ensure DOM updates are done
 
-  if (singleChat?.messages?.length === 0) {
+    return () => clearTimeout(timeout);
+  }, [currentChatConversations]);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView();
+  }, [currentChatConversations]);
+
+  // If no chat is selected, show a placeholder
+  if (!currentChat) {
     return (
-      <div className="flex-grow flex justify-center items-end p-4 text-gray-500">
-        <p>No messages yet. Start the conversation!</p>
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Select a chat to start messaging
+      </div>
+    );
+  }
+
+  // If messages are loading, show a loading indicator
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Loading messages...
+      </div>
+    );
+  }
+
+  // If there are no messages, show a placeholder
+  if (!currentChatConversations.length) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        No messages yet. Start the conversation!
       </div>
     );
   }
@@ -100,51 +93,32 @@ export const ChatMessages = () => {
           </div>
 
           {/* Messages */}
-          {dayMessages.map(
-            (
-              message: {
-                id: string;
-                sender_id: string;
-                message: string;
-                created_at: string;
-              },
-              index: number
-            ) => (
+          {dayMessages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex flex-col mb-2 sm:mb-4 ${
+                message.sender_id === currentChat?.user_id
+                  ? "items-start"
+                  : "items-end"
+              }`}
+            >
               <div
-                key={message.id}
-                ref={
-                  index === dayMessages.length - 1 ? lastMessageRef : undefined
-                } // Attach ref to the last message
-                className={`flex flex-col mb-2 sm:mb-4 ${
-                  message.sender_id !== currentChat.user_id
-                    ? "items-end"
-                    : "items-start"
+                className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg ${
+                  message.sender_id === currentChat?.user_id
+                    ? "bg-gray-200 text-black"
+                    : "bg-[#692E9F] text-white"
                 }`}
               >
-                <div
-                  className={`max-w-[75%] sm:max-w-xs p-2 sm:p-3 rounded-lg relative ${
-                    message.sender_id !== currentChat.user_id
-                      ? "bg-[#692E9F] text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
-                  {message.message}
-
-                  {/* Message Status */}
-                  {message.sender_id !== currentChat.user_id && (
-                    <div className="absolute bottom-1 right-2">
-                      <FaCheck className="text-blue-500" size={10} />
-                    </div>
-                  )}
-                </div>
-                <span className="text-xs text-gray-500 mt-1">
-                  {format(new Date(message.created_at), "p")}
-                </span>
+                {message.message}
               </div>
-            )
-          )}
+              <span className="text-xs text-gray-500 mt-1">
+                {format(new Date(message.updated_at), "p")}
+              </span>
+            </div>
+          ))}
         </div>
       ))}
+      <div ref={bottomRef} />
     </div>
   );
 };

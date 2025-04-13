@@ -25,11 +25,15 @@ export const subscribeToChannel = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: (data: any) => void
 ) => {
-  const channel = pusher.subscribe(channelName);
-  channel.bind(eventName, callback);
+  try {
+    const channel = pusher.subscribe(channelName);
+    channel.bind(eventName, callback);
 
-  return () => {
-    channel.unbind(eventName);
-    pusher.unsubscribe(channelName);
-  };
+    return () => {
+      channel.unbind(eventName);
+      pusher.unsubscribe(channelName);
+    };
+  } catch (error) {
+    console.error(`Error subscribing to channel ${channelName}:`, error);
+  }
 };
