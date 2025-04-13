@@ -8,8 +8,11 @@ import React, {
   useCallback,
   Dispatch,
   SetStateAction,
+  useEffect,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { subscribeToChannel } from "@/src/service/api/pusher.service";
+import { playReceivedSound, playSentSound } from "@/src/utils/audio";
 
 export interface User {
   email: ReactNode;
@@ -42,7 +45,7 @@ interface ChatContextType {
   isInitialState: boolean;
   selectChat: (user: User) => void;
   addNewChat: (user: User) => void;
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string) => Promise<void>;
   setIsInitialState: (state: boolean) => void;
   updateMessageStatus: (
     userId: string,
@@ -53,33 +56,6 @@ interface ChatContextType {
   searchTerm: string;
 }
 
-// const mockUsers: User[] = [
-//   {
-//     id: "1",
-//     name: "Emery Korsgard",
-//     department: "Project Manager",
-//     isOnline: true,
-//   },
-//   {
-//     id: "2",
-//     name: "Jason Statham",
-//     department: "Marketing",
-//     isOnline: true,
-//   },
-//   {
-//     id: "3",
-//     name: "Jakob Saris",
-//     department: "Human Resources",
-//     isOnline: false,
-//   },
-//   {
-//     id: "4",
-//     name: "Sarah Johnson",
-//     department: "Sales",
-//     isOnline: true,
-//   },
-// ];
-
 export const ChatContext = createContext<ChatContextType>({
   users: {} as User[],
   conversations: {},
@@ -88,7 +64,7 @@ export const ChatContext = createContext<ChatContextType>({
   currentChat: undefined,
   selectChat: () => {},
   addNewChat: () => {},
-  sendMessage: () => {},
+  sendMessage: async () => {},
   setIsInitialState: () => {},
   updateMessageStatus: () => {},
   setSearchTerm: () => {},
@@ -103,7 +79,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   const { colleagues } = useGetAllColleagues();
 
   const [users] = useState<User[]>(colleagues);
-  const [currentChat, setCurrentChat] = useState<User>();
+  const [currentChat, setCurrentChat] = useState<User | null>(null);
   const [chatList, setChatList] = useState<User[]>([]);
   const [conversations, setConversations] = useState<Record<string, Message[]>>(
     {}
@@ -170,8 +146,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
     []
   );
 
-  const sendMessage = useCallback(
-    (content: string) => {
+  const sendMessage = async (content: string) => {
+    try {
       if (!currentChat || !content.trim()) return;
       const messageId = uuidv4();
       const newMessage: Message = {
@@ -190,6 +166,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
         [currentChat.id]: [...(prev[currentChat.id] || []), newMessage],
       }));
 
+      playSentSound();
+
       // Simulate message delivery if user is online
       if (currentChat.isOnline) {
         setTimeout(() => {
@@ -201,9 +179,41 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
           }, 3000);
         }, 1000);
       }
-    },
-    [currentChat, updateMessageStatus]
-  );
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw error;
+    }
+  };
+
+  // Subscribe to Pusher channel when currentChat changes
+  useEffect(() => {
+    if (!currentChat?.chat_id) return;
+
+    // Subscribe to the specific chat channel
+    const unsubscribe = subscribeToChannel(
+      `chat-${currentChat.chat_id}`,
+      "new-message",
+      (data) => {
+        // Play sound based on message sender
+        if (data.message.sender_id !== currentChat.user_id) {
+          playReceivedSound();
+        }
+
+        setConversations((prev) => ({
+          ...prev,
+          [currentChat.chat_id]: [
+            ...(prev[currentChat.chat_id] || []),
+            data.message,
+          ],
+        }));
+      }
+    );
+
+    // Cleanup subscription on unmount or when chat changes
+    return () => {
+      unsubscribe();
+    };
+  }, [currentChat?.chat_id, currentChat?.user_id]);
 
   return (
     <ChatContext.Provider

@@ -8,6 +8,7 @@ import {
 import chatService from "@/src/service/api/chat.service";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import { AxiosError } from "axios";
+import { playSentSound } from "@/src/utils/audio";
 
 export const useGetAllChat = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -112,60 +113,18 @@ export const useComposeChat = () => {
   return useMutation({
     mutationFn: async (chatData: ComposeChat) => {
       const response = await chatService.composeChat(chatData);
+      playSentSound(); // Play sound when message is sent successfully
       return response;
     },
-    onMutate: async (newChat) => {
-      // Cancel any outgoing refetches to avoid overwriting optimistic update
-      await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.GET_SINGLE_CHAT],
-      });
-
-      // Snapshot the previous value
-      const previousChat = queryClient.getQueryData([QUERY_KEYS.GET_ALL_CHAT]);
-
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        [QUERY_KEYS.GET_SINGLE_CHAT],
-        (old: {
-          data: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data: any[];
-          };
-        }) => {
-          const newData = { ...old };
-          if (newData?.data?.data) {
-            newData.data.data = [newChat, ...newData.data.data];
-          }
-          return newData;
-        }
-      );
-
-      // Return a context object with the snapshotted value
-      return { previousChat };
-    },
-    onError: (err, newChat, context) => {
-      // Rollback to the previous value if mutation fails
-      queryClient.setQueryData(
-        [QUERY_KEYS.GET_SINGLE_CHAT],
-        context?.previousChat
-      );
-
-      // More robust error handling
-      if (err instanceof AxiosError) {
-        const errorMessage =
-          err.response?.data?.message || "Failed to create chat";
-        throw new Error(errorMessage);
-      } else {
-        throw err;
-      }
-    },
-    onSettled: () => {
-      // Invalidate and refetch after either success or error
+    onSuccess: (response, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_SINGLE_CHAT],
-        exact: false, // Invalidate all variants
+        queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, variables.chat_id],
       });
     },
+    onError: (error) => {
+      console.error('Error sending message:', error);
+      // Optionally play an error sound here
+    }
   });
 };
 

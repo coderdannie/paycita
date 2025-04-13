@@ -1,18 +1,17 @@
-import React, { useMemo, useEffect, useRef } from "react";
+import React, { useMemo, useEffect, useLayoutEffect, useRef } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { useChat } from "./chatContext";
 import { FaCheck } from "react-icons/fa";
 import { useGetSingleChat } from "@/src/api/hooks/chat/useChatQuery";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
+import { subscribeToChannel } from "@/src/service/api/pusher.service";
 
 export const ChatMessages = () => {
-  const { currentChat } = useChat();
-  const { singleChat, isLoading } = useGetSingleChat(
-    currentChat?.chat_id || ""
-  );
+  const { currentChat, conversations } = useChat();
+  const { singleChat } = useGetSingleChat(currentChat?.chat_id || "");
 
   // Ref for the last message
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const groupedMessages = useMemo(() => {
     if (!singleChat?.messages) return {};
@@ -40,6 +39,25 @@ export const ChatMessages = () => {
     return groups;
   }, [singleChat]);
 
+  // Subscribe to Pusher events for this chat
+  useEffect(() => {
+    if (!currentChat?.chat_id) return;
+
+    const unsubscribe = subscribeToChannel(
+      `chat-${currentChat.chat_id}`,
+      "message-status",
+      (data) => {
+        // Update message status (read, delivered, etc.)
+        // Implementation depends on your message status tracking logic
+        console.log("Message status updated:", data);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [currentChat?.chat_id]);
+
   // Scroll to the last message when messages change
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -47,9 +65,15 @@ export const ChatMessages = () => {
     }
   }, [singleChat]);
 
-  if (isLoading) {
-    return <LoadingOverlay />;
-  }
+  // Scroll to bottom when new messages arrive
+  const currentChatConversations = conversations[currentChat?.chat_id];
+
+  useLayoutEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [currentChatConversations]);
 
   if (!currentChat) return null;
 
@@ -62,7 +86,10 @@ export const ChatMessages = () => {
   }
 
   return (
-    <div className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
+    <div
+      ref={chatContainerRef}
+      className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
+    >
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
         <div key={date}>
           {/* Date Header */}
