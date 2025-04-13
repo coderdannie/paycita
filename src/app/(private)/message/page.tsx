@@ -4,9 +4,14 @@ import { ChatSidebar } from "./components/ChatSidebar";
 import { ChatHeader } from "./components/ChatHeader";
 import { ChatMessages } from "./components/ChatMessages";
 import { ChatInput } from "./components/ChatInput";
-import { ChatProvider } from "./components/chatContext";
+
+import { useDashboard } from "@/src/context/dashboardContext";
+import { useAuthSelector } from "@/src/Redux/selectors";
+import { playReceivedSound } from "@/src/utils/audio";
 
 export default function MessagePage() {
+  const { user } = useAuthSelector();
+  const { subscribeToUserChannel, currentChat } = useDashboard();
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -33,45 +38,59 @@ export default function MessagePage() {
     }
   };
 
+  useEffect(() => {
+    if (!user?.id || !currentChat?.chat_id) return;
+
+    const unsubscribe = subscribeToUserChannel(
+      user.id,
+      currentChat.chat_id,
+      (data) => {
+        console.log("New chat received:", data);
+        // Play sound for received messages
+        if (data?.message?.sender_id !== user?.id) {
+          playReceivedSound();
+        }
+      }
+    );
+
+    return unsubscribe;
+  }, [user?.id, currentChat?.chat_id, subscribeToUserChannel]);
+
   return (
-    <ChatProvider>
-      {/* Use absolute positioning to make the chat area fixed within the dashboard */}
-      <div className="absolute inset-0 mt-[70px] flex overflow-hidden">
-        {/* Chat sidebar - fixed width on desktop, full width on mobile when visible */}
-        <div
-          className={`${
-            isMobile
-              ? showSidebar
-                ? "w-full fixed inset-0 z-30 mt-[70px]"
-                : "hidden"
-              : "w-80 min-w-80"
-          } h-full flex-shrink-0 overflow-hidden border-r bg-white`}
-        >
-          <ChatSidebar onChatSelect={toggleView} />
+    <div className="absolute inset-0 mt-[70px] flex overflow-hidden">
+      <div
+        className={`${
+          isMobile
+            ? showSidebar
+              ? "w-full fixed inset-0 z-30 mt-[70px]"
+              : "hidden"
+            : "w-80 min-w-80"
+        } h-full flex-shrink-0 overflow-hidden border-r bg-white`}
+      >
+        <ChatSidebar onChatSelect={toggleView} />
+      </div>
+
+      {/* Main chat area - flexible width on desktop, full width on mobile when visible */}
+      <div
+        className={`${
+          isMobile ? (showSidebar ? "hidden" : "w-full") : "flex-grow"
+        } flex flex-col h-full overflow-hidden`}
+      >
+        {/* Fixed chat header with back button on mobile */}
+        <div className="flex-shrink-0">
+          <ChatHeader onBackClick={isMobile ? toggleView : undefined} />
         </div>
 
-        {/* Main chat area - flexible width on desktop, full width on mobile when visible */}
-        <div
-          className={`${
-            isMobile ? (showSidebar ? "hidden" : "w-full") : "flex-grow"
-          } flex flex-col h-full overflow-hidden`}
-        >
-          {/* Fixed chat header with back button on mobile */}
-          <div className="flex-shrink-0">
-            <ChatHeader onBackClick={isMobile ? toggleView : undefined} />
-          </div>
+        {/* Scrollable messages area - takes remaining height */}
+        <div className="flex-grow overflow-y-auto">
+          <ChatMessages />
+        </div>
 
-          {/* Scrollable messages area - takes remaining height */}
-          <div className="flex-grow overflow-y-auto">
-            <ChatMessages />
-          </div>
-
-          {/* Fixed chat input at bottom */}
-          <div className="flex-shrink-0">
-            <ChatInput />
-          </div>
+        {/* Fixed chat input at bottom */}
+        <div className="flex-shrink-0">
+          <ChatInput />
         </div>
       </div>
-    </ChatProvider>
+    </div>
   );
 }

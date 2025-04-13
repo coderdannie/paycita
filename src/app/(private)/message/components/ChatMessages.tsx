@@ -1,9 +1,10 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { format, isToday, isYesterday } from "date-fns";
-import { useChat } from "./chatContext";
+ 
+import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatMessages = () => {
-  const { currentChat, conversations, isLoading } = useChat();
+  const { currentChat, conversations, ChatLoading } = useDashboard();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Get conversations for the current chat
@@ -36,8 +37,8 @@ export const ChatMessages = () => {
   // Removed redundant scrolling logic
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [currentChatConversations]);
+    bottomRef.current?.scrollIntoView();
+  }, [currentChatConversations, currentChat]);
 
   // If no chat is selected, show a placeholder
   if (!currentChat) {
@@ -49,7 +50,7 @@ export const ChatMessages = () => {
   }
 
   // If messages are loading, show a loading indicator
-  if (isLoading) {
+  if (ChatLoading) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         Loading messages...
@@ -68,7 +69,6 @@ export const ChatMessages = () => {
 
   return (
     <div
-      ref={null}
       className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
     >
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (

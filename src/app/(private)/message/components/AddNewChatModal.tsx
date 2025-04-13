@@ -7,8 +7,28 @@ import {
 } from "@/src/api/hooks/chat/useChatQuery";
 import Image from "next/image";
 import { Spinner } from "react-activity";
+import { useDashboard } from "@/src/context/dashboardContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 
-export const AddNewChatModal = ({ isOpen, onClose }) => {
+export const AddNewChatModal = ({
+  isOpen,
+  onClose,
+  allChats,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  allChats?: {
+    chat_id: string;
+    user_id: string;
+    full_name: string;
+    email: string;
+    profile_picture: string;
+    created_at: string;
+  }[];
+}) => {
+  const queryClient = useQueryClient();
+  const { addNewChat } = useDashboard();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -38,14 +58,27 @@ export const AddNewChatModal = ({ isOpen, onClose }) => {
   );
 
   const handleAddChat = () => {
-    console.log(selectedUser);
     if (selectedUser) {
       mutateInitiateChat(
         { user_2_id: selectedUser.user_id },
         {
-          onSuccess: (data) => {
-            console.log(data);
-            // addNewChat(selectedUser);
+          onSuccess: (response) => {
+            queryClient.invalidateQueries({
+              queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, selectedUser.user_id],
+            });
+
+            const chatId = allChats?.find(
+              (chat) => chat.user_id === selectedUser.user_id
+            )?.chat_id;
+
+            const newChat = {
+              ...selectedUser,
+              chat_id: chatId,
+              user_id: response.data.user_1_id,
+              sender_id: response.data.user_2_id,
+              updated_at: response.data.updated_at,
+            };
+            addNewChat(newChat);
             onClose();
             setSelectedUser(null);
             setSearchTerm("");
@@ -114,7 +147,7 @@ export const AddNewChatModal = ({ isOpen, onClose }) => {
                 <div
                   key={user.user_id}
                   className={`flex items-center p-2 hover:bg-gray-100 cursor-pointer ${
-                    selectedUser?.id === user.user_id ? "bg-purple-50" : ""
+                    selectedUser?.user_id === user.user_id ? "bg-purple-50" : ""
                   }`}
                   onClick={() => setSelectedUser(user)}
                 >

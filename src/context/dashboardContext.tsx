@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import useApiRequest from "../api/hooks/useApiRequest";
@@ -17,6 +18,14 @@ import { updateDateTime } from "../utils/helper";
 import { useGetAttendance } from "../api/hooks/dashboard/useDashboard";
 import { useDashboardSelector } from "../Redux/selectors";
 import { ToastProvider } from "./ToastContext";
+import { subscribeToChannel, subscribeToUserPresence } from "../service/api/pusher.service";
+import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
+import { useQueryClient } from "@tanstack/react-query";
+import { Message } from "../app/(private)/message/components/types";
+import { useGetSingleChat } from "../api/hooks/chat/useChatQuery";
+import { initAudio, playReceivedSound, playSentSound } from "../utils/audio";
+import isEqual from "lodash.isequal";
+import { v4 as uuidv4 } from "uuid";
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -29,6 +38,21 @@ interface DashboardContextType {
   isClockingIn: boolean;
   isClockingOut: boolean;
   currentDateTime: string;
+
+  chatList: ChatUser[];
+  conversations: Record<string, ChatMessage[]>;
+  currentChat?: ChatUser;
+  selectChat: (user: ChatUser) => void;
+  addNewChat: (user: ChatUser) => void;
+  sendMessage: (content: string) => Promise<void>;
+  ChatLoading: boolean;
+  subscribeToUserChannel: (
+    userId: string,
+    chatId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (data: any) => void
+  ) => () => void;
+  onlineUsers: Set<string>;
 }
 
 export const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -69,18 +93,6 @@ const DashboardProvider = ({
     }
   }, [dispatch, getRequest]);
 
-  // const handleGetAttendance = async () =>
-  //   fetchAttendance("/hr/employee-attendance", (data) => {
-  //     if (data.success) {
-  //       dispatch(
-  //         setEmployeeAttendance(
-  //           Array.isArray(data.data) ? data.data : [data.data]
-  //         )
-  //       );
-  //       dispatch(setEmployeeAttendancePagination(data.pagination));
-  //     }
-  //   });
-
   const getAttendance = async () =>
     await fetchAttendance("/hr/attendance", (data) => {
       if (data.success) {
@@ -115,7 +127,7 @@ const DashboardProvider = ({
 
   useEffect(() => {
     // Only run on client side
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     let timeoutId: NodeJS.Timeout;
 
@@ -141,6 +153,195 @@ const DashboardProvider = ({
     loadData();
   }, []);
 
+  const queryClient = useQueryClient();
+
+  const [chatList, setChatList] = useState<ChatUser[]>([]);
+  const [currentChat, setCurrentChat] = useState<ChatUser | null>(null);
+  const [conversations, setConversations] = useState<
+    Record<string, ChatMessage[]>
+  >({});
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+
+  const prevMessagesRef = useRef<Record<string, Message[]>>({});
+  const { singleChat, isLoading: ChatLoading } = useGetSingleChat(
+    currentChat?.chat_id
+  );
+
+  // Update conversations when singleChat data changes
+  useEffect(() => {
+    if (!singleChat?.messages || !currentChat?.chat_id) return;
+
+    const chatId = currentChat.chat_id;
+    const newMessages = singleChat.messages;
+    const prevMessages = prevMessagesRef.current[chatId] || [];
+
+    // Only update if messages have changed
+    if (!isEqual(prevMessages, newMessages)) {
+      prevMessagesRef.current[chatId] = newMessages;
+      setConversations((prev) => ({
+        ...prev,
+        [chatId]: newMessages,
+      }));
+    }
+  }, [singleChat?.messages, currentChat?.chat_id]);
+
+  const selectChat = useCallback((user: ChatUser) => {
+    setCurrentChat(user);
+  }, []);
+
+  // Mark messages as read in a separate effect
+  useEffect(() => {
+    if (!currentChat?.chat_id) return;
+
+    setConversations((prev) => {
+      const chatMessages = prev[currentChat.chat_id] || [];
+      const hasUnreadMessages = chatMessages.some(
+        (message) => message.type === "received" && message.status !== "read"
+      );
+
+      if (!hasUnreadMessages) return prev;
+
+      const updatedMessages = chatMessages.map((message) =>
+        message.type === "received" && message.status !== "read"
+          ? { ...message, status: "read" as const }
+          : message
+      );
+
+      return {
+        ...prev,
+        [currentChat.chat_id]: updatedMessages,
+      };
+    });
+  }, [currentChat?.chat_id]);
+
+  const addNewChat = useCallback((user: ChatUser) => {
+    console.log(user);
+    setChatList((prev) =>
+      prev.some((existingUser) => existingUser.chat_id === user.chat_id)
+        ? prev
+        : [...prev, user]
+    );
+
+    setConversations((prev) => ({
+      ...prev,
+      [user.chat_id]: prev[user.chat_id] || [],
+    }));
+    setCurrentChat(user);
+  }, []);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      initAudio();
+      // Remove listeners after first interaction
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+  }, []);
+
+  const sendMessage = async (content: string) => {
+    if (!currentChat || !content.trim()) return;
+
+    const messageId = uuidv4();
+    const newMessage: ChatMessage = {
+      id: messageId,
+      user_id: currentChat.user_id,
+      message: content.trim(),
+      created_at: new Date().toISOString(),
+      type: "sent",
+      status: "sent",
+      updated_at: new Date().toISOString(),
+      sender_id: currentChat.sender_id,
+    };
+
+    setConversations((prev) => ({
+      ...prev,
+      [currentChat.chat_id]: [...(prev[currentChat.chat_id] || []), newMessage],
+    }));
+
+    playSentSound();
+  };
+
+  const subscribeToUserChannel = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (userId: string, chatId: string, callback: (data: any) => void) => {
+      const channelName = `chat.${userId}`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return subscribeToChannel(channelName, "NewMessageSent", (data: any) => {
+        // Always update the chat list for any new message
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
+        });
+
+        // Only handle message if it's for the current chat
+        if (data?.message?.chat_id === chatId) {
+          callback(data);
+        }
+      });
+    },
+    [queryClient]
+  );
+
+  useEffect(() => {
+    const isSubscribed = true;
+    let unsubscribeFunc: (() => void) | undefined;
+
+    const loadAndSubscribe = async () => {
+      if (!currentChat) {
+        setConversations({});
+        return;
+      }
+
+      unsubscribeFunc = subscribeToChannel(
+        `chat.${currentChat?.chat_id}`,
+        "NewMessageSent",
+        async () => {
+          playReceivedSound();
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, currentChat?.chat_id],
+          });
+        }
+      );
+    };
+
+    loadAndSubscribe();
+    return () => {
+      if (isSubscribed && unsubscribeFunc) {
+        unsubscribeFunc();
+      }
+    };
+  }, [currentChat, queryClient]);
+
+  useEffect(() => {
+    if (!currentChat?.user_id) return;
+
+    const unsubscribe = subscribeToUserPresence(
+      currentChat.user_id,
+      (presenceData) => {
+        setOnlineUsers((prev) => {
+          const newSet = new Set(prev);
+          if (presenceData.isOnline) {
+            newSet.add(currentChat.user_id);
+          } else {
+            newSet.delete(currentChat.user_id);
+          }
+          return newSet;
+        });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [currentChat?.user_id]);
+
   const value: DashboardContextType = {
     isAttendanceLoading,
     handleClockIn,
@@ -151,6 +352,15 @@ const DashboardProvider = ({
     isDashboardDetailsFetching,
     fetchDashboardDetails,
     isEmployeeAttendanceLoading,
+    chatList,
+    conversations,
+    ChatLoading,
+    selectChat,
+    addNewChat,
+    sendMessage,
+    subscribeToUserChannel,
+    currentChat,
+    onlineUsers,
   };
   return (
     <DashboardContext.Provider value={value}>

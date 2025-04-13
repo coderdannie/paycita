@@ -50,26 +50,19 @@ export const useInitiateChat = () => {
   return useMutation({
     mutationFn: async (chatData: { user_2_id: string }) => {
       const response = await chatService.initializeChat(chatData);
-      return response;
+      return response.data; // Make sure we're returning the response data
     },
     onMutate: async (newChat) => {
-      // Cancel any outgoing refetches to avoid overwriting optimistic update
       await queryClient.cancelQueries({
         queryKey: [QUERY_KEYS.GET_ALL_CHAT],
       });
 
-      // Snapshot the previous value
       const previousChat = queryClient.getQueryData([QUERY_KEYS.GET_ALL_CHAT]);
 
-      // Optimistically update the cache
       queryClient.setQueryData(
         [QUERY_KEYS.GET_ALL_CHAT],
-        (old: {
-          data: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data: any[];
-          };
-        }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (old: { data: { data: any[] } }) => {
           const newData = { ...old };
           if (newData?.data?.data) {
             newData.data.data = [newChat, ...newData.data.data];
@@ -78,17 +71,14 @@ export const useInitiateChat = () => {
         }
       );
 
-      // Return a context object with the snapshotted value
       return { previousChat };
     },
     onError: (err, newChat, context) => {
-      // Rollback to the previous value if mutation fails
       queryClient.setQueryData(
         [QUERY_KEYS.GET_ALL_CHAT],
         context?.previousChat
       );
 
-      // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message || "Failed to create chat";
@@ -98,10 +88,9 @@ export const useInitiateChat = () => {
       }
     },
     onSettled: () => {
-      // Invalidate and refetch after either success or error
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_CHAT],
-        exact: false, // Invalidate all variants
+        exact: false,
       });
     },
   });
@@ -113,17 +102,22 @@ export const useComposeChat = () => {
   return useMutation({
     mutationFn: async (chatData: ComposeChat) => {
       const response = await chatService.composeChat(chatData);
-      playSentSound(); // Play sound when message is sent successfully
+      playSentSound();
       return response;
     },
     onSuccess: (response, variables) => {
+      // Immediately invalidate the cache
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, variables.chat_id],
+      });
+      
+      // Also invalidate the chat list to update last message
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT],
       });
     },
     onError: (error) => {
       console.error('Error sending message:', error);
-      // Optionally play an error sound here
     }
   });
 };
@@ -136,16 +130,9 @@ export const useGetSingleChat = (id: string) => {
       const response = await chatService.getSingleChat(id);
       return response;
     },
-
-    // Only retry on server errors, not 404s
-    retry: (
-      failureCount,
-      error: {
-        response: {
-          status: number;
-        };
-      }
-    ) => {
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    retry: (failureCount, error) => {
       if (error instanceof AxiosError && error.response?.status === 404)
         return false;
       return failureCount < 2;

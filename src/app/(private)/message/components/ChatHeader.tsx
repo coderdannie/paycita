@@ -1,12 +1,14 @@
 import React from "react";
 import { FaArrowLeft } from "react-icons/fa";
-import { useChat } from "./chatContext";
 import Image from "next/image";
+import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatHeader = ({ onBackClick }) => {
-  const { currentChat } = useChat();
+  const { currentChat, onlineUsers } = useDashboard();
 
   if (!currentChat) return null;
+
+  const isOnline = onlineUsers.has(currentChat.user_id);
 
   return (
     <div className="bg-white border-b p-4 flex items-center w-full">
@@ -20,25 +22,27 @@ export const ChatHeader = ({ onBackClick }) => {
         </button>
       )}
       <div className="flex items-center">
-        <Image
-          src={currentChat?.profile_picture}
-          alt={currentChat?.full_name}
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full mr-3"
-        />
+        <div className="relative">
+          <Image
+            src={currentChat?.profile_picture}
+            alt={currentChat?.full_name}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full mr-3"
+          />
+          <div
+            className={`absolute bottom-0 right-2 w-3 h-3 border-2 border-white rounded-full ${
+              isOnline ? "bg-green-500" : "bg-gray-400"
+            }`}
+          />
+        </div>
         <div>
           <div className="font-semibold">{currentChat.full_name}</div>
-          <div className="flex items-center">
-            <div
-              className={`w-2 h-2 ${
-                currentChat.isOnline ? "bg-green-500" : "bg-red-500"
-              } rounded-full mr-2`}
-            ></div>
-            <span className="text-sm text-gray-500">
-              {currentChat.isOnline ? "Online" : "Offline"}
+          {/* <div className="flex items-center">
+            <span className={`text-sm ${isOnline ? "text-green-500" : "text-gray-500"}`}>
+              {isOnline ? "Online" : "Offline"}
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
