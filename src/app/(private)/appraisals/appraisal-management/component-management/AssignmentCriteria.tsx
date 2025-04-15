@@ -1,8 +1,6 @@
 import { FC } from "react";
 import AssignmentRatingOptions from "./AssignmentRatingOptions";
 
-
-
 interface CriteriaProps {
   criteria: {
     id: string;

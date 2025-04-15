@@ -1,9 +1,14 @@
 "use client";
 import { FC, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IoSearchOutline, IoInformationCircleOutline, IoArrowBack } from "react-icons/io5";
+import {
+  IoSearchOutline,
+  IoInformationCircleOutline,
+  IoArrowBack,
+} from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
-import Pagination from "@/src/components/common/TanTable/pagination";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+
 
 interface Department {
   id: string;
@@ -56,28 +61,22 @@ const DepartmentsPage: FC = () => {
   const handleViewDepartment = (id: string) => {
     const department = departments.find((dept) => dept.id === id);
     if (department) {
-      router.push(
-        `/appraisals/appraisal-management/departments/${department.name
-          .toLowerCase()
-          .replace(/\s+/g, "-")}`
-      );
+     
+      let urlPath: string;
+      if (department.name === "IT Support") {
+        urlPath = "IT-support";
+      } else {
+        urlPath = department.name.toLowerCase().replace(/\s+/g, "-");
+      }
+
+      router.push(`/appraisals/appraisal-management/departments/${urlPath}`);
     }
   };
 
-const handleGoBack = () => {
-  router.push("/appraisals");
-};
-
-  const mockTable = {
-    getState: () => ({
-      pagination: { pageIndex: currentPage },
-    }),
-    getPageCount: () => Math.ceil(filteredDepartments.length / 10),
-    getCanPreviousPage: () => currentPage > 0,
-    getCanNextPage: () =>
-      currentPage < Math.ceil(filteredDepartments.length / 10) - 1,
-    setPageIndex: (index: number) => setCurrentPage(index),
+  const handleGoBack = () => {
+    router.push("/appraisals");
   };
+
 
   const setPageIndex = (index: number) => {
     setCurrentPage(index);
@@ -202,14 +201,13 @@ const handleGoBack = () => {
             </table>
           </div>
         </div>
-        <Pagination
-          table={mockTable}
-          buttons={[]}
-          setPageIndex={setPageIndex}
+        <CustomPagination 
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredDepartments.length / 10)}
+          goToPage={setPageIndex}
         />
       </div>
     </div>
   );
 };
-
 export default DepartmentsPage;

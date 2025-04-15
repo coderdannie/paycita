@@ -3,16 +3,8 @@ import { FC } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 
-// interface SkillRating {
-//   skill: string;
-//   description: string;
-//   score: number;
-//   lineManagerScore: number | null;
-// }
-
 const ReviewDetailsPage: FC = () => {
   const router = useRouter();
-  // const params = useParams();
 
   const appraisalDetails = {
     title: "Q1 Performance Review",
@@ -24,41 +16,85 @@ const ReviewDetailsPage: FC = () => {
     assessmentScore: 5,
     skills: [
       {
-        skill: "Communication Skills",
+        skill: "Job Knowledge & Expertise",
         description:
-          "Clarity and effectiveness in written and verbal communication",
+          "Understanding of duties and responsibilities, Technical skills related to the role, Ability to apply knowledge to work effectively",
         score: 5,
         lineManagerScore: 2,
-      },
-      {
-        skill: "Teamwork",
-        description: "Ability to work collaboratively with others",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Problem Solving",
-        description:
-          "Effectiveness in identifying problems and implementing solutions",
-        score: 5,
-        lineManagerScore: 2,
-      },
-      {
-        skill: "Punctuality",
-        description:
-          "Adherence to deadlines and punctuality in work attendance",
-        score: 5,
-        lineManagerScore: 3,
       },
       {
         skill: "Quality of Work",
-        description: "Consistency and accuracy of work delivered",
+        description:
+          "Accuracy and thoroughness, Attention to detail, Consistency in output, Meets/exceeds quality standards",
         score: 5,
         lineManagerScore: 4,
       },
       {
-        skill: "Innovation",
-        description: "Ability to contribute new ideas and creative solutions",
+        skill: "Productivity & Efficiency",
+        description:
+          "Timeliness in completing tasks, Ability to manage workload, Minimizes downtime, Time management",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Communication Skills",
+        description:
+          "Clear verbal and written communication, Active listening, Timely and appropriate feedback, Ability to communicate with colleagues, management, and customers",
+        score: 5,
+        lineManagerScore: 2,
+      },
+      {
+        skill: "Customer Service (for client-facing roles)",
+        description:
+          "Response time to inquiries or issues, Customer satisfaction ratings, Professionalism in handling complaints, Resolution of customer issues",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Teamwork & Collaboration",
+        description:
+          "Cooperates with team members, Shares information and ideas, Offers solutions and suggestions, Takes ownership of tasks",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Initiative & Problem-Solving",
+        description:
+          "Proactively identifies problems, Offers solutions and suggestions, Takes ownership of tasks, Willingness to go beyond the assigned duties",
+        score: 5,
+        lineManagerScore: 2,
+      },
+      {
+        skill: "Dependability & Accountability",
+        description: "Meets deadlines, Reliable and punctual",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Adaptability & Flexibility",
+        description:
+          "Open to change and feedback, Adjusts quickly to new responsibilities or shifts in priorities, Learns new skills when required",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Leaderships & ASupervision(For team leads/supervisors)",
+        description:
+          "Delegates tasks appropriately, Motivates and guides team, Conflict resolution, Provides feedback and support.",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Adherence to Company Policies",
+        description:
+          "Follows company procedures and rules, Maintains confidentiality, Complies with safety and operational guidelines",
+        score: 5,
+        lineManagerScore: 4,
+      },
+      {
+        skill: "Professionalism & Attitude",
+        description:
+          "Respectful and courteous behavior, Positive attitude towards work, Presentation and grooming (where applicable), Ethical conduct",
         score: 5,
         lineManagerScore: 3,
       },
@@ -72,7 +108,7 @@ const ReviewDetailsPage: FC = () => {
   };
 
   return (
-    <div className="min-h-screen  w-full">
+    <div className="min-h-screen w-full">
       <div className="w-full mx-auto py-6 px-4">
         <button
           onClick={handleGoBack}
@@ -134,22 +170,22 @@ const ReviewDetailsPage: FC = () => {
 
         <div className="bg-white rounded-lg shadow-sm p-6 w-full">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-fixed">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939]">
+                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939] w-[20%]">
                     Skills
                   </th>
-                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939]">
+                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939] w-[40%]">
                     Description
                   </th>
-                  <th className="text-left py-3 pr-6 font-medium text-#1D2939">
+                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939] w-[10%] whitespace-nowrap">
                     Score
                   </th>
-                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939]">
-                    Line Mana...
+                  <th className="text-left py-3 pr-6 font-medium text-[#1D2939] w-[15%] whitespace-nowrap">
+                    Line Manager
                   </th>
-                  <th className="text-left py-3 font-medium text-[#1D2939]">
+                  <th className="text-left py-3 font-medium text-[#1D2939] w-[15%] whitespace-nowrap">
                     Score Label
                   </th>
                 </tr>
@@ -160,11 +196,15 @@ const ReviewDetailsPage: FC = () => {
                     key={index}
                     className="border-b border-gray-100 last:border-0"
                   >
-                    <td className="py-4 pr-6">{skill.skill}</td>
-                    <td className="py-4 pr-6">{skill.description}</td>
-                    <td className="py-4 pr-6">{skill.score}</td>
-                    <td className="py-4 pr-6">{skill.lineManagerScore}</td>
-                    <td className="py-4">
+                    <td className="py-4 pr-6 align-top">{skill.skill}</td>
+                    <td className="py-4 pr-6 align-top break-words">
+                      {skill.description}
+                    </td>
+                    <td className="py-4 pr-6 align-top">{skill.score}</td>
+                    <td className="py-4 pr-6 align-top">
+                      {skill.lineManagerScore}
+                    </td>
+                    <td className="py-4 align-top">
                       <div className="flex flex-col">
                         <span>1 Poor</span>
                         <span>2 Fair</span>

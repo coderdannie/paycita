@@ -3,7 +3,8 @@ import { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoSearchOutline, IoInformationCircleOutline } from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
-import Pagination from "@/src/components/common/TanTable/pagination";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+
 
 interface EmployeePerformance {
   id: string;
@@ -119,26 +120,25 @@ const DepartmentDetail: FC<DepartmentDetailProps> = ({
       employee.lineManagerScore.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewEmployeeDetails = () => {
-    router.push(
-      `/appraisals/appraisal-management/departments/finance-department/sarah-johnson`
-    );
-  };
+const handleViewEmployeeDetails = (employee: { name: string }) => {
+  
+  const employeeSlug = employee.name.toLowerCase().replace(/\s+/g, "-");
+
+  // Format the department name for the URL
+  const deptSlug = departmentName
+    .replace(" Department", "")
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  router.push(
+    `/appraisals/appraisal-management/departments/${deptSlug}-department/${employeeSlug}`
+  );
+};  
   const handleGoBackToDepartments = () => {
     router.push("/appraisals/appraisal-management/departments");
   };
 
-  const mockTable = {
-    getState: () => ({
-      pagination: {
-        pageIndex: currentPage,
-      },
-    }),
-    getPageCount: () => Math.ceil(employees.length / 10),
-    getCanPreviousPage: () => currentPage > 0,
-    getCanNextPage: () => currentPage < Math.ceil(employees.length / 10) - 1,
-    setPageIndex: (index: number) => setCurrentPage(index),
-  };
+
 
   const setPageIndex = (index: number) => {
     setCurrentPage(index);
@@ -270,7 +270,7 @@ const DepartmentDetail: FC<DepartmentDetailProps> = ({
                     <td className="px-2 py-4 sm:px-6 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">
                         <button
-                          onClick={() => handleViewEmployeeDetails()}
+                          onClick={() => handleViewEmployeeDetails(employee)}
                           className="text-gray-400 border rounded-md p-1 hover:text-gray-500 flex items-center justify-center min-w-[32px] min-h-[32px]"
                           aria-label="View Details"
                         >
@@ -284,14 +284,12 @@ const DepartmentDetail: FC<DepartmentDetailProps> = ({
             </table>
           </div>
         </div>
-        <Pagination
-          table={mockTable}
-          buttons={[]}
-          setPageIndex={setPageIndex}
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(employees.length / 10)}
+          goToPage={setPageIndex}
         />
       </div>
     </div>
   );
-};
-
-export default DepartmentDetail;
+};export default DepartmentDetail;

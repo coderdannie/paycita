@@ -3,8 +3,9 @@ import { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaSort, FaPlus } from "react-icons/fa";
 import { IoInformationCircleOutline, IoSearchOutline } from "react-icons/io5";
-import Pagination from "@/src/components/common/TanTable/pagination";
+
 import AppraisalManagementModal from "./AppraisalManagementModal";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
 
 
 interface Appraisal {
@@ -85,20 +86,9 @@ const AppraisalManagementTab: FC = () => {
     router.push(`/appraisals/appraisal-management/${id}`);
   };
 
-  const mockTable = {
-    getState: () => ({
-      pagination: { pageIndex: currentPage },
-    }),
-    getPageCount: () => Math.ceil(filteredAppraisals.length / 10),
-    getCanPreviousPage: () => currentPage > 0,
-    getCanNextPage: () =>
-      currentPage < Math.ceil(filteredAppraisals.length / 10) - 1,
-    setPageIndex: (index: number) => setCurrentPage(index),
-  };
+ 
 
-  const setPageIndex = (index: number) => {
-    setCurrentPage(index);
-  };
+ 
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -142,6 +132,11 @@ const AppraisalManagementTab: FC = () => {
 
     setAppraisals([newAppraisal, ...appraisals]);
     handleCloseModal();
+  };
+
+  const totalPages = Math.ceil(filteredAppraisals.length / 10);
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -295,7 +290,11 @@ const AppraisalManagementTab: FC = () => {
         </div>
       </div>
 
-      <Pagination table={mockTable} buttons={[]} setPageIndex={setPageIndex} />
+      <CustomPagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        goToPage={goToPage}
+      />
 
       <AppraisalManagementModal
         isOpen={isModalOpen}
@@ -305,5 +304,4 @@ const AppraisalManagementTab: FC = () => {
     </div>
   );
 };
-
 export default AppraisalManagementTab;

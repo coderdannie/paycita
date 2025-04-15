@@ -1,6 +1,4 @@
-"use client";
-
-import { use } from "react";
+import React, { use } from "react";
 import EmployeeReviewDetailsPage from "../../../component-management/EmployeeReviewDetailsPage";
 
 export default function EmployeeDetailPage({
@@ -8,15 +6,14 @@ export default function EmployeeDetailPage({
 }: {
   params: Promise<{ departmentName: string; employeeName: string }>;
 }) {
-  const { departmentName: rawDepartmentName, employeeName: rawEmployeeName } =
-    use(params);
+  const { departmentName: rawDept, employeeName: rawEmp } = use(params);
 
-  const departmentName = rawDepartmentName
+  const departmentName = rawDept
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  const employeeName = rawEmployeeName
+  const employeeName = rawEmp
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

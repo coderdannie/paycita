@@ -3,13 +3,6 @@ import { FC } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 
-// interface SkillRating {
-//   skill: string;
-//   description: string;
-//   score: number;
-//   lineManagerScore: number | null;
-// }
-
 interface EmployeeReviewDetailsPageProps {
   employeeName?: string;
   departmentName?: string;
@@ -17,7 +10,7 @@ interface EmployeeReviewDetailsPageProps {
 
 const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
   employeeName = "Sarah Johnson",
-  departmentName = "Finance Department",
+  departmentName = "Finance Department", 
 }) => {
   const router = useRouter();
 
@@ -33,41 +26,85 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
     assessmentScore: 5,
     skills: [
       {
-        skill: "Communication Skills",
+        skill: "Job Knowledge & Expertise",
         description:
-          "Clarity and effectiveness in written and verbal communication",
+          "Understanding of duties and responsibilities. Technical skills related to the role. Ability to apply knowledge to work effectively",
         score: 5,
         lineManagerScore: 2,
-      },
-      {
-        skill: "Teamwork",
-        description: "Ability to work collaboratively with others",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Problem Solving",
-        description:
-          "Effectiveness in identifying problems and implementing solutions",
-        score: 5,
-        lineManagerScore: 2,
-      },
-      {
-        skill: "Punctuality",
-        description:
-          "Adherence to deadlines and punctuality in work attendance",
-        score: 5,
-        lineManagerScore: 3,
       },
       {
         skill: "Quality of Work",
-        description: "Consistency and accuracy of work delivered",
+        description:
+          "Accuracy and thoroughness. Attention to detail. Consistency in output. Meets/exceeds quality standards",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Productivity & Efficiency",
+        description:
+          "Timeliness in completing tasks. Ability to manage workload. Minimizes downtime. Time management",
+        score: 5,
+        lineManagerScore: 2,
+      },
+      {
+        skill: "Communication Skills",
+        description:
+          "Clear verbal and written communication. Active listening. Timely and appropriate feedback. Ability to communicate with colleagues, management, and customers",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Customer Service (for client-facing roles)",
+        description:
+          "Response time to inquiries or issues. Customer satisfaction ratings. Professionalism in handling complaints. Resolution of customer issues",
         score: 5,
         lineManagerScore: 4,
       },
       {
-        skill: "Innovation",
-        description: "Ability to contribute new ideas and creative solutions",
+        skill: "Teamwork & Collaboration",
+        description:
+          "Cooperates with team members. Shares information and ideas. Offers solutions and suggestions. Takes ownership of tasks",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Initiative & Problem-Solving",
+        description:
+          "Proactively identifies problems. Offers solutions and suggestions. Takes ownership of tasks. Willingness to go beyond the assigned duties",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Dependability & Accountability",
+        description: "Meets deadlines. Reliable and punctual",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Adaptability & Flexibility",
+        description:
+          "Open to change and feedback. Adjusts quickly to new responsibilities or shifts in priorities. Learns new skills when required",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Leadership & Supervision (for team leads/supervisors)",
+        description:
+          "Delegates tasks appropriately. Motivates and guides team. Conflict resolution. Provides feedback and support",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Adherence to Company Policies",
+        description:
+          "Follows company procedures and rules. Maintains confidentiality. Complies with safety and operational guidelines",
+        score: 5,
+        lineManagerScore: 3,
+      },
+      {
+        skill: "Professionalism & Attitude",
+        description:
+          "Respectful and courteous behavior. Positive attitude towards work. Presentation and grooming (where applicable). Ethical conduct",
         score: 5,
         lineManagerScore: 3,
       },
@@ -79,15 +116,24 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
     router.back();
   };
 
-  const handleNavigateToDepartment = () => {
-    router.push(
-      "/appraisals/appraisal-management/departments/finance-department"
-    );
-  };
+   const handleNavigateToDepartment = () => {
+     // Format the department name for the URL
+     const deptSlug = departmentName
+       .replace(" Department", "")
+       .toLowerCase()
+       .replace(/\s+/g, "-");
+
+     router.push(
+       `/appraisals/appraisal-management/departments/${deptSlug}-department`
+     );
+   };
 
   const handleNavigateToDepartments = () => {
     router.push("/appraisals/appraisal-management/departments");
   };
+
+  // Get just the department name without "Department" suffix for display in breadcrumbs
+  const deptNameForBreadcrumb = departmentName.replace(" Department", "");
 
   return (
     <div className="min-h-screen w-full">
@@ -111,7 +157,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
             className="text-[#692E9F] cursor-pointer"
             onClick={handleNavigateToDepartment}
           >
-            {departmentName}
+            {deptNameForBreadcrumb}
           </span>
           <span className="mx-2">/</span>
           <span>{employeeName}</span>
@@ -214,7 +260,9 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
                     className="border-b border-gray-100 last:border-0"
                   >
                     <td className="py-4 pr-6">{skill.skill}</td>
-                    <td className="py-4 pr-6">{skill.description}</td>
+                    <td className="py-4 pr-6 max-w-md whitespace-normal">
+                      {skill.description}
+                    </td>
                     <td className="py-4 pr-6">{skill.score}</td>
                     <td className="py-4 pr-6">{skill.lineManagerScore}</td>
                     <td className="py-4">
