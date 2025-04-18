@@ -260,3 +260,22 @@ export const LoanIcon = ({ fill }: IconProps) => {
     </svg>
   );
 };
+
+export const AppraisalIcon = ({ fill }: IconProps) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 512 512"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect width="512" height="512" rx="100" fill="white" />
+    <path
+      d="M80 80C80 62.3269 94.3269 48 112 48H400C417.673 48 432 62.3269 432 80V224C432 241.673 417.673 256 400 256H80V80Z"
+      fill={fill}
+    />
+    <rect x="80" y="288" width="352" height="144" rx="40" fill={fill} />
+    <rect x="160" y="120" width="192" height="32" rx="16" fill="white" />
+    <rect x="160" y="176" width="128" height="32" rx="16" fill="white" />
+  </svg>
+);
