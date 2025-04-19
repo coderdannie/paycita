@@ -1,107 +1,58 @@
 "use client";
-import { FC } from "react";
-import { useRouter } from "next/navigation";
+
+import { usePathname, useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
+import { useGetSingleAppraisal } from "@/src/hooks/appraisal/useAppraisal";
+import { cn } from "@/lib/utils";
 
-const ReviewDetailsPage: FC = () => {
+interface AssessmentValue {
+  employee_score: string | number;
+  line_manager: string | number | null;
+}
+
+// interface Appraisal {
+//   [key: string]: string | number | AssessmentValue | null;
+//   appraisal_title: string;
+//   start_date: string;
+//   end_date: string;
+//   status: string;
+//   total_score: string;
+//   line_manager_score: string;
+//   employeeComment: string;
+//   lineManagerComment: string;
+// }
+
+const ReviewDetailsPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const id = pathname.split("/").pop();
 
-  const appraisalDetails = {
-    title: "Q1 Performance Review",
-    startDate: "Mar 1, 2025",
-    endDate: "Mar 15, 2025",
-    status: "Completed",
-    totalScore: 30,
-    lineManagerScore: 18,
-    assessmentScore: 5,
-    skills: [
-      {
-        skill: "Job Knowledge & Expertise",
-        description:
-          "Understanding of duties and responsibilities, Technical skills related to the role, Ability to apply knowledge to work effectively",
-        score: 5,
-        lineManagerScore: 2,
-      },
-      {
-        skill: "Quality of Work",
-        description:
-          "Accuracy and thoroughness, Attention to detail, Consistency in output, Meets/exceeds quality standards",
-        score: 5,
-        lineManagerScore: 4,
-      },
-      {
-        skill: "Productivity & Efficiency",
-        description:
-          "Timeliness in completing tasks, Ability to manage workload, Minimizes downtime, Time management",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Communication Skills",
-        description:
-          "Clear verbal and written communication, Active listening, Timely and appropriate feedback, Ability to communicate with colleagues, management, and customers",
-        score: 5,
-        lineManagerScore: 2,
-      },
-      {
-        skill: "Customer Service (for client-facing roles)",
-        description:
-          "Response time to inquiries or issues, Customer satisfaction ratings, Professionalism in handling complaints, Resolution of customer issues",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Teamwork & Collaboration",
-        description:
-          "Cooperates with team members, Shares information and ideas, Offers solutions and suggestions, Takes ownership of tasks",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Initiative & Problem-Solving",
-        description:
-          "Proactively identifies problems, Offers solutions and suggestions, Takes ownership of tasks, Willingness to go beyond the assigned duties",
-        score: 5,
-        lineManagerScore: 2,
-      },
-      {
-        skill: "Dependability & Accountability",
-        description: "Meets deadlines, Reliable and punctual",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Adaptability & Flexibility",
-        description:
-          "Open to change and feedback, Adjusts quickly to new responsibilities or shifts in priorities, Learns new skills when required",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Leaderships & ASupervision(For team leads/supervisors)",
-        description:
-          "Delegates tasks appropriately, Motivates and guides team, Conflict resolution, Provides feedback and support.",
-        score: 5,
-        lineManagerScore: 3,
-      },
-      {
-        skill: "Adherence to Company Policies",
-        description:
-          "Follows company procedures and rules, Maintains confidentiality, Complies with safety and operational guidelines",
-        score: 5,
-        lineManagerScore: 4,
-      },
-      {
-        skill: "Professionalism & Attitude",
-        description:
-          "Respectful and courteous behavior, Positive attitude towards work, Presentation and grooming (where applicable), Ethical conduct",
-        score: 5,
-        lineManagerScore: 3,
-      },
-    ],
-    employeeComment: "",
-    lineManagerComment: "",
+  const { appraisal, isLoading, isError } = useGetSingleAppraisal(id || "");
+
+
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 4.5) return 'Excellent';
+    if (score >= 3.5) return 'Very Good';
+    if (score >= 2.5) return 'Good';
+    if (score >= 1.5) return 'Fair';
+    return 'Poor';
   };
+
+  if (isLoading) {
+    return <div>Loading appraisal details...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading appraisal details</div>;
+  }
+
+  if (!appraisal) {
+    return <div>Appraisal not found</div>;
+  }
+
+
+  const scoreLabel = getScoreLabel(Number(appraisal.total_score));
 
   const handleGoBack = () => {
     router.back();
@@ -122,22 +73,23 @@ const ReviewDetailsPage: FC = () => {
           <div className="space-y-1">
             <div className="flex">
               <span className="text-gray-500 w-36">Appraisals Title</span>
-              <span className="font-medium">{appraisalDetails.title}</span>
+              <span className="font-medium">{appraisal.appraisal_title}</span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">Start Date</span>
-              <span className="font-medium">{appraisalDetails.startDate}</span>
+              <span className="font-medium">{appraisal.start_date}</span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">End Date</span>
-              <span className="font-medium">{appraisalDetails.endDate}</span>
+              <span className="font-medium">{appraisal.end_date
+              }</span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">Status</span>
               <div className="flex items-center">
-                <span className="w-2 h-2 rounded-full bg-[#00813C] mr-2"></span>
-                <span className="text-[#00813C]">
-                  {appraisalDetails.status}
+                <span className={cn("w-2 h-2 rounded-full mr-2", appraisal.status.toLowerCase() === "pending" ? "bg-yellow-500" : "bg-[#00813C]")}></span>
+                <span className={cn("text-[#00813C] capitalize", appraisal.status.toLowerCase() === "pending" ? "text-yellow-500" : "text-[#00813C]")}>
+                  {appraisal.status}
                 </span>
               </div>
             </div>
@@ -151,18 +103,18 @@ const ReviewDetailsPage: FC = () => {
           <div className="space-y-1">
             <div className="flex">
               <span className="text-gray-500 w-36">Total Score</span>
-              <span className="font-medium">{appraisalDetails.totalScore}</span>
+              <span className="font-medium">{appraisal.employee_score}</span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">Line Manager Score</span>
               <span className="font-medium">
-                {appraisalDetails.lineManagerScore}
+                {appraisal.line_manager_score}
               </span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">Appraisals Score</span>
               <span className="font-medium">
-                {appraisalDetails.assessmentScore} (Excellent)
+                {appraisal.total_score} ({scoreLabel})
               </span>
             </div>
           </div>
@@ -191,30 +143,34 @@ const ReviewDetailsPage: FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {appraisalDetails.skills.map((skill, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-100 last:border-0"
-                  >
-                    <td className="py-4 pr-6 align-top">{skill.skill}</td>
-                    <td className="py-4 pr-6 align-top break-words">
-                      {skill.description}
-                    </td>
-                    <td className="py-4 pr-6 align-top">{skill.score}</td>
-                    <td className="py-4 pr-6 align-top">
-                      {skill.lineManagerScore}
-                    </td>
-                    <td className="py-4 align-top">
-                      <div className="flex flex-col">
-                        <span>1 Poor</span>
-                        <span>2 Fair</span>
-                        <span>3 Good</span>
-                        <span>4 Very Good</span>
-                        <span>5 Excellent</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {Object.entries(appraisal).map(([key, value]) => {
+                  if (typeof value === 'object' && value !== null && 'employee_score' in value) {
+                    const skillName = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    const assessmentValue = value as AssessmentValue;
+                    return (
+                      <tr key={key} className="border-b border-gray-100 last:border-0">
+                        <td className="py-4 pr-6 align-top">{skillName}</td>
+                        <td className="py-4 pr-6 align-top break-words">
+                          {/* Description can be added here if available */}
+                        </td>
+                        <td className="py-4 pr-6 align-top">{assessmentValue.employee_score}</td>
+                        <td className="py-4 pr-6 align-top">
+                          {assessmentValue.line_manager || '-'}
+                        </td>
+                        <td className="py-4 align-top">
+                          <div className="flex flex-col">
+                            <span>1 Poor</span>
+                            <span>2 Fair</span>
+                            <span>3 Good</span>
+                            <span>4 Very Good</span>
+                            <span>5 Excellent</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return null;
+                })}
               </tbody>
             </table>
           </div>
@@ -224,7 +180,7 @@ const ReviewDetailsPage: FC = () => {
           <h3 className="font-medium text-lg mb-4">Employee Comment</h3>
           <div className="border border-gray-200 rounded-md p-4 min-h-24 bg-white">
             <p className="text-[#667085]">
-              Notes about the employee performance
+              {appraisal.employee_comment || "No comment provided"}
             </p>
           </div>
         </div>
@@ -233,7 +189,7 @@ const ReviewDetailsPage: FC = () => {
           <h3 className="font-medium text-lg mb-4">Line Manager Comment</h3>
           <div className="border border-gray-200 rounded-md p-4 min-h-24 bg-white">
             <p className="text-[#667085]">
-              Notes about the employee performance
+              {appraisal.line_mamager_comment || "No comment provided"}
             </p>
           </div>
         </div>

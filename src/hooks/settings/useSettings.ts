@@ -6,8 +6,10 @@ import {
 } from "@tanstack/react-query";
 
 import settingsService from "@/src/service/api/settings.service";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+
 import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 
 export const useGetAllProfileSettings = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -250,3 +252,28 @@ export const useUploadDocument = () => {
     },
   });
 };
+
+
+export const useUpdateBankDetails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      id: string;
+      bank_name: string;
+      bank_account_number: string;
+      account_name: string;
+      bank_code?: string;
+    }) => settingsService.updateBankDetails(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+      toast.success('Bank details updated successfully');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error?.response?.data?.message || 'Failed to update bank details');
+    },
+  });
+}
+

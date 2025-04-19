@@ -1,5 +1,5 @@
 import { Loan } from "@/src/types/loan";
-import { api } from "../../api";
+import { api } from ".";
 
 const getAllLoan = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();

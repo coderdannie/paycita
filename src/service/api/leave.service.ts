@@ -1,4 +1,4 @@
-import { api } from "../../api";
+import { api } from ".";
 import { LeaveRequestSchemaType } from "../../utils/validations";
 
 const getAllLeave = (filters?: { page: string }) => {

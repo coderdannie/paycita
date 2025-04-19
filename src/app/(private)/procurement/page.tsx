@@ -11,7 +11,7 @@ import {
   useDeleteProcurement,
   useGetAllProcurements,
   useGetSingleProcurement,
-} from "@/src/api/hooks/procurement/useProcurement";
+} from "@/src/hooks/procurement/useProcurement";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import ConfirmationModal from "@/src/components/common/ConfirmationModal";

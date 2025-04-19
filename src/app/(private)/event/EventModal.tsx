@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import { useGetDepartments } from "@/src/api/hooks/dashboard/useDashboard";
+import { useGetDepartments } from "@/src/hooks/dashboard/useDashboard";
 import { Spinner } from "react-activity";
 
 interface EventModalProps {

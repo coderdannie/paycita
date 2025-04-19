@@ -6,52 +6,19 @@ import { IoInformationCircleOutline, IoSearchOutline } from "react-icons/io5";
 
 import AppraisalManagementModal from "./AppraisalManagementModal";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
-
-
-interface Appraisal {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  duration: string;
-  status: "Ongoing" | "Completed";
-}
+import { useGetAppraisals } from "@/src/hooks/appraisal/useAppraisal";
 
 const AppraisalManagementTab: FC = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedAppraisals, setSelectedAppraisals] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Sample data
-  const [appraisals, setAppraisals] = useState<Appraisal[]>([
-    {
-      id: "1",
-      title: "Q1 Performance Review",
-      startDate: "Mar 1, 2025",
-      endDate: "Mar 15, 2025",
-      duration: "15 days",
-      status: "Ongoing",
-    },
-    {
-      id: "2",
-      title: "Q1 Performance Review",
-      startDate: "Feb 5, 2025",
-      endDate: "Feb 20, 2025",
-      duration: "15 days",
-      status: "Completed",
-    },
-    {
-      id: "3",
-      title: "Q1 Performance Review",
-      startDate: "Jan 5, 2025",
-      endDate: "Jan 20, 2025",
-      duration: "15 days",
-      status: "Completed",
-    },
-  ]);
+  const { appraisals, isLoading, pagination } = useGetAppraisals({
+    page: currentPage.toString(),
+  });
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
@@ -77,18 +44,13 @@ const AppraisalManagementTab: FC = () => {
   const filteredAppraisals = appraisals.filter(
     (appraisal) =>
       appraisal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appraisal.startDate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appraisal.endDate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appraisal.status.toLowerCase().includes(searchTerm.toLowerCase())
+      appraisal.start_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      appraisal.end_date.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleTakeQ1Performance = (id: string) => {
     router.push(`/appraisals/appraisal-management/${id}`);
   };
-
- 
-
- 
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -112,32 +74,20 @@ const AppraisalManagementTab: FC = () => {
     return `${month} ${date.getDate()}, ${date.getFullYear()}`;
   };
 
-  const handleSaveAppraisal = (appraisalData: {
-    title: string;
-    startDate: string;
-    endDate: string;
-    department: string;
-  }) => {
-    const newAppraisal: Appraisal = {
-      id: (appraisals.length + 1).toString(),
-      title: appraisalData.title,
-      startDate: formatDate(appraisalData.startDate),
-      endDate: formatDate(appraisalData.endDate),
-      duration: calculateDuration(
-        appraisalData.startDate,
-        appraisalData.endDate
-      ),
-      status: "Ongoing",
-    };
-
-    setAppraisals([newAppraisal, ...appraisals]);
-    handleCloseModal();
-  };
-
-  const totalPages = Math.ceil(filteredAppraisals.length / 10);
   const goToPage = (page: number) => {
     setCurrentPage(page);
   };
+
+  if (isLoading) {
+    return (
+      <div className="py-8 px-6 w-full">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8 px-6 w-full">
@@ -257,21 +207,21 @@ const AppraisalManagementTab: FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {appraisal.startDate}
+                      {formatDate(appraisal.start_date)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {appraisal.endDate}
+                      {formatDate(appraisal.end_date)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {appraisal.duration}
+                      {calculateDuration(appraisal.start_date, appraisal.end_date)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex text-xs leading-5 font-semibold">
+                    <span className="inline-flex text-xs leading-5 font-semibold capitalize">
                       {appraisal.status}
                     </span>
                   </td>
@@ -290,18 +240,22 @@ const AppraisalManagementTab: FC = () => {
         </div>
       </div>
 
-      <CustomPagination 
-        currentPage={currentPage}
-        totalPages={totalPages}
-        goToPage={goToPage}
-      />
+      {pagination?.total_pages > 1 && (
+        <div className="mt-6">
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={pagination.total_pages}
+            goToPage={goToPage}
+          />
+        </div>
+      )}
 
       <AppraisalManagementModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSave={handleSaveAppraisal}
       />
     </div>
   );
 };
+
 export default AppraisalManagementTab;

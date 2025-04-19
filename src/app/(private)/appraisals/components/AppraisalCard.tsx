@@ -7,14 +7,14 @@ interface AppraisalProps {
   appraisal: {
     id: string;
     title: string;
-    startDate: string;
-    endDate: string;
+    start_date: string;
+    end_date: string;
     status: "Pending" | "Completed";
   };
 }
 
 const AppraisalCard: FC<AppraisalProps> = ({ appraisal }) => {
-  const { id, title, startDate, endDate, status } = appraisal;
+  const { id, title, start_date, end_date, status } = appraisal;
   const router = useRouter();
 
   const handleTakeAssessment = () => {
@@ -35,23 +35,22 @@ const AppraisalCard: FC<AppraisalProps> = ({ appraisal }) => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-8">
             <span className="text-gray-500">Start Date</span>
-            <span className="font-medium text-gray-800">{startDate}</span>
+            <span className="font-medium text-gray-800">{start_date}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-8">
             <span className="text-gray-500">End Date</span>
-            <span className="font-medium text-gray-800">{endDate}</span>
+            <span className="font-medium text-gray-800">{end_date}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-8">
             <span className="text-gray-500">Status</span>
-            <div className="flex items-center">
+            <div className="flex items-center capitalize">
               <span
-                className={`w-2 h-2 rounded-full mr-2 ${
-                  status === "Pending" ? "bg-[#FFA80A]" : "bg-[#00813C]"
-                }`}
+                className={`w-2 h-2 rounded-full mr-2 ${status.toLowerCase() === "pending" ? "bg-[#FFA80A]" : "bg-[#00813C]"
+                  }`}
               />
               <span
                 className={
-                  status === "Pending" ? "text-[#FFA80A]" : "text-[#00813C]"
+                  status.toLowerCase() === "pending" ? "text-[#FFA80A]" : "text-[#00813C]"
                 }
               >
                 {status}
@@ -72,12 +71,11 @@ const AppraisalCard: FC<AppraisalProps> = ({ appraisal }) => {
       <div className="mt-4 flex justify-end">
         <button
           onClick={handleTakeAssessment}
-          className={`px-4 py-2 rounded-md text-white ${
-            status === "Completed"
-              ? "bg-[#F0EAF5] text-[#FFFFFF] cursor-not-allowed"
-              : "bg-[#692E9F] hover:bg-purple-800"
-          }`}
-          disabled={status === "Completed"}
+          className={`px-4 py-2 rounded-md text-white ${status.toLowerCase() === "completed"
+            ? "bg-[#F0EAF5] text-[#FFFFFF] cursor-not-allowed"
+            : "bg-[#692E9F] hover:bg-purple-800"
+            }`}
+          disabled={status.toLowerCase() === "completed"}
         >
           Take Assessment
         </button>

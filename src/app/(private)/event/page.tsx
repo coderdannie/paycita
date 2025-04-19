@@ -9,7 +9,7 @@ import {
   useDeleteEvent,
   useGetAllEvents,
   useUpdateEvent,
-} from "@/src/api/hooks/events/useEvents";
+} from "@/src/hooks/events/useEvents";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import { useSearchParams } from "next/navigation";
 import CustomPagination from "@/src/components/common/pagination/Pagination";

@@ -7,7 +7,7 @@ import EmployeeDetail from "@/src/components/data/EmployeeMgt/Tabs/EmployeeDetai
 import Attendance from "@/src/components/data/EmployeeMgt/Tabs/Attendance";
 import PayrollHistory from "@/src/components/data/EmployeeMgt/Tabs/PaymentHistory";
 import LeaveHistory from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
-import { useGetEmployeeById } from "@/src/api/hooks/dashboard/useDashboard";
+import { useGetEmployeeById } from "@/src/hooks/dashboard/useDashboard";
 import { useParams } from "next/navigation";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import Documents from "@/src/components/data/EmployeeMgt/Tabs/Documents";

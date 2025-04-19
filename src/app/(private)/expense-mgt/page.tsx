@@ -13,7 +13,7 @@ import {
   useDeleteExpense,
   useGetAllExpenses,
   useGetSingleExpense,
-} from "@/src/api/hooks/expenses/useExpenses";
+} from "@/src/hooks/expenses/useExpenses";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import ConfirmationModal from "@/src/components/common/ConfirmationModal";
