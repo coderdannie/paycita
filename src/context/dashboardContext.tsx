@@ -339,6 +339,7 @@ const DashboardProvider = ({
     subscribeToUserChannel,
     currentChat,
   };
+
   return (
     <DashboardContext.Provider value={value}>
       <ToastProvider>{children}</ToastProvider>
