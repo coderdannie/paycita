@@ -15,50 +15,101 @@ interface CriteriaRating {
 
 const AssignmentPage: FC = () => {
   const router = useRouter();
-  // const params = useParams();
+
 
   const [ratings, setRatings] = useState<CriteriaRating[]>([
     {
-      id: "communication",
-      name: "Communication Skill",
+      id: "job-knowledge",
+      name: "Job Knowledge & Expertise",
       description:
-        "Clarity and effectiveness in written and verbal communication",
+        "Understanding of duties and responsibilities\nTechnical skills related to the role\nAbility to apply knowledge to work effectively",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "quality-of-work",
+      name: "Quality of Work",
+      description:
+        "Accuracy and thoroughness\nAttention to detail\nConsistency in output\nMeets/exceeds quality standards",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "productivity",
+      name: "Productivity & Efficiency",
+      description:
+        "Timeliness in completing tasks\nAbility to manage workload\nMinimizes downtime\nTime management",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "communication",
+      name: "Communication Skills",
+      description:
+        "Clear verbal and written communication\nActive listening\nTimely and appropriate feedback\nAbility to communicate with colleagues, management, and customers",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "customer-service",
+      name: "Customer Service (for client-facing roles)",
+      description:
+        "Response time to inquiries or issues\nCustomer satisfaction ratings\nProfessionalism in handling complaints\nResolution of customer issues",
       score: 0,
       managerScore: 0,
     },
     {
       id: "teamwork",
-      name: "Teamwork",
-      description: "Ability to work collaboratively with others",
-      score: 0,
-      managerScore: 0,
-    },
-    {
-      id: "problem-solving",
-      name: "Problem Solving",
+      name: "Teamwork & Collaboration",
       description:
-        "Effectiveness in identifying problems and implementing solutions",
+        "Cooperates with team members\nShares information and ideas\nOffers solutions and suggestions\nTakes ownership of tasks\nWorks well across departments",
       score: 0,
       managerScore: 0,
     },
     {
-      id: "punctuality",
-      name: "Punctuality",
-      description: "Adherence to deadlines and punctuality in work attendance",
+      id: "initiative",
+      name: "Initiative & Problem-Solving",
+      description:
+        "Proactively identifies problems\nOffers solutions and suggestions\nTakes ownership of tasks\nWillingness to go beyond the assigned duties",
       score: 0,
       managerScore: 0,
     },
     {
-      id: "quality",
-      name: "Quality of Work",
-      description: "Consistency and accuracy of work delivered",
+      id: "dependability",
+      name: "Dependability & Accountability",
+      description: "Meets deadlines\nReliable and punctual",
       score: 0,
       managerScore: 0,
     },
     {
-      id: "innovation",
-      name: "Innovation",
-      description: "Ability to contribute new ideas and creative solutions",
+      id: "adaptability",
+      name: "Adaptability & Flexibility",
+      description:
+        "Open to change and feedback\nAdjusts quickly to new responsibilities or shifts in priorities\nLearns new skills when required",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "leadership",
+      name: "Leadership & Supervision (For team leads/supervisors)",
+      description:
+        "Delegates tasks appropriately\nMotivates and guides team\nConflict resolution\nProvides feedback and support",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "company-policies",
+      name: "Adherence to Company Policies",
+      description:
+        "Follows company procedures and rules\nMaintains confidentiality\nComplies with safety and operational guidelines",
+      score: 0,
+      managerScore: 0,
+    },
+    {
+      id: "professionalism",
+      name: "Professionalism & Attitude",
+      description:
+        "Respectful and courteous behavior\nPositive attitude towards work\nPresentation and grooming (where applicable)\nEthical conduct",
       score: 0,
       managerScore: 0,
     },
@@ -129,8 +180,8 @@ const AssignmentPage: FC = () => {
         <div className="p-6 w-full">
           {ratings.map((criteria) => (
             <div key={criteria.id} className="py-8 ">
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/3 mb-6 md:mb-0">
+              <div className="flex flex-col md:flex-row gap-24">
+                <div className="md:w-1/3 mb-6 md:mb-0 mt-11">
                   <h3 className="font-medium text-gray-800">{criteria.name}</h3>
                   <p className="text-sm text-gray-500 mt-1">
                     {criteria.description}
