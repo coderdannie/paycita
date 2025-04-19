@@ -117,7 +117,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
   };
 
    const handleNavigateToDepartment = () => {
-     // Format the department name for the URL
+     
      const deptSlug = departmentName
        .replace(" Department", "")
        .toLowerCase()
@@ -132,7 +132,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
     router.push("/appraisals/appraisal-management/departments");
   };
 
-  // Get just the department name without "Department" suffix for display in breadcrumbs
+  
   const deptNameForBreadcrumb = departmentName.replace(" Department", "");
 
   return (
