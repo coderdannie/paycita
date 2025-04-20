@@ -25,7 +25,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Message } from "../app/(private)/message/components/types";
 import { useGetSingleChat } from "../hooks/chat/useChatQuery";
-import { initAudio, playSentSound } from "../utils/audio";
+// import { initAudio, playSentSound } from "../utils/audio";
 import isEqual from "lodash.isequal";
 import { v4 as uuidv4 } from "uuid";
 import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
@@ -256,8 +256,8 @@ const DashboardProvider = ({
     }));
 
     // Initialize audio before playing sound
-    initAudio();
-    playSentSound();
+    // initAudio();
+    // playSentSound();
   };
 
   const subscribeToUserChannel = useCallback(

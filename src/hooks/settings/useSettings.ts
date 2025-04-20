@@ -277,3 +277,25 @@ export const useUpdateBankDetails = () => {
   });
 }
 
+export const useAddBankDetails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      bank_name: string;
+      bank_account_number: string;
+      account_name: string;
+      bank_code?: string;
+    }) => settingsService.addBankDetails(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
+      });
+      toast.success('Bank details added successfully');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error?.response?.data?.message || 'Failed to add bank details');
+    },
+  });
+};
+
