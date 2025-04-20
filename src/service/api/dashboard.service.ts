@@ -1,4 +1,4 @@
-import { api } from "../../api";
+import { api } from ".";
 import { AddEmployee } from "../../utils/validations";
 
 const getAttendance = (filters: {

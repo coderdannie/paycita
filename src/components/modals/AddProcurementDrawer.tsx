@@ -27,12 +27,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useCreateProcurements,
   useGetVendors,
-} from "@/src/api/hooks/procurement/useProcurement";
+} from "@/src/hooks/procurement/useProcurement";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { Procurement } from "@/src/types/procurement";
 import { Spinner } from "react-activity";
-import { useGetExpenseTypes } from "@/src/api/hooks/expenses/useExpenses";
+import { useGetExpenseTypes } from "@/src/hooks/expenses/useExpenses";
 
 interface ProcurementDrawerProps {
   isOpen: boolean;

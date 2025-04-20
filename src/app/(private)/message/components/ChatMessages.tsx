@@ -1,19 +1,17 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { format, isToday, isYesterday } from "date-fns";
- 
+
 import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatMessages = () => {
   const { currentChat, conversations, ChatLoading } = useDashboard();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Get conversations for the current chat
   const currentChatConversations = useMemo(
     () => conversations[currentChat?.chat_id] || [],
     [conversations, currentChat?.chat_id]
   );
 
-  // Group messages by date
   const groupedMessages = useMemo(() => {
     if (!currentChatConversations.length) return {};
 
@@ -34,13 +32,10 @@ export const ChatMessages = () => {
     return groups;
   }, [currentChatConversations]);
 
-  // Removed redundant scrolling logic
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
   }, [currentChatConversations, currentChat]);
 
-  // If no chat is selected, show a placeholder
   if (!currentChat) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
@@ -68,19 +63,15 @@ export const ChatMessages = () => {
   }
 
   return (
-    <div
-      className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
-    >
+    <div className="flex-grow overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
       {Object.entries(groupedMessages).map(([date, dayMessages]) => (
         <div key={date}>
-          {/* Date Header */}
           <div className="text-center text-[#FFFFFF] my-2 sm:my-4">
             <span className="bg-[#344054] px-3 py-[.5rem] rounded-[.8rem] text-xs sm:text-sm">
               {date}
             </span>
           </div>
 
-          {/* Messages */}
           {dayMessages.map((message) => (
             <div
               key={message.id}

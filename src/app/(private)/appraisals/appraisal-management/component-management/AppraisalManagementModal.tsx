@@ -1,43 +1,166 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Form } from "@/src/components/ui/form";
+import { CustomFormField, CustomFormSelect } from "@/src/components/common/CustomInput";
+import Calendar from "react-calendar";
+import { FiCalendar } from "react-icons/fi";
+import { formatDate } from "@/src/utils/helper";
+import { useGetDepartments } from "@/src/hooks/dashboard/useDashboard";
+import { useCreateAppraisal } from "@/src/hooks/appraisal/useAppraisal";
+import { AppraisalFormValues } from "@/src/types/appraisal";
+import Select, { StylesConfig, SingleValue } from "react-select";
+
+type DepartmentOption = { label: string; value: string };
+
+const appraisalSchema = z.object({
+  title: z.string().min(1, { message: "Appraisal title is required" }),
+  start_date: z.string().min(1, { message: "Start date is required" }),
+  end_date: z.string().min(1, { message: "End date is required" }),
+  notification_type: z.enum(["all", "department"], {
+    required_error: "Notification type is required",
+  }),
+  department_id: z.union([z.string(), z.number()]).optional(),
+}).refine((data) => {
+  if (data.notification_type === "department") {
+    return !!data.department_id;
+  }
+  return true;
+}, {
+  message: "Department is required when notification type is department",
+  path: ["department_id"],
+}) satisfies z.ZodType<AppraisalFormValues>;
 
 interface CreateAppraisalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (appraisal: {
-    title: string;
-    startDate: string;
-    endDate: string;
-    department: string;
-  }) => void;
 }
+
+const customStyles: StylesConfig<DepartmentOption, false> = {
+  control: (provided) => ({
+    ...provided,
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    border: "2px solid #E4E7EC",
+    borderRadius: "8px",
+    boxShadow: "none",
+    minHeight: "40px",
+    padding: "0 12px",
+    fontSize: "14px",
+    color: "#1D2939",
+    outline: "none",
+    "&:hover": {
+      borderColor: "#692E9F",
+    },
+    "&:focus": {
+      borderColor: "transparent",
+      outline: "none",
+    },
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    fontSize: "12px",
+    color: "#b3b3b3",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: "10px",
+    marginTop: "4px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+    zIndex: 10,
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? "#F0EAF5" : "transparent",
+    color: "#333333",
+    fontSize: "12px",
+    padding: "10px 8px",
+    cursor: "pointer",
+    "&:active": {
+      backgroundColor: "#EAEAEA",
+    },
+  }),
+};
 
 const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
   isOpen,
   onClose,
-  onSave,
 }) => {
-  const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [department, setDepartment] = useState("All");
+  const form = useForm<AppraisalFormValues>({
+    resolver: zodResolver(appraisalSchema),
+    defaultValues: {
+      title: "",
+      start_date: "",
+      end_date: "",
+      notification_type: "all",
+      department_id: "",
+    },
+  });
 
-  const handleSubmit = () => {
-    onSave({
-      title,
-      startDate,
-      endDate,
-      department,
+  const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = form;
+  const [showStartCalendar, setShowStartCalendar] = useState(false);
+  const [showEndCalendar, setShowEndCalendar] = useState(false);
+
+  const { departmentOptions, isPending: isPendingDepartment } = useGetDepartments();
+  const { mutate: createAppraisal, isPending } = useCreateAppraisal();
+
+  const start_date = watch("start_date");
+  const end_date = watch("end_date");
+  const notification_type = watch("notification_type");
+
+  // Watch for notification_type changes and clear department if switching to "all"
+  useEffect(() => {
+    if (notification_type === "all") {
+      setValue("department_id", "", { shouldValidate: true });
+    }
+  }, [notification_type, setValue]);
+
+  const handleStartDateChange = (value: Date | Date[] | [Date | null, Date | null] | null) => {
+    if (value instanceof Date) {
+      setValue("start_date", formatDate(value), { shouldValidate: true });
+      setShowStartCalendar(false);
+    }
+  };
+
+  const handleEndDateChange = (value: Date | Date[] | [Date | null, Date | null] | null) => {
+    if (value instanceof Date) {
+      setValue("end_date", formatDate(value), { shouldValidate: true });
+      setShowEndCalendar(false);
+    }
+  };
+
+  const handleDepartmentChange = (selectedOption: SingleValue<DepartmentOption> | null) => {
+    if (selectedOption) {
+      setValue("department_id", selectedOption.value.toString(), { shouldValidate: true });
+    } else {
+      setValue("department_id", "", { shouldValidate: true });
+    }
+  };
+
+  const onSubmit = (data: AppraisalFormValues) => {
+    const submissionData = {
+      ...data,
+      department_id: data.notification_type === "department" ? data.department_id : undefined
+    };
+
+    createAppraisal(submissionData, {
+      onSuccess: () => {
+        reset();
+        onClose();
+      },
+      onError: (error: { response?: { data?: { message?: string } } }) => {
+        console.error("Error creating appraisal:", error.response?.data?.message || "Failed to create appraisal");
+      },
     });
-    resetForm();
   };
 
-  const resetForm = () => {
-    setTitle("");
-    setStartDate("");
-    setEndDate("");
-    setDepartment("All");
-  };
+  console.log(form.formState.errors)
 
   if (!isOpen) return null;
 
@@ -48,7 +171,7 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
           <h2 className="text-xl font-semibold">Create Appraisal</h2>
           <button
             onClick={() => {
-              resetForm();
+              reset();
               onClose();
             }}
             className="text-gray-400 hover:text-gray-500"
@@ -57,109 +180,115 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
           </button>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="appraisalTitle"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Appraisal Title
-            </label>
-            <input
-              type="text"
-              id="appraisalTitle"
-              className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <CustomFormField
+              control={control}
+              name="title"
+              label="Appraisal Title"
+              placeholder="Enter appraisal title"
             />
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="startDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Start Date
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  id="startDate"
-                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <div className="relative">
+                  <div
+                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${start_date ? "justify-between" : "justify-end"
+                      } items-center p-[10px] ${errors.start_date ? "border-red-500" : ""}`}
+                    onClick={() => setShowStartCalendar((prev) => !prev)}
+                  >
+                    <p className="text-xs text-[#292D32]">
+                      {start_date || "Pick date"}
+                    </p>
+                    <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
+                  </div>
+                  {errors.start_date && (
+                    <p className="text-red-500 text-sm mt-1">{errors.start_date.message}</p>
+                  )}
+                  {showStartCalendar && (
+                    <div className="absolute max-w-[350px] mt-2 w-full z-30">
+                      <Calendar
+                        onChange={handleStartDateChange}
+                        value={start_date ? new Date(start_date) : new Date()}
+                        minDate={new Date()}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                <div className="relative">
+                  <div
+                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${end_date ? "justify-between" : "justify-end"
+                      } items-center p-[10px] ${errors.end_date ? "border-red-500" : ""}`}
+                    onClick={() => setShowEndCalendar((prev) => !prev)}
+                  >
+                    <p className="text-xs text-[#292D32]">
+                      {end_date || "Pick date"}
+                    </p>
+                    <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
+                  </div>
+                  {errors.end_date && (
+                    <p className="text-red-500 text-sm mt-1">{errors.end_date.message}</p>
+                  )}
+                  {showEndCalendar && (
+                    <div className="absolute max-w-[350px] mt-2 w-full z-30">
+                      <Calendar
+                        onChange={handleEndDateChange}
+                        value={end_date ? new Date(end_date) : new Date()}
+                        minDate={start_date ? new Date(start_date) : new Date()}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <CustomFormSelect
+              control={control}
+              name="notification_type"
+              labelText="Notification Type"
+              items={["all", "department"]}
+              holder="Select notification type"
+            />
+
+            {notification_type === "department" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Department
+                </label>
+                <Select
+                  instanceId="department-select"
+                  options={departmentOptions}
+                  isLoading={isPendingDepartment}
+                  styles={customStyles}
+                  placeholder="Select department"
+                  onChange={handleDepartmentChange}
+                  value={departmentOptions?.find(
+                    (option) => option.value === watch("department_id")
+                  )}
                 />
               </div>
-            </div>
+            )}
 
-            <div>
-              <label
-                htmlFor="endDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
+            <div className="mt-6">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full py-2 px-4 bg-[#692E9F] hover:bg-purple-800 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                End Date
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  id="endDate"
-                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
+                {isPending ? "Creating..." : "Create"}
+              </button>
             </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="department"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Department
-            </label>
-            <div className="relative">
-              <select
-                id="department"
-                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 appearance-none pr-10 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-              >
-                <option value="All">All</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Sales">Sales</option>
-                <option value="HR">HR</option>
-                <option value="Finance">Finance</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <button
-            type="button"
-            className="w-full py-2 px-4 bg-[#692E9F] hover:bg-purple-800 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-            onClick={handleSubmit}
-          >
-            Create
-          </button>
-        </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

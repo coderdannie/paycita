@@ -2,7 +2,7 @@
 import OffBoardingDrawer from "@/src/components/modals/OffBoardingDrawer";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { useOffBoardEmployee } from "@/src/api/hooks/dashboard/useDashboard";
+import { useOffBoardEmployee } from "@/src/hooks/dashboard/useDashboard";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 

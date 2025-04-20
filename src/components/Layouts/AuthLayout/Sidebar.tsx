@@ -7,7 +7,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { sidebarData } from "../../common/constants";
 import Image from "next/image";
 import logoutIcon from "../../../../public/assets/logout.svg";
-import { useLogOut } from "@/src/api/hooks/useLogOut";
+import { useLogOut } from "@/src/hooks/useLogOut";
 import { useAuthSelector } from "@/src/Redux/selectors";
 
 const Sidebar = () => {

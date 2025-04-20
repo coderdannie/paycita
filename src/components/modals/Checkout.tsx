@@ -11,9 +11,14 @@ import {
 type Props = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  elapsedTime: string;
+  attendance: AttendanceSummary
+  isClockingOut: boolean;
+  handleClockOut: () => void;
 };
 
-const Checkout: React.FC<Props> = ({ isOpen, setIsOpen }) => {
+const Checkout: React.FC<Props> = ({ isOpen, setIsOpen,
+  elapsedTime, attendance, isClockingOut, handleClockOut }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="text-center bg-white p-0  w-[90%] rounded-md">
@@ -31,7 +36,7 @@ const Checkout: React.FC<Props> = ({ isOpen, setIsOpen }) => {
               className="w-6 h-6"
             />
             Your total working time today is
-            <span className="font-semibold"> 08:00:05 Hrs</span>
+            <span className="font-semibold"> {elapsedTime}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -44,8 +49,11 @@ const Checkout: React.FC<Props> = ({ isOpen, setIsOpen }) => {
             >
               Cancel
             </button>
-            <button className="bg-primary h-[40px] rounded-lg text-white flex-1">
-              Clock out
+            <button className="bg-primary h-[40px] rounded-lg text-white flex-1"
+              disabled={isClockingOut || !attendance?.is_clocked_in}
+              onClick={handleClockOut}>
+              {isClockingOut && (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />)}  Clock out
             </button>
           </div>
         </DialogFooter>

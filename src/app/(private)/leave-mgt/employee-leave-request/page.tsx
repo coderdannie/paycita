@@ -6,7 +6,7 @@ import {
   useDeleteLeaveRequest,
   useGetEmployeeLeave,
   useUpdateEmployeeLeave,
-} from "@/src/api/hooks/leave/useLeave";
+} from "@/src/hooks/leave/useLeave";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { useSearchParams } from "next/navigation";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";

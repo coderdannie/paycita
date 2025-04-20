@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import {
   useGetRepaymentPeriod,
   useRequestLoan,
-} from "@/src/api/hooks/loan/useLoan";
+} from "@/src/hooks/loan/useLoan";
 import { useToast } from "@/src/context/ToastContext";
 import { Loan } from "@/src/types/loan";
 import { Spinner } from "react-activity";

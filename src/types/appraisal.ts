@@ -18,3 +18,22 @@ export interface AssessmentSubmission {
   ratings: CriteriaRating[];
   feedback: string;
 }
+
+export type AppraisalFormValues = {
+  title?: string;
+  start_date?: string;
+  end_date?: string;
+  notification_type?: "all" | "department";
+  department_id?: string | number;
+};
+
+export type AppraisalResponse = {
+  id: string;
+  title: string;
+  start_date: string;
+  end_date: string;
+  notification_type: "all" | "department";
+  department_id?: string;
+  created_at: string;
+  updated_at: string;
+};

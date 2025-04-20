@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { useChangePassword } from "@/src/api/hooks/settings/useSettings";
+import { useChangePassword } from "@/src/hooks/settings/useSettings";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 

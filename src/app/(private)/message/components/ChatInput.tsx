@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FaAt } from "react-icons/fa";
- 
+
 import SendIcon from "../../../../assets/Send.svg";
 import Image from "next/image";
-import { useComposeChat } from "@/src/api/hooks/chat/useChatQuery";
+import { useComposeChat } from "@/src/hooks/chat/useChatQuery";
 import { useDashboard } from "@/src/context/dashboardContext";
 
 export const ChatInput = () => {
@@ -24,7 +24,6 @@ export const ChatInput = () => {
     if (message.trim()) {
       mutateComposeMessage(payload, {
         onSuccess: () => {
-          console.log("Message sent successfully");
           sendMessage(message);
           setMessage("");
         },

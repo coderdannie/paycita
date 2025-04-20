@@ -1,32 +1,60 @@
-import React, { useState } from "react";
+import React from "react";
 import { FiX } from "react-icons/fi";
 import { BankDetails } from "../BankAccountTab";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useUpdateBankDetails } from "@/src/hooks/settings/useSettings";
+import toast from "react-hot-toast";
+
+const bankDetailsSchema = z.object({
+  bank_name: z.string().min(1, "Bank name is required"),
+  bank_account_number: z.string().min(10, "Account number must be at least 10 digits").max(10, "Account number must be 10 digits"),
+  bank_account_name: z.string().min(1, "Account name is required"),
+});
+
+type BankDetailsFormValues = z.infer<typeof bankDetailsSchema>;
 
 interface BankDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentDetails: BankDetails;
-  onUpdate: (details: BankDetails) => void;
 }
 
 const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
   isOpen,
   onClose,
   currentDetails,
-  onUpdate,
 }) => {
-  const [formData, setFormData] = useState<BankDetails>(currentDetails);
+  const { mutate: updateBankDetails, isPending } = useUpdateBankDetails();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const form = useForm<BankDetailsFormValues>({
+    resolver: zodResolver(bankDetailsSchema),
+    defaultValues: {
+      bank_name: currentDetails.bank_name || "",
+      bank_account_number: currentDetails.bank_account_number || "",
+      bank_account_name: currentDetails.bank_account_name || "",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onUpdate(formData);
+  const onSubmit = async (data: BankDetailsFormValues) => {
+    updateBankDetails(
+      {
+        id: currentDetails.id,
+        bank_name: data.bank_name,
+        bank_account_number: data.bank_account_number,
+        account_name: data.bank_account_name,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Bank details updated successfully");
+          onClose();
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to update bank details");
+        },
+      }
+    );
   };
 
   if (!isOpen) return null;
@@ -62,51 +90,61 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
             <p className="mb-4 text-sm text-gray-600">
               Please provide your valid bank account information for payouts
             </p>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Select Your Bank
                 </label>
                 <select
-                  name="bank_name"
-                  value={formData.bank_name}
-                  onChange={handleChange}
+                  {...form.register("bank_name")}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
                 >
+                  <option value="">Select a bank</option>
                   {bankOptions.map((bank) => (
                     <option key={bank} value={bank}>
                       {bank}
                     </option>
                   ))}
                 </select>
+                {form.formState.errors.bank_name && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.bank_name.message}
+                  </p>
+                )}
               </div>
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Account Number
                 </label>
                 <input
                   type="text"
-                  name="bank_account_number"
-                  value={formData.bank_account_number}
-                  onChange={handleChange}
+                  {...form.register("bank_account_number")}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
                 />
+                {form.formState.errors.bank_account_number && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.bank_account_number.message}
+                  </p>
+                )}
               </div>
+
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Account Name
                 </label>
                 <input
                   type="text"
-                  name="bank_account_name"
-                  value={formData.bank_account_name}
-                  onChange={handleChange}
+                  {...form.register("bank_account_name")}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
                 />
+                {form.formState.errors.bank_account_name && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.bank_account_name.message}
+                  </p>
+                )}
               </div>
+
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
@@ -117,9 +155,10 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+                  disabled={isPending}
+                  className="bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Update
+                  {isPending ? "Updating..." : "Update"}
                 </button>
               </div>
             </form>

@@ -23,7 +23,7 @@ import { ExpenseForm, expenseSchema } from "@/src/utils/validations";
 import {
   useCreateExpenses,
   useGetExpenseTypes,
-} from "@/src/api/hooks/expenses/useExpenses";
+} from "@/src/hooks/expenses/useExpenses";
 import { AxiosError } from "axios";
 import { Expenses } from "@/src/types/procurement";
 import toast from "react-hot-toast";

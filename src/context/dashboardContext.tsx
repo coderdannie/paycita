@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import useApiRequest from "../api/hooks/useApiRequest";
+import useApiRequest from "../hooks/useApiRequest";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
@@ -15,17 +15,21 @@ import {
   updateDashboardDetails,
 } from "../Redux/features/dashboardSlice";
 import { updateDateTime } from "../utils/helper";
-import { useGetAttendance } from "../api/hooks/dashboard/useDashboard";
+import { useGetAttendance } from "../hooks/dashboard/useDashboard";
 import { useDashboardSelector } from "../Redux/selectors";
 import { ToastProvider } from "./ToastContext";
-import { subscribeToChannel, subscribeToUserPresence } from "../service/api/pusher.service";
-import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
+import {
+  PusherMessage,
+  subscribeToChannel,
+} from "../service/api/pusher.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message } from "../app/(private)/message/components/types";
-import { useGetSingleChat } from "../api/hooks/chat/useChatQuery";
-import { initAudio, playReceivedSound, playSentSound } from "../utils/audio";
+import { useGetSingleChat } from "../hooks/chat/useChatQuery";
+import { initAudio, playSentSound } from "../utils/audio";
 import isEqual from "lodash.isequal";
 import { v4 as uuidv4 } from "uuid";
+import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
+import { useNotification } from "./notificationContext";
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -52,7 +56,6 @@ interface DashboardContextType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     callback: (data: any) => void
   ) => () => void;
-  onlineUsers: Set<string>;
 }
 
 export const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -160,7 +163,6 @@ const DashboardProvider = ({
   const [conversations, setConversations] = useState<
     Record<string, ChatMessage[]>
   >({});
-  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
   const prevMessagesRef = useRef<Record<string, Message[]>>({});
   const { singleChat, isLoading: ChatLoading } = useGetSingleChat(
@@ -185,8 +187,12 @@ const DashboardProvider = ({
     }
   }, [singleChat?.messages, currentChat?.chat_id]);
 
+  const { resetChatNotification } = useNotification();
+
   const selectChat = useCallback((user: ChatUser) => {
     setCurrentChat(user);
+    // Reset notifications when entering chat
+    resetChatNotification(user.chat_id);
   }, []);
 
   // Mark messages as read in a separate effect
@@ -229,23 +235,6 @@ const DashboardProvider = ({
     setCurrentChat(user);
   }, []);
 
-  useEffect(() => {
-    const handleInteraction = () => {
-      initAudio();
-      // Remove listeners after first interaction
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
-    };
-
-    document.addEventListener("click", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
-
-    return () => {
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
-    };
-  }, []);
-
   const sendMessage = async (content: string) => {
     if (!currentChat || !content.trim()) return;
 
@@ -266,25 +255,36 @@ const DashboardProvider = ({
       [currentChat.chat_id]: [...(prev[currentChat.chat_id] || []), newMessage],
     }));
 
+    // Initialize audio before playing sound
+    initAudio();
     playSentSound();
   };
 
   const subscribeToUserChannel = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (userId: string, chatId: string, callback: (data: any) => void) => {
+    (
+      userId: string,
+      chatId: string,
+      callback: (data: PusherMessage) => void
+    ) => {
       const channelName = `chat.${userId}`;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return subscribeToChannel(channelName, "NewMessageSent", (data: any) => {
-        // Always update the chat list for any new message
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
-        });
 
-        // Only handle message if it's for the current chat
-        if (data?.message?.chat_id === chatId) {
-          callback(data);
+      return subscribeToChannel(
+        channelName,
+        "NewMessageSent",
+        userId,
+        (data: PusherMessage) => {
+          console.log(data);
+          // Always update the chat list for any new message
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
+          });
+
+          // Only handle message if it's for the current chat
+          if (data?.chat_id === chatId) {
+            callback(data);
+          }
         }
-      });
+      );
     },
     [queryClient]
   );
@@ -302,8 +302,9 @@ const DashboardProvider = ({
       unsubscribeFunc = subscribeToChannel(
         `chat.${currentChat?.chat_id}`,
         "NewMessageSent",
+        currentChat.user_id,
         async () => {
-          playReceivedSound();
+          // Only update the chat list for any new message
           queryClient.invalidateQueries({
             queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, currentChat?.chat_id],
           });
@@ -318,29 +319,6 @@ const DashboardProvider = ({
       }
     };
   }, [currentChat, queryClient]);
-
-  useEffect(() => {
-    if (!currentChat?.user_id) return;
-
-    const unsubscribe = subscribeToUserPresence(
-      currentChat.user_id,
-      (presenceData) => {
-        setOnlineUsers((prev) => {
-          const newSet = new Set(prev);
-          if (presenceData.isOnline) {
-            newSet.add(currentChat.user_id);
-          } else {
-            newSet.delete(currentChat.user_id);
-          }
-          return newSet;
-        });
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [currentChat?.user_id]);
 
   const value: DashboardContextType = {
     isAttendanceLoading,
@@ -360,8 +338,8 @@ const DashboardProvider = ({
     sendMessage,
     subscribeToUserChannel,
     currentChat,
-    onlineUsers,
   };
+
   return (
     <DashboardContext.Provider value={value}>
       <ToastProvider>{children}</ToastProvider>

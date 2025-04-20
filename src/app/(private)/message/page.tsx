@@ -5,13 +5,7 @@ import { ChatHeader } from "./components/ChatHeader";
 import { ChatMessages } from "./components/ChatMessages";
 import { ChatInput } from "./components/ChatInput";
 
-import { useDashboard } from "@/src/context/dashboardContext";
-import { useAuthSelector } from "@/src/Redux/selectors";
-import { playReceivedSound } from "@/src/utils/audio";
-
 export default function MessagePage() {
-  const { user } = useAuthSelector();
-  const { subscribeToUserChannel, currentChat } = useDashboard();
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -37,24 +31,6 @@ export default function MessagePage() {
       setShowSidebar(!showSidebar);
     }
   };
-
-  useEffect(() => {
-    if (!user?.id || !currentChat?.chat_id) return;
-
-    const unsubscribe = subscribeToUserChannel(
-      user.id,
-      currentChat.chat_id,
-      (data) => {
-        console.log("New chat received:", data);
-        // Play sound for received messages
-        if (data?.message?.sender_id !== user?.id) {
-          playReceivedSound();
-        }
-      }
-    );
-
-    return unsubscribe;
-  }, [user?.id, currentChat?.chat_id, subscribeToUserChannel]);
 
   return (
     <div className="absolute inset-0 mt-[70px] flex overflow-hidden">

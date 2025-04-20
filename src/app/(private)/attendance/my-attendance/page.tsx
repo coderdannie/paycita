@@ -4,12 +4,12 @@ import TableLayer from '@/src/components/data/Attendance/TableLayer';
 import { useDashboardSelector } from '@/src/Redux/selectors';
 
 const MyAttendance = () => {
-  
-    const { attendance } = useDashboardSelector();
- 
+
+  const { attendance } = useDashboardSelector();
+
   return (
     <>
-      <FirstLayer />
+      <FirstLayer attendance={attendance}/>
       <TableLayer attendance={attendance?.attendance} />
     </>
   );

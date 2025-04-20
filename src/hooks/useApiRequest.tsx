@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
-import { api2, api } from "..";
+import { api2, api } from "../service/api";
 import { AxiosError, AxiosRequestConfig } from "axios";
 
 type Res = {

@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import LoanDetails from "../../modals/LoanDetails";
 import { Info, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useDeleteLoanRequest } from "@/src/api/hooks/loan/useLoan";
+import { useDeleteLoanRequest } from "@/src/hooks/loan/useLoan";
 import ConfirmationModal from "../../common/ConfirmationModal";
 
 export type loanData = {
