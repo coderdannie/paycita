@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 
-import { FaPlus, FaSearch, FaUser } from "react-icons/fa";
-import { AddNewChatModal } from "./AddNewChatModal";
-import { MessageIcon } from "@/src/assets/Icons";
-import Image from "next/image";
-import { useGetAllChat } from "@/src/api/hooks/chat/useChatQuery";
-import { formatTimeAgo } from "@/src/utils/helper";
-import { useDashboard } from "@/src/context/dashboardContext";
+import { FaPlus, FaSearch, FaUser } from 'react-icons/fa';
+import { AddNewChatModal } from './AddNewChatModal';
+import { MessageIcon } from '@/src/assets/Icons';
+import Image from 'next/image';
+import { useGetAllChat } from '@/src/api/hooks/chat/useChatQuery';
+import { formatTimeAgo } from '@/src/utils/helper';
+import { useDashboard } from '@/src/context/dashboardContext';
 
 export const ChatSidebar = ({ onChatSelect }) => {
   const { currentChat, selectChat, conversations } = useDashboard();
@@ -33,11 +33,11 @@ export const ChatSidebar = ({ onChatSelect }) => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Load the persisted chat from localStorage on mount
   useEffect(() => {
-    const savedChat = localStorage.getItem("selectedChat");
+    const savedChat = localStorage.getItem('selectedChat');
     if (savedChat) {
       const parsedChat = JSON.parse(savedChat);
       selectChat(parsedChat);
@@ -47,7 +47,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
   // Save the selected chat to localStorage whenever it changes
   useEffect(() => {
     if (currentChat) {
-      localStorage.setItem("selectedChat", JSON.stringify(currentChat));
+      localStorage.setItem('selectedChat', JSON.stringify(currentChat));
     }
   }, [currentChat]);
 
@@ -158,7 +158,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
               key={user.chat_id}
               onClick={() => handleChatSelect(user)}
               className={`flex items-center rounded-lg p-4 cursor-pointer mb-1 mx-2 ${
-                isSelected ? "bg-[#692E9F] text-white" : "hover:bg-gray-100"
+                isSelected ? 'bg-[#692E9F] text-white' : 'hover:bg-gray-100'
               }`}
             >
               {isSelected && (
@@ -184,27 +184,27 @@ export const ChatSidebar = ({ onChatSelect }) => {
 
               <div className="flex-grow">
                 <div
-                  className={`font-medium ${isSelected ? "text-white" : ""}`}
+                  className={`font-medium ${isSelected ? 'text-white' : ''}`}
                 >
                   {user.full_name}
                 </div>
                 <div
                   className={`text-sm truncate ${
-                    isSelected ? "text-white/80" : "text-gray-500"
+                    isSelected ? 'text-white/80' : 'text-gray-500'
                   }`}
                 >
                   {lastMessage
                     ? lastMessage.message.length > 30
-                      ? lastMessage.message.substring(0, 30) + "..."
+                      ? lastMessage.message.substring(0, 30) + '...'
                       : lastMessage.message
-                    : "No messages yet"}
+                    : 'No messages yet'}
                 </div>
               </div>
               <div className="flex flex-col items-end">
                 {lastMessage && (
                   <span
                     className={`text-xs mb-1 ${
-                      isSelected ? "text-white/80" : "text-gray-500"
+                      isSelected ? 'text-white/80' : 'text-gray-500'
                     }`}
                   >
                     {formatTimeAgo(lastMessage.updated_at)}

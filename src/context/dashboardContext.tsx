@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   createContext,
   useCallback,
@@ -6,26 +6,29 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react";
-import useApiRequest from "../api/hooks/useApiRequest";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+} from 'react';
+import useApiRequest from '../api/hooks/useApiRequest';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 import {
   updateAttendance,
   updateDashboardDetails,
-} from "../Redux/features/dashboardSlice";
-import { updateDateTime } from "../utils/helper";
-import { useGetAttendance } from "../api/hooks/dashboard/useDashboard";
-import { useDashboardSelector } from "../Redux/selectors";
-import { ToastProvider } from "./ToastContext";
-import { subscribeToChannel, subscribeToUserPresence } from "../service/api/pusher.service";
-import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
-import { useQueryClient } from "@tanstack/react-query";
-import { Message } from "../app/(private)/message/components/types";
-import { useGetSingleChat } from "../api/hooks/chat/useChatQuery";
-import { initAudio, playReceivedSound, playSentSound } from "../utils/audio";
-import isEqual from "lodash.isequal";
-import { v4 as uuidv4 } from "uuid";
+} from '../Redux/features/dashboardSlice';
+import { updateDateTime } from '../utils/helper';
+import { useGetAttendance } from '../api/hooks/dashboard/useDashboard';
+import { useDashboardSelector } from '../Redux/selectors';
+import { ToastProvider } from './ToastContext';
+import {
+  subscribeToChannel,
+  subscribeToUserPresence,
+} from '../service/api/pusher.service';
+import { QUERY_KEYS } from '../service/tanstack-query/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
+import { Message } from '../app/(private)/message/components/types';
+import { useGetSingleChat } from '../api/hooks/chat/useChatQuery';
+import { initAudio, playReceivedSound, playSentSound } from '../utils/audio';
+import isEqual from 'lodash.isequal';
+import { v4 as uuidv4 } from 'uuid';
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -74,50 +77,50 @@ const DashboardProvider = ({
   const { isPending: isEmployeeAttendanceLoading } = useGetAttendance(filters);
 
   const dispatch = useDispatch();
-  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [currentDateTime, setCurrentDateTime] = useState('');
   const [isDashboardDetailsFetching, setIsDashboardDetailsFetching] =
     useState(false);
 
   const fetchDashboardDetails = useCallback(async () => {
     try {
       setIsDashboardDetailsFetching(true);
-      await getRequest("hr/dashboard", (response) => {
+      await getRequest('hr/dashboard', (response) => {
         if (response.success) {
           dispatch(updateDashboardDetails(response.data));
         }
       });
     } catch (error) {
-      console.error("Error fetching dashboard details:", error);
+      console.error('Error fetching dashboard details:', error);
     } finally {
       setIsDashboardDetailsFetching(false);
     }
   }, [dispatch, getRequest]);
 
   const getAttendance = async () =>
-    await fetchAttendance("/hr/attendance", (data) => {
+    await fetchAttendance('/hr/attendance', (data) => {
       if (data.success) {
         dispatch(updateAttendance(data.data));
       }
     });
 
   const handleClockOut = async () =>
-    await clockOut("/hr/attendance/clock-out", {}, (data) => {
+    await clockOut('/hr/attendance/clock-out', {}, (data) => {
       if (data.success) {
         getAttendance();
       }
     });
 
   const handleClockIn = async () =>
-    await clockIn("/hr/attendance/clock-in", {}, (data) => {
+    await clockIn('/hr/attendance/clock-in', {}, (data) => {
       if (data.success) {
         getAttendance();
       }
     });
 
   const loadData = () => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem('access_token');
     if (!token) {
-      router.replace("/");
+      router.replace('/');
     } else {
       // handleGetAttendance();
       getAttendance();
@@ -127,7 +130,7 @@ const DashboardProvider = ({
 
   useEffect(() => {
     // Only run on client side
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     let timeoutId: NodeJS.Timeout;
 
@@ -196,14 +199,14 @@ const DashboardProvider = ({
     setConversations((prev) => {
       const chatMessages = prev[currentChat.chat_id] || [];
       const hasUnreadMessages = chatMessages.some(
-        (message) => message.type === "received" && message.status !== "read"
+        (message) => message.type === 'received' && message.status !== 'read'
       );
 
       if (!hasUnreadMessages) return prev;
 
       const updatedMessages = chatMessages.map((message) =>
-        message.type === "received" && message.status !== "read"
-          ? { ...message, status: "read" as const }
+        message.type === 'received' && message.status !== 'read'
+          ? { ...message, status: 'read' as const }
           : message
       );
 
@@ -233,16 +236,16 @@ const DashboardProvider = ({
     const handleInteraction = () => {
       initAudio();
       // Remove listeners after first interaction
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
     };
 
-    document.addEventListener("click", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
 
     return () => {
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
     };
   }, []);
 
@@ -255,8 +258,8 @@ const DashboardProvider = ({
       user_id: currentChat.user_id,
       message: content.trim(),
       created_at: new Date().toISOString(),
-      type: "sent",
-      status: "sent",
+      type: 'sent',
+      status: 'sent',
       updated_at: new Date().toISOString(),
       sender_id: currentChat.sender_id,
     };
@@ -274,7 +277,7 @@ const DashboardProvider = ({
     (userId: string, chatId: string, callback: (data: any) => void) => {
       const channelName = `chat.${userId}`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return subscribeToChannel(channelName, "NewMessageSent", (data: any) => {
+      return subscribeToChannel(channelName, 'NewMessageSent', (data: any) => {
         // Always update the chat list for any new message
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
@@ -301,7 +304,7 @@ const DashboardProvider = ({
 
       unsubscribeFunc = subscribeToChannel(
         `chat.${currentChat?.chat_id}`,
-        "NewMessageSent",
+        'NewMessageSent',
         async () => {
           playReceivedSound();
           queryClient.invalidateQueries({
