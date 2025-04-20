@@ -1,7 +1,7 @@
 import {
   useAddResumptionDate,
   useGetResumptionTime,
-} from "@/src/api/hooks/settings/useSettings";
+} from "@/src/hooks/settings/useSettings";
 import { CustomFormField } from "@/src/components/common/CustomInput";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import { Form } from "@/src/components/ui/form";

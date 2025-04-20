@@ -6,7 +6,7 @@ import { Pencil } from "lucide-react";
 import {
   useGetAllProfileSettings,
   useUpdateProfilePicture,
-} from "@/src/api/hooks/settings/useSettings";
+} from "@/src/hooks/settings/useSettings";
 import toast from "react-hot-toast";
 
 const ProfileTab: React.FC = () => {

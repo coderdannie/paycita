@@ -6,7 +6,7 @@ import { HiOutlineBell } from "react-icons/hi2";
 import { IoMenuSharp } from "react-icons/io5";
 import SideDrawer from "./SideDrawer";
 
-import { useGetAllProfileSettings } from "@/src/api/hooks/settings/useSettings";
+import { useGetAllProfileSettings } from "@/src/hooks/settings/useSettings";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

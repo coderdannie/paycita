@@ -1,4 +1,4 @@
-import { api } from "../../api";
+import { api } from ".";
 
 const getAllEvents = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();

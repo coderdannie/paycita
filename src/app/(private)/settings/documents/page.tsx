@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import {
   useGetAllProfileSettings,
   useUploadDocument,
-} from "@/src/api/hooks/settings/useSettings";
+} from "@/src/hooks/settings/useSettings";
 import toast from "react-hot-toast";
 
 interface Document {

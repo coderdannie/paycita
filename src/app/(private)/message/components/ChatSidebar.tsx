@@ -4,11 +4,13 @@ import { FaPlus, FaSearch, FaUser } from 'react-icons/fa';
 import { AddNewChatModal } from './AddNewChatModal';
 import { MessageIcon } from '@/src/assets/Icons';
 import Image from 'next/image';
-import { useGetAllChat } from '@/src/api/hooks/chat/useChatQuery';
+import { useGetAllChat } from '@/src/hooks/chat/useChatQuery';
 import { formatTimeAgo } from '@/src/utils/helper';
 import { useDashboard } from '@/src/context/dashboardContext';
+import { useNotification } from '@/src/context/notificationContext';
 
 export const ChatSidebar = ({ onChatSelect }) => {
+  const { chatNotifications } = useNotification();
   const { currentChat, selectChat, conversations } = useDashboard();
   const { allChats } = useGetAllChat();
 
@@ -152,6 +154,7 @@ export const ChatSidebar = ({ onChatSelect }) => {
               : null;
 
           const isSelected = currentChat?.chat_id === user.chat_id;
+          const unreadCount = chatNotifications[user.chat_id] || 0;
 
           return (
             <div
@@ -183,10 +186,17 @@ export const ChatSidebar = ({ onChatSelect }) => {
               </div>
 
               <div className="flex-grow">
-                <div
-                  className={`font-medium ${isSelected ? 'text-white' : ''}`}
-                >
-                  {user.full_name}
+                <div className="flex justify-between items-center">
+                  <div
+                    className={`font-medium ${isSelected ? 'text-white' : ''}`}
+                  >
+                    {user.full_name}
+                  </div>
+                  {!isSelected && unreadCount > 0 && (
+                    <span className="bg-[#692E9F] text-white text-xs rounded-full px-2 py-1">
+                      {unreadCount}
+                    </span>
+                  )}
                 </div>
                 <div
                   className={`text-sm truncate ${

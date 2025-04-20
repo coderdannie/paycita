@@ -18,7 +18,7 @@ import CustomPagination from "@/src/components/common/pagination/Pagination";
 import FilterDrawer from "@/src/components/common/FilterDrawer";
 import TableEmptyState from "@/src/components/common/TableEmptyState";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useGetAllEmployees } from "@/src/api/hooks/dashboard/useDashboard";
+import { useGetAllEmployees } from "@/src/hooks/dashboard/useDashboard";
 import { jobOptions, levelOptions } from "@/src/utils/constants";
 
 const statusOptions = [

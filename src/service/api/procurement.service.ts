@@ -1,5 +1,5 @@
 import { Procurement } from "@/src/types/procurement";
-import { api } from "../../api";
+import { api } from ".";
 
 const getAllProcurements = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();

@@ -24,7 +24,7 @@ import {
   useGetDepartments,
   useGetGivenItems,
   useGetPensionCompanies,
-} from "@/src/api/hooks/dashboard/useDashboard";
+} from "@/src/hooks/dashboard/useDashboard";
 import { useUserDetailSelector } from "@/src/Redux/selectors";
 import { useDispatch } from "react-redux";
 import { resetUserDetails } from "@/src/Redux/features/userDetailsSlice";

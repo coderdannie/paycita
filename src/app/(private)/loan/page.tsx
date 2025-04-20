@@ -1,7 +1,7 @@
 "use client";
 
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useGetAllLoan } from "@/src/api/hooks/loan/useLoan";
+import { useGetAllLoan } from "@/src/hooks/loan/useLoan";
 import LoadingOverlay from "@/src/components/common/LoadingOverlay";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
 import TableLayer from "@/src/components/data/Loan/TableLayer";

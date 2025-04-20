@@ -20,7 +20,7 @@ import {
   CustomFormField,
   CustomFormSelect,
 } from "@/src/components/common/CustomInput";
-import { useGetCountries } from "@/src/api/hooks/location/useCountries";
+import { useGetCountries } from "@/src/hooks/location/useCountries";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "@/src/Redux/features/userDetailsSlice";
 import { useUserDetailSelector } from "@/src/Redux/selectors";

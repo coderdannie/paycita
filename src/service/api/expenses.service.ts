@@ -1,5 +1,5 @@
 import { Expenses } from "@/src/types/procurement";
-import { api } from "../../api";
+import { api } from ".";
 
 
 const getAllExpenses = (filters?: { page: string }) => {

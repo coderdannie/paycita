@@ -10,7 +10,7 @@ import {
   useCreateLeave,
   useDeleteLeaveRequest,
   useGetAllLeave,
-} from "@/src/api/hooks/leave/useLeave";
+} from "@/src/hooks/leave/useLeave";
 import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

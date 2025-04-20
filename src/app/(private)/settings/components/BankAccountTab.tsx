@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import BankDetailsModal from "./modals/BankDetailsModal";
 import { Pencil } from "lucide-react";
-import { useGetAllProfileSettings } from "@/src/api/hooks/settings/useSettings";
+import { useGetAllProfileSettings } from "@/src/hooks/settings/useSettings";
 
 export interface BankDetails {
+  id: string;
   bank_account_name: string;
   bank_account_number: string;
   bank_name: string;
@@ -11,14 +12,7 @@ export interface BankDetails {
 
 const BankAccountTab: React.FC = () => {
   const { profile } = useGetAllProfileSettings();
-  const [bankDetails, setBankDetails] = useState<BankDetails>(profile);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleUpdateBankDetails = (newDetails: BankDetails) => {
-    setBankDetails(newDetails);
-    setIsModalOpen(false);
-  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -28,14 +22,14 @@ const BankAccountTab: React.FC = () => {
             <label className="block text-sm text-gray-500 mb-1">
               Bank Name
             </label>
-            <p className="text-gray-800">{bankDetails.bank_name ?? "N/A"}</p>
+            <p className="text-gray-800">{profile.bank_name ?? "N/A"}</p>
           </div>
           <div>
             <label className="block text-sm text-gray-500 mb-1">
               Account Number
             </label>
             <p className="text-gray-800">
-              {bankDetails.bank_account_number ?? "N/A"}
+              {profile.bank_account_number ?? "N/A"}
             </p>
           </div>
           <div>
@@ -43,7 +37,7 @@ const BankAccountTab: React.FC = () => {
               Account Name
             </label>
             <p className="text-gray-800">
-              {bankDetails.bank_account_name ?? "N/A"}
+              {profile.bank_account_name ?? "N/A"}
             </p>
           </div>
         </div>
@@ -65,8 +59,7 @@ const BankAccountTab: React.FC = () => {
         <BankDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          currentDetails={bankDetails}
-          onUpdate={handleUpdateBankDetails}
+          currentDetails={profile}
         />
       )}
     </div>

@@ -162,7 +162,7 @@ export function CustomFormField<T extends FieldValues>({
 type CustomFormSelectProps<T extends FieldValues> = {
   name: Path<T>;
   control: Control<T>;
-  items: string[];
+  items: Array<{ label: string; value: string } | string>;
   labelText?: string;
   error?: string;
   holder?: string;
@@ -187,21 +187,25 @@ export function CustomFormSelect<T extends FieldValues>({
               {labelText || String(name)}
             </FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger
                   className={`bg-white ${
                     error ? "border-red-500" : "border-[#E4E7EC]"
-                  }`} // Apply error styling
+                  }`}
                 >
                   <SelectValue placeholder={holder || String(name)} />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   {Array.isArray(items) &&
-                    items?.map((item) => (
-                      <SelectItem key={item} value={item}>
-                        {item}
-                      </SelectItem>
-                    ))}
+                    items?.map((item) => {
+                      const value = typeof item === 'string' ? item : item.value;
+                      const label = typeof item === 'string' ? item : item.label;
+                      return (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      );
+                    })}
                 </SelectContent>
               </Select>
             </FormControl>

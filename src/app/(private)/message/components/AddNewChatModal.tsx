@@ -4,7 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import {
   useGetAllColleagues,
   useInitiateChat,
-} from "@/src/api/hooks/chat/useChatQuery";
+} from "@/src/hooks/chat/useChatQuery";
 import Image from "next/image";
 import { Spinner } from "react-activity";
 import { useDashboard } from "@/src/context/dashboardContext";

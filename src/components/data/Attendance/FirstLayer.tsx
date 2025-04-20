@@ -1,17 +1,57 @@
 'use client';
 
-import { useState } from 'react';
-import { AiFillClockCircle } from 'react-icons/ai';
+import { useEffect, useState, useMemo } from 'react';
+
 import { attendanceCount } from '../../common/constants';
 import Checkout from '../../modals/Checkout';
-import { useDashboardSelector } from '@/src/Redux/selectors';
+
 import { useDashboard } from '@/src/context/dashboardContext';
 import { Skeleton } from '../../ui/skeleton';
+import { Clock } from 'lucide-react';
 
-const FirstLayer = () => {
+const FirstLayer = ({ attendance }: { attendance: AttendanceSummary }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { attendance } = useDashboardSelector();
-  const { isAttendanceLoading, currentDateTime } = useDashboard();
+
+  const { isAttendanceLoading, currentDateTime, handleClockIn, isClockingIn, isClockingOut, handleClockOut } = useDashboard();
+
+
+  const isClockedIn = attendance?.is_clocked_in;
+  const currentAttendance = attendance?.attendance[0];
+  const clockedInTime = currentAttendance?.clock_in;
+  const [elapsedTime, setElapsedTime] = useState("00:00:00");
+
+
+  const formatTimeElapsed = (startTime: string) => {
+    const start = new Date(startTime);
+    const now = new Date();
+    const diffMs = now.getTime() - start.getTime();
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+
+  useEffect(() => {
+    if (isClockedIn && clockedInTime) {
+      setElapsedTime(formatTimeElapsed(clockedInTime));
+      const timer = setInterval(() => {
+        setElapsedTime(formatTimeElapsed(clockedInTime));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [isClockedIn, clockedInTime]);
+
+  const buttonClassName = useMemo(() => {
+    const baseClasses = "flex py-2 px-4 capitalize text-md space-x-2 text-center items-center justify-center rounded-md text-white";
+    const stateClasses = isClockedIn ? "bg-[#692E9F]" : "bg-[#9B73BF]";
+    const loadingClasses = isClockingIn ? "opacity-50 cursor-not-allowed" : "";
+    return `${baseClasses} ${stateClasses} ${loadingClasses}`;
+  }, [isClockedIn, isClockingIn]);
 
   return (
     <div>
@@ -22,12 +62,22 @@ const FirstLayer = () => {
           </h2>
           <p className="text-sm text-gray-800 pt-2">{currentDateTime}</p>
         </div>
+
         <button
-          className="flex items-center gap-2 bg-primary text-white h-[40px] px-4 rounded-md  text-sm"
-          onClick={() => setIsOpen(true)}
+          className={buttonClassName}
+          onClick={() => (isClockedIn ? setIsOpen(true) : handleClockIn())}
+          disabled={isClockingIn}
         >
-          <AiFillClockCircle /> <span>Check Out 08:00:05 Hrs</span>
+          {isClockingIn ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+          ) : (
+            <Clock fill="#fff" stroke="#8758B2" />
+          )}
+          <p className="text-sm">
+            {isClockedIn ? `Time Elapsed: ${elapsedTime}` : "Check In"}
+          </p>
         </button>
+
       </div>
       <div className="grid md:grid-cols-4 mt-5 gap-6 w-full">
         {isAttendanceLoading ? (
@@ -49,17 +99,22 @@ const FirstLayer = () => {
                   {i === 0
                     ? attendance?.total_working_days
                     : i === 1
-                    ? attendance?.days_present
-                    : i === 2
-                    ? attendance?.days_absent
-                    : attendance?.days_late}
+                      ? attendance?.days_present
+                      : i === 2
+                        ? attendance?.days_absent
+                        : attendance?.days_late}
                 </p>
               </div>
             ))}
           </>
         )}
       </div>
-      <Checkout isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Checkout isOpen={isOpen} setIsOpen={setIsOpen}
+        elapsedTime={elapsedTime}
+        attendance={attendance}
+        handleClockOut={handleClockOut}
+        isClockingOut={isClockingOut}
+         />
     </div>
   );
 };
