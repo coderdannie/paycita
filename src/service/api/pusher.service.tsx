@@ -82,7 +82,7 @@ export const subscribeToChannel = (
     if (currentUserId && data.sender_id === currentUserId) {
       await playMessageSound();
 
-      toast.success(data.message);
+      toast.success("New Message\nKindly Reply", { duration: 5000 });
       if (Notification.permission === "granted") {
         new Notification("New Message", {
           body: `${data.message}`,
