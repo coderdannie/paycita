@@ -149,7 +149,7 @@ export const useAddResumptionDate = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to create chat";
+          err.response?.data?.message || "Failed to add resumption date";
         throw new Error(errorMessage);
       } else {
         throw err;
