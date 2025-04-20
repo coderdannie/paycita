@@ -8,7 +8,7 @@ import {
 import chatService from "@/src/service/api/chat.service";
  
 import { AxiosError } from "axios";
-import { playSentSound } from "@/src/utils/audio";
+// import { playSentSound } from "@/src/utils/audio";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 
 export const useGetAllChat = () => {
@@ -103,7 +103,7 @@ export const useComposeChat = () => {
   return useMutation({
     mutationFn: async (chatData: ComposeChat) => {
       const response = await chatService.composeChat(chatData);
-      playSentSound();
+      // playSentSound();
       return response;
     },
     onSuccess: (response, variables) => {
