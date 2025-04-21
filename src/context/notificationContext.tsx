@@ -38,10 +38,8 @@ export function NotificationProvider({
   useEffect(() => {
     if (!user?.id) return;
 
-    console.log("User ID:", user?.id);
-    // Subscribe to user's chat channel
     const unsubscribe = subscribeToChannel(
-      `private-user.${user.id}`,
+      `chat.${user.id}`,
       "new-message",
       user.id,
       (data: PusherMessage) => {

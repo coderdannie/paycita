@@ -217,7 +217,10 @@ const AppraisalManagementTab: FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {calculateDuration(appraisal.start_date, appraisal.end_date)}
+                      {calculateDuration(
+                        appraisal.start_date,
+                        appraisal.end_date
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
