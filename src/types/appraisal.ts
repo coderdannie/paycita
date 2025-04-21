@@ -28,6 +28,7 @@ export type AppraisalFormValues = {
 };
 
 export type AppraisalResponse = {
+  message: string;
   id: string;
   title: string;
   start_date: string;

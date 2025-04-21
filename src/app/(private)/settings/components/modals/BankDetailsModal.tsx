@@ -4,12 +4,15 @@ import { BankDetails } from "../BankAccountTab";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useUpdateBankDetails, useAddBankDetails } from "@/src/hooks/settings/useSettings";
+import { useAddBankDetails } from "@/src/hooks/settings/useSettings";
 import toast from "react-hot-toast";
 
 const bankDetailsSchema = z.object({
   bank_name: z.string().min(1, "Bank name is required"),
-  bank_account_number: z.string().min(10, "Account number must be at least 10 digits").max(10, "Account number must be 10 digits"),
+  bank_account_number: z
+    .string()
+    .min(10, "Account number must be at least 10 digits")
+    .max(10, "Account number must be 10 digits"),
   bank_account_name: z.string().min(1, "Account name is required"),
 });
 
@@ -26,9 +29,8 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
   onClose,
   currentDetails,
 }) => {
-  const { mutate: updateBankDetails, isPending: isUpdating } = useUpdateBankDetails();
   const { mutate: addBankDetails, isPending: isAdding } = useAddBankDetails();
-  const isPending = isUpdating || isAdding;
+  const isPending = isAdding;
 
   const form = useForm<BankDetailsFormValues>({
     resolver: zodResolver(bankDetailsSchema),
@@ -40,44 +42,61 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
   });
 
   const onSubmit = async (data: BankDetailsFormValues) => {
-    if (currentDetails.id) {
-      // Update existing bank details
-      updateBankDetails(
-        {
-          id: currentDetails.id,
-          bank_name: data.bank_name,
-          bank_account_number: data.bank_account_number,
-          account_name: data.bank_account_name,
+    addBankDetails(
+      {
+        bank_name: data.bank_name,
+        bank_account_number: data.bank_account_number,
+        account_name: data.bank_account_name,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Bank details added successfully");
+          onClose();
         },
-        {
-          onSuccess: () => {
-            toast.success("Bank details updated successfully");
-            onClose();
-          },
-          onError: (error) => {
-            toast.error(error.message || "Failed to update bank details");
-          },
-        }
-      );
-    } else {
-      // Add new bank details
-      addBankDetails(
-        {
-          bank_name: data.bank_name,
-          bank_account_number: data.bank_account_number,
-          account_name: data.bank_account_name,
+        onError: (error) => {
+          toast.error(error.message || "Failed to add bank details");
         },
-        {
-          onSuccess: () => {
-            toast.success("Bank details added successfully");
-            onClose();
-          },
-          onError: (error) => {
-            toast.error(error.message || "Failed to add bank details");
-          },
-        }
-      );
-    }
+      }
+    );
+
+    // if (currentDetails.id) {
+    //   // Update existing bank details
+    //   updateBankDetails(
+    //     {
+    //       id: currentDetails.id,
+    //       bank_name: data.bank_name,
+    //       bank_account_number: data.bank_account_number,
+    //       account_name: data.bank_account_name,
+    //     },
+    //     {
+    //       onSuccess: () => {
+    //         toast.success("Bank details updated successfully");
+    //         onClose();
+    //       },
+    //       onError: (error) => {
+    //         toast.error(error.message || "Failed to update bank details");
+    //       },
+    //     }
+    //   );
+    // } else {
+    //   // Add new bank details
+    //   addBankDetails(
+    //     {
+    //       bank_name: data.bank_name,
+    //       bank_account_number: data.bank_account_number,
+    //       account_name: data.bank_account_name,
+    //     },
+    //     {
+    //       onSuccess: () => {
+    //         toast.success("Bank details added successfully");
+    //         onClose();
+    //       },
+    //       onError: (error) => {
+    //         toast.error(error.message || "Failed to add bank details");
+    //       },
+    //     }
+    //   );
+    // }
   };
 
   if (!isOpen) return null;
@@ -109,7 +128,7 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
               <FiX className="h-5 w-5" />
             </button>
           </div>
-          
+
           <div className="p-4">
             <p className="mb-4 text-sm text-gray-600">
               Please provide your valid bank account information for payouts
@@ -182,7 +201,13 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                   disabled={isPending}
                   className="bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPending ? (currentDetails.id ? "Updating..." : "Adding...") : (currentDetails.id ? "Update" : "Add")}
+                  {isPending
+                    ? currentDetails.id
+                      ? "Updating..."
+                      : "Adding..."
+                    : currentDetails.id
+                    ? "Update"
+                    : "Add"}
                 </button>
               </div>
             </form>

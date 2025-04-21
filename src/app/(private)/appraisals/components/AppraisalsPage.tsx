@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import MyAppraisalTab from "./MyAppraisalTab";
 import AppraisalManagementTab from "../appraisal-management/component-management/AppraisalManagementTab";
-import { useGetAppraisals } from "@/src/hooks/appraisal/useAppraisal";
-import { useSearchParams } from "next/navigation";
 
 type TabValue = "myAppraisal" | "appraisalManagement";
 
@@ -19,14 +17,7 @@ interface TabData {
 }
 
 const AppraisalsPage: React.FC = () => {
-  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabValue>("myAppraisal");
-
-
-  const currentPage = searchParams.get("page") || "1";
-  const { appraisals } = useGetAppraisals({ page: currentPage })
-
-  console.log(appraisals)
 
   const tabHeaders: Record<TabValue, TabHeader> = {
     myAppraisal: {
@@ -53,20 +44,16 @@ const AppraisalsPage: React.FC = () => {
     },
   ];
 
-
   const currentHeader = tabHeaders[activeTab];
-
 
   const activeContent = data.find((tab) => tab.value === activeTab)?.desc;
 
   return (
     <div className="w-full">
-
       <div className="mb-6">
         <h2 className="text-xl font-medium">{currentHeader.title}</h2>
         <p className="text-gray-600">{currentHeader.description}</p>
       </div>
-
 
       <div className="border-b border-gray-200">
         <nav className="flex -mb-px">
@@ -74,17 +61,17 @@ const AppraisalsPage: React.FC = () => {
             <button
               key={value}
               onClick={() => setActiveTab(value)}
-              className={`py-2 px-4 text-sm font-medium border-b-2 focus:outline-none transition-colors duration-200 ${activeTab === value
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+              className={`py-2 px-4 text-sm font-medium border-b-2 focus:outline-none transition-colors duration-200 ${
+                activeTab === value
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
             >
               {label}
             </button>
           ))}
         </nav>
       </div>
-
 
       <div className="py-4">{activeContent}</div>
     </div>

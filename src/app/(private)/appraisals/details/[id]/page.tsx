@@ -1,5 +1,5 @@
 import ReviewDetailsPage from "../../components/ReviewDetailsPage";
 
-export default function Page() {
+export default function DetailsPage() {
   return <ReviewDetailsPage />;
 }

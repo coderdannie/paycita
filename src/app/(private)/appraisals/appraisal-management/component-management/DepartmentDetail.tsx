@@ -1,172 +1,183 @@
 "use client";
-import { FC, useState } from "react";
-import { useRouter } from "next/navigation";
+
+import { FC, useState, useMemo, useCallback, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IoSearchOutline, IoInformationCircleOutline } from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
-
+import { useGetDepartmentDetails } from "@/src/hooks/appraisal/useAppraisal";
 
 interface EmployeePerformance {
-  id: string;
-  name: string;
-  performanceScore: string;
-  lineManagerScore: string;
+  appraisal_id: string;
+  staff_name: string;
+  employee_score: string;
+  line_manager_score: string | null;
 }
 
-interface DepartmentDetailProps {
-  departmentName?: string;
-}
+const ITEMS_PER_PAGE = 10;
 
-const DepartmentDetail: FC<DepartmentDetailProps> = ({
-  departmentName = "Finance Department",
-}) => {
+const DepartmentDetail: FC = () => {
+  const pathname = usePathname();
+  const params = useSearchParams();
   const router = useRouter();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedEmployees, setSelectedEmployees] = useState<Set<string>>(
+    new Set()
+  );
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
 
-  // Sample data
-  const [employees] = useState<EmployeePerformance[]>([
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      performanceScore: "29%",
-      lineManagerScore: "20%",
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      performanceScore: "30%",
-      lineManagerScore: "23%",
-    },
-    {
-      id: "3",
-      name: "Sarah Johnson",
-      performanceScore: "24%",
-      lineManagerScore: "15%",
-    },
-    {
-      id: "4",
-      name: "Sarah Johnson",
-      performanceScore: "27%",
-      lineManagerScore: "17%",
-    },
-    {
-      id: "5",
-      name: "Sarah Johnson",
-      performanceScore: "19%",
-      lineManagerScore: "11%",
-    },
-    {
-      id: "6",
-      name: "Sarah Johnson",
-      performanceScore: "29%",
-      lineManagerScore: "10%",
-    },
-    {
-      id: "7",
-      name: "Sarah Johnson",
-      performanceScore: "29%",
-      lineManagerScore: "11%",
-    },
-    {
-      id: "8",
-      name: "Sarah Johnson",
-      performanceScore: "21%",
-      lineManagerScore: "5%",
-    },
-    {
-      id: "9",
-      name: "Sarah Johnson",
-      performanceScore: "24%",
-      lineManagerScore: "15%",
-    },
-    {
-      id: "10",
-      name: "Sarah Johnson",
-      performanceScore: "29%",
-      lineManagerScore: "29%",
-    },
-  ]);
+  const departmentName = useMemo(() => {
+    const pathSegments = pathname.split("/");
+    const lastSegment = pathSegments.pop() || "";
 
-  const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    if (!selectAll) {
-      setSelectedEmployees(employees.map((emp) => emp.id));
-    } else {
-      setSelectedEmployees([]);
-    }
-  };
+    return lastSegment
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }, [pathname]);
 
-  const handleSelectItem = (id: string) => {
-    if (selectedEmployees.includes(id)) {
-      setSelectedEmployees(selectedEmployees.filter((item) => item !== id));
+  const id = useMemo(() => params.get("id") || "", [params]);
+
+  const { appraisalDepartmentDetails, isLoading, isError } =
+    useGetDepartmentDetails(id);
+
+  const employees = useMemo(
+    () => appraisalDepartmentDetails || [],
+    [appraisalDepartmentDetails]
+  );
+
+  const filteredEmployees = useMemo(() => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    if (!lowerSearchTerm) return employees;
+
+    return employees.filter(
+      (employee: EmployeePerformance) =>
+        employee.staff_name.toLowerCase().includes(lowerSearchTerm) ||
+        employee.employee_score.toLowerCase().includes(lowerSearchTerm) ||
+        (employee.line_manager_score &&
+          employee.line_manager_score.toLowerCase().includes(lowerSearchTerm))
+    );
+  }, [employees, searchTerm]);
+
+  const paginatedEmployees = useMemo(() => {
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredEmployees.slice(startIndex, endIndex);
+  }, [filteredEmployees, currentPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredEmployees.length / ITEMS_PER_PAGE);
+  }, [filteredEmployees.length]);
+
+  useEffect(() => {
+    if (filteredEmployees.length === 0) {
       setSelectAll(false);
-    } else {
-      setSelectedEmployees([...selectedEmployees, id]);
-      if (selectedEmployees.length + 1 === employees.length) {
-        setSelectAll(true);
-      }
+      return;
     }
-  };
+    const allFilteredSelected = filteredEmployees.every((emp) =>
+      selectedEmployees.has(emp.appraisal_id)
+    );
+    setSelectAll(allFilteredSelected);
+  }, [selectedEmployees, filteredEmployees]);
 
-  const filteredEmployees = employees.filter(
-    (employee) =>
-      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.performanceScore
+  const handleSelectAll = useCallback(() => {
+    setSelectAll((prevSelectAll) => {
+      const nextSelectAll = !prevSelectAll;
+      setSelectedEmployees((prevSelected) => {
+        const newSelected = new Set(prevSelected);
+        if (nextSelectAll) {
+          filteredEmployees.forEach((emp) => newSelected.add(emp.appraisal_id));
+        } else {
+          filteredEmployees.forEach((emp) =>
+            newSelected.delete(emp.appraisal_id)
+          );
+        }
+        return newSelected;
+      });
+      return nextSelectAll;
+    });
+  }, [filteredEmployees]);
+
+  const handleSelectItem = useCallback((id: string) => {
+    setSelectedEmployees((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  }, []);
+
+  const handleViewEmployeeDetails = useCallback(
+    (employee: EmployeePerformance) => {
+      const employeeSlug = employee.staff_name
         .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      employee.lineManagerScore.toLowerCase().includes(searchTerm.toLowerCase())
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+
+      const deptSlug = pathname.split("/").pop() || "";
+
+      if (employeeSlug && deptSlug) {
+        router.push(
+          `/appraisals/appraisal-management/departments/${deptSlug}/${employeeSlug}?id=${employee.appraisal_id}`
+        );
+      }
+    },
+    [pathname, router]
   );
 
-const handleViewEmployeeDetails = (employee: { name: string }) => {
-  
-  const employeeSlug = employee.name.toLowerCase().replace(/\s+/g, "-");
-
-  // Format the department name for the URL
-  const deptSlug = departmentName
-    .replace(" Department", "")
-    .toLowerCase()
-    .replace(/\s+/g, "-");
-
-  router.push(
-    `/appraisals/appraisal-management/departments/${deptSlug}-department/${employeeSlug}`
-  );
-};  
-  const handleGoBackToDepartments = () => {
+  const handleGoBackToDepartments = useCallback(() => {
     router.push("/appraisals/appraisal-management/departments");
-  };
+  }, [router]);
 
-
-
-  const setPageIndex = (index: number) => {
+  const setPageIndex = useCallback((index: number) => {
     setCurrentPage(index);
-  };
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen p-8 text-center">
+        Loading employee details...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen p-8 text-center text-red-600">
+        Error loading details. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
       <div className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center text-sm mb-4">
+        <div className="flex items-center text-sm mb-4 flex-wrap">
           <span
-            className="text-[#692E9F] cursor-pointer"
+            className="text-[#692E9F] cursor-pointer hover:underline"
             onClick={handleGoBackToDepartments}
           >
             Appraisal Management
           </span>
           <span className="mx-2">/</span>
           <span
-            className="text-[#692E9F] cursor-pointer"
+            className="text-[#692E9F] cursor-pointer hover:underline"
             onClick={handleGoBackToDepartments}
           >
             Departments
           </span>
           <span className="mx-2">/</span>
-          <span>{departmentName}</span>
+          <span className="text-gray-500">{departmentName} </span>
         </div>
 
         <h1 className="text-2xl font-semibold text-[#1D2939] mb-6">
-          {departmentName}
+          {departmentName} Department
         </h1>
 
         <div className="mb-6">
@@ -178,10 +189,13 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
               type="text"
               name="search"
               id="search"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-black focus:border-transparent sm:text-sm"
-              placeholder="Search"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              placeholder="Search Employees..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(0);
+              }}
             />
           </div>
         </div>
@@ -189,7 +203,7 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
         <div className="bg-white shadow overflow-hidden rounded-md">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 table-fixed">
-              <thead className="bg-white">
+              <thead className="bg-gray-50">
                 <tr>
                   <th
                     scope="col"
@@ -198,15 +212,17 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
                     <div className="flex items-center">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 text-[#692E9F] border-gray-300 rounded"
+                        className="h-4 w-4 text-[#692E9F] border-gray-300 rounded focus:ring-[#692E9F]"
                         checked={selectAll}
                         onChange={handleSelectAll}
+                        aria-label="Select all visible employees"
+                        disabled={filteredEmployees.length === 0}
                       />
                     </div>
                   </th>
                   <th
                     scope="col"
-                    className="px-2 py-3 sm:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-2 py-3 sm:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   >
                     <div className="flex items-center">
                       <span>Name</span>
@@ -215,7 +231,7 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
                   </th>
                   <th
                     scope="col"
-                    className="px-2 py-3 sm:px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-2 py-3 sm:px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   >
                     <div className="flex items-center justify-center">
                       <span>Performance Score</span>
@@ -224,7 +240,7 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
                   </th>
                   <th
                     scope="col"
-                    className="px-2 py-3 sm:px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-2 py-3 sm:px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   >
                     <div className="flex items-center justify-center">
                       <span>Line Manager Score</span>
@@ -235,61 +251,91 @@ const handleViewEmployeeDetails = (employee: { name: string }) => {
                     scope="col"
                     className="px-2 py-3 sm:px-6 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    <span className="sr-only">Actions</span>
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredEmployees.map((employee) => (
-                  <tr key={employee.id} className="hover:bg-gray-50">
-                    <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-[#692E9F]  border-gray-300 rounded"
-                          checked={selectedEmployees.includes(employee.id)}
-                          onChange={() => handleSelectItem(employee.id)}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {employee.name}
-                      </div>
-                    </td>
-                    <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 text-center">
-                        {employee.performanceScore}
-                      </div>
-                    </td>
-                    <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 text-center">
-                        {employee.lineManagerScore}
-                      </div>
-                    </td>
-                    <td className="px-2 py-4 sm:px-6 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={() => handleViewEmployeeDetails(employee)}
-                          className="text-gray-400 border rounded-md p-1 hover:text-gray-500 flex items-center justify-center min-w-[32px] min-h-[32px]"
-                          aria-label="View Details"
+                {paginatedEmployees.length > 0 ? (
+                  paginatedEmployees.map((employee: EmployeePerformance) => (
+                    <tr
+                      key={employee.appraisal_id}
+                      className="hover:bg-gray-50"
+                    >
+                      <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 text-[#692E9F] border-gray-300 rounded focus:ring-[#692E9F]"
+                            checked={selectedEmployees.has(
+                              employee.appraisal_id
+                            )}
+                            onChange={() =>
+                              handleSelectItem(employee.appraisal_id)
+                            }
+                            aria-labelledby={`employee-name-${employee.appraisal_id}`}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 sm:px-6 whitespace-nowrap">
+                        <div
+                          id={`employee-name-${employee.appraisal_id}`}
+                          className="text-sm font-medium text-gray-900"
                         >
-                          <IoInformationCircleOutline className="h-5 w-5" />
-                        </button>
-                      </div>
+                          {employee.staff_name}
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 sm:px-6 whitespace-nowrap text-center">
+                        <div className="text-sm text-gray-900">
+                          {/* Consider formatting score if it's numeric */}
+                          {employee.employee_score ?? "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 sm:px-6 whitespace-nowrap text-center">
+                        <div className="text-sm text-gray-900">
+                          {employee.line_manager_score ?? "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 sm:px-6 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end space-x-2">
+                          <button
+                            onClick={() => handleViewEmployeeDetails(employee)}
+                            className="text-gray-400 border rounded-md p-1 hover:text-gray-500 hover:border-gray-400 flex items-center justify-center min-w-[32px] min-h-[32px]"
+                            aria-label={`View ${employee.staff_name} details`}
+                            title={`View ${employee.staff_name} details`}
+                          >
+                            <IoInformationCircleOutline className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                      {searchTerm
+                        ? "No employees match your search."
+                        : "No employee data available for this department."}
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(employees.length / 10)}
-          goToPage={setPageIndex}
-        />
+
+        {totalPages > 1 && (
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPage={setPageIndex}
+          />
+        )}
       </div>
     </div>
   );
-};export default DepartmentDetail;
+};
+export default DepartmentDetail;

@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form } from "@/src/components/ui/form";
-import { CustomFormField, CustomFormSelect } from "@/src/components/common/CustomInput";
+import {
+  CustomFormField,
+  CustomFormSelect,
+} from "@/src/components/common/CustomInput";
 import Calendar from "react-calendar";
 import { FiCalendar } from "react-icons/fi";
 import { formatDate } from "@/src/utils/helper";
@@ -12,26 +15,32 @@ import { useGetDepartments } from "@/src/hooks/dashboard/useDashboard";
 import { useCreateAppraisal } from "@/src/hooks/appraisal/useAppraisal";
 import { AppraisalFormValues } from "@/src/types/appraisal";
 import Select, { StylesConfig, SingleValue } from "react-select";
+import toast from "react-hot-toast";
 
 type DepartmentOption = { label: string; value: string };
 
-const appraisalSchema = z.object({
-  title: z.string().min(1, { message: "Appraisal title is required" }),
-  start_date: z.string().min(1, { message: "Start date is required" }),
-  end_date: z.string().min(1, { message: "End date is required" }),
-  notification_type: z.enum(["all", "department"], {
-    required_error: "Notification type is required",
-  }),
-  department_id: z.union([z.string(), z.number()]).optional(),
-}).refine((data) => {
-  if (data.notification_type === "department") {
-    return !!data.department_id;
-  }
-  return true;
-}, {
-  message: "Department is required when notification type is department",
-  path: ["department_id"],
-}) satisfies z.ZodType<AppraisalFormValues>;
+const appraisalSchema = z
+  .object({
+    title: z.string().min(1, { message: "Appraisal title is required" }),
+    start_date: z.string().min(1, { message: "Start date is required" }),
+    end_date: z.string().min(1, { message: "End date is required" }),
+    notification_type: z.enum(["all", "department"], {
+      required_error: "Notification type is required",
+    }),
+    department_id: z.union([z.string(), z.number()]).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.notification_type === "department") {
+        return !!data.department_id;
+      }
+      return true;
+    },
+    {
+      message: "Department is required when notification type is department",
+      path: ["department_id"],
+    }
+  ) satisfies z.ZodType<AppraisalFormValues>;
 
 interface CreateAppraisalModalProps {
   isOpen: boolean;
@@ -103,11 +112,19 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
     },
   });
 
-  const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = form;
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
 
-  const { departmentOptions, isPending: isPendingDepartment } = useGetDepartments();
+  const { departmentOptions, isPending: isPendingDepartment } =
+    useGetDepartments();
   const { mutate: createAppraisal, isPending } = useCreateAppraisal();
 
   const start_date = watch("start_date");
@@ -121,23 +138,31 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
     }
   }, [notification_type, setValue]);
 
-  const handleStartDateChange = (value: Date | Date[] | [Date | null, Date | null] | null) => {
+  const handleStartDateChange = (
+    value: Date | Date[] | [Date | null, Date | null] | null
+  ) => {
     if (value instanceof Date) {
       setValue("start_date", formatDate(value), { shouldValidate: true });
       setShowStartCalendar(false);
     }
   };
 
-  const handleEndDateChange = (value: Date | Date[] | [Date | null, Date | null] | null) => {
+  const handleEndDateChange = (
+    value: Date | Date[] | [Date | null, Date | null] | null
+  ) => {
     if (value instanceof Date) {
       setValue("end_date", formatDate(value), { shouldValidate: true });
       setShowEndCalendar(false);
     }
   };
 
-  const handleDepartmentChange = (selectedOption: SingleValue<DepartmentOption> | null) => {
+  const handleDepartmentChange = (
+    selectedOption: SingleValue<DepartmentOption> | null
+  ) => {
     if (selectedOption) {
-      setValue("department_id", selectedOption.value.toString(), { shouldValidate: true });
+      setValue("department_id", selectedOption.value.toString(), {
+        shouldValidate: true,
+      });
     } else {
       setValue("department_id", "", { shouldValidate: true });
     }
@@ -146,21 +171,29 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
   const onSubmit = (data: AppraisalFormValues) => {
     const submissionData = {
       ...data,
-      department_id: data.notification_type === "department" ? data.department_id : undefined
+      department_id:
+        data.notification_type === "department"
+          ? data.department_id
+          : undefined,
     };
 
     createAppraisal(submissionData, {
-      onSuccess: () => {
+      onSuccess: (res) => {
         reset();
         onClose();
+        toast.success(res.data.message || "Appraisal created successfully");
       },
       onError: (error: { response?: { data?: { message?: string } } }) => {
-        console.error("Error creating appraisal:", error.response?.data?.message || "Failed to create appraisal");
+        console.error(
+          "Error creating appraisal:",
+          error.response?.data?.message || "Failed to create appraisal"
+        );
+        toast.error(
+          error.response?.data?.message || "Failed to create appraisal"
+        );
       },
     });
   };
-
-  console.log(form.formState.errors)
 
   if (!isOpen) return null;
 
@@ -196,8 +229,11 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${start_date ? "justify-between" : "justify-end"
-                      } items-center p-[10px] ${errors.start_date ? "border-red-500" : ""}`}
+                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
+                      start_date ? "justify-between" : "justify-end"
+                    } items-center p-[10px] ${
+                      errors.start_date ? "border-red-500" : ""
+                    }`}
                     onClick={() => setShowStartCalendar((prev) => !prev)}
                   >
                     <p className="text-xs text-[#292D32]">
@@ -206,7 +242,9 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
                     <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
                   </div>
                   {errors.start_date && (
-                    <p className="text-red-500 text-sm mt-1">{errors.start_date.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.start_date.message}
+                    </p>
                   )}
                   {showStartCalendar && (
                     <div className="absolute max-w-[350px] mt-2 w-full z-30">
@@ -226,8 +264,11 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${end_date ? "justify-between" : "justify-end"
-                      } items-center p-[10px] ${errors.end_date ? "border-red-500" : ""}`}
+                    className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
+                      end_date ? "justify-between" : "justify-end"
+                    } items-center p-[10px] ${
+                      errors.end_date ? "border-red-500" : ""
+                    }`}
                     onClick={() => setShowEndCalendar((prev) => !prev)}
                   >
                     <p className="text-xs text-[#292D32]">
@@ -236,7 +277,9 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
                     <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
                   </div>
                   {errors.end_date && (
-                    <p className="text-red-500 text-sm mt-1">{errors.end_date.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.end_date.message}
+                    </p>
                   )}
                   {showEndCalendar && (
                     <div className="absolute max-w-[350px] mt-2 w-full z-30">

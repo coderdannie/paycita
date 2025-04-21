@@ -6,15 +6,23 @@ import {
 } from "@tanstack/react-query";
 
 import dashboardService from "@/src/service/api/dashboard.service";
- 
+
 import { useDispatch } from "react-redux";
 import {
   setEmployeeAttendance,
   setEmployeeAttendancePagination,
 } from "@/src/Redux/features/dashboardSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AddEmployee } from "@/src/utils/validations";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+
+const checkIsAuthenticated = (): boolean => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access_token");
+    return !!token;
+  }
+  return false;
+};
 
 export const useGetAttendance = (filters: {
   page: string;
@@ -23,14 +31,30 @@ export const useGetAttendance = (filters: {
   job_title?: string;
 }) => {
   const dispatch = useDispatch();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(checkIsAuthenticated);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(checkIsAuthenticated());
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    setIsAuthenticated(checkIsAuthenticated());
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const { isError, isSuccess, data, isPending } = useQuery({
-    queryKey: [QUERY_KEYS.GET_EMPLOYEE_ATTENDANCE, filters],
+    queryKey: [QUERY_KEYS.GET_EMPLOYEE_ATTENDANCE, filters, isAuthenticated],
     queryFn: async () => {
       const response = await dashboardService.getAttendance(filters);
-
       return response;
     },
     placeholderData: keepPreviousData,
+
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {
@@ -42,10 +66,46 @@ export const useGetAttendance = (filters: {
 
   return {
     isError,
+
+    isEnabled: isAuthenticated,
+
     isSuccess,
-    isPending,
+
+    isPending: isPending && isAuthenticated,
+    isLoading: isPending && isAuthenticated,
   };
 };
+
+// export const useGetAttendance = (filters: {
+//   page: string;
+//   employee_name?: string;
+//   status?: string;
+//   job_title?: string;
+// }) => {
+//   const dispatch = useDispatch();
+//   const { isError, isSuccess, data, isPending } = useQuery({
+//     queryKey: [QUERY_KEYS.GET_EMPLOYEE_ATTENDANCE, filters],
+//     queryFn: async () => {
+//       const response = await dashboardService.getAttendance(filters);
+
+//       return response;
+//     },
+//     placeholderData: keepPreviousData,
+//   });
+
+//   useEffect(() => {
+//     if (isSuccess) {
+//       dispatch(setEmployeeAttendance(data?.data?.data));
+//       dispatch(setEmployeeAttendancePagination(data?.data?.pagination));
+//     }
+//   }, [data?.data?.data, data?.data?.pagination, dispatch, isSuccess]);
+
+//   return {
+//     isError,
+//     isSuccess,
+//     isPending,
+//   };
+// };
 
 export const useAddEmployee = () => {
   const queryClient = useQueryClient();
@@ -245,4 +305,3 @@ export const useOffBoardEmployee = () => {
     isError, // Error state
   };
 };
-

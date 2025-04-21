@@ -10,18 +10,6 @@ interface AssessmentValue {
   line_manager: string | number | null;
 }
 
-// interface Appraisal {
-//   [key: string]: string | number | AssessmentValue | null;
-//   appraisal_title: string;
-//   start_date: string;
-//   end_date: string;
-//   status: string;
-//   total_score: string;
-//   line_manager_score: string;
-//   employeeComment: string;
-//   lineManagerComment: string;
-// }
-
 const ReviewDetailsPage = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,14 +17,12 @@ const ReviewDetailsPage = () => {
 
   const { appraisal, isLoading, isError } = useGetSingleAppraisal(id || "");
 
-
-
   const getScoreLabel = (score: number) => {
-    if (score >= 4.5) return 'Excellent';
-    if (score >= 3.5) return 'Very Good';
-    if (score >= 2.5) return 'Good';
-    if (score >= 1.5) return 'Fair';
-    return 'Poor';
+    if (score >= 4.5) return "Excellent";
+    if (score >= 3.5) return "Very Good";
+    if (score >= 2.5) return "Good";
+    if (score >= 1.5) return "Fair";
+    return "Poor";
   };
 
   if (isLoading) {
@@ -50,7 +36,6 @@ const ReviewDetailsPage = () => {
   if (!appraisal) {
     return <div>Appraisal not found</div>;
   }
-
 
   const scoreLabel = getScoreLabel(Number(appraisal.total_score));
 
@@ -81,14 +66,27 @@ const ReviewDetailsPage = () => {
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">End Date</span>
-              <span className="font-medium">{appraisal.end_date
-              }</span>
+              <span className="font-medium">{appraisal.end_date}</span>
             </div>
             <div className="flex">
               <span className="text-gray-500 w-36">Status</span>
               <div className="flex items-center">
-                <span className={cn("w-2 h-2 rounded-full mr-2", appraisal.status.toLowerCase() === "pending" ? "bg-yellow-500" : "bg-[#00813C]")}></span>
-                <span className={cn("text-[#00813C] capitalize", appraisal.status.toLowerCase() === "pending" ? "text-yellow-500" : "text-[#00813C]")}>
+                <span
+                  className={cn(
+                    "w-2 h-2 rounded-full mr-2",
+                    appraisal.status.toLowerCase() === "pending"
+                      ? "bg-yellow-500"
+                      : "bg-[#00813C]"
+                  )}
+                ></span>
+                <span
+                  className={cn(
+                    "text-[#00813C] capitalize",
+                    appraisal.status.toLowerCase() === "pending"
+                      ? "text-yellow-500"
+                      : "text-[#00813C]"
+                  )}
+                >
                   {appraisal.status}
                 </span>
               </div>
@@ -144,18 +142,32 @@ const ReviewDetailsPage = () => {
               </thead>
               <tbody>
                 {Object.entries(appraisal).map(([key, value]) => {
-                  if (typeof value === 'object' && value !== null && 'employee_score' in value) {
-                    const skillName = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                  if (
+                    typeof value === "object" &&
+                    value !== null &&
+                    "employee_score" in value
+                  ) {
+                    const skillName = key
+                      .split("_")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ");
                     const assessmentValue = value as AssessmentValue;
                     return (
-                      <tr key={key} className="border-b border-gray-100 last:border-0">
+                      <tr
+                        key={key}
+                        className="border-b border-gray-100 last:border-0"
+                      >
                         <td className="py-4 pr-6 align-top">{skillName}</td>
                         <td className="py-4 pr-6 align-top break-words">
                           {/* Description can be added here if available */}
                         </td>
-                        <td className="py-4 pr-6 align-top">{assessmentValue.employee_score}</td>
                         <td className="py-4 pr-6 align-top">
-                          {assessmentValue.line_manager || '-'}
+                          {assessmentValue.employee_score}
+                        </td>
+                        <td className="py-4 pr-6 align-top">
+                          {assessmentValue.line_manager || "-"}
                         </td>
                         <td className="py-4 align-top">
                           <div className="flex flex-col">
