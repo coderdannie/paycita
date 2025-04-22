@@ -228,3 +228,21 @@ export const approvalFilterSchema = z.object({
 });
 
 export type ApprovalFilterSchemaType = z.infer<typeof approvalFilterSchema>;
+
+export const walletFilterSchema = z.object({
+  expense_type: z.string().min(1, { message: 'Expense type is required' }),
+  transaction_type: z
+    .string()
+    .min(1, { message: 'Transaction type is required' }),
+  status: z.string().min(1, { message: 'Status date is required' }),
+});
+
+export type WalletFilterSchemaType = z.infer<typeof walletFilterSchema>;
+
+export const requestFundSchema = z.object({
+  amount: z.string().min(1, 'Amount is required'),
+  reason: z.string().min(1, 'Reason is required'),
+  date: z.string().min(1, 'Date is required'),
+});
+
+export type RequestFundSchemaType = z.infer<typeof requestFundSchema>;

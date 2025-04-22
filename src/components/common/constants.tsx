@@ -13,6 +13,7 @@ import {
   LoanIcon,
   AppraisalIcon,
   ApprovalIcon,
+  WalletIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -137,6 +138,13 @@ export const sidebarData = [
     path: '/message',
   },
   {
+    title: 'Wallet',
+    icon: <WalletIcon fill="#344054" />,
+    sec: <WalletIcon fill="#692E9F" />,
+    hover: <WalletIcon fill="#692E9F" />,
+    path: '/wallet',
+  },
+  {
     title: 'Approval',
     icon: <ApprovalIcon fill="#344054" />,
     sec: <ApprovalIcon fill="#692E9F" />,
@@ -160,6 +168,7 @@ export const sidebarData = [
       },
     ],
   },
+
   {
     title: 'Settings',
     icon: <SettingsIcon fill="#344054" />,
@@ -286,3 +295,18 @@ export const COLORS = {
   yellow_pry: '#FFEE00',
   black_pry: '#344054',
 };
+
+export const walletCounts: { title: string; amount: string }[] = [
+  {
+    title: 'Total Budget',
+    amount: '21000',
+  },
+  {
+    title: 'Total Spent',
+    amount: '1000',
+  },
+  {
+    title: 'Remaining Balance',
+    amount: '400000',
+  },
+];
