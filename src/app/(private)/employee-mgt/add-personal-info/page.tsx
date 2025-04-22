@@ -1,43 +1,43 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { IoMdArrowBack } from "react-icons/io";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useRouter } from 'next/navigation';
+import { IoMdArrowBack } from 'react-icons/io';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import {
   userDetailsSchema,
   userDetailsSchemaType,
-} from "@/src/utils/validations";
-import { FaPlus } from "react-icons/fa6";
-import { Form } from "@/src/components/ui/form";
-import Calendar from "react-calendar";
-import { FiCalendar } from "react-icons/fi";
-import { formatDate } from "@/src/utils/helper";
-import { useEffect, useMemo, useState } from "react";
-import Select, { StylesConfig } from "react-select";
-import { SingleValue } from "@/src/types/attendance";
+} from '@/src/utils/validations';
+import { FaPlus } from 'react-icons/fa6';
+import { Form } from '@/src/components/ui/form';
+import Calendar from 'react-calendar';
+import { FiCalendar } from 'react-icons/fi';
+import { formatDate } from '@/src/utils/helper';
+import { useEffect, useMemo, useState } from 'react';
+import Select, { StylesConfig } from 'react-select';
+import { SingleValue } from '@/src/types/attendance';
 import {
   CustomFormField,
   CustomFormSelect,
-} from "@/src/components/common/CustomInput";
-import { useGetCountries } from "@/src/hooks/location/useCountries";
-import { useDispatch } from "react-redux";
-import { setUserDetails } from "@/src/Redux/features/userDetailsSlice";
-import { useUserDetailSelector } from "@/src/Redux/selectors";
+} from '@/src/components/common/CustomInput';
+import { useGetCountries } from '@/src/hooks/location/useCountries';
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '@/src/Redux/features/userDetailsSlice';
+import { useUserDetailSelector } from '@/src/Redux/selectors';
 
 const RELATIONSHIP_OPTIONS = [
-  "Spouse",
-  "Parent",
-  "Sibling",
-  "Child",
-  "Friend",
-  "Relative",
-  "Colleague",
-  "Other",
+  'Spouse',
+  'Parent',
+  'Sibling',
+  'Child',
+  'Friend',
+  'Relative',
+  'Colleague',
+  'Other',
 ] as string[];
 
-const GENDER_OPTIONS = ["Male", "Female", "Other"] as string[];
-const MARITAL_STATUS_OPTIONS = ["Single", "Married", "Divorced"] as string[];
+const GENDER_OPTIONS = ['Male', 'Female', 'Other'] as string[];
+const MARITAL_STATUS_OPTIONS = ['Single', 'Married', 'Divorced'] as string[];
 
 const PersonalInfo = () => {
   const userDetails = useUserDetailSelector();
@@ -47,32 +47,31 @@ const PersonalInfo = () => {
   const form = useForm<userDetailsSchemaType>({
     resolver: zodResolver(userDetailsSchema),
     defaultValues: {
-      full_name: "",
-      email: "",
-      phone_number: "",
-      gender: "",
-      marital_status: "",
+      full_name: '',
+      email: '',
+      phone_number: '',
+      gender: '',
+      marital_status: '',
       address: {
-        country: "",
-        residentialAddress: "",
+        country: '',
+        residentialAddress: '',
       },
       emergencyContact: {
-        emergency_contact_name: "",
-        emergency_contact_relationship: "",
-        emergency_contact_phone: "",
+        emergency_contact_name: '',
+        emergency_contact_relationship: '',
+        emergency_contact_phone: '',
       },
       guarantors: [
-        { fullName: "", address: "", phoneNumber: "", relationship: "" },
-        { fullName: "", address: "", phoneNumber: "", relationship: "" },
+        { fullName: '', address: '', phoneNumber: '', relationship: '' },
+        { fullName: '', address: '', phoneNumber: '', relationship: '' },
       ],
     },
-    mode: "onTouched",
+    mode: 'onTouched',
   });
 
   const { control, formState, setValue, reset, handleSubmit } = form;
   const { errors } = formState;
 
- 
   const [showCalendar, setShowCalendar] = useState(false);
   const [date_of_birth, setDateOfBirth] = useState<Date | null>(null);
   const [showGuarantorFields, setShowGuarantorFields] = useState(false);
@@ -92,49 +91,49 @@ const PersonalInfo = () => {
     () => ({
       control: (provided) => ({
         ...provided,
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#ffff",
-        border: "1px solid #E4E7EC",
-        borderRadius: "8px",
-        boxShadow: "none",
-        minHeight: "40px",
-        padding: "0 12px",
-        fontSize: "14px",
-        color: "#1D2939",
-        outline: "none",
-        "&:hover": {
-          borderColor: "#692E9F",
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#ffff',
+        border: '1px solid #E4E7EC',
+        borderRadius: '8px',
+        boxShadow: 'none',
+        minHeight: '40px',
+        padding: '0 12px',
+        fontSize: '14px',
+        color: '#1D2939',
+        outline: 'none',
+        '&:hover': {
+          borderColor: '#692E9F',
         },
-        "&:focus": {
-          borderColor: "transparent",
-          outline: "none",
+        '&:focus': {
+          borderColor: 'transparent',
+          outline: 'none',
         },
       }),
       placeholder: (provided) => ({
         ...provided,
-        fontSize: "12px",
-        color: "#b3b3b3",
+        fontSize: '12px',
+        color: '#b3b3b3',
       }),
       menu: (provided) => ({
         ...provided,
-        borderRadius: "10px",
-        marginTop: "4px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+        borderRadius: '10px',
+        marginTop: '4px',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
         zIndex: 10,
       }),
       indicatorSeparator: () => ({
-        display: "none",
+        display: 'none',
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? "#F0EAF5" : "transparent",
-        color: "#333333",
-        fontSize: "12px",
-        padding: "10px 8px",
-        cursor: "pointer",
-        "&:active": {
-          backgroundColor: "#EAEAEA",
+        backgroundColor: state.isFocused ? '#F0EAF5' : 'transparent',
+        color: '#333333',
+        fontSize: '12px',
+        padding: '10px 8px',
+        cursor: 'pointer',
+        '&:active': {
+          backgroundColor: '#EAEAEA',
         },
       }),
     }),
@@ -148,7 +147,7 @@ const PersonalInfo = () => {
     };
 
     dispatch(setUserDetails(dataWithDateOfBirth));
-    router.push("/employee-mgt/employee-details");
+    router.push('/employee-mgt/employee-details');
   };
 
   // useEffect(() => {
@@ -158,8 +157,8 @@ const PersonalInfo = () => {
   // }, [date_of_birth, form]);
 
   const handleCountryChange = (selectedOption: SingleValue | null) => {
-    const countryValue = selectedOption?.value || "";
-    form.setValue("address.country", countryValue, { shouldValidate: true });
+    const countryValue = selectedOption?.value || '';
+    form.setValue('address.country', countryValue, { shouldValidate: true });
   };
 
   const handleAddGuarantor = () => {
@@ -173,68 +172,68 @@ const PersonalInfo = () => {
     reset();
 
     // Set basic information
-    setValue("full_name", userDetails.full_name || "");
-    setValue("email", userDetails.email || "");
-    setValue("phone_number", userDetails.phone_number || "");
-    setValue("gender", userDetails.gender || "");
-    setValue("marital_status", userDetails.marital_status || "");
+    setValue('full_name', userDetails.full_name || '');
+    setValue('email', userDetails.email || '');
+    setValue('phone_number', userDetails.phone_number || '');
+    setValue('gender', userDetails.gender || '');
+    setValue('marital_status', userDetails.marital_status || '');
 
     // Set address information
-    setValue("address.country", userDetails.address?.country || "");
+    setValue('address.country', userDetails.address?.country || '');
     setValue(
-      "address.residentialAddress",
-      userDetails.address?.residentialAddress || ""
+      'address.residentialAddress',
+      userDetails.address?.residentialAddress || ''
     );
 
     // Set emergency contact information
     setValue(
-      "emergencyContact.emergency_contact_name",
-      userDetails.emergencyContact?.emergency_contact_name || ""
+      'emergencyContact.emergency_contact_name',
+      userDetails.emergencyContact?.emergency_contact_name || ''
     );
     setValue(
-      "emergencyContact.emergency_contact_relationship",
-      userDetails.emergencyContact?.emergency_contact_relationship || ""
+      'emergencyContact.emergency_contact_relationship',
+      userDetails.emergencyContact?.emergency_contact_relationship || ''
     );
     setValue(
-      "emergencyContact.emergency_contact_phone",
-      userDetails.emergencyContact?.emergency_contact_phone || ""
+      'emergencyContact.emergency_contact_phone',
+      userDetails.emergencyContact?.emergency_contact_phone || ''
     );
 
     // Set guarantor information
     if (userDetails.guarantors?.length > 0) {
       setValue(
         `guarantors.0.fullName`,
-        userDetails.guarantors[0]?.fullName || ""
+        userDetails.guarantors[0]?.fullName || ''
       );
       setValue(
         `guarantors.0.address`,
-        userDetails.guarantors[0]?.address || ""
+        userDetails.guarantors[0]?.address || ''
       );
       setValue(
         `guarantors.0.phoneNumber`,
-        userDetails.guarantors[0]?.phoneNumber || ""
+        userDetails.guarantors[0]?.phoneNumber || ''
       );
       setValue(
         `guarantors.0.relationship`,
-        userDetails.guarantors[0]?.relationship || ""
+        userDetails.guarantors[0]?.relationship || ''
       );
 
       if (userDetails.guarantors.length > 1) {
         setValue(
           `guarantors.1.fullName`,
-          userDetails.guarantors[1]?.fullName || ""
+          userDetails.guarantors[1]?.fullName || ''
         );
         setValue(
           `guarantors.1.address`,
-          userDetails.guarantors[1]?.address || ""
+          userDetails.guarantors[1]?.address || ''
         );
         setValue(
           `guarantors.1.phoneNumber`,
-          userDetails.guarantors[1]?.phoneNumber || ""
+          userDetails.guarantors[1]?.phoneNumber || ''
         );
         setValue(
           `guarantors.1.relationship`,
-          userDetails.guarantors[1]?.relationship || ""
+          userDetails.guarantors[1]?.relationship || ''
         );
       }
     }
@@ -249,7 +248,7 @@ const PersonalInfo = () => {
     <div>
       <div className="flex items-center gap-1">
         <button onClick={() => router.back()}>
-          <IoMdArrowBack />{" "}
+          <IoMdArrowBack />{' '}
         </button>
         <h2 className="text-[#1D2939] font-bold text-lg md:text-xl">
           Add Employee
@@ -310,12 +309,12 @@ const PersonalInfo = () => {
                 <div className="w-full relative">
                   <div
                     className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
-                      date_of_birth ? "justify-between" : "justify-end"
+                      date_of_birth ? 'justify-between' : 'justify-end'
                     } items-center p-[10px]`}
                     onClick={() => setShowCalendar((prev) => !prev)}
                   >
                     <p className="text-xs text-[#292D32]">
-                      {date_of_birth ? formatDate(date_of_birth) : "Pick date"}
+                      {date_of_birth ? formatDate(date_of_birth) : 'Pick date'}
                     </p>
                     <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
                   </div>
@@ -328,8 +327,8 @@ const PersonalInfo = () => {
                         maxDate={new Date()}
                         tileClassName={({ date }) =>
                           date.getDay() === 0 || date.getDay() === 6
-                            ? "weekend"
-                            : ""
+                            ? 'weekend'
+                            : ''
                         }
                       />
                     </div>
@@ -371,7 +370,7 @@ const PersonalInfo = () => {
                   placeholder="Select Country"
                   onChange={handleCountryChange}
                   value={countries?.find(
-                    (option) => option.value === form.watch("address.country")
+                    (option) => option.value === form.watch('address.country')
                   )}
                 />
                 {errors.address?.country?.message && (
@@ -548,7 +547,7 @@ const PersonalInfo = () => {
                 type="submit"
                 className={`btn-primary px-[30px] ${
                   !formState.isValid &&
-                  "!bg-gray-200 !text-[#98A2B3] !cursor-not-allowed"
+                  '!bg-gray-200 !text-[#98A2B3] !cursor-not-allowed'
                 }`}
                 disabled={!formState.isValid}
               >
