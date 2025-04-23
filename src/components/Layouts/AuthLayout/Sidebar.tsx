@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { sidebarData } from "../../common/constants";
-import Image from "next/image";
-import logoutIcon from "../../../../public/assets/logout.svg";
-import { useLogOut } from "@/src/hooks/useLogOut";
-import { useAuthSelector } from "@/src/Redux/selectors";
+import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { sidebarData } from '../../common/constants';
+import Image from 'next/image';
+import logoutIcon from '../../../../public/assets/logout.svg';
+import { useLogOut } from '@/src/hooks/useLogOut';
+import { useAuthSelector } from '@/src/Redux/selectors';
 
 const Sidebar = () => {
   const userData = useAuthSelector();
 
-  const isVisible = userData?.user?.feature?.employee_loan === "1";
+  const isVisible = userData?.user?.feature?.employee_loan === '1';
 
   const companyLogo = userData?.user?.company_logo;
 
   const [showMenu, setShowMenu] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<string>("");
+  const [currentIndex, setCurrentIndex] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
   const pathname = usePathname();
@@ -51,13 +51,13 @@ const Sidebar = () => {
       // For items without submenus, navigate immediately
       router.push(item.path);
       setShowMenu(false);
-      setCurrentIndex("");
+      setCurrentIndex('');
     }
   };
 
   // Filter sidebar data to exclude Loan if not visible
   const filteredSidebarData = sidebarData.filter(
-    (item) => item.title !== "Loan" || isVisible
+    (item) => item.title !== 'Loan' || isVisible
   );
 
   return (
@@ -65,7 +65,7 @@ const Sidebar = () => {
       {/* Fixed Header */}
       <div className="sticky top-0 bg-white z-10 pt-[40px] pl-5 pb-4 max-h-32">
         <Image
-          src={companyLogo || "/assets/logo.jpg"}
+          src={companyLogo || '/assets/logo.jpg'}
           alt="logo"
           width={100}
           height={100}
@@ -83,7 +83,7 @@ const Sidebar = () => {
                 className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${
                   pathname.includes(item.path)
                     ? 'bg-[#F0EAF5] text-primary before:content-[""] before:absolute before:top-0 before:right-[10px] before:h-[50%] before:translate-y-[45%] before:w-[4px] before:bg-primary'
-                    : "bg-transparent text-[#616161] hover:bg-[#F0EAF5]"
+                    : 'bg-transparent text-[#616161] hover:bg-[#F0EAF5]'
                 }`}
                 onClick={() => handleMainMenuClick(item)}
               >
@@ -109,8 +109,8 @@ const Sidebar = () => {
                       href={subItem.path}
                       className={`py-2 px-3 rounded-lg text-sm flex items-center gap-2 ${
                         pathname.includes(subItem.path)
-                          ? "text-primary"
-                          : "text-[#757575] hover:text-primary"
+                          ? 'text-primary'
+                          : 'text-[#757575] hover:text-primary'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent event bubbling to parent

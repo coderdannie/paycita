@@ -246,3 +246,28 @@ export const requestFundSchema = z.object({
 });
 
 export type RequestFundSchemaType = z.infer<typeof requestFundSchema>;
+
+export const reimbursementFormSchema = z.object({
+  amount: z
+    .string()
+    .min(1, { message: 'Amount is required' })
+    .regex(/^\d+(\.\d{1,2})?$/, {
+      message: 'Amount must be a valid number',
+    }),
+  date_of_purchase: z
+    .string()
+    .min(1, { message: 'Date of purchase is required' }),
+  item_description: z
+    .string()
+    .min(1, { message: 'Item description is required' }),
+  reason_for_payment: z
+    .string()
+    .min(1, { message: 'Reason for reimbursement is required' }),
+  proof_of_payment: z.instanceof(FileList).refine((files) => files.length > 0, {
+    message: 'Proof of payment is required',
+  }),
+});
+
+export type reimbursementFormSchemaType = z.infer<
+  typeof reimbursementFormSchema
+>;

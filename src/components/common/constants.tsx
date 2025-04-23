@@ -14,6 +14,7 @@ import {
   AppraisalIcon,
   ApprovalIcon,
   WalletIcon,
+  ReimbursementIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -168,7 +169,13 @@ export const sidebarData = [
       },
     ],
   },
-
+  {
+    title: 'Reimbursement',
+    icon: <ReimbursementIcon fill="#344054" />,
+    sec: <ReimbursementIcon fill="#692E9F" />,
+    hover: <ReimbursementIcon fill="#692E9F" />,
+    path: '/add-reimbursement',
+  },
   {
     title: 'Settings',
     icon: <SettingsIcon fill="#344054" />,

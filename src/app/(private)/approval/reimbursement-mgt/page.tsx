@@ -1,6 +1,5 @@
 'use client';
 
-import LeaveTable from '@/src/components/data/Approval/LeaveTable';
 import ReimbursementTable from '@/src/components/data/Approval/ReimbursementTable';
 import ApprovalFilter from '@/src/components/modals/ApprovalFilter';
 import SearchInput from '@/src/components/ui/SearchInput';

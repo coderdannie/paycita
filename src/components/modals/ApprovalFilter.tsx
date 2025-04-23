@@ -100,7 +100,7 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-[350px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-[350px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
             <div className="flex px-6 items-center justify-between border-b border-[#E4E7EC] py-5">
