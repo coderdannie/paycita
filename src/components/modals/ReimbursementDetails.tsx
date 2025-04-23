@@ -69,7 +69,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full  w-[400px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
@@ -111,7 +111,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Description</p>
-                  <p className="font-medium text-gray-700">
+                  <p className="font-semibold text-gray-700">
                     Black color ink for departmental growing need
                   </p>
                 </div>
