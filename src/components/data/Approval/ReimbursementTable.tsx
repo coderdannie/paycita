@@ -6,9 +6,15 @@ import { TableCell, TableRow } from '../../ui/table';
 import TableEmptyState from '../../common/TableEmptyState';
 import { Button } from '@/components/ui/button';
 import ReimbursementDetails from '../../modals/ReimbursementDetails';
+import RejectModal from '../../modals/RejectModal';
 
 const ReimbursementTable = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isShow, setIsShow] = useState(false);
+  const handleReject = (comment: string) => {
+    console.log('Request rejected with comment:', comment);
+  };
+
   const headers = useMemo(
     () => [
       { label: 'RN' },
@@ -93,7 +99,16 @@ const ReimbursementTable = () => {
           <TableEmptyState headers={headers} />
         )}
       </CustomTable>
-      <ReimbursementDetails isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <ReimbursementDetails
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        setIsShow={setIsShow}
+      />
+      <RejectModal
+        isOpen={isShow}
+        onClose={() => setIsShow(false)}
+        onReject={handleReject}
+      />
     </div>
   );
 };

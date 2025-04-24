@@ -6,9 +6,15 @@ import { TableCell, TableRow } from '../../ui/table';
 import TableEmptyState from '../../common/TableEmptyState';
 import { Button } from '@/components/ui/button';
 import ExpenseDrawer from '../../modals/ExpenseDrawer';
+import RejectModal from '../../modals/RejectModal';
 
 const ExpenseTable = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [isShow, setIsShow] = useState(false);
+  const handleReject = (comment: string) => {
+    console.log('Request rejected with comment:', comment);
+  };
   const headers = useMemo(
     () => [
       { label: 'Employee Name' },
@@ -83,7 +89,16 @@ const ExpenseTable = () => {
           <TableEmptyState headers={headers} />
         )}
       </CustomTable>
-      <ExpenseDrawer open={isOpen} onOpenChange={() => setIsOpen(false)} />
+      <ExpenseDrawer
+        open={isOpen}
+        onOpenChange={() => setIsOpen(false)}
+        setIsShow={setIsShow}
+      />
+      <RejectModal
+        isOpen={isShow}
+        onClose={() => setIsShow(false)}
+        onReject={handleReject}
+      />
     </div>
   );
 };

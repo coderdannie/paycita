@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button';
 interface ReimbursementDetailsProps {
   isOpen: boolean;
   onClose: () => void;
+  setIsShow: (open: boolean) => void;
 }
 
 const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
   isOpen,
   onClose,
+  setIsShow,
 }) => {
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
@@ -154,7 +156,10 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                   <Button type="submit">Apply</Button>
                   <Button
                     type="button"
-                    onClick={onClose}
+                    onClick={() => {
+                      setIsShow(true);
+                      onClose();
+                    }}
                     variant="outline"
                     className="flex-1 py-2 border border-[#EA3D3D] text-[#EA3D3D] font-semibold rounded-lg hover:bg-red-50 transition-colors"
                   >

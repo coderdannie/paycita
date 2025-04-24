@@ -48,9 +48,11 @@ const expenseItems = [
 export default function ExpenseDrawer({
   open,
   onOpenChange,
+  setIsShow,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  setIsShow: (open: boolean) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,6 +111,10 @@ export default function ExpenseDrawer({
           <Button
             variant="outline"
             className="border border-red-500 text-red-500 hover:bg-red-50"
+            onClick={() => {
+              setIsShow(true);
+              onOpenChange(false);
+            }}
           >
             Reject
           </Button>
