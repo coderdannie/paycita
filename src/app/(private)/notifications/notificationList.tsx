@@ -4,6 +4,7 @@ import NotificationItem from "./notificationItem";
 import { Notification } from "@/src/types/notifications";
 
 
+
 interface NotificationListProps {
   notifications: Notification[];
   onToggleSelect: (id: string) => void;

@@ -1,5 +1,6 @@
 import { Notification } from "@/src/types/notifications";
 
+
 export const mockNotifications: Notification[] = [
   {
     id: "1",

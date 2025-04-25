@@ -4,7 +4,6 @@ import Image from "next/image";
 import { HiOutlineBell } from "react-icons/hi2";
 import { IoMenuSharp } from "react-icons/io5";
 import SideDrawer from "./SideDrawer";
-
 import { useGetAllProfileSettings } from "@/src/hooks/settings/useSettings";
 import NotificationsPanel from "@/src/app/(private)/notifications/notificationPanel";
 

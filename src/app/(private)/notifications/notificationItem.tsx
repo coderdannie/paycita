@@ -1,10 +1,9 @@
 "use client";
-
 import React from "react";
-import { Clock, Repeat } from "lucide-react";
-import { Notification } from "@/types/notifications";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { Notification } from "@/src/types/notifications";
+import Image from "next/image";
 
 
 interface NotificationItemProps {
@@ -39,7 +38,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
             <div className="flex items-center mt-2">
               {notification.user.avatar ? (
-                <img
+                <Image
                   src={notification.user.avatar}
                   alt={notification.user.name}
                   className="h-6 w-6 rounded-full"

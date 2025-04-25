@@ -1,7 +1,8 @@
-import { Notification } from "@/types/notifications";
+
 import React, { useState } from "react";
 import NotificationList from "./notificationList";
 import NotificationHeader from "./notificationHeader";
+import { Notification } from "@/src/types/notifications";
 
 
 

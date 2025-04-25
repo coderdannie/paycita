@@ -5,6 +5,7 @@ import NotificationHeader from "./notificationHeader";
 import NotificationList from "./notificationList";
 import { Notification } from "@/src/types/notifications";
 
+
 interface NotificationsPanelProps {
   isOpen: boolean;
   onClose: () => void;
