@@ -1,21 +1,24 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
-import ProcurementTable, { ProcurementData } from "@/src/components/data/Procurement/ProcurementTable";
-import AddProcurement from "@/src/components/modals/AddProcurementDrawer";
-import ProcurementDetailDrawer from "@/src/components/modals/ProcurementDetailsDrawer";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+import { useCallback, useState } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
+import ProcurementTable, {
+  ProcurementData,
+} from '@/src/components/data/Procurement/ProcurementTable';
+import AddProcurement from '@/src/components/modals/AddProcurementDrawer';
+import ProcurementDetailDrawer from '@/src/components/modals/ProcurementDetailsDrawer';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import {
   useDeleteProcurement,
   useGetAllProcurements,
   useGetSingleProcurement,
-} from "@/src/hooks/procurement/useProcurement";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import ConfirmationModal from "@/src/components/common/ConfirmationModal";
-import toast from "react-hot-toast"; 
+} from '@/src/hooks/procurement/useProcurement';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import ConfirmationModal from '@/src/components/common/ConfirmationModal';
+import toast from 'react-hot-toast';
+import CommentModal from '@/src/components/modals/CommentModal';
 
 const Procurement = () => {
   const searchParams = useSearchParams();
@@ -23,13 +26,35 @@ const Procurement = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  const [procurementId, setProcurementId] = useState("");
-  const [procurementToDelete, setProcurementToDelete] = useState<ProcurementData | null>(
-    null
-  );
+  const [procurementId, setProcurementId] = useState('');
+  const [procurementToDelete, setProcurementToDelete] =
+    useState<ProcurementData | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const currentPage = searchParams.get("page") || "1";
+  const [openModal, setOpenModal] = useState(false);
+  const [comments, setComments] = useState([
+    {
+      name: 'Cameron Williamson',
+      text: 'Not enough funds for this Procurement',
+      time: '24 min',
+    },
+    {
+      name: 'Hawkins Maru',
+      text: 'Not enough funds for this Procurement',
+      time: '24 min',
+    },
+  ]);
+
+  const handleSend = (message: string) => {
+    const newComment = {
+      name: 'You',
+      text: message,
+      time: 'Just now',
+    };
+    setComments((prev) => [...prev, newComment]);
+  };
+
+  const currentPage = searchParams.get('page') || '1';
 
   const {
     procurements,
@@ -51,7 +76,6 @@ const Procurement = () => {
     [updateSearchParams]
   );
 
-
   const { procurement } = useGetSingleProcurement(procurementId);
 
   const { mutate: deleteProcurement, isPending: isDeleting } =
@@ -65,7 +89,7 @@ const Procurement = () => {
   const handleDeleteProcurement = () => {
     deleteProcurement(procurementToDelete?.id, {
       onSuccess: () => {
-        toast.success("Procurement deleted successfully");
+        toast.success('Procurement deleted successfully');
         setIsDeleteModalOpen(false);
       },
       onError: (error) => {
@@ -113,6 +137,7 @@ const Procurement = () => {
         isOpen={isShow}
         onClose={() => setIsShow(false)}
         procurement={procurement}
+        setOpenComment={setOpenModal}
       />
 
       <ConfirmationModal
@@ -125,6 +150,13 @@ const Procurement = () => {
         title="Delete Procurement"
         actionLabel="Delete"
         isLoading={isDeleting}
+      />
+      <CommentModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        comments={comments}
+        onSend={handleSend}
+        setIsShow={setIsShow}
       />
     </>
   );

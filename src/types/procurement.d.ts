@@ -33,3 +33,10 @@ interface Expenses {
 }
 
 export { Procurement, ProcurementData, Expenses };
+
+export type ApprovalStep = {
+  name: string;
+  status: 'approved' | 'rejected' | 'pending';
+  date: string;
+  comment?: string;
+};

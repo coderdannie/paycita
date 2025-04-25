@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { IoCloseSharp } from "react-icons/io5";
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoCloseSharp } from 'react-icons/io5';
 import {
   Table,
   TableBody,
@@ -9,9 +9,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import StatusStepper from "../common/Stepper";
-import { useAuthSelector } from "@/src/Redux/selectors";
+} from '../../components/ui/table';
+import StatusStepper from '../common/Stepper';
+import { useAuthSelector } from '@/src/Redux/selectors';
+import { ApprovalFlow } from '../common/ApprovalFlow';
+import { Button } from '../ui/button';
+import Image from 'next/image';
+import { ApprovalStep } from '@/src/types/procurement';
 
 interface ExpenseItem {
   id: string;
@@ -36,24 +40,26 @@ interface ExpenseMgtDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   expense: ExpenseDetails;
+  setOpenComment: (open: boolean) => void;
 }
 
 const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
   isOpen,
   onClose,
   expense,
+  setOpenComment,
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
@@ -61,16 +67,39 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved":
-        return "text-green-500";
-      case "pending":
-        return "text-orange-500";
-      case "rejected":
-        return "text-red-500";
+      case 'approved':
+        return 'text-green-500';
+      case 'pending':
+        return 'text-orange-500';
+      case 'rejected':
+        return 'text-red-500';
       default:
-        return "text-gray-500";
+        return 'text-gray-500';
     }
   };
+  const steps: ApprovalStep[] = [
+    {
+      name: 'Cameron Williamson',
+      status: 'approved',
+      date: 'Mon, 3 Feb 2025',
+    },
+    {
+      name: 'Cameron Williamson',
+      status: 'rejected',
+      date: 'Mon, 3 Feb 2025',
+      comment: 'Not enough funds for this Procurement',
+    },
+    {
+      name: 'Cameron Williamson',
+      status: 'pending',
+      date: 'Mon, 3 Feb 2025',
+    },
+    {
+      name: 'Cameron Williamson',
+      status: 'pending',
+      date: 'Mon, 3 Feb 2025',
+    },
+  ];
 
   return (
     <AnimatePresence>
@@ -80,16 +109,16 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 overflow-y-auto rounded-tl-xl rounded-bl-xl  right-0 h-full w-full px-5 max-w-[573px] bg-white shadow-xl z-50"
           >
             <div className="flex flex-col h-full">
@@ -114,11 +143,11 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                       </p>
                       <div
                         className={`border-2 rounded-md bg-white ${
-                          expense.status === "approved"
-                            ? "border-green-400"
-                            : expense.status === "pending"
-                            ? "border-[#FFD384]"
-                            : "border-red-600"
+                          expense.status === 'approved'
+                            ? 'border-green-400'
+                            : expense.status === 'pending'
+                            ? 'border-[#FFD384]'
+                            : 'border-red-600'
                         }`}
                       >
                         <span
@@ -136,7 +165,7 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                     </p>
                   </div>
                   <p className="text-sm">
-                    {expense?.items?.length} Products • Order Placed on{" "}
+                    {expense?.items?.length} Products • Order Placed on{' '}
                     {orderDate}
                   </p>
                 </div>
@@ -146,10 +175,28 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
 
                 {/* Items Table */}
                 <div className="py-4">
-                  <div className="pt-4 pb-2 border-b-2">
+                  <div className="pt-4 pb-2 border-b-2 flex items-center justify-between">
                     <p className="text-[#344054] font-semibold text-lg">
                       List Items
                     </p>
+                    <button
+                      className="flex"
+                      onClick={() => {
+                        setOpenComment(true);
+                        onClose();
+                      }}
+                    >
+                      <Image
+                        src="/assets/messages.png"
+                        alt="message icon"
+                        width={20}
+                        height={20}
+                      />
+
+                      <span className="text-sm text-[#344054] text-semibold gap-1">
+                        3 comments
+                      </span>
+                    </button>
                   </div>
 
                   <div className="w-full bg-gray-100 mt-6">
@@ -216,7 +263,24 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                   </div>
                 )}
               </div>
+              <div>
+                <ApprovalFlow steps={steps} />
+              </div>
 
+              <div>
+                <p className="font-semibold text-lg pb-2 mt-4 border-b border-[#E4E7EC]">
+                  Vendor
+                </p>
+                <Button variant="outline" className="mt-6">
+                  <Image
+                    src="/assets/personalcard.png"
+                    alt="personal card"
+                    width={20}
+                    height={20}
+                  />
+                  <span>Seun Segun</span>
+                </Button>
+              </div>
               {/* Footer */}
               <div className="p-4 flex justify-end">
                 <button

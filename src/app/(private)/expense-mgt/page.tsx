@@ -1,23 +1,24 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { useCallback, useState } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
 import ExpenseMgtTable, {
   ExpenseData,
-} from "@/src/components/data/ExpenseMgt/ExpenseMgtTable";
-import AddExpenseDrawer from "@/src/components/modals/AddExpenseDrawer";
-import ExpenseMgtDetailDrawer from "@/src/components/modals/ExpenseDetailsDrawer";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+} from '@/src/components/data/ExpenseMgt/ExpenseMgtTable';
+import AddExpenseDrawer from '@/src/components/modals/AddExpenseDrawer';
+import ExpenseMgtDetailDrawer from '@/src/components/modals/ExpenseDetailsDrawer';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import {
   useDeleteExpense,
   useGetAllExpenses,
   useGetSingleExpense,
-} from "@/src/hooks/expenses/useExpenses";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import ConfirmationModal from "@/src/components/common/ConfirmationModal";
-import toast from "react-hot-toast";
+} from '@/src/hooks/expenses/useExpenses';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import ConfirmationModal from '@/src/components/common/ConfirmationModal';
+import toast from 'react-hot-toast';
+import CommentModal from '@/src/components/modals/CommentModal';
 
 const ExpenseMgt = () => {
   const searchParams = useSearchParams();
@@ -28,10 +29,33 @@ const ExpenseMgt = () => {
   const [expenseToDelete, setExpenseToDelete] = useState<ExpenseData | null>(
     null
   );
-  const [expenseId, setExpenseId] = useState("");
+  const [expenseId, setExpenseId] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const currentPage = searchParams.get("page") || "1";
+  const [openModal, setOpenModal] = useState(false);
+  const [comments, setComments] = useState([
+    {
+      name: 'Cameron Williamson',
+      text: 'Not enough funds for this Procurement',
+      time: '24 min',
+    },
+    {
+      name: 'Hawkins Maru',
+      text: 'Not enough funds for this Procurement',
+      time: '24 min',
+    },
+  ]);
+
+  const handleSend = (message: string) => {
+    const newComment = {
+      name: 'You',
+      text: message,
+      time: 'Just now',
+    };
+    setComments((prev) => [...prev, newComment]);
+  };
+
+  const currentPage = searchParams.get('page') || '1';
 
   const {
     expenses,
@@ -65,7 +89,7 @@ const ExpenseMgt = () => {
   const handleDeleteExpense = () => {
     deleteExpense(expenseToDelete?.id, {
       onSuccess: () => {
-        toast.success("Expense deleted successfully");
+        toast.success('Expense deleted successfully');
         setIsDeleteModalOpen(false);
       },
       onError: (error) => {
@@ -113,6 +137,7 @@ const ExpenseMgt = () => {
         isOpen={isShow}
         onClose={() => setIsShow(false)}
         expense={expense}
+        setOpenComment={setOpenModal}
       />
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
@@ -124,6 +149,13 @@ const ExpenseMgt = () => {
         title="Delete Expense"
         actionLabel="Delete"
         isLoading={isDeleting}
+      />
+      <CommentModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        comments={comments}
+        onSend={handleSend}
+        setIsShow={setIsShow}
       />
     </>
   );
