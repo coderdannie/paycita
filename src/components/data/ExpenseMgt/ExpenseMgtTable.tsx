@@ -31,8 +31,8 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
   const headers = [
     { label: "Request ID" },
 
-    { label: "Quantity" },
     { label: "Total Cost" },
+    // { label: "Quantity" },
     { label: "Status" },
     { label: "" },
   ];

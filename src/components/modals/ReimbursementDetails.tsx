@@ -1,21 +1,27 @@
-'use client';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoClose, IoCloudDownloadOutline } from 'react-icons/io5';
-import { useState, useCallback, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoClose, IoCloudDownloadOutline } from "react-icons/io5";
+import { useState, useCallback, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useGetReimbursementById } from "@/src/hooks/re-imbursement/useReImbursement";
+import Image from "next/image";
 
 interface ReimbursementDetailsProps {
   isOpen: boolean;
   onClose: () => void;
-  setIsShow: (open: boolean) => void;
+  id: string;
+  onReject?: () => void;
 }
 
 const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
   isOpen,
   onClose,
-  setIsShow,
+  id,
+  onReject,
 }) => {
   const [isImageExpanded, setIsImageExpanded] = useState(false);
+
+  const { reimbursement } = useGetReimbursementById(id);
 
   const toggleImageExpansion = useCallback(() => {
     setIsImageExpanded((prev) => !prev);
@@ -26,28 +32,28 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
       <span
         className={`py-[5px] w-full text-sm text-center block px-[10px] rounded-md 
           ${
-            status === 'approved'
-              ? 'text-[#008000] bg-[#EDFCED]'
-              : status === 'pending'
-              ? 'text-[#5252FF] bg-[#EDEDFB]'
-              : 'text-red-600 bg-[#FFF5F5]'
+            status === "approved"
+              ? "text-[#008000] bg-[#EDFCED]"
+              : status === "pending"
+              ? "text-[#5252FF] bg-[#EDEDFB]"
+              : "text-red-600 bg-[#FFF5F5]"
           }`}
       >
         {status}
       </span>
     );
   }, []);
-  // Handle escape key and body overflow
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === "Escape") onClose();
     };
 
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'auto';
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
     };
   }, [isOpen, onClose]);
 
@@ -60,17 +66,17 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: 'tween', duration: 0.2 }}
+            transition={{ type: "tween", duration: 0.2 }}
             className="fixed inset-0 bg-black z-50"
             onClick={onClose}
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
@@ -90,31 +96,37 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                 <div className="grid  gap-y-4">
                   <div>
                     <p className="text-sm text-gray-500">Reimbursement</p>
-                    <p className="font-semibold">#12345</p>
+                    <p className="font-semibold">{reimbursement?.rb_number}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Date</p>
-                    <p className="font-semibold">24/04/25</p>
+                    <p className="font-semibold">
+                      {reimbursement?.date_of_purchase}
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center gap-2 gap-x-4">
                   <div>
                     <p className="text-sm text-gray-500">Employee Name</p>
-                    <p className="font-semibold">Bunmi Tanimonure</p>
+                    <p className="font-semibold">
+                      {reimbursement?.employee_name}{" "}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Status</p>
-                    <p className="ml-auto">{renderStatusBadge('pending')}</p>
+                    <p className="ml-auto">
+                      {renderStatusBadge(reimbursement?.status)}
+                    </p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Title</p>
-                  <p className="font-semibold">Ink</p>
+                  <p className="text-sm text-gray-500">Amount</p>
+                  <p className="font-semibold">{reimbursement?.amount}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Description</p>
                   <p className="font-semibold text-gray-700">
-                    Black color ink for departmental growing need
+                    {reimbursement?.description}
                   </p>
                 </div>
                 <div>
@@ -139,11 +151,14 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                       onClick={toggleImageExpansion}
                       className="cursor-pointer overflow-hidden rounded-b-md"
                     >
-                      <img
-                        src="https://via.placeholder.com/400x200"
+                      <Image
+                        width={400}
+                        height={200}
+                        src={reimbursement?.proof_of_payment}
+                        onClick={toggleImageExpansion}
                         alt="Receipt Preview"
                         className={`w-full h-auto object-cover transition-transform duration-300 ${
-                          isImageExpanded ? 'scale-100' : 'scale-105'
+                          isImageExpanded ? "scale-100" : "scale-105"
                         }`}
                       />
                     </div>
@@ -156,10 +171,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                   <Button type="submit">Apply</Button>
                   <Button
                     type="button"
-                    onClick={() => {
-                      setIsShow(true);
-                      onClose();
-                    }}
+                    onClick={onReject}
                     variant="outline"
                     className="flex-1 py-2 border border-[#EA3D3D] text-[#EA3D3D] font-semibold rounded-lg hover:bg-red-50 transition-colors"
                   >

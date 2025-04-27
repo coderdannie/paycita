@@ -3,39 +3,41 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/src/components/ui/dialog';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from "@/src/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   requestFundSchema,
   RequestFundSchemaType,
-} from '@/src/utils/validations';
-import { Button } from '@/src/components/ui/button';
-import { CustomFormField } from '../common/CustomInput';
-import { Form } from '../ui/form';
-import Calendar from 'react-calendar';
-import { useState } from 'react';
-import { FiCalendar } from 'react-icons/fi';
-import { formatDate } from '@/src/utils/helper';
-import { TileArgs } from 'react-calendar';
+} from "@/src/utils/validations";
+import { Button } from "@/src/components/ui/button";
+import { CustomFormField } from "../common/CustomInput";
+import { Form } from "../ui/form";
+import Calendar from "react-calendar";
+import { useState } from "react";
+import { FiCalendar } from "react-icons/fi";
+import { formatDate } from "@/src/utils/helper";
+import { Spinner } from "react-activity";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: RequestFundSchemaType) => void;
+  isLoading?: boolean;
 };
 
-type CalendarTileArgs = TileArgs & {
-  view: 'month' | 'year' | 'decade' | 'century';
-};
-
-export const RequestFundModal = ({ open, onClose, onSubmit }: Props) => {
+export const RequestFundModal = ({
+  open,
+  onClose,
+  onSubmit,
+  isLoading,
+}: Props) => {
   const form = useForm<RequestFundSchemaType>({
     resolver: zodResolver(requestFundSchema),
     defaultValues: {
-      amount: '',
-      reason: '',
-      date: '',
+      amount: "",
+      reason: "",
+      date: "",
     },
   });
   const [showCalendar, setShowCalendar] = useState(false);
@@ -45,16 +47,16 @@ export const RequestFundModal = ({ open, onClose, onSubmit }: Props) => {
 
   const handleDateChange = (value: Date) => {
     setSelectedDate(value);
-    setValue('date', value.toISOString());
+    setValue("date", value.toISOString());
     setShowCalendar(false);
   };
 
   //disabled class for past dates
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
-    if (view === 'month') {
+    if (view === "month") {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return date < today ? 'disabled-date' : null;
+      return date < today ? "disabled-date" : null;
     }
     return null;
   };
@@ -92,12 +94,12 @@ export const RequestFundModal = ({ open, onClose, onSubmit }: Props) => {
               <div className="w-full relative">
                 <div
                   className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
-                    selectedDate ? 'justify-between' : 'justify-end'
+                    selectedDate ? "justify-between" : "justify-end"
                   } items-center p-[10px]`}
                   onClick={() => setShowCalendar((prev) => !prev)}
                 >
                   <p className="text-xs text-[#292D32]">
-                    {selectedDate ? formatDate(selectedDate) : 'Pick date'}
+                    {selectedDate ? formatDate(selectedDate) : "Pick date"}
                   </p>
                   <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
                 </div>
@@ -121,8 +123,8 @@ export const RequestFundModal = ({ open, onClose, onSubmit }: Props) => {
               )}
             </div>
 
-            <Button type="submit" className="w-full">
-              Request Fund
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? <Spinner className="h-4 w-4" /> : "Request Fund"}
             </Button>
           </form>
         </Form>
