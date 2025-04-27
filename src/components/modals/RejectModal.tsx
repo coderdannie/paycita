@@ -1,47 +1,54 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoMdClose } from 'react-icons/io';
-import { Textarea } from '../ui/textarea';
+import { useEffect, useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoMdClose } from "react-icons/io";
+import { Textarea } from "../ui/textarea";
+import toast from "react-hot-toast";
 
 interface RejectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onReject: (comment: string) => void;
+  isLoading?: boolean;
 }
 
 const RejectModal: React.FC<RejectModalProps> = ({
   isOpen,
   onClose,
   onReject,
+  isLoading,
 }) => {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   const closeModal = useCallback(() => {
-    setComment('');
+    setComment("");
     onClose();
   }, [onClose]);
 
   const handleReject = () => {
+    if (!comment) {
+      toast.error("Please provide a comment before rejecting.");
+      return;
+    }
     onReject(comment);
-    closeModal();
+    // closeModal();
   };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         closeModal();
       }
     };
 
     if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, closeModal]);
 
@@ -74,14 +81,14 @@ const RejectModal: React.FC<RejectModalProps> = ({
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Add rejection comment (optional)
+                Add rejection comment
               </label>
               <Textarea
                 rows={4}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Provide the reason why you are rejecting this request"
-                className="w-full px-3 py-2 text-white border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
@@ -89,8 +96,9 @@ const RejectModal: React.FC<RejectModalProps> = ({
               <Button
                 className="w-full bg-primary text-white hover:bg-primary/90 h-10"
                 onClick={handleReject}
+                disabled={isLoading}
               >
-                Yes I’m sure
+                {isLoading ? "Rejecting..." : "Yes, I’m sure"}
               </Button>
               <Button
                 variant="outline"

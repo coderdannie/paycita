@@ -1,58 +1,54 @@
-'use client';
+"use client";
 
-import SearchInput from '../../ui/SearchInput';
-import { useState, useMemo, useCallback } from 'react';
-import { PiSlidersHorizontal } from 'react-icons/pi';
-import WalletFilterDrawer from '../../modals/WalletFilterDrawer';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
+import SearchInput from "../../ui/SearchInput";
+import { useState, useMemo, useCallback } from "react";
+import { PiSlidersHorizontal } from "react-icons/pi";
+import WalletFilterDrawer from "../../modals/WalletFilterDrawer";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { formatDate } from "@/src/utils/helper";
 
-const TableLayer = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const TableLayer = ({
+  walletHistory,
+}: {
+  walletHistory: Array<{
+    employee_name: string;
+    created_at: string;
+    transaction_type: string;
+    amount_type: string;
+    amount: string;
+    approval_status_id: string;
+    expenses_id: string;
+    expenses_number: string;
+    status: string;
+  }>;
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const headers = useMemo(
     () => [
-      { label: 'Employee Name' },
-      { label: 'Date' },
-      { label: 'Transaction Type' },
-      { label: 'Amount Type' },
-      { label: 'Amount' },
-      { label: 'Status' },
+      { label: "Employee Name" },
+      { label: "Date" },
+      { label: "Transaction Type" },
+      { label: "Amount Type" },
+      { label: "Amount" },
+      { label: "Status" },
     ],
     []
   );
-
-  const walletData = [
-    {
-      name: 'Bunmi Tanny',
-      date: '15/4/25',
-      transactionType: 'Reimbursement',
-      amountType: 'Debit',
-      amount: '5000',
-      status: 'Successful',
-    },
-    {
-      name: 'Bunmi Tanny',
-      date: '15/4/25',
-      transactionType: 'Reimbursement',
-      amountType: 'Debit',
-      amount: '5000',
-      status: 'Successful',
-    },
-  ];
 
   const renderStatusBadge = useCallback((status: string) => {
     return (
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
             ${
-              status === 'successful'
-                ? 'text-[#008000] bg-[#EDFCED]'
-                : status === 'pending'
-                ? 'text-[#5252FF] bg-[#EDEDFB]'
-                : 'text-red-600 bg-[#FFF5F5]'
+              status === "successful"
+                ? "text-[#008000] bg-[#EDFCED]"
+                : status === "pending"
+                ? "text-[#5252FF] bg-[#EDEDFB]"
+                : "text-red-600 bg-[#FFF5F5]"
             }`}
       >
         {status}
@@ -82,16 +78,16 @@ const TableLayer = () => {
           </button>
         </div>
         <CustomTable headers={headers}>
-          {walletData.length ? (
-            walletData.map((row, index) => (
+          {walletHistory?.length ? (
+            walletHistory.map((row, index) => (
               <TableRow key={index} className="text-[#1D2939] text-sm">
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.transactionType}</TableCell>
-                <TableCell>{row.amountType}</TableCell>
+                <TableCell>{row.employee_name || "-"}</TableCell>
+                <TableCell>{formatDate(row.created_at)}</TableCell>
+                <TableCell>{row.transaction_type}</TableCell>
+                <TableCell>{row.amount_type || "-"}</TableCell>
                 <TableCell>
-                  {' '}
-                  ₦{Number(row?.amount)?.toLocaleString() || '0.00'}
+                  {" "}
+                  ₦{Number(row?.amount)?.toLocaleString() || "0.00"}
                 </TableCell>
                 <TableCell>{renderStatusBadge(row.status)}</TableCell>
               </TableRow>

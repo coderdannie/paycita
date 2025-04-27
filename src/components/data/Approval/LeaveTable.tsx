@@ -1,29 +1,45 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
-import { Button } from '@/components/ui/button';
-import RejectModal from '../../modals/RejectModal';
-import StatusModal from '../../modals/StatusModal';
+import { useCallback, useMemo, useState } from "react";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { Button } from "@/components/ui/button";
+import RejectModal from "../../modals/RejectModal";
+import StatusModal from "../../modals/StatusModal";
 
-const LeaveTable = () => {
+const LeaveTable = ({
+  approvals,
+}: {
+  approvals: Array<{
+    employee_name: string;
+    type: string;
+    start_date: string;
+    end_date: string;
+    applied_date: string;
+    action_time: string;
+    amount: string;
+    approval_status_id: string;
+    expenses_id: string;
+    expenses_number: string;
+    status: string;
+  }>;
+}) => {
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [canChangeStatus, setCanChangeStatus] = useState(true); // For simulating the 30min logic
 
   const headers = useMemo(
     () => [
-      { label: 'Employee' },
-      { label: 'Leave Type' },
-      { label: 'Start Date' },
-      { label: 'End Date' },
-      { label: 'Status' },
-      { label: 'Applied Date' },
-      { label: 'Action Time' },
-      { label: 'Action' },
+      { label: "Employee" },
+      { label: "Leave Type" },
+      { label: "Start Date" },
+      { label: "End Date" },
+      { label: "Status" },
+      { label: "Applied Date" },
+      { label: "Action Time" },
+      { label: "Action" },
     ],
     []
   );
@@ -33,11 +49,11 @@ const LeaveTable = () => {
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -49,27 +65,27 @@ const LeaveTable = () => {
     setSelectedStatus(status);
 
     // Fake check for 30-minute window
-    const isWithin30Min = actionTime.includes('min'); // Replace with real timestamp logic
+    const isWithin30Min = actionTime.includes("min"); // Replace with real timestamp logic
     setCanChangeStatus(isWithin30Min);
 
     setIsStatusModalOpen(true);
   };
 
   const handleStatusChange = (newStatus: string) => {
-    console.log('Changed to:', newStatus);
+    console.log("Changed to:", newStatus);
     setIsStatusModalOpen(false);
   };
 
   const renderActionButtons = useCallback(
     (status: string, actionTime: string) => {
       switch (status.toLowerCase()) {
-        case 'approved':
+        case "approved":
           return (
             <Button onClick={() => handleOpenStatusModal(status, actionTime)}>
               Change status
             </Button>
           );
-        case 'pending':
+        case "pending":
           return (
             <div className="flex gap-2">
               <Button>Approve</Button>
@@ -81,7 +97,7 @@ const LeaveTable = () => {
               </button>
             </div>
           );
-        case 'rejected':
+        case "rejected":
           return (
             <button
               className="bg-gray-200 text-gray-500 px-4 py-1 rounded-md cursor-not-allowed"
@@ -97,55 +113,25 @@ const LeaveTable = () => {
     []
   );
 
-  const leaveData = [
-    {
-      name: 'Bunmi Tanny',
-      type: 'Sick leave',
-      startDate: '15/4/25',
-      endDate: '20/4/26',
-      status: 'approved',
-      appliedDate: '20/4/26',
-      actionTime: '10 min ago', // Within 30 minutes
-    },
-    {
-      name: 'Bunmi Tanny',
-      type: 'Sick leave',
-      startDate: '15/4/25',
-      endDate: '20/4/26',
-      status: 'approved',
-      appliedDate: '20/4/26',
-      actionTime: '2 hrs ago', // Not within 30 minutes
-    },
-    {
-      name: 'Bunmi Tanny',
-      type: 'Sick leave',
-      startDate: '15/4/25',
-      endDate: '20/4/26',
-      status: 'pending',
-      appliedDate: '20/4/26',
-      actionTime: '8 hrs ago',
-    },
-  ];
-
   const handleReject = (comment: string) => {
-    console.log('Request rejected with comment:', comment);
+    console.log("Request rejected with comment:", comment);
   };
 
   return (
     <div className="mt-6">
       <CustomTable headers={headers}>
-        {leaveData.length ? (
-          leaveData.map((row, index) => (
+        {approvals?.length ? (
+          approvals.map((row, index) => (
             <TableRow key={index} className="text-[#1D2939] text-sm">
-              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.employee_name}</TableCell>
               <TableCell>{row.type}</TableCell>
-              <TableCell>{row.startDate}</TableCell>
-              <TableCell>{row.endDate}</TableCell>
+              <TableCell>{row.start_date}</TableCell>
+              <TableCell>{row.end_date}</TableCell>
               <TableCell>{renderStatusBadge(row.status)}</TableCell>
-              <TableCell>{row.appliedDate}</TableCell>
-              <TableCell>{row.actionTime}</TableCell>
+              <TableCell>{row.applied_date}</TableCell>
+              <TableCell>{row.action_time}</TableCell>
               <TableCell>
-                {renderActionButtons(row.status, row.actionTime)}
+                {renderActionButtons(row.status, row.action_time)}
               </TableCell>
             </TableRow>
           ))

@@ -1,61 +1,46 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { useCallback, useState } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
 import ExpenseMgtTable, {
   ExpenseData,
-} from '@/src/components/data/ExpenseMgt/ExpenseMgtTable';
-import AddExpenseDrawer from '@/src/components/modals/AddExpenseDrawer';
-import ExpenseMgtDetailDrawer from '@/src/components/modals/ExpenseDetailsDrawer';
-import { useSearchParams } from 'next/navigation';
-import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+} from "@/src/components/data/ExpenseMgt/ExpenseMgtTable";
+import AddExpenseDrawer from "@/src/components/modals/AddExpenseDrawer";
+import ExpenseMgtDetailDrawer from "@/src/components/modals/ExpenseDetailsDrawer";
+import { useSearchParams } from "next/navigation";
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import {
   useDeleteExpense,
   useGetAllExpenses,
   useGetSingleExpense,
-} from '@/src/hooks/expenses/useExpenses';
-import CustomPagination from '@/src/components/common/pagination/Pagination';
-import LoadingOverlay from '@/src/components/common/LoadingOverlay';
-import ConfirmationModal from '@/src/components/common/ConfirmationModal';
-import toast from 'react-hot-toast';
-import CommentModal from '@/src/components/modals/CommentModal';
+} from "@/src/hooks/expenses/useExpenses";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
+import ConfirmationModal from "@/src/components/common/ConfirmationModal";
+import toast from "react-hot-toast";
+import CommentModal from "@/src/components/modals/CommentModal";
+import { Comments } from "@/src/types/procurement";
+import { useAddApprovalComment } from "@/src/hooks/approvals/useApprovals";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 const ExpenseMgt = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
+  const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<ExpenseData | null>(
     null
   );
-  const [expenseId, setExpenseId] = useState('');
+  const [expenseId, setExpenseId] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
-  const [comments, setComments] = useState([
-    {
-      name: 'Cameron Williamson',
-      text: 'Not enough funds for this Procurement',
-      time: '24 min',
-    },
-    {
-      name: 'Hawkins Maru',
-      text: 'Not enough funds for this Procurement',
-      time: '24 min',
-    },
-  ]);
 
-  const handleSend = (message: string) => {
-    const newComment = {
-      name: 'You',
-      text: message,
-      time: 'Just now',
-    };
-    setComments((prev) => [...prev, newComment]);
-  };
-
-  const currentPage = searchParams.get('page') || '1';
+  const currentPage = searchParams.get("page") || "1";
 
   const {
     expenses,
@@ -79,6 +64,45 @@ const ExpenseMgt = () => {
 
   const { expense } = useGetSingleExpense(expenseId);
 
+  const currentComments: Comments[] = expense?.comment_thread?.comments || [];
+  const currentThreadId = expense?.comment_thread?.thread_id;
+
+  const { mutate: mutateAddComment, isPending: isAddingComment } =
+    useAddApprovalComment("add-expense-comment");
+
+  const handleSend = (message: string) => {
+    if (!currentThreadId) {
+      toast.error("Cannot add comment: Thread ID is missing.");
+      return;
+    }
+    if (!expenseId) {
+      toast.error("Cannot add comment: Expense ID is missing.");
+      return;
+    }
+
+    const payload = {
+      thread_id: currentThreadId,
+      comment: message,
+    };
+
+    mutateAddComment(payload, {
+      onSuccess: () => {
+        toast.success("Comment added successfully");
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, expenseId],
+        });
+        setOpenModal(false);
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError)
+          toast.error(
+            error?.response?.data?.message || "Failed to add comment"
+          );
+        else toast.error("An unexpected error occurred while adding comment.");
+      },
+    });
+  };
+
   const { mutate: deleteExpense, isPending: isDeleting } = useDeleteExpense();
 
   const handleDelete = useCallback((expense: ExpenseData) => {
@@ -89,7 +113,7 @@ const ExpenseMgt = () => {
   const handleDeleteExpense = () => {
     deleteExpense(expenseToDelete?.id, {
       onSuccess: () => {
-        toast.success('Expense deleted successfully');
+        toast.success("Expense deleted successfully");
         setIsDeleteModalOpen(false);
       },
       onError: (error) => {
@@ -153,9 +177,9 @@ const ExpenseMgt = () => {
       <CommentModal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
-        comments={comments}
+        comments={currentComments}
         onSend={handleSend}
-        setIsShow={setIsShow}
+        isLoading={isAddingComment}
       />
     </>
   );
