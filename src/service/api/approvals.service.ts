@@ -19,7 +19,7 @@ const updateApproval = (
   id: string,
   data: {
     status: string;
-    reason: string;
+    reason?: string;
   }
 ) => {
   return api.post(`/hr/${route}/${id}`, data);

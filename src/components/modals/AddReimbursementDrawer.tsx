@@ -1,20 +1,24 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { IoClose } from 'react-icons/io5';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { IoClose } from "react-icons/io5";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   reimbursementFormSchema,
   reimbursementFormSchemaType,
-} from '@/src/utils/validations';
-import { CustomFormField } from '@/src/components/common/CustomInput';
-import { LuHardDriveUpload } from 'react-icons/lu';
-import { Form } from '@/src/components/ui/form';
-import Calendar from 'react-calendar';
-import { formatDate } from '@/src/utils/helper';
-import { Button } from '../ui/button';
+} from "@/src/utils/validations";
+import { CustomFormField } from "@/src/components/common/CustomInput";
+import { LuHardDriveUpload } from "react-icons/lu";
+import { Form } from "@/src/components/ui/form";
+import Calendar from "react-calendar";
+import { formatDate } from "@/src/utils/helper";
+import { Button } from "../ui/button";
+import { useCreateReimbursement } from "@/src/hooks/re-imbursement/useReImbursement";
+import { Spinner } from "react-activity";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -26,15 +30,15 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
   const form = useForm<reimbursementFormSchemaType>({
     resolver: zodResolver(reimbursementFormSchema),
     defaultValues: {
-      amount: '',
-      date_of_purchase: '',
-      item_description: '',
-      reason_for_payment: '',
+      amount: "",
+      date_of_purchase: "",
+      description: "",
+      reason: "",
       proof_of_payment: null,
     },
   });
 
-  const { control, handleSubmit, formState, setValue, watch } = form;
+  const { control, handleSubmit, formState, setValue, watch, setError } = form;
   const { errors } = formState;
   const [fileUploaded, setFileUploaded] = useState(false);
 
@@ -46,33 +50,76 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
       const fileList = new DataTransfer(); // Create a new DataTransfer object
       fileList.items.add(file); // Add the file to the DataTransfer object
 
-      setValue('proof_of_payment', fileList.files); // Update form value with the FileList
+      setValue("proof_of_payment", fileList.files); // Update form value with the FileList
+      setError("proof_of_payment", {
+        type: "manual",
+        message: "",
+      });
+    } else {
+      setError("proof_of_payment", {
+        type: "manual",
+        message: "File is required.",
+      });
     }
   };
 
   // Handle escape key and body overflow
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === "Escape") onClose();
     };
 
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'auto';
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
     };
   }, [isOpen, onClose]);
 
+  const {
+    mutate: mutateCreateReimbursement,
+    isPending: isPendingCreateReimbursement,
+  } = useCreateReimbursement();
+
   const onSubmit = (data: reimbursementFormSchemaType) => {
     console.log(data);
-    onClose();
+
+    const formData = new FormData();
+    formData.append("amount", data.amount);
+    formData.append("date_of_purchase", data.date_of_purchase);
+    formData.append("description", data.description);
+    formData.append("reason", data.reason);
+    if (data.proof_of_payment) {
+      formData.append("proof_of_payment", data.proof_of_payment[0]);
+    }
+    mutateCreateReimbursement(formData, {
+      onSuccess: (res) => {
+        toast.success(res.data.message || "Reimbursement Created Successfully");
+        onClose();
+        // reset form values
+        form.reset();
+        setFileUploaded(false); // Reset file upload state
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          const errorMessage =
+            error.response?.data?.message || "Failed to create reimbursement";
+          toast.error(errorMessage);
+        }
+      },
+
+      onSettled: () => {
+        form.reset();
+        setFileUploaded(false);
+      },
+    });
   };
 
-  const date_of_purchase = watch('date_of_purchase');
+  const date_of_purchase = watch("date_of_purchase");
   const handleDateChange = (value: Date | null) => {
     if (value instanceof Date) {
-      setValue('date_of_purchase', formatDate(value), {
+      setValue("date_of_purchase", formatDate(value), {
         shouldValidate: true,
       });
       setShowDate(false);
@@ -88,17 +135,17 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: 'tween', duration: 0.2 }}
+            transition={{ type: "tween", duration: 0.2 }}
             className="fixed inset-0 bg-black z-50"
             onClick={onClose}
           />
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white shadow-xl z-50 rounded-lg flex flex-col pb-5"
           >
             {/* Header */}
@@ -153,18 +200,18 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
                   <CustomFormField
                     label="Item Description"
-                    name="item_description"
+                    name="description"
                     control={control}
                     placeholder="Enter item description"
-                    error={errors.item_description?.message}
+                    error={errors.description?.message}
                   />
 
                   <CustomFormField
                     label="Reason for Payment"
-                    name="reason_for_payment"
+                    name="reason"
                     control={control}
                     placeholder="Enter reason"
-                    error={errors.reason_for_payment?.message}
+                    error={errors.reason?.message}
                   />
 
                   {/* File Upload Section */}
@@ -176,14 +223,14 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                       Upload Proof of Payment
                       <div
                         className={`flex text-xs ${
-                          fileUploaded && 'justify-between'
+                          fileUploaded && "justify-between"
                         }items-center border px-3 py-4 rounded-md border-[#E4E7EC] border-dashed mt-2 gap-2`}
                       >
                         <LuHardDriveUpload size={20} />
                         <span className="text-[#3A3A3A]">
                           {fileUploaded
-                            ? 'Uploaded'
-                            : 'Attach the purchase receipt of the reimbursement'}
+                            ? "Uploaded"
+                            : "Attach the purchase receipt of the reimbursement"}
                         </span>
                         <input
                           id="file"
@@ -200,7 +247,7 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         <p className="text-red-500 text-sm">
                           {errors.proof_of_payment?.message}
                         </p>
-                      )}{' '}
+                      )}{" "}
                     </label>
                   </div>
 
@@ -213,8 +260,12 @@ const AddReimbursementDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={!form.formState.isValid}>
-                      Submit
+                    <Button
+                      type="submit"
+                      disabled={isPendingCreateReimbursement}
+                      className="h-full font-semibold"
+                    >
+                      {isPendingCreateReimbursement ? <Spinner /> : "Submit"}
                     </Button>
                   </div>
                 </form>

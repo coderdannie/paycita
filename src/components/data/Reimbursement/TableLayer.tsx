@@ -19,7 +19,7 @@ const TableLayer = ({
       { label: "RN" },
       { label: "Amount" },
       { label: "Description" },
-      { label: "Employee Name" },
+      // { label: "Employee Name" },
       { label: "Date" },
       { label: "Status" },
       { label: "Action" },
@@ -53,7 +53,7 @@ const TableLayer = ({
               <TableCell className="text-primary">{row.rb_number}</TableCell>
               <TableCell>₦{row.amount}</TableCell>
               <TableCell>{row.description || "-"}</TableCell>
-              <TableCell>{row.employee_name || "-"}</TableCell>
+              {/* <TableCell>{row.employee_name || "-"}</TableCell> */}
               <TableCell>{row.date_of_purchase}</TableCell>
               <TableCell>{renderStatusBadge(row.status)}</TableCell>
               <TableCell>

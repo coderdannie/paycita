@@ -154,16 +154,19 @@ export const sidebarData = [
     sub: [
       {
         id: 1,
+        title: "Leave",
         name: "Leave",
         path: "/approval/leave",
       },
       {
         id: 2,
+        title: "Expense",
         name: "Expense",
         path: "/approval/expense",
       },
       {
         id: 3,
+        title: "Reimbursement",
         name: "Reimbursement Management",
         path: "/approval/reimbursement-mgt",
       },
@@ -309,7 +312,7 @@ export const walletCounts = (item: {
   wallet_balance: string;
 }): { title: string; amount: string }[] => [
   {
-    title: "Total Budget",
+    title: "Total Credit",
     amount: item?.wallet_credit || "0.00",
   },
   {

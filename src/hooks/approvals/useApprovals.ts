@@ -49,7 +49,6 @@ export const useGetAllApprovals = (
   };
 };
 
- 
 export const useAddApprovalComment = (route: string) => {
   const queryClient = useQueryClient();
 
@@ -81,37 +80,33 @@ export const useAddApprovalComment = (route: string) => {
   });
 };
 
- 
 export const useUpdateApproval = (route: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (variables: {
       id: string;
-      data: { status: string; reason: string };
+      data: { status: string; reason?: string };
     }) => {
       const { id, data } = variables;
       const response = await approvalService.updateApproval(route, id, data);
       return response;
     },
- 
+
     onMutate: async (updatedApprovalData) => {
       const { id } = updatedApprovalData;
-      const listQueryKey = [QUERY_KEYS.GET_ALL_APPROVALS, route]; // Adjust filters if needed
+      const listQueryKey = [QUERY_KEYS.GET_ALL_APPROVALS, route];
       const detailQueryKey = [QUERY_KEYS.GET_ALL_APPROVALS, id];
 
-      // Cancel ongoing refetches
       await queryClient.cancelQueries({ queryKey: listQueryKey });
       await queryClient.cancelQueries({ queryKey: detailQueryKey });
 
-      // Snapshot previous values
       const previousApprovalList = queryClient.getQueryData(listQueryKey);
       const previousApprovalDetail = queryClient.getQueryData(detailQueryKey);
 
-      // Optimistically update detail view
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueryData(detailQueryKey, (old: any) => {
-        if (!old) return old; 
+        if (!old) return old;
         return {
           ...old,
           data: { ...old.data, status: updatedApprovalData.data.status },
@@ -166,7 +161,7 @@ export const useUpdateApproval = (route: string) => {
       }
       throw err;
     },
-    onSettled: (_data, _error, _variables, context) => { 
+    onSettled: (_data, _error, _variables, context) => {
       queryClient.invalidateQueries({
         queryKey: context?.listQueryKey,
         exact: false,
