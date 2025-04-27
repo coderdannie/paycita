@@ -13,7 +13,7 @@ const TableLayer = ({
   walletHistory,
 }: {
   walletHistory: Array<{
-    employee_name: string;
+    description: string;
     created_at: string;
     transaction_type: string;
     amount_type: string;
@@ -29,7 +29,7 @@ const TableLayer = ({
 
   const headers = useMemo(
     () => [
-      { label: "Employee Name" },
+      { label: "Description" },
       { label: "Date" },
       { label: "Transaction Type" },
       { label: "Amount Type" },
@@ -44,9 +44,9 @@ const TableLayer = ({
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
             ${
-              status === "successful"
+              status.toLowerCase() === "success"
                 ? "text-[#008000] bg-[#EDFCED]"
-                : status === "pending"
+                : status.toLowerCase() === "pending"
                 ? "text-[#5252FF] bg-[#EDEDFB]"
                 : "text-red-600 bg-[#FFF5F5]"
             }`}
@@ -81,7 +81,7 @@ const TableLayer = ({
           {walletHistory?.length ? (
             walletHistory.map((row, index) => (
               <TableRow key={index} className="text-[#1D2939] text-sm">
-                <TableCell>{row.employee_name || "-"}</TableCell>
+                <TableCell>{row.description || "-"}</TableCell>
                 <TableCell>{formatDate(row.created_at)}</TableCell>
                 <TableCell>{row.transaction_type}</TableCell>
                 <TableCell>{row.amount_type || "-"}</TableCell>

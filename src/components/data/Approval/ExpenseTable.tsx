@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 import ExpenseDrawer from "../../modals/ExpenseDrawer";
 import { useGetSingleExpense } from "@/src/hooks/expenses/useExpenses";
 import RejectModal from "../../modals/RejectModal";
-import { useUpdateApproval } from "@/src/hooks/approvals/useApprovals";
+import { useAddApprovalComment, useUpdateApproval } from "@/src/hooks/approvals/useApprovals";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import CommentModal from "../../modals/CommentModal";
+import { Comments } from "@/src/types/procurement";
 
 const ExpenseTable = ({
   approvals,
@@ -23,6 +27,7 @@ const ExpenseTable = ({
     status: string;
   }>;
 }) => {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const headers = useMemo(
     () => [
@@ -53,12 +58,14 @@ const ExpenseTable = ({
   }, []);
 
   const [expenseId, setExpenseId] = useState("");
+  const [approvalId, setApprovalId] = useState("");
 
   const { expense } = useGetSingleExpense(expenseId);
 
   const handleViewDetails = useCallback(
-    (id: string) => {
-      setExpenseId(id);
+    (item: { expenses_id: string; approval_status_id: string }) => {
+      setExpenseId(item.expenses_id);
+      setApprovalId(item.approval_status_id);
       setIsOpen(true);
     },
     [setExpenseId, setIsOpen]
@@ -70,7 +77,7 @@ const ExpenseTable = ({
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const handleReject = (comment: string) => {
     const payload = {
-      id: expenseId,
+      id: approvalId,
       data: {
         status: "rejected",
         reason: comment,
@@ -80,12 +87,76 @@ const ExpenseTable = ({
       onSuccess: () => {
         toast.success("Status updated successfully");
         setIsRejectOpen(false);
-        // queryClient.invalidateQueries([QUERY_KEYS.GET_ALL_APPROVALS]);
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
+        });
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
           toast.error(error?.response?.data?.message || "Something went wrong");
         }
+      },
+    });
+  };
+
+  const handleApprove = () => {
+    const payload = {
+      id: approvalId,
+      data: {
+        status: "approved",
+      },
+    };
+    mutateUpdateApprovalStatus(payload, {
+      onSuccess: () => {
+        toast.success("Status updated successfully");
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
+        });
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+      },
+    });
+  };
+  const [openModal, setOpenModal] = useState(false);
+
+  const currentComments: Comments[] = expense?.comment_thread?.comments || [];
+  const currentThreadId = expense?.comment_thread?.thread_id;
+
+  const { mutate: mutateAddComment, isPending: isAddingComment } =
+    useAddApprovalComment("add-expense-comment");
+
+  const handleSend = (message: string) => {
+    if (!currentThreadId) {
+      toast.error("Cannot add comment: Thread ID is missing.");
+      return;
+    }
+    if (!expenseId) {
+      toast.error("Cannot add comment: Expense ID is missing.");
+      return;
+    }
+
+    const payload = {
+      thread_id: currentThreadId,
+      comment: message,
+    };
+
+    mutateAddComment(payload, {
+      onSuccess: () => {
+        toast.success("Comment added successfully");
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, expenseId],
+        });
+        setOpenModal(false);
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError)
+          toast.error(
+            error?.response?.data?.message || "Failed to add comment"
+          );
+        else toast.error("An unexpected error occurred while adding comment.");
       },
     });
   };
@@ -103,7 +174,7 @@ const ExpenseTable = ({
                 <Button
                   variant="outline"
                   className="border-primary"
-                  onClick={() => handleViewDetails(row.expenses_id)}
+                  onClick={() => handleViewDetails(row)}
                 >
                   View Details
                 </Button>
@@ -119,6 +190,9 @@ const ExpenseTable = ({
         onOpenChange={() => setIsOpen(false)}
         setIsShow={setIsRejectOpen}
         expense={expense}
+        handleApprove={handleApprove}
+        isLoading={isUpdatePending}
+        setOpenComment={setOpenModal}
       />
 
       <RejectModal
@@ -126,6 +200,14 @@ const ExpenseTable = ({
         onClose={() => setIsRejectOpen(false)}
         onReject={handleReject}
         isLoading={isUpdatePending}
+      />
+
+      <CommentModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        comments={currentComments}
+        onSend={handleSend}
+        isLoading={isAddingComment}
       />
     </div>
   );

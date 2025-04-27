@@ -5,12 +5,15 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGetReimbursementById } from "@/src/hooks/re-imbursement/useReImbursement";
 import Image from "next/image";
+import { Spinner } from "react-activity";
 
 interface ReimbursementDetailsProps {
   isOpen: boolean;
   onClose: () => void;
   id: string;
   onReject?: () => void;
+  handleApprove?: () => void;
+  isLoading?: boolean;
 }
 
 const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
@@ -18,6 +21,8 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
   onClose,
   id,
   onReject,
+  handleApprove,
+  isLoading,
 }) => {
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
@@ -166,19 +171,23 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-[#E4E7EC] p-4 bg-white">
-                <div className="grid grid-cols-2 gap-4">
-                  <Button type="submit">Apply</Button>
-                  <Button
-                    type="button"
-                    onClick={onReject}
-                    variant="outline"
-                    className="flex-1 py-2 border border-[#EA3D3D] text-[#EA3D3D] font-semibold rounded-lg hover:bg-red-50 transition-colors"
-                  >
-                    Reject
-                  </Button>
+              {handleApprove && onReject && (
+                <div className="border-t border-[#E4E7EC] p-4 bg-white">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button onClick={handleApprove} disabled={isLoading}>
+                      {isLoading ? <Spinner /> : "Approve"}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={onReject}
+                      variant="outline"
+                      className="flex-1 py-2 border border-[#EA3D3D] text-[#EA3D3D] font-semibold rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      Reject
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </>

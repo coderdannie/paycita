@@ -10,6 +10,8 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useUpdateApproval } from "@/src/hooks/approvals/useApprovals";
 import RejectModal from "../../modals/RejectModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 
 const ReimbursementTable = ({
   approvals,
@@ -25,6 +27,7 @@ const ReimbursementTable = ({
     status: string;
   }>;
 }) => {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState("");
   const headers = useMemo(
     () => [
@@ -56,14 +59,16 @@ const ReimbursementTable = ({
     );
   }, []);
 
-  const [reimbursementId, setReimbursementId] = useState("");
   const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
     useUpdateApproval("update-reimbursement-requests");
 
   const [isRejectOpen, setIsRejectOpen] = useState(false);
+
+  const [approvalId, setApprovalId] = useState("");
+
   const handleReject = (comment: string) => {
     const payload = {
-      id: reimbursementId,
+      id: approvalId,
       data: {
         status: "rejected",
         reason: comment,
@@ -72,7 +77,40 @@ const ReimbursementTable = ({
     mutateUpdateApprovalStatus(payload, {
       onSuccess: () => {
         toast.success("Status updated successfully");
+        queryClient.invalidateQueries({
+          queryKey: [
+            QUERY_KEYS.GET_ALL_APPROVALS,
+            "pending-reimbursement-requests",
+          ],
+        });
         setIsRejectOpen(false);
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+      },
+    });
+  };
+
+  const handleApprove = () => {
+    const payload = {
+      id: approvalId,
+      data: {
+        status: "approved",
+      },
+    };
+    mutateUpdateApprovalStatus(payload, {
+      onSuccess: () => {
+        toast.success("Status updated successfully");
+        queryClient.invalidateQueries({
+          queryKey: [
+            QUERY_KEYS.GET_ALL_APPROVALS,
+            "update-reimbursement-requests",
+          ],
+        });
+        setIsOpen("");
+        setApprovalId("");
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
@@ -100,7 +138,7 @@ const ReimbursementTable = ({
                   className="border-primary"
                   onClick={() => {
                     setIsOpen(row.re_imbursement_id);
-                    setReimbursementId(row.re_imbursement_id);
+                    setApprovalId(row.approval_status_id);
                   }}
                 >
                   View Details
@@ -117,6 +155,8 @@ const ReimbursementTable = ({
         onClose={() => setIsOpen("")}
         id={isOpen}
         onReject={() => setIsRejectOpen(true)}
+        handleApprove={handleApprove}
+        isLoading={isUpdatePending}
       />
 
       <RejectModal

@@ -12,7 +12,7 @@ import {
 import { AxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { GoArrowUpRight } from "react-icons/go";
+
 
 const WalletPage = () => {
   const { wallet, isLoading } = useGetWalletHistory();
@@ -65,16 +65,16 @@ const WalletPage = () => {
                   <p className="text-[#11142D] text-2xl font-bold">
                     ₦{Number(data?.amount)?.toLocaleString() || "0.00"}
                   </p>
-                  <div>
+                  {/* <div>
                     <div className="flex items-center border border-[#3440544D] rounded-lg p-[5px] gap-1">
                       <GoArrowUpRight color="green" />{" "}
                       <span className="text-sm">3.46%</span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
-                <p className="text-sm text-[#808191] pt-2">
+                {/* <p className="text-sm text-[#808191] pt-2">
                   Vs last month: ₦200,000
-                </p>
+                </p> */}
               </div>
             ))}
           </>
