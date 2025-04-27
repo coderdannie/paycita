@@ -51,12 +51,15 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               <span className="ml-2 text-sm text-gray-600">
                 {notification.user.name}
               </span>
-              <div className="ml-auto flex items-center text-xs text-gray-500">
+              <div className="ml-auto flex mb-2 items-center text-xs text-gray-500">
                 <span>{notification.timestamp}</span>
               </div>
             </div>
             {notification.id === "3" && (
-              <Link href='#' className="absolute bottom-[.2rem] right-3 border rounded p-[.05rem] ">
+              <Link
+                href="#"
+                className="absolute bottom-[.2rem] right-3 border rounded p-[.05rem] "
+              >
                 <ArrowTopRightOnSquareIcon className="w-3 h-3" />
               </Link>
             )}

@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { mockNotifications } from "./mockData";
+
 import NotificationHeader from "./notificationHeader";
 import NotificationList from "./notificationList";
 import { Notification } from "@/src/types/notifications";
-
 
 interface NotificationsPanelProps {
   isOpen: boolean;
@@ -13,7 +13,6 @@ interface NotificationsPanelProps {
 }
 
 const lockScroll = () => {
-
   const scrollY = window.scrollY;
   document.body.style.position = "fixed";
   document.body.style.top = `-${scrollY}px`;
@@ -57,7 +56,6 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
     setNotifications([]);
   };
 
- 
   if (isOpen) {
     lockScroll();
   } else {
@@ -73,7 +71,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
         aria-hidden="true"
       />
       <div
-        className="fixed p-5 right-0 top-0 h-full w-full max-w-md bg-gray-50 shadow-xl z-50 flex flex-col rounded-xl mr-6 overflow-y-auto"
+        className="fixed p-5 right-0 top-0 h-full w-full max-w-md bg-gray-50 shadow-xl z-50 flex flex-col rounded-xl lg:mr-6 overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="notifications-title"
