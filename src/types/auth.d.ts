@@ -4,8 +4,8 @@ type Feature = {
 } | null
 
 interface LoggedInUserProps {
-  approvals: any[];
-  line_manager: any;
+  approvals: string[];
+  line_manager: boolean;
   birthday: boolean;
   company_logo: string;
   currency: string;
