@@ -173,7 +173,8 @@ export const useDeleteProcurement = () => {
       // Enhanced error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || `Failed to delete event ${procurementId}`;
+          err.response?.data?.message ||
+          `Failed to delete event ${procurementId}`;
         throw new Error(errorMessage);
       }
       throw err;
@@ -258,4 +259,43 @@ export const useGetSingleProcurement = (id: string) => {
     pagination: data?.data?.pagination || {},
     rawData: data,
   };
+};
+
+export const useResolveProcurementCommentThread = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<unknown, AxiosError<{ message?: string }> | Error, string>(
+    {
+      mutationFn: async (threadId: string): Promise<unknown> => {
+        const response =
+          await procurementService.resolveProcurementCommentThread(threadId);
+        return response;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT],
+        });
+      },
+      onError: (
+        error: AxiosError<{ message?: string }> | Error,
+        threadId: string
+      ) => {
+        console.error(`Error resolving comment thread ${threadId}:`, error);
+        if (error instanceof AxiosError && error.response?.data?.message) {
+          throw new Error(error.response.data.message);
+        } else if (error instanceof Error) {
+          throw new Error(error.message || "Failed to resolve comment thread");
+        }
+        throw new Error(
+          "An unknown error occurred while resolving the comment thread."
+        );
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT],
+          exact: false,
+        });
+      },
+    }
+  );
 };

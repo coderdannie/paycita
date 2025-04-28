@@ -64,6 +64,9 @@ const Sidebar = () => {
     if (item.title === "Approval" && !isLineManager) {
       return false;
     }
+    if (item.title === "Wallet" && !isLineManager) {
+      return false;
+    }
 
     return true;
   });
