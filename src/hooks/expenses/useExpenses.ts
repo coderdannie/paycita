@@ -4,9 +4,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
- 
+
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { AxiosError } from "axios"; 
+import { AxiosError } from "axios";
 import expenseService from "@/src/service/api/expenses.service";
 import { Expenses } from "@/src/types/procurement";
 
@@ -258,4 +258,43 @@ export const useGetSingleExpense = (id: string) => {
     pagination: data?.data?.pagination || {},
     rawData: data,
   };
+};
+
+export const useResolveExpensesCommentThread = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<unknown, AxiosError<{ message?: string }> | Error, string>(
+    {
+      mutationFn: async (threadId: string): Promise<unknown> => {
+        const response =
+          await expenseService.resolveExpensesCommentThread(threadId);
+        return response;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE],
+        });
+      },
+      onError: (
+        error: AxiosError<{ message?: string }> | Error,
+        threadId: string
+      ) => {
+        console.error(`Error resolving comment thread ${threadId}:`, error);
+        if (error instanceof AxiosError && error.response?.data?.message) {
+          throw new Error(error.response.data.message);
+        } else if (error instanceof Error) {
+          throw new Error(error.message || "Failed to resolve comment thread");
+        }
+        throw new Error(
+          "An unknown error occurred while resolving the comment thread."
+        );
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE],
+          exact: false,
+        });
+      },
+    }
+  );
 };

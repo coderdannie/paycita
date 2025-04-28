@@ -26,8 +26,6 @@ const Loan = () => {
     page: currentPage.toString(),
   });
 
-  console.log(loans);
-
   const goToPage = useCallback(
     (page: number) => {
       updateSearchParams(

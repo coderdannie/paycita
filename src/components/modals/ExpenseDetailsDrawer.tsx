@@ -17,6 +17,9 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { Approvals, CommentThread } from "@/src/types/procurement";
 import VerticalItemStepper from "../common/VerticalItemStepper";
+import { Spinner } from "react-activity";
+import { useResolveExpensesCommentThread } from "@/src/hooks/expenses/useExpenses";
+import toast from "react-hot-toast";
 
 interface ExpenseItem {
   id: string;
@@ -83,6 +86,20 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
   };
 
   const commentsCount = expense?.comment_thread?.comments?.length || 0;
+
+  const { mutate: mutateResolveComment, isPending } =
+    useResolveExpensesCommentThread();
+
+  const handleResolveComment = () => {
+    mutateResolveComment(expense.comment_thread.thread_id.toString(), {
+      onSuccess: () => {
+        toast.success("Comments resolved successfully");
+      },
+      onError: () => {
+        toast.error("Failed to resolve comments");
+      },
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -162,24 +179,37 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                     <p className="text-[#344054] font-semibold text-lg">
                       List Items
                     </p>
-                    <button
-                      className="flex"
-                      onClick={() => {
-                        setOpenComment(true);
-                        onClose();
-                      }}
-                    >
-                      <Image
-                        src="/assets/messages.png"
-                        alt="message icon"
-                        width={20}
-                        height={20}
-                      />
+                    <div className="flex flex-col gap-2 items-center">
+                      <button
+                        className="flex"
+                        onClick={() => {
+                          setOpenComment(true);
+                          onClose();
+                        }}
+                      >
+                        <Image
+                          src="/assets/messages.png"
+                          alt="message icon"
+                          width={20}
+                          height={20}
+                        />
 
-                      <span className="text-sm text-[#344054] text-semibold gap-1">
-                        {commentsCount} comments
-                      </span>
-                    </button>
+                        <span className="text-sm text-[#344054] text-semibold gap-1">
+                          {commentsCount} comments
+                        </span>
+                      </button>
+                      {commentsCount > 0 && (
+                        <button
+                          className="flex"
+                          onClick={handleResolveComment}
+                          disabled={isPending}
+                        >
+                          <span className="text-xs text-[#344054] text-semibold gap-1">
+                            {isPending ? <Spinner /> : "  Resolve Comments"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="w-full bg-gray-100 mt-6">
