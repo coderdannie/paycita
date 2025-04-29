@@ -30,6 +30,7 @@ const Procurement = () => {
   const [procurementToDelete, setProcurementToDelete] =
     useState<ProcurementData | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
   const [comments, setComments] = useState([
@@ -98,6 +99,11 @@ const Procurement = () => {
     });
   };
 
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+    setIsOpen(true);
+  }, []);
+
   if (isPending) {
     return <LoadingOverlay />;
   }
@@ -121,7 +127,8 @@ const Procurement = () => {
         tableData={procurements}
         setIsShow={setIsShow}
         setProcurementId={setProcurementId}
-        handleDelete={handleDelete}
+        // handleDelete={handleDelete}
+        handleEdit={handleEdit}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (
@@ -132,7 +139,12 @@ const Procurement = () => {
           />
         )}
       </div>
-      <AddProcurement isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <AddProcurement
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        procurement={procurement}
+        isEditing={isEditing}
+      />
       <ProcurementDetailDrawer
         isOpen={isShow}
         onClose={() => setIsShow(false)}

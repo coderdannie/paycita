@@ -29,6 +29,7 @@ const ExpenseMgt = () => {
   const [expenseToDelete, setExpenseToDelete] = useState<ExpenseData | null>(
     null
   );
+  const [isEditing, setIsEditing] = useState(false);
   const [expenseId, setExpenseId] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -86,6 +87,11 @@ const ExpenseMgt = () => {
     setIsDeleteModalOpen(true);
   }, []);
 
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+    setIsOpen(true);
+  }, []);
+
   const handleDeleteExpense = () => {
     deleteExpense(expenseToDelete?.id, {
       onSuccess: () => {
@@ -121,7 +127,7 @@ const ExpenseMgt = () => {
         tableData={expenses}
         setIsShow={setIsShow}
         setExpenseId={setExpenseId}
-        handleDelete={handleDelete}
+        handleEdit={handleEdit}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (
@@ -132,7 +138,12 @@ const ExpenseMgt = () => {
           />
         )}
       </div>
-      <AddExpenseDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <AddExpenseDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        expense={expense}
+        isEditing={isEditing}
+      />
       <ExpenseMgtDetailDrawer
         isOpen={isShow}
         onClose={() => setIsShow(false)}

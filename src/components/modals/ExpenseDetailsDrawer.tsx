@@ -43,6 +43,17 @@ interface ExpenseMgtDetailDrawerProps {
   setOpenComment: (open: boolean) => void;
 }
 
+interface ExpenseDetails {
+  id: string;
+  procurement_number: string;
+  status: string;
+  total_cost: number;
+  created_at: string;
+  expected_delivery_date?: string;
+  items: ExpenseItem[];
+  description?: string;
+}
+
 const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
   isOpen,
   onClose,

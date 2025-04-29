@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { IoClose, IoTrashBin } from "react-icons/io5";
+import React, { useEffect, useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoClose, IoTrashBin } from 'react-icons/io5';
 import {
   Table,
   TableBody,
@@ -8,47 +8,50 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from '../../components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
-import { formatDate } from "@/src/utils/helper";
-import Calendar from "react-calendar";
-import { FiCalendar } from "react-icons/fi";
-import { TileArgs } from "react-calendar";
-import { expenseHeaders } from "../common/constants";
-import { useForm, useFieldArray, Controller, useWatch } from "react-hook-form";
-import { ProcurementForm, procurementSchema } from "@/src/utils/validations";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '../../components/ui/select';
+import { formatDate } from '@/src/utils/helper';
+import Calendar from 'react-calendar';
+import { FiCalendar } from 'react-icons/fi';
+import { TileArgs } from 'react-calendar';
+import { expenseHeaders } from '../common/constants';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
+import { ProcurementForm, procurementSchema } from '@/src/utils/validations';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useCreateProcurements,
   useGetVendors,
-} from "@/src/hooks/procurement/useProcurement";
-import toast from "react-hot-toast";
-import { AxiosError } from "axios";
-import { Procurement } from "@/src/types/procurement";
-import { Spinner } from "react-activity";
-import { useGetExpenseTypes } from "@/src/hooks/expenses/useExpenses";
+} from '@/src/hooks/procurement/useProcurement';
+import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
+import { Procurement, ProcurementData } from '@/src/types/procurement';
+import { Spinner } from 'react-activity';
+import { useGetExpenseTypes } from '@/src/hooks/expenses/useExpenses';
 
 interface ProcurementDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  procurement: ProcurementData;
+  isEditing: boolean;
 }
 
 type CalendarTileArgs = TileArgs & {
-  view: "month" | "year" | "decade" | "century";
+  view: 'month' | 'year' | 'decade' | 'century';
 };
 
 const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   isOpen,
   onClose,
+  procurement,
+  isEditing,
 }) => {
   const { expenseType } = useGetExpenseTypes();
-
   const { vendors } = useGetVendors();
 
   const {
@@ -63,40 +66,96 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   } = useForm<ProcurementForm>({
     resolver: zodResolver(procurementSchema),
     defaultValues: {
-      procurement_date: null,
-      expected_delivery_date: null,
-      vendor_id: "",
-      details: [
-        {
-          id: crypto.randomUUID(),
-          item: "",
-          description: "",
-          quantity: "",
-          price: "",
-        },
-      ],
+      procurement_date:
+        isEditing && procurement.created_at
+          ? new Date(procurement.created_at)
+          : null,
+      expected_delivery_date:
+        isEditing && procurement.expected_delivery_date
+          ? new Date(procurement.expected_delivery_date)
+          : null,
+      vendor_id: isEditing ? procurement.vendor : '',
+      details:
+        isEditing && procurement.items
+          ? procurement.items.map((item) => ({
+              id: crypto.randomUUID(),
+              item: item.item,
+              description: item.description,
+              quantity: item.quantity.toString(),
+              price: item.price.toString(),
+              total: Number(item.price) * item.quantity,
+            }))
+          : [
+              {
+                id: crypto.randomUUID(),
+                item: '',
+                description: '',
+                quantity: '',
+                price: '',
+                total: 0,
+              },
+            ],
     },
   });
 
+  // Reset form when procurement changes (for edit mode)
+  useEffect(() => {
+    if (isEditing && procurement) {
+      reset({
+        procurement_date: procurement.created_at
+          ? new Date(procurement.created_at)
+          : null,
+        expected_delivery_date: procurement.expected_delivery_date
+          ? new Date(procurement.expected_delivery_date)
+          : null,
+        vendor_id: procurement.vendor,
+        details: procurement.items.map((item) => ({
+          id: crypto.randomUUID(),
+          item: item.item,
+          description: item.description,
+          quantity: item.quantity.toString(),
+          price: item.price.toString(),
+          total: Number(item.price) * item.quantity,
+        })),
+      });
+    } else {
+      reset({
+        procurement_date: null,
+        expected_delivery_date: null,
+        vendor_id: '',
+        details: [
+          {
+            id: crypto.randomUUID(),
+            item: '',
+            description: '',
+            quantity: '',
+            price: '',
+            total: 0,
+          },
+        ],
+      });
+    }
+  }, [procurement, isEditing, reset]);
+
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "details",
+    name: 'details',
   });
 
   const [showProcurementCalendar, setShowProcurementCalendar] = useState(false);
   const [showDeliveryCalendar, setShowDeliveryCalendar] = useState(false);
 
-  const procurement_date = watch("procurement_date");
-  const expected_delivery_date = watch("expected_delivery_date");
-  const itemsArray = watch("details");
+  const procurement_date = watch('procurement_date');
+  const expected_delivery_date = watch('expected_delivery_date');
+  const itemsArray = watch('details');
 
   const handleProcurementDateChange = (
     value: Date | Date[] | [Date | null, Date | null] | null
   ) => {
     if (value instanceof Date) {
-      setValue("procurement_date", value);
+      setValue('procurement_date', value);
       setShowProcurementCalendar(false);
-      clearErrors("procurement_date");
+      clearErrors('procurement_date');
     }
   };
 
@@ -104,9 +163,9 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     value: Date | Date[] | [Date | null, Date | null] | null
   ) => {
     if (value instanceof Date) {
-      setValue("expected_delivery_date", value);
+      setValue('expected_delivery_date', value);
       setShowDeliveryCalendar(false);
-      clearErrors("expected_delivery_date");
+      clearErrors('expected_delivery_date');
     }
   };
 
@@ -115,7 +174,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     date,
     view,
   }: CalendarTileArgs): boolean => {
-    if (view !== "month") return false;
+    if (view !== 'month') return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return date < today;
@@ -125,26 +184,26 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     date,
     view,
   }: CalendarTileArgs): boolean => {
-    if (view !== "month" || !procurement_date) return false;
+    if (view !== 'month' || !procurement_date) return false;
     const minDate = new Date(procurement_date);
     minDate.setHours(0, 0, 0, 0);
     return date < minDate;
   };
 
   const tileClassName = ({ date, view }: CalendarTileArgs): string | null => {
-    if (view !== "month") return null;
+    if (view !== 'month') return null;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     // For weekends
     if (date.getDay() === 0 || date.getDay() === 6) {
-      return "disabled-date";
+      return 'disabled-date';
     }
 
     // For past dates
     if (date < today) {
-      return "disabled-date";
+      return 'disabled-date';
     }
 
     return null;
@@ -152,27 +211,27 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         onClose();
       }
     }
 
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  const calculateTotal = (quantity: number | "", price: number | "") => {
-    if (quantity === "" || price === "") return "0.00";
+  const calculateTotal = (quantity: number | '', price: number | '') => {
+    if (quantity === '' || price === '') return '0.00';
     return (Number(quantity) * Number(price)).toFixed(2);
   };
 
-  const procuredItems = useWatch({ control, name: "details" });
+  const procuredItems = useWatch({ control, name: 'details' });
 
   useEffect(() => {
     procuredItems?.forEach((item, index) => {
@@ -188,8 +247,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
   const totalSum = useMemo(() => {
     return procuredItems.reduce((sum, item) => {
-      const quantity = item.quantity === "" ? 0 : Number(item.quantity);
-      const price = item.price === "" ? 0 : Number(item.price);
+      const quantity = item.quantity === '' ? 0 : Number(item.quantity);
+      const price = item.price === '' ? 0 : Number(item.price);
       return sum + quantity * price;
     }, 0);
   }, [procuredItems]);
@@ -202,10 +261,10 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
     append({
       id: crypto.randomUUID(),
-      item: "",
-      description: "",
-      quantity: "",
-      price: "",
+      item: '',
+      description: '',
+      quantity: '',
+      price: '',
       total: 0,
     });
   };
@@ -231,14 +290,14 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
     mutateCreateProcurements(payload, {
       onSuccess: (res) => {
-        toast.success(res.data.message || "Procurement created successfully");
+        toast.success(res.data.message || 'Procurement created successfully');
         reset();
         onClose();
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
           const errorMessage =
-            error.response?.data?.message || "Failed to update event";
+            error.response?.data?.message || 'Failed to update event';
           toast.error(errorMessage);
         }
       },
@@ -253,22 +312,22 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[930px] bg-white shadow-xl z-50 rounded-lg p-4"
           >
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex items-center justify-between border-b border-[#E4E7EC] py-3 ">
                 <h2 className="text-lg font-semibold">
-                  New Procurement Request
+                  {isEditing ? 'Edit Procurement' : 'New Procurement Request'}
                 </h2>
                 <button onClick={onClose} type="button">
                   <IoClose className="text-2xl text-[#667085]" />
@@ -293,7 +352,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                       <div>
                         <div
                           className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
-                            procurement_date ? "justify-between" : "justify-end"
+                            procurement_date ? 'justify-between' : 'justify-end'
                           } items-center p-[10px]`}
                           onClick={() => {
                             setShowProcurementCalendar((prev) => !prev);
@@ -303,7 +362,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                           <p className="text-sm text-[#292D32]">
                             {procurement_date
                               ? formatDate(procurement_date)
-                              : "Select date"}
+                              : 'Select date'}
                           </p>
                           <div>
                             <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
@@ -312,7 +371,6 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                         {errors.procurement_date && (
                           <p className="text-red-500 text-sm">
                             Procurement date is required
-                            {/* {errors.procurement_date.message?.toString()} */}
                           </p>
                         )}
                       </div>
@@ -338,8 +396,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                       <div
                         className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
                           expected_delivery_date
-                            ? "justify-between"
-                            : "justify-end"
+                            ? 'justify-between'
+                            : 'justify-end'
                         } items-center p-[10px]`}
                         onClick={() => {
                           setShowDeliveryCalendar((prev) => !prev);
@@ -349,7 +407,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                         <p className="text-sm text-[#292D32]">
                           {expected_delivery_date
                             ? formatDate(expected_delivery_date)
-                            : "Select date"}
+                            : 'Select date'}
                         </p>
                         <div>
                           <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
@@ -503,7 +561,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       field.onChange(
-                                        value === "" ? "" : parseInt(value) || 0
+                                        value === '' ? '' : parseInt(value) || 0
                                       );
                                     }}
                                     className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
@@ -529,8 +587,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       field.onChange(
-                                        value === ""
-                                          ? ""
+                                        value === ''
+                                          ? ''
                                           : parseFloat(value) || 0
                                       );
                                     }}
@@ -546,7 +604,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                             />
                           </TableCell>
                           <TableCell className="w-[10%] text-center">
-                            ₦{" "}
+                            ₦{' '}
                             {calculateTotal(
                               +itemsArray[index].quantity,
                               +itemsArray[index].price
@@ -589,7 +647,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                   disabled={isPending}
                 >
                   {isPending && <Spinner />}
-                  Submit
+                  {isEditing ? 'Update' : 'Submit'}
                 </button>
               </div>
             </form>
