@@ -63,7 +63,7 @@ const ExpenseMgt = () => {
     [updateSearchParams]
   );
 
-  const { expense } = useGetSingleExpense(expenseId);
+  const { expense, isFetching } = useGetSingleExpense(expenseId);
 
   const currentComments: Comments[] = expense?.comment_thread?.comments || [];
   const currentThreadId = expense?.comment_thread?.thread_id;
@@ -152,6 +152,8 @@ const ExpenseMgt = () => {
         setIsShow={setIsShow}
         setExpenseId={setExpenseId}
         handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        isFetching={isFetching}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (

@@ -102,14 +102,14 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   useEffect(() => {
     if (isEditing && procurement) {
       reset({
-        procurement_date: procurement.created_at
-          ? new Date(procurement.created_at)
+        procurement_date: procurement?.created_at
+          ? new Date(procurement?.created_at)
           : null,
-        expected_delivery_date: procurement.expected_delivery_date
-          ? new Date(procurement.expected_delivery_date)
+        expected_delivery_date: procurement?.expected_delivery_date
+          ? new Date(procurement?.expected_delivery_date)
           : null,
-        vendor_id: procurement.vendor,
-        details: procurement.items.map((item) => ({
+        vendor_id: procurement?.vendor,
+        details: procurement?.items?.map((item) => ({
           id: crypto.randomUUID(),
           item: item.item,
           description: item.description,
@@ -226,9 +226,14 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  const calculateTotal = (quantity: number | '', price: number | '') => {
-    if (quantity === '' || price === '') return '0.00';
-    return (Number(quantity) * Number(price)).toFixed(2);
+  const calculateTotal = (
+    quantity: number | string | undefined,
+    price: number | string | undefined
+  ) => {
+    const qty =
+      quantity === undefined || quantity === '' ? 0 : Number(quantity);
+    const prc = price === undefined || price === '' ? 0 : Number(price);
+    return (qty * prc).toFixed(2);
   };
 
   const procuredItems = useWatch({ control, name: 'details' });
@@ -246,7 +251,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   }, [procuredItems, setValue]);
 
   const totalSum = useMemo(() => {
-    return procuredItems.reduce((sum, item) => {
+    return procuredItems?.reduce((sum, item) => {
       const quantity = item.quantity === '' ? 0 : Number(item.quantity);
       const price = item.price === '' ? 0 : Number(item.price);
       return sum + quantity * price;
@@ -606,8 +611,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                           <TableCell className="w-[10%] text-center">
                             ₦{' '}
                             {calculateTotal(
-                              +itemsArray[index].quantity,
-                              +itemsArray[index].price
+                              itemsArray[index]?.quantity,
+                              itemsArray[index]?.price
                             )}
                           </TableCell>
                           <TableCell className="w-[10%] text-center">

@@ -154,11 +154,13 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  const calculateTotal = (quantity: number | '', price: number | '') => {
-    if (quantity === '' || price === '') return '0.00';
+  const calculateTotal = (
+    quantity: number | string | undefined,
+    price: number | string | undefined
+  ) => {
+    if (!quantity || !price) return '0.00';
     return (Number(quantity) * Number(price)).toFixed(2);
   };
-
   const procuredItems = useWatch({ control, name: 'details' });
 
   useEffect(() => {
@@ -389,8 +391,8 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                           <TableCell className="w-[10%] text-center">
                             {currency}
                             {calculateTotal(
-                              +itemsArray[index]?.quantity,
-                              +itemsArray[index]?.price
+                              +(itemsArray[index]?.quantity || 0),
+                              +(itemsArray[index]?.price || 0)
                             )}
                           </TableCell>
                           <TableCell className="w-[10%] text-center">

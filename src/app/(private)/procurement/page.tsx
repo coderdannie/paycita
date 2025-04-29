@@ -50,7 +50,8 @@ const Procurement = () => {
     page: currentPage.toString(),
   });
 
-  const { procurement } = useGetSingleProcurement(procurementId);
+  const { procurement, isFetching: isLoadingSingle } =
+    useGetSingleProcurement(procurementId);
 
   const currentComments: Comments[] =
     procurement?.comment_thread?.comments || [];
@@ -169,8 +170,9 @@ const Procurement = () => {
         tableData={procurements}
         setIsShow={setIsShow}
         setProcurementId={setProcurementId}
-        // handleDelete={handleDelete}
+        handleDelete={handleDelete}
         handleEdit={handleEdit}
+        isLoadingSingle={isLoadingSingle}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (

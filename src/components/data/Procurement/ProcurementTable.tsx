@@ -6,6 +6,7 @@ import { TableCell, TableRow } from '../../ui/table';
 import { formatLongCurrency } from '@/src/utils/helper';
 import { Dispatch, SetStateAction } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
+import { Trash2 } from 'lucide-react';
 
 export type ProcurementData = {
   id: string;
@@ -21,6 +22,8 @@ interface ProcurementTableProps {
   setIsShow: (value: boolean) => void;
   setProcurementId: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
+  handleDelete: (procurement: ProcurementData) => void;
+  isLoadingSingle: boolean;
 }
 
 const ProcurementTable: React.FC<ProcurementTableProps> = ({
@@ -28,17 +31,17 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
   setIsShow,
   setProcurementId,
   handleEdit,
+  handleDelete,
+  isLoadingSingle,
 }) => {
   const headers = [
     { label: 'Request ID' },
-    { label: 'Item Name' },
-    { label: 'Date' },
+    { label: 'Vendor Name' },
     // { label: "Quantity" },
     { label: 'Total Cost' },
     { label: 'Status' },
     { label: '' },
   ];
-
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'successful':
@@ -59,12 +62,12 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
               <TableCell className="py-5">
                 {row.procurement_number ?? 'N/A'}
               </TableCell>
-              <TableCell>{'IT Equipment	'}</TableCell>
-              <TableCell>{'Wed, 5 Feb 2025'}</TableCell>
-
+              <TableCell>{row.vendor ?? 'N/A'}</TableCell>
+              {/* <TableCell>{row.quantity ?? "N/A"}</TableCell> */}
               <TableCell>
                 {formatLongCurrency(+row.total_cost) ?? 'N/A'}
               </TableCell>
+
               <TableCell>
                 <span
                   className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${getStatusStyle(
@@ -91,17 +94,25 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
                       height={15}
                     />
                   </button>
-                  {row.status === 'pending' && (
-                    <button
-                      onClick={() => {
+
+                  <button
+                    onClick={() => {
+                      if (!isLoadingSingle) {
                         handleEdit();
                         setProcurementId(row.id);
-                      }}
-                      className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
-                    >
-                      <FaRegEdit className="w-4 h-4" />
-                    </button>
-                  )}
+                      }
+                    }}
+                    className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
+                    disabled={isLoadingSingle}
+                  >
+                    <FaRegEdit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(row)}
+                    className="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </TableCell>
             </TableRow>
