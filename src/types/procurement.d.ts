@@ -13,8 +13,40 @@ interface Procurement {
   total_price: string;
   details: ProcurementDetails[];
 }
+interface Actor {
+  full_name: string;
+  profile_picture?: string | null;
+}
+type ApprovalStatus = "approved" | "rejected" | "pending" | "waiting";
+type Approval = {
+  approved_at?: string | null;
+  approved_by: Actor | null;
+  rejected_at?: string | null;
+  rejection_reason?: string | null;
+  status: ApprovalStatus;
+};
+type Approvals = Record<string, Approval> | null | undefined;
+type CommentUser = {
+  id: number;
+  name: string;
+  profile_picture?: string | null;
+};
+type Comments = {
+  id: number;
+  message: string;
+  created_at: string;
+  user: CommentUser;
+};
+
+type CommentThread = {
+  comments: Comments[];
+  is_resolved: number;
+  thread_id: number;
+};
 
 interface ProcurementData {
+  comment_thread: CommentThread | null;
+  approvals: Approvals | null;
   id: number;
   procurement_number: string;
   vendor: string;
@@ -32,11 +64,21 @@ interface Expenses {
   details: ProcurementDetails[];
 }
 
-export { Procurement, ProcurementData, Expenses };
-
 export type ApprovalStep = {
   name: string;
-  status: 'approved' | 'rejected' | 'pending';
+  status: "approved" | "rejected" | "pending";
   date: string;
   comment?: string;
+};
+
+export {
+  Procurement,
+  ProcurementData,
+  Expenses,
+  ApprovalStatus,
+  Approval,
+  Approvals,
+  Actor,
+  Comments,
+  CommentThread,
 };

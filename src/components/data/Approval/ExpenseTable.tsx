@@ -1,27 +1,41 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
-import { Button } from '@/components/ui/button';
-import ExpenseDrawer from '../../modals/ExpenseDrawer';
-import RejectModal from '../../modals/RejectModal';
+import { useCallback, useMemo, useState } from "react";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { Button } from "@/components/ui/button";
+import ExpenseDrawer from "../../modals/ExpenseDrawer";
+import { useGetSingleExpense } from "@/src/hooks/expenses/useExpenses";
+import RejectModal from "../../modals/RejectModal";
+import { useAddApprovalComment, useUpdateApproval } from "@/src/hooks/approvals/useApprovals";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import CommentModal from "../../modals/CommentModal";
+import { Comments } from "@/src/types/procurement";
 
-const ExpenseTable = () => {
+const ExpenseTable = ({
+  approvals,
+}: {
+  approvals: Array<{
+    amount: string;
+    approval_status_id: string;
+    expenses_id: string;
+    expenses_number: string;
+    status: string;
+  }>;
+}) => {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-
-  const [isShow, setIsShow] = useState(false);
-  const handleReject = (comment: string) => {
-    console.log('Request rejected with comment:', comment);
-  };
   const headers = useMemo(
     () => [
-      { label: 'Employee Name' },
-      { label: 'Employee Number' },
-      { label: 'Total Cost' },
-      { label: 'Status' },
-      { label: 'Action' },
+      // { label: "Employee Name" },
+      { label: "Employee Number" },
+      { label: "Total Cost" },
+      { label: "Status" },
+      { label: "Action" },
     ],
     []
   );
@@ -31,11 +45,11 @@ const ExpenseTable = () => {
       <span
         className={`py-[5px] w-[70%] text-center block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -43,42 +57,124 @@ const ExpenseTable = () => {
     );
   }, []);
 
-  const leaveData = [
-    {
-      name: 'Bunmi Tanny',
-      number: '09074632738',
-      totalCost: '100',
-      status: 'approved',
-    },
-    {
-      name: 'Bunmi Tanny',
-      number: '09074632738',
-      totalCost: '100',
-      status: 'approved',
-    },
-    {
-      name: 'Bunmi Tanny',
-      number: '09074632738',
-      totalCost: '100',
-      status: 'pending',
-    },
-  ];
+  const [expenseId, setExpenseId] = useState("");
+  const [approvalId, setApprovalId] = useState("");
 
+  const { expense } = useGetSingleExpense(expenseId);
+
+  const handleViewDetails = useCallback(
+    (item: { expenses_id: string; approval_status_id: string }) => {
+      setExpenseId(item.expenses_id);
+      setApprovalId(item.approval_status_id);
+      setIsOpen(true);
+    },
+    [setExpenseId, setIsOpen]
+  );
+
+  const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
+    useUpdateApproval("update-expenses-requests");
+
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
+  const handleReject = (comment: string) => {
+    const payload = {
+      id: approvalId,
+      data: {
+        status: "rejected",
+        reason: comment,
+      },
+    };
+    mutateUpdateApprovalStatus(payload, {
+      onSuccess: () => {
+        toast.success("Status updated successfully");
+        setIsRejectOpen(false);
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
+        });
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+      },
+    });
+  };
+
+  const handleApprove = () => {
+    const payload = {
+      id: approvalId,
+      data: {
+        status: "approved",
+      },
+    };
+    mutateUpdateApprovalStatus(payload, {
+      onSuccess: () => {
+        toast.success("Status updated successfully");
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
+        });
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+      },
+    });
+  };
+  const [openModal, setOpenModal] = useState(false);
+
+  const currentComments: Comments[] = expense?.comment_thread?.comments || [];
+  const currentThreadId = expense?.comment_thread?.thread_id;
+
+  const { mutate: mutateAddComment, isPending: isAddingComment } =
+    useAddApprovalComment("add-expense-comment");
+
+  const handleSend = (message: string) => {
+    if (!currentThreadId) {
+      toast.error("Cannot add comment: Thread ID is missing.");
+      return;
+    }
+    if (!expenseId) {
+      toast.error("Cannot add comment: Expense ID is missing.");
+      return;
+    }
+
+    const payload = {
+      thread_id: currentThreadId,
+      comment: message,
+    };
+
+    mutateAddComment(payload, {
+      onSuccess: () => {
+        toast.success("Comment added successfully");
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, expenseId],
+        });
+        setOpenModal(false);
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError)
+          toast.error(
+            error?.response?.data?.message || "Failed to add comment"
+          );
+        else toast.error("An unexpected error occurred while adding comment.");
+      },
+    });
+  };
   return (
     <div className="mt-6">
       <CustomTable headers={headers}>
-        {leaveData.length ? (
-          leaveData.map((row, index) => (
+        {approvals?.length ? (
+          approvals.map((row, index) => (
             <TableRow key={index} className="text-[#1D2939] text-sm">
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.number}</TableCell>
-              <TableCell>{row.totalCost}</TableCell>
+              {/* <TableCell>{row.name}</TableCell> */}
+              <TableCell>{row.expenses_number}</TableCell>
+              <TableCell>{row.amount}</TableCell>
               <TableCell>{renderStatusBadge(row.status)}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
                   className="border-primary"
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => handleViewDetails(row)}
                 >
                   View Details
                 </Button>
@@ -92,12 +188,26 @@ const ExpenseTable = () => {
       <ExpenseDrawer
         open={isOpen}
         onOpenChange={() => setIsOpen(false)}
-        setIsShow={setIsShow}
+        setIsShow={setIsRejectOpen}
+        expense={expense}
+        handleApprove={handleApprove}
+        isLoading={isUpdatePending}
+        setOpenComment={setOpenModal}
       />
+
       <RejectModal
-        isOpen={isShow}
-        onClose={() => setIsShow(false)}
+        isOpen={isRejectOpen}
+        onClose={() => setIsRejectOpen(false)}
         onReject={handleReject}
+        isLoading={isUpdatePending}
+      />
+
+      <CommentModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        comments={currentComments}
+        onSend={handleSend}
+        isLoading={isAddingComment}
       />
     </div>
   );

@@ -110,3 +110,156 @@ export const formatTimeAgo = (date: string | Date): string => {
     });
   }
 };
+
+export const numberToWords = (num: number): string => {
+  if (num === 0) return "zero";
+
+  const ones = [
+    "",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+  ];
+  const teens = [
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+  ];
+  const tens = [
+    "",
+    "",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+  ];
+  const thousands = ["", "thousand", "million", "billion", "trillion"]; // Add more if needed
+
+  // Helper function to convert a number less than 1000
+  const convertLessThanOneThousand = (n: number): string => {
+    let result = "";
+    if (n >= 100) {
+      result += ones[Math.floor(n / 100)] + " hundred";
+      n %= 100;
+      if (n > 0) result += " and "; // Add space if there are tens/ones
+    }
+    if (n >= 20) {
+      result += tens[Math.floor(n / 10)];
+      n %= 10;
+      if (n > 0) result += "-"; // Add hyphen for numbers like twenty-one
+    }
+    if (n >= 10) {
+      // Handle teens separately if result is empty or ends with space
+      if (result && !result.endsWith(" ")) result += " ";
+      result += teens[n - 10];
+      n = 0; // Handled teens, reset n
+    }
+    if (n > 0) {
+      // Handle ones
+      if (result && !result.endsWith(" ") && !result.endsWith("-"))
+        result += " ";
+      result += ones[n];
+    }
+    return result.trim();
+  };
+
+  if (num < 0) return "minus " + numberToWords(Math.abs(num));
+
+  // Handle potential decimal part (optional, basic implementation)
+  const numStr = num.toString();
+  const [integerPartStr, decimalPartStr] = numStr.split(".");
+  let integerPart = parseInt(integerPartStr, 10);
+
+  let words = "";
+  let i = 0;
+
+  if (integerPart === 0 && !decimalPartStr) return "zero"; // Handle case where only integer part is 0
+
+  if (integerPart === 0 && decimalPartStr) {
+    // Handle 0.xx cases
+    words = "zero";
+  } else {
+    while (integerPart > 0) {
+      if (integerPart % 1000 !== 0) {
+        words =
+          convertLessThanOneThousand(integerPart % 1000) +
+          (thousands[i] ? " " + thousands[i] : "") +
+          (words ? " " + words : "");
+      }
+      integerPart = Math.floor(integerPart / 1000);
+      i++;
+    }
+  }
+
+  // Add decimal part if exists (e.g., " naira and fifty kobo") - Customize as needed
+  if (decimalPartStr) {
+    const decimalNum = parseInt(
+      decimalPartStr.padEnd(2, "0").substring(0, 2),
+      10
+    ); // Assuming 2 decimal places for currency
+    if (decimalNum > 0) {
+      // You might want currency-specific logic here, e.g., "Naira" and "Kobo"
+      words += (words ? " and " : "") + numberToWords(decimalNum) + " kobo"; // Example for Kobo
+    }
+  }
+
+  // Basic capitalization and cleanup
+  words = words.trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+};
+
+export const imageToBase64 = (url) => {
+  return new Promise((resolve, reject) => {
+    // Input validation
+    if (!url) {
+      return reject(new Error("Image URL is required."));
+    }
+
+    fetch(url) // Attempt to fetch the image
+      .then((response) => {
+        if (!response.ok) {
+          // Handle HTTP errors (e.g., 404 Not Found, 403 Forbidden)
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob(); // Get the image data as a Blob
+      })
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          // Resolve with the Base64 Data URL string
+          resolve(reader.result);
+        };
+        reader.onerror = (error) => {
+          // Handle FileReader errors
+          reject(new Error("Failed to read image blob: " + error));
+        };
+        reader.readAsDataURL(blob); // Read the Blob as Data URL
+      })
+      .catch((error) => {
+        // Handle fetch errors (network issues, CORS blockage)
+        console.error("Failed to fetch or process image:", error);
+        reject(
+          new Error(
+            "Failed to fetch image. Check URL and CORS policy. " + error
+          )
+        );
+      });
+  });
+};

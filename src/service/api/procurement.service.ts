@@ -30,12 +30,17 @@ export const getVendors = () => {
   return api.get("/hr/vendors");
 };
 
+const resolveProcurementCommentThread = (id: string) => {
+  return api.post(`/hr/resolve-procurement-comment/${id}`);
+};
+
 const procurementService = {
   getAllProcurements,
   createProcurements,
   getSingleProcurement,
   deleteProcurement,
   getVendors,
+  resolveProcurementCommentThread,
 };
 
 export default procurementService;

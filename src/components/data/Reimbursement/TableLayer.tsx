@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
-import { Button } from '@/components/ui/button';
-import ReimbursementDetails from '../../modals/ReimbursementDetails';
-import RejectModal from '../../modals/RejectModal';
+import { useCallback, useMemo, useState } from "react";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { Button } from "@/components/ui/button";
+import ReimbursementDetails from "../../modals/ReimbursementDetails";
+import { Reimbursement } from "@/src/service/api/re-imbursement.service";
 
-const TableLayer = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const handleReject = (comment: string) => {
-    console.log('Request rejected with comment:', comment);
-  };
+const TableLayer = ({
+  reimbursements,
+}: {
+  reimbursements: Reimbursement[];
+}) => {
+  const [isOpen, setIsOpen] = useState("");
   const headers = useMemo(
     () => [
-      { label: 'RN' },
-      { label: 'Title' },
-      { label: 'Description' },
-      { label: 'Employee Name' },
-      { label: 'Date' },
-      { label: 'Status' },
-      { label: 'Action' },
+      { label: "RN" },
+      { label: "Amount" },
+      { label: "Description" },
+      // { label: "Employee Name" },
+      { label: "Date" },
+      { label: "Status" },
+      { label: "Action" },
     ],
     []
   );
@@ -32,11 +32,11 @@ const TableLayer = () => {
       <span
         className={`py-[5px] w-[70%] text-center block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -44,51 +44,23 @@ const TableLayer = () => {
     );
   }, []);
 
-  const leaveData = [
-    {
-      RN: '#1253',
-      amount: '5000',
-
-      description: 'Black color for departmental ink',
-      name: 'Bunmi Tanny',
-      date: 'April 7 2024',
-      status: 'approved',
-    },
-    {
-      RN: '#1253',
-      amount: '5000',
-      description: 'Black color for departmental ink',
-      name: 'Bunmi Tanny',
-      date: 'April 7 2024',
-      status: 'approved',
-    },
-    {
-      RN: '#1253',
-      amount: '5000',
-      description: 'Black color for departmental ink',
-      name: 'Bunmi Tanny',
-      date: 'April 7 2024',
-      status: 'approved',
-    },
-  ];
-
   return (
     <div className="mt-6">
       <CustomTable headers={headers}>
-        {leaveData.length ? (
-          leaveData.map((row, index) => (
+        {reimbursements?.length ? (
+          reimbursements.map((row, index) => (
             <TableRow key={index} className="text-[#1D2939] text-sm">
-              <TableCell className="text-primary">{row.RN}</TableCell>
+              <TableCell className="text-primary">{row.rb_number}</TableCell>
               <TableCell>₦{row.amount}</TableCell>
-              <TableCell>{row.description}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.date}</TableCell>
+              <TableCell>{row.description || "-"}</TableCell>
+              {/* <TableCell>{row.employee_name || "-"}</TableCell> */}
+              <TableCell>{row.date_of_purchase}</TableCell>
               <TableCell>{renderStatusBadge(row.status)}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
                   className="border-primary bg-transparent"
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => setIsOpen(row.id)}
                 >
                   View Details
                 </Button>
@@ -100,14 +72,9 @@ const TableLayer = () => {
         )}
       </CustomTable>
       <ReimbursementDetails
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        setIsShow={setIsShow}
-      />
-      <RejectModal
-        isOpen={isShow}
-        onClose={() => setIsShow(false)}
-        onReject={handleReject}
+        isOpen={!!isOpen}
+        onClose={() => setIsOpen("")}
+        id={isOpen}
       />
     </div>
   );

@@ -1,7 +1,6 @@
 import { Expenses } from "@/src/types/procurement";
 import { api } from ".";
 
-
 const getAllExpenses = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();
 
@@ -31,12 +30,16 @@ export const getExpenseType = () => {
   return api.get("/hr/expenses-type");
 };
 
+const resolveExpensesCommentThread = (id: string) => {
+  return api.post(`/hr/resolve-expense-comment/${id}`);
+};
 const expenseService = {
   getAllExpenses,
   createExpenses,
   getSingleExpenses,
   deleteExpenses,
   getExpenseType,
+  resolveExpensesCommentThread,
 };
 
 export default expenseService;

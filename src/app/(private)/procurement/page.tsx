@@ -19,10 +19,16 @@ import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 import ConfirmationModal from '@/src/components/common/ConfirmationModal';
 import toast from 'react-hot-toast';
 import CommentModal from '@/src/components/modals/CommentModal';
+import { useAddApprovalComment } from '@/src/hooks/approvals/useApprovals';
+import { useQueryClient } from '@tanstack/react-query';
+import { Comments } from '@/src/types/procurement';
+import { AxiosError } from 'axios';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 const Procurement = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
+  const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
@@ -33,27 +39,6 @@ const Procurement = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
-  const [comments, setComments] = useState([
-    {
-      name: 'Cameron Williamson',
-      text: 'Not enough funds for this Procurement',
-      time: '24 min',
-    },
-    {
-      name: 'Hawkins Maru',
-      text: 'Not enough funds for this Procurement',
-      time: '24 min',
-    },
-  ]);
-
-  const handleSend = (message: string) => {
-    const newComment = {
-      name: 'You',
-      text: message,
-      time: 'Just now',
-    };
-    setComments((prev) => [...prev, newComment]);
-  };
 
   const currentPage = searchParams.get('page') || '1';
 
@@ -64,6 +49,48 @@ const Procurement = () => {
   } = useGetAllProcurements({
     page: currentPage.toString(),
   });
+
+  const { procurement } = useGetSingleProcurement(procurementId);
+
+  const currentComments: Comments[] =
+    procurement?.comment_thread?.comments || [];
+  const currentThreadId = procurement?.comment_thread?.thread_id;
+
+  const { mutate: mutateAddComment, isPending: isAddingComment } =
+    useAddApprovalComment('add-procurement-comment');
+
+  const handleSend = (message: string) => {
+    if (!currentThreadId) {
+      toast.error('Cannot add comment: Thread ID is missing.');
+      return;
+    }
+    if (!procurementId) {
+      toast.error('Cannot add comment: Procurement ID is missing.');
+      return;
+    }
+
+    const payload = {
+      thread_id: currentThreadId,
+      comment: message,
+    };
+
+    mutateAddComment(payload, {
+      onSuccess: () => {
+        toast.success('Comment added successfully');
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, procurementId],
+        });
+        setOpenModal(false);
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError)
+          toast.error(
+            error?.response?.data?.message || 'Failed to add comment'
+          );
+        else toast.error('An unexpected error occurred while adding comment.');
+      },
+    });
+  };
 
   const goToPage = useCallback(
     (page: number) => {
@@ -77,8 +104,6 @@ const Procurement = () => {
     [updateSearchParams]
   );
 
-  const { procurement } = useGetSingleProcurement(procurementId);
-
   const { mutate: deleteProcurement, isPending: isDeleting } =
     useDeleteProcurement();
 
@@ -88,13 +113,20 @@ const Procurement = () => {
   }, []);
 
   const handleDeleteProcurement = () => {
-    deleteProcurement(procurementToDelete?.id, {
+    if (!procurementToDelete?.id) return;
+    deleteProcurement(procurementToDelete.id, {
       onSuccess: () => {
         toast.success('Procurement deleted successfully');
         setIsDeleteModalOpen(false);
+        setProcurementToDelete(null);
+        queryClient.invalidateQueries({ queryKey: ['procurements'] });
       },
       onError: (error) => {
-        toast.error(error.message);
+        if (error instanceof AxiosError)
+          toast.error(
+            error?.response?.data?.message || 'Failed to delete procurement'
+          );
+        else toast.error(error?.message || 'Failed to delete procurement');
       },
     });
   };
@@ -103,6 +135,16 @@ const Procurement = () => {
     setIsEditing(true);
     setIsOpen(true);
   }, []);
+
+  const handleOpenCommentModal = (id: string) => {
+    setProcurementId(id);
+    setOpenModal(true);
+    setIsShow(false);
+  };
+
+  const handleCloseCommentModal = () => {
+    setOpenModal(false);
+  };
 
   if (isPending) {
     return <LoadingOverlay />;
@@ -149,7 +191,7 @@ const Procurement = () => {
         isOpen={isShow}
         onClose={() => setIsShow(false)}
         procurement={procurement}
-        setOpenComment={setOpenModal}
+        setOpenComment={() => handleOpenCommentModal(procurementId)}
       />
 
       <ConfirmationModal
@@ -165,10 +207,10 @@ const Procurement = () => {
       />
       <CommentModal
         isOpen={openModal}
-        onClose={() => setOpenModal(false)}
-        comments={comments}
+        onClose={handleCloseCommentModal}
+        comments={currentComments}
         onSend={handleSend}
-        setIsShow={setIsShow}
+        isLoading={isAddingComment}
       />
     </>
   );

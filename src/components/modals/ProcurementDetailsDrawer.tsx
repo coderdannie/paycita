@@ -1,21 +1,25 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 
-import { IoCloseSharp } from 'react-icons/io5';
-// import Image from "next/image";
+import { IoCloseSharp } from "react-icons/io5";
+
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
-} from '../../components/ui/table';
-import StatusStepper from '../common/Stepper';
-import { formatDate } from '@/src/utils/helper';
-import { ApprovalStep, ProcurementData } from '@/src/types/procurement';
-import { useAuthSelector } from '@/src/Redux/selectors';
-import { ApprovalFlow } from '../common/ApprovalFlow';
-import Image from 'next/image';
+} from "../../components/ui/table";
+import StatusStepper from "../common/Stepper";
+import { formatDate } from "@/src/utils/helper";
+import { ProcurementData } from "@/src/types/procurement";
+import { useAuthSelector } from "@/src/Redux/selectors";
+// import { ApprovalFlow } from "../common/ApprovalFlow";
+import Image from "next/image";
+import VerticalItemStepper from "../common/VerticalItemStepper";
+import { useResolveProcurementCommentThread } from "@/src/hooks/procurement/useProcurement";
+import { Spinner } from "react-activity";
+import toast from "react-hot-toast";
 
 interface ProcurementDetailDrawerProps {
   isOpen: boolean;
@@ -32,45 +36,37 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || 'NGN';
+  const currency = userData?.user?.currency || "NGN";
 
   const orderDate = formatDate(procurement.created_at);
 
-  const steps: ApprovalStep[] = [
-    {
-      name: 'Cameron Williamson',
-      status: 'approved',
-      date: 'Mon, 3 Feb 2025',
-    },
-    {
-      name: 'Cameron Williamson',
-      status: 'rejected',
-      date: 'Mon, 3 Feb 2025',
-      comment: 'Not enough funds for this Procurement',
-    },
-    {
-      name: 'Cameron Williamson',
-      status: 'pending',
-      date: 'Mon, 3 Feb 2025',
-    },
-    {
-      name: 'Cameron Williamson',
-      status: 'pending',
-      date: 'Mon, 3 Feb 2025',
-    },
-  ];
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved':
-        return 'text-green-500';
-      case 'pending':
-        return 'text-orange-500';
-      case 'rejected':
-        return 'text-red-500';
+      case "approved":
+        return "text-green-500";
+      case "pending":
+        return "text-orange-500";
+      case "rejected":
+        return "text-red-500";
       default:
-        return 'text-gray-500';
+        return "text-gray-500";
     }
+  };
+
+  const commentsCount = procurement?.comment_thread?.comments?.length || 0;
+
+  const { mutate: mutateResolveComment, isPending } =
+    useResolveProcurementCommentThread();
+
+  const handleResolveComment = () => {
+    mutateResolveComment(procurement.comment_thread.thread_id.toString(), {
+      onSuccess: () => {
+        toast.success("Comments resolved successfully");
+      },
+      onError: () => { 
+        toast.error("Failed to resolve comments");
+      },
+    });
   };
 
   return (
@@ -81,13 +77,13 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: 'tween', duration: 0.2 }}
+            transition={{ type: "tween", duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -114,7 +110,7 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                         {procurement.procurement_number}
                       </p>
                       <span
-                        className={`py-1 px-2 rounded-md text-sm font-medium ${getStatusColor(
+                        className={`py-1 px-2 rounded-md text-sm font-medium capitalize ${getStatusColor(
                           procurement.status
                         )}`}
                       >
@@ -127,64 +123,51 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                     </p>
                   </div>
                   <p className="text-sm">
-                    {procurement?.items?.length} Products • Order Placed on{' '}
+                    {procurement?.items?.length} Products • Order Placed on{" "}
                     {orderDate}
                   </p>
                 </div>
 
-                {/* Approval Status */}
-                <div className="py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="border p-3 rounded-md">
-                      <p className="text-sm text-gray-500">
-                        Finance Manager Status
-                      </p>
-                      <p
-                        className={`font-medium capitalize ${getStatusColor(
-                          procurement.finance_manager_status
-                        )}`}
-                      >
-                        {procurement.finance_manager_status}
-                      </p>
-                    </div>
-                    <div className="border p-3 rounded-md">
-                      <p className="text-sm text-gray-500">Management Status</p>
-                      <p
-                        className={`font-medium capitalize ${getStatusColor(
-                          procurement.managment_status
-                        )}`}
-                      >
-                        {procurement.managment_status}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <div className="mt-4"></div>
 
                 {/* Stepper */}
-                <StatusStepper currentStatus={procurement.status} />
+                <StatusStepper approvals={procurement?.approvals} />
 
                 {/* Items Table */}
                 <div className="py-4">
                   <div className="py-4 border-b-2 flex items-center justify-between">
                     <p className="font-medium">List Items</p>
-                    <button
-                      className="flex"
-                      onClick={() => {
-                        setOpenComment(true);
-                        onClose();
-                      }}
-                    >
-                      <Image
-                        src="/assets/messages.png"
-                        alt="message icon"
-                        width={20}
-                        height={20}
-                      />
+                    <div className="flex flex-col gap-2 items-center">
+                      <button
+                        className="flex items-center gap-1"
+                        onClick={() => {
+                          setOpenComment(true);
+                          onClose();
+                        }}
+                      >
+                        <Image
+                          src="/assets/messages.png"
+                          alt="message icon"
+                          width={20}
+                          height={20}
+                        />
 
-                      <span className="text-sm text-[#344054] text-semibold gap-1">
-                        3 comments
-                      </span>
-                    </button>
+                        <span className="text-sm text-[#344054] text-semibold gap-1">
+                          {commentsCount} comments
+                        </span>
+                      </button>
+                      {commentsCount > 0 && (
+                        <button
+                          className="flex"
+                          onClick={handleResolveComment}
+                          disabled={isPending}
+                        >
+                          <span className="text-xs text-[#344054] text-semibold gap-1">
+                            {isPending ? <Spinner /> : "  Resolve Comments"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="w-full bg-gray-100 mt-2">
@@ -234,9 +217,13 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                     </Table>
                   </div>
                 </div>
-                <div>
-                  <ApprovalFlow steps={steps} />
-                </div>
+                {/* <div>
+                  <ApprovalFlow approvals={procurement?.approvals} />
+                </div> */}
+
+                {/* Vertical Item Stepper */}
+                <VerticalItemStepper approvals={procurement?.approvals} />
+
                 {/* Vendor */}
                 {procurement.vendor && (
                   <div className="mt-4">
@@ -244,12 +231,6 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                       <p className="font-medium">Vendor</p>
                     </div>
                     <div className="flex flex-row gap-2 border-2 border-gray-200 p-3 rounded-md w-fit mt-2">
-                      {/* <Image
-                        src="/personalcard.svg"
-                        alt="vendor"
-                        width={20}
-                        height={20}
-                      /> */}
                       <p className="uppercase text-sm">{procurement.vendor}</p>
                     </div>
                   </div>
