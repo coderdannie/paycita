@@ -8,8 +8,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from '../../components/ui/table';
 import StatusStepper from '../common/Stepper';
@@ -93,14 +91,12 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full max-w-[930px] bg-white shadow-xl z-50"
+            className="fixed top-0 right-0 h-full w-full max-w-[680px] bg-white shadow-xl z-50"
           >
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex flex-row justify-between items-center p-4 border-b border-gray-200">
-                <h2 className="text-lg font-medium">
-                  Purchase Request Details
-                </h2>
+                <h2 className="text-lg font-medium">Procurement Details</h2>
                 <IoCloseSharp
                   className="hover:bg-gray-100 hover:text-primary rounded-md hover:font-semibold cursor-pointer p-1"
                   size={24}
@@ -193,14 +189,12 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
 
                   <div className="w-full bg-gray-100 mt-2">
                     <Table>
-                      <TableHeader className="bg-gray-200">
+                      {/* <TableHeader className="bg-gray-200">
                         <TableRow>
                           <TableHead className="px-4 py-2 text-left">
                             Item
                           </TableHead>
-                          <TableHead className="px-4 py-2 text-left">
-                            Description
-                          </TableHead>
+           
                           <TableHead className="px-4 py-2 text-right">
                             Unit Price
                           </TableHead>
@@ -211,16 +205,16 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                             Total
                           </TableHead>
                         </TableRow>
-                      </TableHeader>
+                      </TableHeader> */}
                       <TableBody>
                         {procurement?.items?.map((item) => (
                           <TableRow key={item.id} className="border-b-2">
                             <TableCell className="px-4 py-3">
                               {item.item}
                             </TableCell>
-                            <TableCell className="px-4 py-3">
+                            {/* <TableCell className="px-4 py-3">
                               {item.description}
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell className="px-4 py-3 text-right">
                               {currency}
                               {Number(item.price).toLocaleString()}
