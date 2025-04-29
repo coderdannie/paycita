@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { IoClose, IoTrashBin } from "react-icons/io5";
+import React, { useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoClose, IoTrashBin } from 'react-icons/io5';
 import {
   Table,
   TableBody,
@@ -8,41 +8,63 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from '../../components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
-import { expenseHeaders } from "../common/constants";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpenseForm, expenseSchema } from "@/src/utils/validations";
+} from '../../components/ui/select';
+import { expenseHeaders } from '../common/constants';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ExpenseForm, expenseSchema } from '@/src/utils/validations';
 import {
   useCreateExpenses,
   useGetExpenseTypes,
-} from "@/src/hooks/expenses/useExpenses";
-import { AxiosError } from "axios";
-import { Expenses } from "@/src/types/procurement";
-import toast from "react-hot-toast";
-import { Spinner } from "react-activity";
-import { formatLongCurrency } from "@/src/utils/helper";
-import { useAuthSelector } from "@/src/Redux/selectors";
+} from '@/src/hooks/expenses/useExpenses';
+import { AxiosError } from 'axios';
+import { Expenses } from '@/src/types/procurement';
+import toast from 'react-hot-toast';
+import { Spinner } from 'react-activity';
+import { formatLongCurrency } from '@/src/utils/helper';
+import { useAuthSelector } from '@/src/Redux/selectors';
+
+interface ExpenseItem {
+  id: string;
+  item: string;
+  description: string;
+  price: number;
+  quantity: number;
+}
+
+interface ExpenseDetails {
+  id: string;
+  procurement_number: string;
+  status: string;
+  total_cost: number;
+  created_at: string;
+  expected_delivery_date?: string;
+  items: ExpenseItem[];
+  description?: string;
+}
 
 interface ExpenseDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  expense: ExpenseDetails;
+  isEditing: boolean;
 }
 
 const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
   isOpen,
   onClose,
+  expense,
+  isEditing,
 }) => {
   const userData = useAuthSelector();
-
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const { expenseType } = useGetExpenseTypes();
 
@@ -57,48 +79,87 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
   } = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      details: [
-        {
-          id: crypto.randomUUID(),
-          item: "",
-          description: "",
-          quantity: "",
-          price: "",
-        },
-      ],
+      details: isEditing
+        ? expense?.items?.map((item) => ({
+            id: crypto.randomUUID(),
+            item: item.item,
+            description: item.description,
+            quantity: item.quantity.toString(),
+            price: item.price.toString(),
+            total: Number(item.price) * item.quantity,
+          }))
+        : [
+            {
+              id: crypto.randomUUID(),
+              item: '',
+              description: '',
+              quantity: '',
+              price: '',
+              total: 0,
+            },
+          ],
     },
   });
 
-  const itemsArray = watch("details");
+  // Reset form when expense changes (for edit mode)
+  useEffect(() => {
+    if (isEditing && expense) {
+      reset({
+        details: expense?.items?.map((item) => ({
+          id: crypto.randomUUID(),
+          item: item.item,
+          description: item.description,
+          quantity: item.quantity.toString(),
+          price: item.price.toString(),
+          total: Number(item.price) * item.quantity,
+        })),
+      });
+    } else {
+      reset({
+        details: [
+          {
+            id: crypto.randomUUID(),
+            item: '',
+            description: '',
+            quantity: '',
+            price: '',
+            total: 0,
+          },
+        ],
+      });
+    }
+  }, [expense, isEditing, reset]);
+
+  const itemsArray = watch('details');
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "details",
+    name: 'details',
   });
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         onClose();
       }
     }
 
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  const calculateTotal = (quantity: number | "", price: number | "") => {
-    if (quantity === "" || price === "") return "0.00";
+  const calculateTotal = (quantity: number | '', price: number | '') => {
+    if (quantity === '' || price === '') return '0.00';
     return (Number(quantity) * Number(price)).toFixed(2);
   };
 
-  const procuredItems = useWatch({ control, name: "details" });
+  const procuredItems = useWatch({ control, name: 'details' });
 
   useEffect(() => {
     procuredItems?.forEach((item, index) => {
@@ -113,9 +174,9 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
   }, [procuredItems, setValue]);
 
   const totalSum = useMemo(() => {
-    return procuredItems.reduce((sum, item) => {
-      const quantity = item.quantity === "" ? 0 : Number(item.quantity);
-      const price = item.price === "" ? 0 : Number(item.price);
+    return procuredItems?.reduce((sum, item) => {
+      const quantity = item.quantity === '' ? 0 : Number(item.quantity);
+      const price = item.price === '' ? 0 : Number(item.price);
       return sum + quantity * price;
     }, 0);
   }, [procuredItems]);
@@ -128,10 +189,10 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
 
     append({
       id: crypto.randomUUID(),
-      item: "",
-      description: "",
-      quantity: "",
-      price: "",
+      item: '',
+      description: '',
+      quantity: '',
+      price: '',
       total: 0,
     });
   };
@@ -154,19 +215,20 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
 
     mutateCreateExpense(payload, {
       onSuccess: (res) => {
-        toast.success(res.data.message || "Procurement created successfully");
+        toast.success(res.data.message || 'Expense created successfully');
         reset();
         onClose();
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
           const errorMessage =
-            error.response?.data?.message || "Failed to update event";
+            error.response?.data?.message || 'Failed to create expense';
           toast.error(errorMessage);
         }
       },
     });
   };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -175,20 +237,22 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[930px] bg-white shadow-xl z-50 rounded-lg p-4"
           >
             <div className="flex items-center justify-between border-b border-[#E4E7EC] py-3 ">
-              <h2 className="text-lg font-semibold">Add Expense</h2>
+              <h2 className="text-lg font-semibold">
+                {isEditing ? 'Edit Expense' : 'Add Expense'}
+              </h2>
               <button onClick={onClose}>
                 <IoClose className="text-2xl text-[#667085]" />
               </button>
@@ -280,7 +344,7 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       field.onChange(
-                                        value === "" ? "" : parseInt(value) || 0
+                                        value === '' ? '' : parseInt(value) || 0
                                       );
                                     }}
                                     className="border border-gray-300 h-[40px] w-full rounded p-2 text-center"
@@ -306,8 +370,8 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       field.onChange(
-                                        value === ""
-                                          ? ""
+                                        value === ''
+                                          ? ''
                                           : parseFloat(value) || 0
                                       );
                                     }}
@@ -325,8 +389,8 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                           <TableCell className="w-[10%] text-center">
                             {currency}
                             {calculateTotal(
-                              +itemsArray[index].quantity,
-                              +itemsArray[index].price
+                              +itemsArray[index]?.quantity,
+                              +itemsArray[index]?.price
                             )}
                           </TableCell>
                           <TableCell className="w-[10%] text-center">
@@ -375,7 +439,7 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                   disabled={isPending}
                 >
                   {isPending && <Spinner />}
-                  Submit
+                  {isEditing ? 'Update' : 'Submit'}
                 </button>
               </div>
             </form>
