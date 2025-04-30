@@ -59,8 +59,6 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
   const { expenseType } = useGetExpenseTypes();
   const { vendors } = useGetVendors();
 
-  console.log(procurement?.vendor);
-
   const {
     control,
     handleSubmit,
