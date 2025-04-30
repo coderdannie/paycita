@@ -3,12 +3,12 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { AxiosError } from "axios";
-import expenseService from "@/src/service/api/expenses.service";
-import { Expenses } from "@/src/types/procurement";
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { AxiosError } from 'axios';
+import expenseService from '@/src/service/api/expenses.service';
+import { Expenses } from '@/src/types/procurement';
 
 export const useGetAllExpenses = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -93,7 +93,7 @@ export const useCreateExpenses = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to create event";
+          err.response?.data?.message || 'Failed to create event';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -254,6 +254,7 @@ export const useGetSingleExpense = (id: string) => {
     isSuccess,
     isLoading: isPending && !isFetching,
     isFetching,
+    isPending,
     expense: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
     rawData: data,
@@ -266,8 +267,9 @@ export const useResolveExpensesCommentThread = () => {
   return useMutation<unknown, AxiosError<{ message?: string }> | Error, string>(
     {
       mutationFn: async (threadId: string): Promise<unknown> => {
-        const response =
-          await expenseService.resolveExpensesCommentThread(threadId);
+        const response = await expenseService.resolveExpensesCommentThread(
+          threadId
+        );
         return response;
       },
       onSuccess: () => {
@@ -283,10 +285,10 @@ export const useResolveExpensesCommentThread = () => {
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
-          throw new Error(error.message || "Failed to resolve comment thread");
+          throw new Error(error.message || 'Failed to resolve comment thread');
         }
         throw new Error(
-          "An unknown error occurred while resolving the comment thread."
+          'An unknown error occurred while resolving the comment thread.'
         );
       },
       onSettled: () => {

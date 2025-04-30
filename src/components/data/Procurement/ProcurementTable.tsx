@@ -23,7 +23,6 @@ interface ProcurementTableProps {
   setProcurementId: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
   handleDelete: (procurement: ProcurementData) => void;
-  isLoadingSingle: boolean;
 }
 
 const ProcurementTable: React.FC<ProcurementTableProps> = ({
@@ -32,7 +31,6 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
   setProcurementId,
   handleEdit,
   handleDelete,
-  isLoadingSingle,
 }) => {
   const headers = [
     { label: 'Request ID' },
@@ -97,13 +95,10 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
 
                   <button
                     onClick={() => {
-                      if (!isLoadingSingle) {
-                        handleEdit();
-                        setProcurementId(row.id);
-                      }
+                      handleEdit();
+                      setProcurementId(row.id);
                     }}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
-                    disabled={isLoadingSingle}
                   >
                     <FaRegEdit className="w-4 h-4" />
                   </button>

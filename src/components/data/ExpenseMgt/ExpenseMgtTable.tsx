@@ -22,7 +22,6 @@ interface ExpenseTableProps {
   setExpenseId: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
   handleDelete: (procurement: ExpenseData) => void;
-  isFetching: boolean;
 }
 
 const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
@@ -31,7 +30,6 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
   setExpenseId,
   handleEdit,
   handleDelete,
-  isFetching,
 }) => {
   const headers = [
     { label: 'Request ID' },
@@ -95,13 +93,10 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
 
                   <button
                     onClick={() => {
-                      if (!isFetching) {
-                        handleEdit();
-                        setExpenseId(row.id);
-                      }
+                      handleEdit();
+                      setExpenseId(row.id);
                     }}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
-                    disabled={isFetching}
                   >
                     <FaRegEdit className="w-4 h-4" />
                   </button>

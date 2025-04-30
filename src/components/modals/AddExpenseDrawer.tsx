@@ -161,7 +161,29 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
     if (!quantity || !price) return '0.00';
     return (Number(quantity) * Number(price)).toFixed(2);
   };
-  const procuredItems = useWatch({ control, name: 'details' });
+  const procuredItems = useWatch({
+    control,
+    name: 'details',
+    defaultValue: isEditing
+      ? expense?.items?.map((item) => ({
+          id: crypto.randomUUID(),
+          item: item.item,
+          description: item.description,
+          quantity: item.quantity.toString(),
+          price: item.price.toString(),
+          total: Number(item.price) * item.quantity,
+        }))
+      : [
+          {
+            id: crypto.randomUUID(),
+            item: '',
+            description: '',
+            quantity: '',
+            price: '',
+            total: 0,
+          },
+        ],
+  });
 
   useEffect(() => {
     procuredItems?.forEach((item, index) => {
@@ -390,10 +412,12 @@ const AddExpenseDrawer: React.FC<ExpenseDrawerProps> = ({
                           </TableCell>
                           <TableCell className="w-[10%] text-center">
                             {currency}
-                            {calculateTotal(
-                              +(itemsArray[index]?.quantity || 0),
-                              +(itemsArray[index]?.price || 0)
-                            )}
+                            {itemsArray && itemsArray[index]
+                              ? calculateTotal(
+                                  +(itemsArray[index]?.quantity || 0),
+                                  +(itemsArray[index]?.price || 0)
+                                )
+                              : '0.00'}
                           </TableCell>
                           <TableCell className="w-[10%] text-center">
                             <button

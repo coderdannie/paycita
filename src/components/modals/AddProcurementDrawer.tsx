@@ -41,6 +41,11 @@ interface ProcurementDrawerProps {
   isEditing: boolean;
 }
 
+type Vendor = {
+  id: number;
+  vendor_name: string;
+};
+
 type CalendarTileArgs = TileArgs & {
   view: 'month' | 'year' | 'decade' | 'century';
 };
@@ -53,6 +58,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 }) => {
   const { expenseType } = useGetExpenseTypes();
   const { vendors } = useGetVendors();
+
+  console.log(procurement?.vendor);
 
   const {
     control,
@@ -67,17 +74,17 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
     resolver: zodResolver(procurementSchema),
     defaultValues: {
       procurement_date:
-        isEditing && procurement.created_at
-          ? new Date(procurement.created_at)
+        isEditing && procurement?.created_at
+          ? new Date(procurement?.created_at)
           : null,
       expected_delivery_date:
-        isEditing && procurement.expected_delivery_date
-          ? new Date(procurement.expected_delivery_date)
+        isEditing && procurement?.expected_delivery_date
+          ? new Date(procurement?.expected_delivery_date)
           : null,
-      vendor_id: isEditing ? procurement.vendor : '',
+      vendor_id: isEditing ? procurement?.vendor : '',
       details:
-        isEditing && procurement.items
-          ? procurement.items.map((item) => ({
+        isEditing && procurement?.items
+          ? procurement?.items.map((item) => ({
               id: crypto.randomUUID(),
               item: item.item,
               description: item.description,
@@ -100,7 +107,14 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
   // Reset form when procurement changes (for edit mode)
   useEffect(() => {
-    if (isEditing && procurement) {
+    if (isEditing && procurement && vendors.length > 0) {
+      // Find the vendor ID that matches the procurement vendor name
+      const vendorId =
+        vendors
+          .find((v: Vendor) => v.vendor_name === procurement.vendor)
+          ?.id.toString() || '';
+
+      console.log(vendorId);
       reset({
         procurement_date: procurement?.created_at
           ? new Date(procurement?.created_at)
@@ -108,7 +122,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
         expected_delivery_date: procurement?.expected_delivery_date
           ? new Date(procurement?.expected_delivery_date)
           : null,
-        vendor_id: procurement?.vendor,
+        vendor_id: vendorId, // Use the found ID
         details: procurement?.items?.map((item) => ({
           id: crypto.randomUUID(),
           item: item.item,
@@ -135,7 +149,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
         ],
       });
     }
-  }, [procurement, isEditing, reset]);
+  }, [procurement, isEditing, reset, vendors]); // Add vendors to dependencies
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -147,7 +161,31 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
 
   const procurement_date = watch('procurement_date');
   const expected_delivery_date = watch('expected_delivery_date');
-  const itemsArray = watch('details');
+
+  const itemsArray = useWatch({
+    control,
+    name: 'details',
+    defaultValue:
+      isEditing && procurement?.items
+        ? procurement.items.map((item) => ({
+            id: crypto.randomUUID(),
+            item: item.item,
+            description: item.description,
+            quantity: item.quantity.toString(),
+            price: item.price.toString(),
+            total: Number(item.price) * item.quantity,
+          }))
+        : [
+            {
+              id: crypto.randomUUID(),
+              item: '',
+              description: '',
+              quantity: '',
+              price: '',
+              total: 0,
+            },
+          ],
+  });
 
   const handleProcurementDateChange = (
     value: Date | Date[] | [Date | null, Date | null] | null
@@ -345,7 +383,7 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                   </div>
                   <div>
                     <span className="font-semibold">Total:</span>
-                    <span className="font-bold">₦ {totalSum.toFixed(2)}</span>
+                    <span className="font-bold">₦ {totalSum?.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -611,8 +649,8 @@ const AddProcurement: React.FC<ProcurementDrawerProps> = ({
                           <TableCell className="w-[10%] text-center">
                             ₦{' '}
                             {calculateTotal(
-                              itemsArray[index]?.quantity,
-                              itemsArray[index]?.price
+                              itemsArray?.[index]?.quantity,
+                              itemsArray?.[index]?.price
                             )}
                           </TableCell>
                           <TableCell className="w-[10%] text-center">

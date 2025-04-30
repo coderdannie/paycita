@@ -172,7 +172,6 @@ const Procurement = () => {
         setProcurementId={setProcurementId}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
-        isLoadingSingle={isLoadingSingle}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (
