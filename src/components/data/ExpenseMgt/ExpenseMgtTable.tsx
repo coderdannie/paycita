@@ -6,6 +6,7 @@ import { TableCell, TableRow } from '../../ui/table';
 import { Dispatch, SetStateAction } from 'react';
 import { formatLongCurrency } from '@/src/utils/helper';
 import { FaRegEdit } from 'react-icons/fa';
+import { Trash2 } from 'lucide-react';
 
 export interface ExpenseData {
   id: string;
@@ -20,6 +21,7 @@ interface ExpenseTableProps {
   setIsShow: (value: boolean) => void;
   setExpenseId: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
+  handleDelete: (procurement: ExpenseData) => void;
 }
 
 const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
@@ -27,12 +29,13 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
   setIsShow,
   setExpenseId,
   handleEdit,
+  handleDelete,
 }) => {
   const headers = [
     { label: 'Request ID' },
-    { label: 'Item Name' },
-    { label: 'Quantity' },
+
     { label: 'Total Cost' },
+    // { label: "Quantity" },
     { label: 'Status' },
     { label: '' },
   ];
@@ -87,24 +90,23 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
                       height={15}
                     />
                   </button>
-                  {row.status === 'pending' && (
-                    <button
-                      onClick={() => {
-                        handleEdit();
-                        setExpenseId(row.id);
-                      }}
-                      className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
-                    >
-                      <FaRegEdit className="w-4 h-4" />
-                    </button>
-                  )}
 
-                  {/* <button
+                  <button
+                    onClick={() => {
+                      handleEdit();
+                      setExpenseId(row.id);
+                    }}
+                    className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
+                  >
+                    <FaRegEdit className="w-4 h-4" />
+                  </button>
+
+                  <button
                     onClick={() => handleDelete(row)}
                     className="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button> */}
+                  </button>
                 </div>
               </TableCell>
             </TableRow>

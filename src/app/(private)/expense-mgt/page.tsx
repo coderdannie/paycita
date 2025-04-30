@@ -152,6 +152,7 @@ const ExpenseMgt = () => {
         setIsShow={setIsShow}
         setExpenseId={setExpenseId}
         handleEdit={handleEdit}
+        handleDelete={handleDelete}
       />
       <div className="mt-6">
         {pagination?.total_pages > 1 && (
