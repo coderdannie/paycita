@@ -60,7 +60,6 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
               <TableCell className="py-5">
                 {row.expenses_number ?? 'N/A'}
               </TableCell>
-              <TableCell className="py-5">{'Office tools'}</TableCell>
               <TableCell>
                 {formatLongCurrency(+row.total_cost) ?? 'N/A'}
               </TableCell>
