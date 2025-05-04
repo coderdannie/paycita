@@ -18,9 +18,11 @@ interface Department {
 
 const ITEMS_PER_PAGE = 10;
 
-const DepartmentsPage: FC = () => {
+const DepartmentsComponent: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  console.log(pathname);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -29,9 +31,12 @@ const DepartmentsPage: FC = () => {
   );
   const [selectAll, setSelectAll] = useState(false);
 
-  const id = useMemo(() => pathname.split("/").pop() || "", [pathname]);
+  const routeId = useMemo(() => pathname.split("/").pop() || "", [pathname]);
 
-  const { appraisalByDepartment, isLoading } = useGetAppraisalsByDepartment(id);
+  console.log("ID", routeId);
+
+  const { appraisalByDepartment, isLoading } =
+    useGetAppraisalsByDepartment(routeId);
 
   const departments = useMemo(
     () => appraisalByDepartment || [],
@@ -104,6 +109,7 @@ const DepartmentsPage: FC = () => {
       const department = departments.find(
         (dept: Department) => dept.department_id === id
       );
+      console.log("Department", department);
       if (department) {
         let urlPath = department.department_name
           .toLowerCase()
@@ -116,17 +122,15 @@ const DepartmentsPage: FC = () => {
         if (department.department_name === "IT Support") {
           urlPath = "it-support";
         }
-
-        router.push(
-          `/appraisals/appraisal-management/departments/${urlPath}?id=${id}`
-        );
+        localStorage.setItem("departmentID", id);
+        router.push(`${pathname}/${urlPath}`);
       }
     },
-    [departments, router]
+    [departments, router, pathname]
   );
 
   const handleGoBack = useCallback(() => {
-    router.push("/appraisals");
+    router.push("/appraisals?tab=appraisal-management");
   }, [router]);
 
   const setPageIndex = useCallback((index: number) => {
@@ -141,7 +145,9 @@ const DepartmentsPage: FC = () => {
     <div className="min-h-screen">
       <div className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center text-sm mb-4">
-          <span className="text-[#692E9F]">Appraisal Management</span>
+          <button onClick={handleGoBack} className="text-[#692E9F]">
+            Appraisal Management
+          </button>
           <span className="mx-2">/</span>
           <span>Departments</span>
         </div>
@@ -302,4 +308,4 @@ const DepartmentsPage: FC = () => {
   );
 };
 
-export default DepartmentsPage;
+export default DepartmentsComponent;

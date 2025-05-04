@@ -80,7 +80,7 @@ const Sidebar = () => {
           alt="logo"
           width={100}
           height={100}
-          className="w-24 h-24 object-contain"
+          className="max-w-16 max-h-16 object-contain"
           priority
         />
       </div>

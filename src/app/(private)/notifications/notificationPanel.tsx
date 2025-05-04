@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import { mockNotifications } from "./mockData";
+import React, { useState, useEffect, useRef } from "react";
 
 import NotificationHeader from "./notificationHeader";
 import NotificationList from "./notificationList";
 import { Notification } from "@/src/types/notifications";
+import { useGetAppNotifications, useDeleteAppNotification, useDeleteAllAppNotifications } from "@/src/hooks/app-notifications/useAppNotifications";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface NotificationsPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  initialNotifications?: Notification[];
 }
 
 const lockScroll = () => {
@@ -31,29 +31,61 @@ const unlockScroll = () => {
 const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   isOpen,
   onClose,
-  initialNotifications = mockNotifications,
 }) => {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(initialNotifications);
+  const { appNotifications, isLoading, isError } = useGetAppNotifications();
+  const { mutate: deleteNotification } = useDeleteAppNotification();
+  const { mutate: deleteAllNotifications } = useDeleteAllAppNotifications();
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const prevAppNotificationsRef = useRef<Notification[] | undefined>(undefined); // Initialize useRef with undefined
+
+  useEffect(() => {
+    const hasDataChanged = JSON.stringify(appNotifications) !== JSON.stringify(prevAppNotificationsRef.current);
+
+    if (appNotifications && hasDataChanged) {
+      setSelectedIds(new Set());
+      setNotifications(appNotifications.map(n => ({ ...n, isSelected: false })));
+      prevAppNotificationsRef.current = appNotifications;
+    } else if (!appNotifications && prevAppNotificationsRef.current) {
+      setSelectedIds(new Set());
+      setNotifications([]);
+      prevAppNotificationsRef.current = undefined;
+    }
+  }, [appNotifications]);
 
   const handleToggleSelect = (id: string) => {
-    setNotifications(
-      notifications.map((notification) =>
+    const newSelectedIds = new Set(selectedIds);
+    const notificationIndex = notifications.findIndex(n => n.id === id);
+    if (notificationIndex === -1) return;
+
+    const isCurrentlySelected = newSelectedIds.has(id);
+
+    if (isCurrentlySelected) {
+      newSelectedIds.delete(id);
+    } else {
+      newSelectedIds.add(id);
+    }
+
+    setSelectedIds(newSelectedIds);
+
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
         notification.id === id
-          ? { ...notification, isSelected: !notification.isSelected }
+          ? { ...notification, isSelected: !isCurrentlySelected }
           : notification
       )
     );
   };
 
   const handleDeleteSelected = () => {
-    setNotifications(
-      notifications.filter((notification) => !notification.isSelected)
-    );
+    selectedIds.forEach(id => {
+      deleteNotification(id);
+    });
   };
 
   const handleDeleteAll = () => {
-    setNotifications([]);
+    deleteAllNotifications();
   };
 
   if (isOpen) {
@@ -80,11 +112,25 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
           onDeleteSelected={handleDeleteSelected}
           onDeleteAll={handleDeleteAll}
           onClose={onClose}
+          isDeleteSelectedDisabled={selectedIds.size === 0}
+          isDeleteAllDisabled={notifications.length === 0 || isLoading}
         />
-        <NotificationList
-          notifications={notifications}
-          onToggleSelect={handleToggleSelect}
-        />
+        {isLoading ? (
+          <div className="space-y-3 p-4">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+        ) : isError ? (
+          <div className="p-4 text-center text-red-600">
+            Failed to load notifications.
+          </div>
+        ) : (
+          <NotificationList
+            notifications={notifications}
+            onToggleSelect={handleToggleSelect}
+          />
+        )}
       </div>
     </>
   );

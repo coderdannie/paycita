@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoMdClose } from 'react-icons/io';
-import { FaExclamationCircle } from 'react-icons/fa';
-import { cn } from '@/lib/utils';
+import { useEffect, useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoMdClose } from "react-icons/io";
+import { FaExclamationCircle } from "react-icons/fa";
 
 interface StatusModalProps {
   isOpen: boolean;
@@ -15,7 +14,7 @@ interface StatusModalProps {
   disabled?: boolean;
 }
 
-const statusOptions = ['Approved', 'Rejected', 'Pending'];
+const statusOptions = ["Approved", "Rejected", "Pending"];
 
 const StatusModal: React.FC<StatusModalProps> = ({
   isOpen,
@@ -31,11 +30,11 @@ const StatusModal: React.FC<StatusModalProps> = ({
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status.toLowerCase() === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status.toLowerCase() === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -55,17 +54,17 @@ const StatusModal: React.FC<StatusModalProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         closeModal();
       }
     };
 
     if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, closeModal]);
 

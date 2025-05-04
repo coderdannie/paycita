@@ -192,13 +192,14 @@ export const useDeleteProcurement = () => {
   });
 };
 
-export const useGetVendors = () => {
+export const useGetVendors = (options?: { enabled?: boolean }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
     queryKey: [QUERY_KEYS.GET_ALL_VENDORS],
     queryFn: async () => {
       const response = await procurementService.getVendors();
       return response;
     },
+    enabled: options?.enabled !== false,
 
     // Only retry on server errors, not 404s
     retry: (
@@ -218,11 +219,11 @@ export const useGetVendors = () => {
   return {
     isError,
     isSuccess,
-    isLoading: isPending && !isFetching, // Distinguish between initial load and background refresh
+    isLoading: isPending && !isFetching, 
     isFetching,
     vendors: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
-    rawData: data, // Provide access to raw response if needed
+    rawData: data,  
   };
 };
 
@@ -231,6 +232,7 @@ export const useGetSingleProcurement = (id: string) => {
     queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, id],
     enabled: !!id,
     queryFn: async () => {
+      console.log("Fetching single procurement for ID:", id); // Log inside queryFn too
       const response = await procurementService.getSingleProcurement(id);
       return response;
     },
@@ -298,4 +300,80 @@ export const useResolveProcurementCommentThread = () => {
       },
     }
   );
+};
+
+export const useUpdateProcurement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { id: string; data: Procurement }) => {
+      const response = await procurementService.updateProcurement(
+        data.id,
+        data.data
+      );
+      return response;
+    },
+    onMutate: async (newProcurement) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+      });
+
+      // Snapshot the previous value
+      const previousProcurements = queryClient.getQueryData([
+        QUERY_KEYS.GET_ALL_PROCUREMENTS,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        (old: {
+          data: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: any[];
+          };
+        }) => {
+          const newData = { ...old };
+          if (newData?.data?.data) {
+            newData.data.data = [
+              newProcurement.data,
+              ...newData.data.data.filter(
+                (procurement) => procurement.id !== newProcurement.id
+              ),
+            ];
+          }
+          return newData;
+        }
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousProcurements };
+    },
+    onError: (err, newProcurement, context) => {
+      // Rollback to the previous value if mutation fails
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        context?.previousProcurements
+      );
+
+      // More robust error handling
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to update procurement";
+        throw new Error(errorMessage);
+      } else {
+        throw err;
+      }
+    },
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS],
+        exact: false,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, +variables.id],
+      });
+    },
+  });
 };

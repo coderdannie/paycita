@@ -107,7 +107,10 @@ export const useCreateReimbursement = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_REIMBURSEMENTS],
+        queryKey: [
+          QUERY_KEYS.GET_ALL_REIMBURSEMENTS,
+          "pending-reimbursement-requests",
+        ],
       });
     },
   });

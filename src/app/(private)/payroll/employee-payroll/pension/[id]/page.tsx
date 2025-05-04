@@ -1,37 +1,54 @@
-'use client';
-import CustomTable from '@/src/components/common/CustomTable';
-import TableEmptyState from '@/src/components/common/TableEmptyState';
-import { TableCell, TableRow } from '@/src/components/ui/table';
-import { useMemo, useState } from 'react';
-import SearchInput from '@/src/components/ui/SearchInput';
+"use client";
+import CustomTable from "@/src/components/common/CustomTable";
+import TableEmptyState from "@/src/components/common/TableEmptyState";
+import { TableCell, TableRow } from "@/src/components/ui/table";
+import { useMemo, useState } from "react";
+import SearchInput from "@/src/components/ui/SearchInput";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/src/components/ui/select';
+} from "@/src/components/ui/select";
+import { useSearchParams } from "next/navigation";
+import { useGetAllStaffPension } from "@/src/hooks/payroll/usePayroll";
+import { useAuthSelector } from "@/src/Redux/selectors";
 
 const ViewSinglePension = () => {
-  const [status, setStatus] = useState('This Month');
+  const userData = useAuthSelector();
+
+  const currency = userData?.user?.currency || "NGN";
+
+  const params = useSearchParams();
+  const companyName = params.get("company_name") || "";
+  const period = params.get("date") || "";
+
+  const { allStaffPensionData } = useGetAllStaffPension(companyName, period);
+
+  const [status, setStatus] = useState("This Month");
 
   const headers = useMemo(
-    () => [{ label: 'Staff Name' }, { label: 'Amount Paid' }],
+    () => [
+      { label: "Staff Name" },
+      { label: "Amount Paid" },
+      { label: "Status" },
+    ],
     []
   );
-  const [searchTerm, setSearchTerm] = useState('');
-  const cards = ['Total Pension', 'Total Staff'];
+  const [searchTerm, setSearchTerm] = useState("");
+  const cards = ["Total Pension", "Total Staff"];
 
   return (
     <div className="px-2 sm:px-0">
-      {' '}
+      {" "}
       {/* Added horizontal padding for mobile */}
       <div className="flex items-center gap-1 text-sm sm:text-base">
         <span className="text-primary ">Pension</span>/
-        <span className="text-[#667085]">ARM Pension </span>
+        <span className="text-[#667085]">{companyName} </span>
       </div>
       <h2 className="text-[#1D2939] font-bold text-lg md:text-xl pt-3 sm:pt-5 pb-4 sm:pb-8">
-        ARM Pension
+        {companyName}
       </h2>
       {/* Cards Section - Changed to flex with wrap for better mobile behavior */}
       <div className="flex flex-wrap gap-3 sm:gap-5">
@@ -41,7 +58,9 @@ const ViewSinglePension = () => {
             className="bg-white rounded-xl w-full sm:w-[calc(50%-20px)] border border-[#E4E7EC] text-center flex flex-col items-center justify-center p-4 min-h-[90px] sm:h-[106px]"
           >
             <h4 className="font-bold text-lg sm:text-xl">
-              {i === 0 ? '₦25,000,000' : '34'}
+              {i === 0
+                ? `${currency} ${allStaffPensionData.total_pension}`
+                : allStaffPensionData.total_staff}
             </h4>
             <p className="text-xs sm:text-sm text-[#667085]">{dat}</p>
           </div>
@@ -62,7 +81,7 @@ const ViewSinglePension = () => {
               <SelectValue placeholder={status} />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              {['This Month', 'Last week'].map((item) => (
+              {["This Month", "Last week"].map((item) => (
                 <SelectItem key={item} value={item}>
                   {item}
                 </SelectItem>
@@ -74,16 +93,17 @@ const ViewSinglePension = () => {
       {/* Table Section - Added overflow container */}
       <div className="overflow-x-auto">
         <CustomTable headers={headers}>
-          {['', '', '', '']?.length ? (
-            ['', '', '', ''].map((row, rowIndex) => (
+          {allStaffPensionData?.data?.length ? (
+            allStaffPensionData.data.map((row, rowIndex) => (
               <TableRow key={rowIndex} className="text-[#1D2939] text-sm">
                 <TableCell className="py-3 sm:py-5">
                   <div className="flex gap-3 sm:gap-6 items-center">
                     <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>
-                    John Doe
+                    {row.name}
                   </div>
                 </TableCell>
-                <TableCell>₦25,000,000</TableCell>
+                <TableCell>{`${currency} ${row.amount}`}</TableCell>
+                <TableCell>{row.status}</TableCell>
               </TableRow>
             ))
           ) : (

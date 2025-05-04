@@ -1,5 +1,5 @@
-import DepartmentsPage from "../component-management/Department";
+import DepartmentsComponent from "../components/DepartmentComponent";
 
-export default function Page() {
-  return <DepartmentsPage />;
+export default function DepartmentsPage() {
+  return <DepartmentsComponent />;
 }

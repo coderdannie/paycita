@@ -106,7 +106,7 @@ const ReimbursementTable = ({
         queryClient.invalidateQueries({
           queryKey: [
             QUERY_KEYS.GET_ALL_APPROVALS,
-            "update-reimbursement-requests",
+            "pending-reimbursement-requests",
           ],
         });
         setIsOpen("");

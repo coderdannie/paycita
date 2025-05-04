@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Notification } from "@/src/types/notifications";
 import Image from "next/image";
 
-
 interface NotificationItemProps {
   notification: Notification;
   onToggleSelect: (id: string) => void;
@@ -39,6 +38,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             <div className="flex items-center mt-2">
               {notification.user.avatar ? (
                 <Image
+                  width={24}
+                  height={24}
                   src={notification.user.avatar}
                   alt={notification.user.name}
                   className="h-6 w-6 rounded-full"

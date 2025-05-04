@@ -1,5 +1,5 @@
 import React, { use } from "react";
-import EmployeeReviewDetailsPage from "../../../component-management/EmployeeReviewDetailsPage";
+import EmployeeReviewDetailsPage from "../../../components/EmployeeReviewDetailsPage";
 
 export default function EmployeeDetailPage({
   params,

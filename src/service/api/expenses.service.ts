@@ -33,6 +33,11 @@ export const getExpenseType = () => {
 const resolveExpensesCommentThread = (id: string) => {
   return api.post(`/hr/resolve-expense-comment/${id}`);
 };
+
+const updateExpenses = (id: string, data: Expenses) => {
+  return api.put(`/hr/update-expenses-request/${id}`, data);
+};
+
 const expenseService = {
   getAllExpenses,
   createExpenses,
@@ -40,6 +45,7 @@ const expenseService = {
   deleteExpenses,
   getExpenseType,
   resolveExpensesCommentThread,
+  updateExpenses,
 };
 
 export default expenseService;

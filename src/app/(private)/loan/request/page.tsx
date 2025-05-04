@@ -23,27 +23,37 @@ import { Checkbox } from "@/src/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import {
-  useGetRepaymentPeriod,
+  useGetLoanType,
+  useGetLoanTypeDetails,
+  // useGetRepaymentPeriod,
   useRequestLoan,
 } from "@/src/hooks/loan/useLoan";
 import { useToast } from "@/src/context/ToastContext";
 import { Loan } from "@/src/types/loan";
 import { Spinner } from "react-activity";
+import { InfoIcon } from "lucide-react";
+import LoanTypeDetails from "@/src/components/modals/LoanTypeDetails";
+import { useState } from "react";
 
 const LoanRequest = () => {
   const { addToast } = useToast();
   const router = useRouter();
 
-  const { repaymentPeriod } = useGetRepaymentPeriod();
+  const [openLoanDetails, setOpenLoanDetails] = useState<boolean>(false);
+
+  // const { repaymentPeriod } = useGetRepaymentPeriod();
 
   const { mutate: mutateRequestLoan, isPending: isPendingCreateEvent } =
     useRequestLoan();
 
+  const { loanType } = useGetLoanType();
+
   const form = useForm<LoanApplicationSchemaType>({
     resolver: zodResolver(loanApplicationSchema),
     defaultValues: {
+      loan_type: "",
       amount: "",
-      loan_payment_plan: "",
+      // loan_payment_plan: "",
       loan_purpose: "",
       salary_deduction_agreement: true,
     },
@@ -52,9 +62,18 @@ const LoanRequest = () => {
 
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
+    watch,
   } = form;
+
+  const loanTypeWatch = watch("loan_type");
+
+  const loanTypeID = loanType.find(
+    (item: { loan_type: string }) => item.loan_type === loanTypeWatch
+  )?.id;
+
+  const { loanTypeDetails } = useGetLoanTypeDetails(loanTypeID);
 
   const onSubmit = (values: LoanApplicationSchemaType) => {
     mutateRequestLoan(values as Loan, {
@@ -77,6 +96,30 @@ const LoanRequest = () => {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="pt-4">
             <div className="grid gap-5 pb-5 mt-5">
+              <div>
+                <CustomFormSelect
+                  name="loan_type"
+                  control={control}
+                  items={loanType.map(
+                    (item: { loan_type: string; name: string }) =>
+                      item.loan_type
+                  )}
+                  labelText="Loan Type"
+                  holder="Select loan type"
+                  error={errors.loan_type?.message}
+                />
+                {loanTypeDetails && (
+                  <button
+                    type="button"
+                    className="text-gray-500 text-xs flex items-center gap-1 mt-1"
+                    onClick={() => {
+                      setOpenLoanDetails(true);
+                    }}
+                  >
+                    <InfoIcon className="w-3 h-3" /> Loan Details
+                  </button>
+                )}
+              </div>
               <CustomFormField
                 name="amount"
                 control={control}
@@ -85,7 +128,7 @@ const LoanRequest = () => {
                 error={errors.amount?.message}
               />
 
-              <CustomFormSelect
+              {/* <CustomFormSelect
                 name="loan_payment_plan"
                 control={control}
                 items={repaymentPeriod.map(
@@ -94,7 +137,7 @@ const LoanRequest = () => {
                 labelText="Repayment Period"
                 holder="Select repayment period"
                 error={errors.loan_payment_plan?.message}
-              />
+              /> */}
 
               <FormField
                 control={control}
@@ -152,13 +195,21 @@ const LoanRequest = () => {
             <Button
               type="submit"
               className="flex items-center justify-center gap-3 disabled:bg-gray-400 ml-auto"
-              disabled={!isValid || isPendingCreateEvent}
+              disabled={isPendingCreateEvent}
             >
               {isPendingCreateEvent && <Spinner />} Request
             </Button>
           </form>
         </Form>
       </div>
+
+      <LoanTypeDetails
+        isOpen={openLoanDetails && !!loanTypeDetails}
+        onClose={() => {
+          setOpenLoanDetails(false);
+        }}
+        details={loanTypeDetails}
+      />
     </div>
   );
 };

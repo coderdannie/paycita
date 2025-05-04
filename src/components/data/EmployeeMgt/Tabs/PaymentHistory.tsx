@@ -1,13 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import Calendar from 'react-calendar';
-import { formatDate } from '@/src/utils/helper';
-import { LuCalendarDays } from 'react-icons/lu';
-import PaymentHisTable from '../PaymentHisTable';
+import Calendar from "react-calendar";
+import { formatDate } from "@/src/utils/helper";
+import { LuCalendarDays } from "react-icons/lu";
+import PaymentHisTable from "../PaymentHisTable";
 
-const PaymentHistory = () => {
+const PaymentHistory = ({
+  payroll,
+}: {
+  payroll: {
+    date: string;
+    deductions: string;
+    gross_income: string;
+    net_pay: string;
+    paye: string;
+    pension: string;
+  }[];
+}) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
 
@@ -36,7 +47,7 @@ const PaymentHistory = () => {
                 <LuCalendarDays className="mr-2 h-4 w-4 text-[#5B5B5B]" />
               </div>
               <p className="text-xs text-[#292D32]">
-                {date ? formatDate(date) : 'Select date'}
+                {date ? formatDate(date) : "Select date"}
               </p>
             </div>
 
@@ -49,8 +60,8 @@ const PaymentHistory = () => {
                   tileClassName={
                     ({ date }) =>
                       date.getDay() === 0 || date.getDay() === 6
-                        ? 'weekend'
-                        : '' // Optional: Style weekends
+                        ? "weekend"
+                        : "" // Optional: Style weekends
                   }
                 />
               </div>
@@ -58,7 +69,7 @@ const PaymentHistory = () => {
           </div>
         </div>
       </div>
-      <PaymentHisTable />
+      <PaymentHisTable payroll={payroll} />
     </div>
   );
 };

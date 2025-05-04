@@ -8,7 +8,7 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 import MyAppraisalTab from "./MyAppraisalTab";
-import AppraisalManagementTab from "../appraisal-management/component-management/AppraisalManagementTab";
+import AppraisalManagementTab from "../appraisal-management/components/AppraisalManagementTab";
 
 export function AppraisalTabs() {
   const [activeTab, setActiveTab] = React.useState("myAppraisal");

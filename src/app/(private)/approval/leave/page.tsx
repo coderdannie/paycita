@@ -141,16 +141,13 @@ const LeavePage = () => {
         {isFetching && !isLoading && (
           <p className="mt-4 text-center">Updating...</p>
         )}{" "}
-        {/* Optional: Show background fetching */}
+      
         {isError && (
           <p className="mt-4 text-center text-red-600">
             Error fetching leave approvals.
           </p>
         )}
-        {/* Render table only when not loading initially and no error */}
-        {!isLoading && !isError && (
-          <LeaveTable approvals={approvals} /> // Pass the fetched data to the table
-        )}
+        {!isLoading && !isError && <LeaveTable approvals={approvals} />}
         {!isLoading && !isError && pagination?.total_pages > 1 && (
           <CustomPagination
             totalPages={pagination.total_pages}
@@ -158,7 +155,6 @@ const LeavePage = () => {
             goToPage={goToPage}
           />
         )}
-        {/* Pass filter state and apply function to the modal */}
         <ApprovalFilter
           isOpen={isFilterModalOpen}
           onClose={() => setIsFilterModalOpen(false)}

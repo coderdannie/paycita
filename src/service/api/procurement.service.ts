@@ -34,6 +34,10 @@ const resolveProcurementCommentThread = (id: string) => {
   return api.post(`/hr/resolve-procurement-comment/${id}`);
 };
 
+const updateProcurement = (id: string, data: Procurement) => {
+  return api.put(`/hr/update-procurement-request/${id}`, data);
+};
+
 const procurementService = {
   getAllProcurements,
   createProcurements,
@@ -41,6 +45,7 @@ const procurementService = {
   deleteProcurement,
   getVendors,
   resolveProcurementCommentThread,
+  updateProcurement,
 };
 
 export default procurementService;

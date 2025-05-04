@@ -29,6 +29,12 @@ export const deleteLoan = (LoanId: string) => {
 export const getRepaymentPeriod = () => {
   return api.get("/hr/get-loan-period");
 };
+export const getLoanType = () => {
+  return api.get("/hr/get-loan-type");
+};
+export const getLoanTypeDetails = (id: string) => {
+  return api.get(`/hr/get-loan-type-details/${id}`);
+};
 
 const loanService = {
   getAllLoan,
@@ -36,6 +42,8 @@ const loanService = {
   getSingleLoan,
   deleteLoan,
   getRepaymentPeriod,
+  getLoanType,
+  getLoanTypeDetails,
 };
 
 export default loanService;

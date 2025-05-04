@@ -142,12 +142,13 @@ export const leaveRequestSchema = z.object({
 export type LeaveRequestSchemaType = z.infer<typeof leaveRequestSchema>;
 
 export const loanApplicationSchema = z.object({
+  loan_type: z.string().min(1, { message: "Loan type is required." }),
   amount: z.string().min(1, { message: "Loan amount is required." }).trim(),
 
-  loan_payment_plan: z
-    .string()
-    .min(1, { message: "Repayment period is required." })
-    .trim(),
+  // loan_payment_plan: z
+  //   .string()
+  //   .min(1, { message: "Repayment period is required." })
+  //   .trim(),
 
   loan_purpose: z
     .string()
@@ -192,25 +193,39 @@ export const procurementItemSchema = z.object({
 
 export type ProcurementItemSchemaType = z.infer<typeof procurementItemSchema>;
 
-export const procurementSchema = z.object({
-  procurement_date: z.date({ required_error: "Procurement date is required" }),
-  expected_delivery_date: z
-    .date({ required_error: "Expected delivery date is required" })
-    .superRefine((val, ctx) => {
-      if (val < new Date()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Date must be in the future",
-        });
-      }
+// Function to get the appropriate schema based on edit mode
+export const getProcurementSchema = (isEditing: boolean) => {
+  return z.object({
+    procurement_date: z.date({
+      required_error: "Procurement date is required",
     }),
-  vendor_id: z.string().min(1, "Vendor is required"),
-  details: z
-    .array(procurementItemSchema)
-    .min(1, "At least one item is required"),
-});
+    // Conditionally validate expected_delivery_date
+    expected_delivery_date: isEditing
+      ? z.date().optional() // Optional when editing
+      : z // Required and must be in the future when creating
+          .date({ required_error: "Expected delivery date is required" })
+          .superRefine((val, ctx) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Compare dates only
+            if (val < today) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Date must be today or in the future",
+              });
+            }
+          }),
+    // Conditionally validate vendor_id
+    vendor_id: isEditing
+      ? z.string().optional() // Optional when editing
+      : z.string().min(1, "Vendor is required"), // Required when creating
+    details: z
+      .array(procurementItemSchema)
+      .min(1, "At least one item is required"),
+  });
+};
 
-export type ProcurementForm = z.infer<typeof procurementSchema>;
+// Define the type based on the function's return type for creation mode (or a generic one)
+export type ProcurementForm = z.infer<ReturnType<typeof getProcurementSchema>>;
 
 export const expenseSchema = z.object({
   details: z
