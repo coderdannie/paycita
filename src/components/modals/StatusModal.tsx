@@ -30,9 +30,9 @@ const StatusModal: React.FC<StatusModalProps> = ({
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
         ${
-          status === "approved"
+          status.toLowerCase() === "approved"
             ? "text-[#008000] bg-[#EDFCED]"
-            : status === "pending"
+            : status.toLowerCase() === "pending"
             ? "text-[#5252FF] bg-[#EDEDFB]"
             : "text-red-600 bg-[#FFF5F5]"
         }`}
