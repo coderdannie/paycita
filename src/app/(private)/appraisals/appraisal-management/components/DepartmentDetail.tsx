@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState, useMemo, useCallback, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IoSearchOutline, IoInformationCircleOutline } from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
 import CustomPagination from "@/src/components/common/pagination/Pagination";
@@ -18,8 +18,10 @@ const ITEMS_PER_PAGE = 10;
 
 const DepartmentDetail: FC = () => {
   const pathname = usePathname();
-  const params = useSearchParams();
   const router = useRouter();
+  const departmentId = localStorage.getItem("departmentID") || "";
+
+  console.log(pathname);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -28,20 +30,26 @@ const DepartmentDetail: FC = () => {
   );
   const [selectAll, setSelectAll] = useState(false);
 
+  const pathSegments = pathname.split("/");
+  const departmentPath = pathSegments.slice(0, -1).join("/");
+  const appraisalPath = pathSegments
+    .slice(0, -2)
+    .join("/")
+    .replace(/\/([^/]+)\/(.*)/, "/$1?tab=$2");
+
   const departmentName = useMemo(() => {
-    const pathSegments = pathname.split("/");
     const lastSegment = pathSegments.pop() || "";
 
     return lastSegment
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
-  }, [pathname]);
+  }, [pathSegments]);
 
-  const id = useMemo(() => params.get("id") || "", [params]);
+  // const paramsId = useMemo(() => params.get("id") || "", [params]);
 
   const { appraisalDepartmentDetails, isLoading, isError } =
-    useGetDepartmentDetails(id);
+    useGetDepartmentDetails(departmentId);
 
   const employees = useMemo(
     () => appraisalDepartmentDetails || [],
@@ -122,17 +130,19 @@ const DepartmentDetail: FC = () => {
       const deptSlug = pathname.split("/").pop() || "";
 
       if (employeeSlug && deptSlug) {
-        router.push(
-          `/appraisals/appraisal-management/departments/${deptSlug}/${employeeSlug}?id=${employee.appraisal_id}`
-        );
+        router.push(`${pathname}/${employeeSlug}?id=${employee.appraisal_id}`);
       }
     },
     [pathname, router]
   );
 
   const handleGoBackToDepartments = useCallback(() => {
-    router.push("/appraisals/appraisal-management/departments");
-  }, [router]);
+    router.replace(departmentPath);
+  }, [departmentPath, router]);
+
+  const handleGoBackToAppraisals = useCallback(() => {
+    router.replace(appraisalPath);
+  }, [appraisalPath, router]);
 
   const setPageIndex = useCallback((index: number) => {
     setCurrentPage(index);
@@ -161,7 +171,7 @@ const DepartmentDetail: FC = () => {
         <div className="flex items-center text-sm mb-4 flex-wrap">
           <span
             className="text-[#692E9F] cursor-pointer hover:underline"
-            onClick={handleGoBackToDepartments}
+            onClick={handleGoBackToAppraisals}
           >
             Appraisal Management
           </span>

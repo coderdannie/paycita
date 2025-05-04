@@ -1,4 +1,4 @@
-import EmployeeReviewDetailsPage from "../../component-management/EmployeeReviewDetailsPage";
+import EmployeeReviewDetailsPage from "../../components/EmployeeReviewDetailsPage";
 
 import { use } from 'react';
 

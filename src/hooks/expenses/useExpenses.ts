@@ -3,12 +3,12 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
-import { AxiosError } from 'axios';
-import expenseService from '@/src/service/api/expenses.service';
-import { Expenses } from '@/src/types/procurement';
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { AxiosError } from "axios";
+import expenseService from "@/src/service/api/expenses.service";
+import { Expenses } from "@/src/types/procurement";
 
 export const useGetAllExpenses = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -93,17 +93,22 @@ export const useCreateExpenses = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || 'Failed to create event';
+          err.response?.data?.message || "Failed to create event";
         throw new Error(errorMessage);
       } else {
         throw err;
       }
     },
-    onSettled: () => {
+    onSettled: (data, error, variables) => {
       // Invalidate and refetch after either success or error
+      // Invalidate the list query more broadly to catch different filter variations
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
-        exact: false, // Invalidate all variants
+        exact: false, // Ensures all queries starting with GET_ALL_EXPENSES are invalidated
+      });
+      // Also invalidate the specific single expense query if needed elsewhere or for the detail view
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, variables.id],
       });
     },
   });
@@ -285,10 +290,10 @@ export const useResolveExpensesCommentThread = () => {
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
-          throw new Error(error.message || 'Failed to resolve comment thread');
+          throw new Error(error.message || "Failed to resolve comment thread");
         }
         throw new Error(
-          'An unknown error occurred while resolving the comment thread.'
+          "An unknown error occurred while resolving the comment thread."
         );
       },
       onSettled: () => {
@@ -299,4 +304,79 @@ export const useResolveExpensesCommentThread = () => {
       },
     }
   );
+};
+
+export const useUpdateExpenses = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { id: string; data: Expenses }) => {
+      const response = await expenseService.updateExpenses(data.id, data.data);
+      return response;
+    },
+    onMutate: async (newExpense) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
+      });
+
+      // Snapshot the previous value
+      const previousExpenses = queryClient.getQueryData([
+        QUERY_KEYS.GET_ALL_EXPENSES,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_EXPENSES],
+        (old: {
+          data: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: any[];
+          };
+        }) => {
+          const newData = { ...old };
+          if (newData?.data?.data) {
+            newData.data.data = [
+              newExpense.data,
+              ...newData.data.data.filter(
+                (expense) => expense.id !== newExpense.id
+              ),
+            ];
+          }
+          return newData;
+        }
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousExpenses };
+    },
+    onError: (err, newExpense, context) => {
+      // Rollback to the previous value if mutation fails
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_ALL_EXPENSES],
+        context?.previousExpenses
+      );
+
+      // More robust error handling
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to create event";
+        throw new Error(errorMessage);
+      } else {
+        throw err;
+      }
+    },
+    onSettled: (data, error, variables) => {
+      // Invalidate and refetch after either success or error
+      // Invalidate the list query more broadly to catch different filter variations
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EXPENSES],
+        exact: false, // Ensures all queries starting with GET_ALL_EXPENSES are invalidated
+      });
+      // Also invalidate the specific single expense query if needed elsewhere or for the detail view
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, variables.id],
+      });
+    },
+  });
 };

@@ -33,6 +33,21 @@ const getPayRollTax = () => {
   return api.get(`/hr/employee-tax`);
 };
 
+const getEmployeePension = () => {
+  return api.get(`/hr/employee-pension`);
+};
+const getEmployeePensionByCompany = (company: {
+  month: string;
+  year: string;
+}) => {
+  return api.get(
+    `/hr/pension-per-company?month=${company.month}&year=${company.year}`
+  );
+};
+const getAllStaffPension = (company: string, date: string) => {
+  return api.get(`/hr/all-staff-pension?company_name=${company}&date=${date}`);
+};
+
 const payslipService = {
   getMyPayslip,
   getMyPension,
@@ -43,6 +58,9 @@ const payslipService = {
   getSinglePayRoll,
   uploadPayroll,
   getPayRollTax,
+  getEmployeePension,
+  getEmployeePensionByCompany,
+  getAllStaffPension,
 };
 
 export default payslipService;

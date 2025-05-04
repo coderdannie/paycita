@@ -2,11 +2,16 @@ import CustomTable from "@/src/components/common/CustomTable";
 import TableEmptyState from "@/src/components/common/TableEmptyState";
 import { TableCell, TableRow } from "@/src/components/ui/table";
 import { useGetPayRollTax } from "@/src/hooks/payroll/usePayroll";
+import { useAuthSelector } from "@/src/Redux/selectors";
 import { useMemo } from "react";
 
 const Tax = () => {
+  const userData = useAuthSelector();
+
+  const currency = userData?.user?.currency || "NGN";
+
   const headers = useMemo(
-    () => [{ label: "Period" }, { label: "Total PAYE" }, { label: "Date" }],
+    () => [{ label: "Period" }, { label: "Total Amount" }, { label: "Status" }],
     []
   );
 
@@ -28,8 +33,11 @@ const Tax = () => {
                   {row.month_year}
                 </div>
               </TableCell>
-              <TableCell>{row.total_paye}</TableCell>
-              <TableCell>{row.transaction_date}</TableCell>
+              <TableCell>
+                {currency}
+                {row.total_amount}
+              </TableCell>
+              <TableCell>{row.status}</TableCell>
             </TableRow>
           ))
         ) : (

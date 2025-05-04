@@ -68,7 +68,7 @@ const EmployeeDetails = () => {
         ) : tab.includes("Attendance") ? (
           <Attendance attendance={employee?.attendance} />
         ) : tab.includes("Payroll") ? (
-          <PayrollHistory />
+          <PayrollHistory payroll={employee?.payroll} />
         ) : tab.includes("Leave") ? (
           <LeaveHistory leave={employee?.leave} />
         ) : tab.includes("Documents") ? (

@@ -221,9 +221,9 @@ const LeaveRequest: React.FC = () => {
       label: "Duration (Days)",
     },
 
-    {
-      label: "Line Manager Status",
-    },
+    // {
+    //   label: "Line Manager Status",
+    // },
 
     {
       label: "Status",
@@ -272,7 +272,7 @@ const LeaveRequest: React.FC = () => {
                   - {formatDate(row.end_date)}
                 </TableCell>
                 <TableCell>{row.duration}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                             ${
@@ -288,7 +288,7 @@ const LeaveRequest: React.FC = () => {
                   >
                     {row?.line_manager_status || "N/A"}
                   </span>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 

@@ -263,3 +263,91 @@ export const useGetPayRollTax = (options?: { enabled?: boolean }) => {
     rawData: data,
   };
 };
+
+export const useGetEmployeePension = (options?: { enabled?: boolean }) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_EMPLOYEE_PENSION],
+    queryFn: async () => {
+      const response = await payslipService.getEmployeePension();
+      return response;
+    },
+    enabled: options?.enabled ?? true,
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    employeePensionData: data?.data?.data || [],
+    rawData: data,
+  };
+};
+
+export const useGetEmployeePensionByCompany = (
+  company: { month: string; year: string },
+  options?: { enabled?: boolean }
+) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [
+      QUERY_KEYS.GET_EMPLOYEE_PENSION_BY_COMPANY,
+      company.month,
+      company.year,
+    ],
+    queryFn: async () => {
+      const response = await payslipService.getEmployeePensionByCompany(
+        company
+      );
+      return response;
+    },
+    enabled: !!company && (options?.enabled ?? true),
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    employeePensionDataByCompany: data?.data?.data || [],
+    rawData: data,
+  };
+};
+
+export const useGetAllStaffPension = (
+  company: string,
+  date: string,
+  options?: { enabled?: boolean }
+) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_STAFF_PENSION, company, date],
+    queryFn: async () => {
+      const response = await payslipService.getAllStaffPension(company, date);
+      return response;
+    },
+    enabled: !!company && !!date && (options?.enabled ?? true),
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    allStaffPensionData: data?.data?.data || [],
+    rawData: data,
+  };
+};

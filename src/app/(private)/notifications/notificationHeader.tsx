@@ -5,17 +5,21 @@ interface NotificationHeaderProps {
   onDeleteSelected: () => void;
   onDeleteAll: () => void;
   onClose: () => void;
+  isDeleteSelectedDisabled?: boolean;
+  isDeleteAllDisabled?: boolean;
 }
 
 const NotificationHeader: React.FC<NotificationHeaderProps> = ({
   onDeleteSelected,
   onDeleteAll,
   onClose,
+  isDeleteSelectedDisabled = false,
+  isDeleteAllDisabled = false,
 }) => {
   return (
     <div className="px-2 py-2">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium text-gray-900">Notification</h2>
+        <h2 className="text-lg font-medium text-gray-900" id="notifications-title">Notification</h2>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700"
@@ -27,37 +31,36 @@ const NotificationHeader: React.FC<NotificationHeaderProps> = ({
       <div className="flex space-x-3 mb-2">
         <button
           onClick={onDeleteSelected}
-          className="flex-1 lg:px-2 lg:py-1 sm:py-1 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          disabled={isDeleteSelectedDisabled}
+          className="flex-1 lg:px-2 lg:py-1 sm:py-1 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <div className="hidden sm:flex items-center justify-center w-full">
-            <Trash2 size={16} className="mr-2 flex-shrink-0" />
-            <span>Delete Notifications</span>
-          </div>
-
           <div className="flex sm:hidden items-center justify-center w-full">
             <Trash2 size={16} className="mr-2 flex-shrink-0" />
             <div className="flex flex-col items-start">
               <span>Delete</span>
-              <span>Notifications</span>
+              <span>Selected</span>
             </div>
+          </div>
+          <div className="hidden sm:flex items-center justify-center w-full">
+            <Trash2 size={16} className="mr-2 flex-shrink-0" />
+            <span>Delete Selected</span>
           </div>
         </button>
 
         <button
           onClick={onDeleteAll}
-          className="flex-1 px-2 py-1 sm:py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          disabled={isDeleteAllDisabled}
+          className="flex-1 px-2 py-1 sm:py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <div className="hidden sm:flex items-center justify-center w-full">
-            <Trash2 size={16} className="mr-2 flex-shrink-0" />
-            <span>Delete All Notifications</span>
-          </div>
-
           <div className="flex sm:hidden items-center justify-center w-full">
             <Trash2 size={16} className="mr-2 flex-shrink-0" />
             <div className="flex flex-col items-start">
               <span>Delete All</span>
-              <span>Notifications</span>
             </div>
+          </div>
+          <div className="hidden sm:flex items-center justify-center w-full">
+            <Trash2 size={16} className="mr-2 flex-shrink-0" />
+            <span>Delete All</span>
           </div>
         </button>
       </div>

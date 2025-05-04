@@ -219,3 +219,71 @@ export const useGetRepaymentPeriod = () => {
     rawData: data,
   };
 };
+
+export const useGetLoanType = () => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_LOAN_TYPE],
+    queryFn: async () => {
+      const response = await loanService.getLoanType();
+      return response;
+    },
+
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    loanType: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
+};
+
+export const useGetLoanTypeDetails = (id: string) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_LOAN_TYPE_DETAILS, id],
+    queryFn: async () => {
+      const response = await loanService.getLoanTypeDetails(id);
+      return response;
+    },
+    enabled: !!id,  
+    placeholderData: keepPreviousData,
+
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    loanTypeDetails: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
+};

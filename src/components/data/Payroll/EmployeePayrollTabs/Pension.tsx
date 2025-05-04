@@ -4,36 +4,46 @@ import { TableCell, TableRow } from "@/src/components/ui/table";
 import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useGetEmployeePension } from "@/src/hooks/payroll/usePayroll";
+import { useAuthSelector } from "@/src/Redux/selectors";
 
 const Pension = () => {
+  const userData = useAuthSelector();
+
+  const currency = userData?.user?.currency || "NGN";
+
   const headers = useMemo(
     () => [
       { label: "Period" },
-      { label: "Pension Name" },
-      { label: "Amount Remitted " },
+      { label: "Amount" },
+      { label: "Status" },
       { label: "" },
     ],
     []
   );
 
+  const { employeePensionData } = useGetEmployeePension();
+
   return (
     <div>
       <CustomTable headers={headers}>
-        {["", "", "", ""]?.length ? (
-          ["", "", "", ""].map((row, rowIndex) => (
+        {employeePensionData?.length ? (
+          employeePensionData.map((row, rowIndex) => (
             <TableRow key={rowIndex} className="text-[#1D2939]  text-sm">
               <TableCell className="py-5">
                 <div className="flex gap-6">
                   <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{" "}
-                  Jan 14
+                  {row.month_year}
                 </div>
               </TableCell>
-              <TableCell>ARM Pension </TableCell>
-              <TableCell>₦25,000,000</TableCell>
+              <TableCell>
+                {currency} {row.total_amount}
+              </TableCell>
+              <TableCell>{row.status} </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/payroll/employee-payroll/pension`}
+                    href={`/payroll/employee-payroll/pension?period=${row.month_year}`}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
                   >
                     <Image

@@ -1,6 +1,6 @@
 "use client";
-import { FC, useMemo, useCallback } from "react";  
-import { useRouter, useSearchParams } from "next/navigation";
+import { FC, useMemo, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import { useGetSingleAppraisal } from "@/src/hooks/appraisal/useAppraisal";
 import { cn } from "@/lib/utils";
@@ -122,6 +122,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
 }) => {
   const params = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
 
   const id = useMemo(() => params.get("id") || "", [params]);
 
@@ -141,21 +142,25 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
     router.back();
   }, [router]);
 
-  const handleNavigateToDepartment = useCallback(() => {
-    const deptSlug = departmentName
-      .replace(" Department", "")
-      .toLowerCase()
-      .replace(/\s+/g, "-");
-
-    router.push(
-      `/appraisals/appraisal-management/departments/${deptSlug}-department`
-    );
-  }, [router, departmentName]);
+  const pathSegments = pathname.split("/");
+  const appraisalPath = pathSegments
+    .slice(0, -3)
+    .join("/")
+    .replace(/\/([^/]+)\/(.*)/, "/$1?tab=$2");
+  const departmentPath = pathSegments.slice(0, -2).join("/");
+  const singleDepartmentPath = pathSegments.slice(0, -1).join("/");
 
   const handleNavigateToDepartments = useCallback(() => {
-    router.push("/appraisals/appraisal-management/departments");
-  }, [router]);
+    router.replace(departmentPath);
+  }, [departmentPath, router]);
 
+  const handleGoBackToAppraisals = useCallback(() => {
+    router.replace(appraisalPath);
+  }, [appraisalPath, router]);
+
+  const handleNavigateToSingleDepartment = useCallback(() => {
+    router.replace(singleDepartmentPath);
+  }, [router, singleDepartmentPath]);
   const deptNameForBreadcrumb = departmentName.replace(" Department", "");
 
   const getScoreLabel = useCallback((score: number | string | null) => {
@@ -189,7 +194,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
         <div className="flex items-center text-sm mb-4">
           <span
             className="text-[#692E9F] cursor-pointer"
-            onClick={handleNavigateToDepartments}
+            onClick={handleGoBackToAppraisals}
           >
             Appraisal Management
           </span>
@@ -203,7 +208,7 @@ const EmployeeReviewDetailsPage: FC<EmployeeReviewDetailsPageProps> = ({
           <span className="mx-2">/</span>
           <span
             className="text-[#692E9F] cursor-pointer"
-            onClick={handleNavigateToDepartment}
+            onClick={handleNavigateToSingleDepartment}
           >
             {deptNameForBreadcrumb}
           </span>

@@ -47,7 +47,7 @@ export const useCreateLeave = () => {
     },
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_LEAVE],
+        queryKey: [QUERY_KEYS.GET_ALL_LEAVE, "pending-leave-requests"],
       });
     },
     onError: (error: {
@@ -87,7 +87,6 @@ export const useGetEmployeeLeave = (filters?: {
   const employeeLeave = data?.data?.data || [];
   const pagination = data?.data?.pagination || {};
 
-
   return {
     employeeLeave,
     isSuccess,
@@ -96,7 +95,6 @@ export const useGetEmployeeLeave = (filters?: {
     pagination,
   };
 };
-
 
 export const useUpdateEmployeeLeave = () => {
   const queryClient = useQueryClient();
@@ -109,7 +107,7 @@ export const useUpdateEmployeeLeave = () => {
     mutationFn: async (data: {
       id: string;
       status: string;
-      comment?: string
+      comment?: string;
     }) => {
       const response = await leaveService.updateLeaveRequests(data);
       return response;
@@ -136,7 +134,6 @@ export const useUpdateEmployeeLeave = () => {
     isError,
   };
 };
-
 
 export const useDeleteLeaveRequest = () => {
   const queryClient = useQueryClient();
@@ -175,5 +172,3 @@ export const useDeleteLeaveRequest = () => {
     isError,
   };
 };
-
- 
