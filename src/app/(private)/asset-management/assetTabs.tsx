@@ -9,11 +9,10 @@ import { AssignedTable } from "./assignedTable";
 import { AssetDetailModal } from "./assetDetailModal";
 import { Asset, Employee } from "@/src/types/assets-management";
 
-
 interface AssetTabsProps {
   assets: Asset[];
   employees: Employee[];
-  onAddAsset: (asset) => void;
+  onAddAsset: (asset: Asset) => void;
   onAssignAsset: (assetId: string, employeeId: string) => void;
 }
 
@@ -21,8 +20,8 @@ export const AssetTabs = ({
   assets,
   // employees,
   onAddAsset,
-  // onAssignAsset,
-}: AssetTabsProps) => {
+}: // onAssignAsset,
+AssetTabsProps) => {
   const [activeTab, setActiveTab] = useState("assets");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -32,7 +31,6 @@ export const AssetTabs = ({
   const [masterCheckbox, setMasterCheckbox] = useState(false);
 
   const assignedAssets = assets.filter((asset) => asset.assignedTo);
-
 
   const filteredAssets =
     activeTab === "assets"
@@ -54,7 +52,6 @@ export const AssetTabs = ({
   const handleMasterCheckboxChange = (checked: boolean) => {
     setMasterCheckbox(checked);
   };
-
 
   if (
     typeof document !== "undefined" &&
@@ -86,7 +83,7 @@ export const AssetTabs = ({
             Filter
           </button>
         </div> */}
-{/* 
+        {/* 
         <div className="w-full md:w-auto md:ml-auto">
           {activeTab === "assets" ? (
             // <button
@@ -143,13 +140,13 @@ export const AssetTabs = ({
         />
       ) : (
         <AssignedTable
-          // assets={filteredAssets}
-          // masterCheckbox={masterCheckbox}
-          // onMasterCheckboxChange={handleMasterCheckboxChange}
-          // onInfoClick={(asset:any) => {
-          //   setSelectedAsset(asset);
-          //   setIsDetailModalOpen(true);
-          // }}
+        // assets={filteredAssets}
+        // masterCheckbox={masterCheckbox}
+        // onMasterCheckboxChange={handleMasterCheckboxChange}
+        // onInfoClick={(asset:any) => {
+        //   setSelectedAsset(asset);
+        //   setIsDetailModalOpen(true);
+        // }}
         />
       )}
 

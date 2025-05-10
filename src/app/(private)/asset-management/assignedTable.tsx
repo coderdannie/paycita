@@ -26,6 +26,8 @@ const assets: Asset[] = [
       name: "Alice Johnson",
     },
     avatarUrl: "https://randomuser.me/api/portraits/women/1.jpg",
+    
+    status: "available",
   },
   {
     id: "A002",
@@ -37,6 +39,7 @@ const assets: Asset[] = [
       name: "Bob Smith",
     },
     avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+    status: "available",
   },
   {
     id: "A003",
@@ -48,6 +51,7 @@ const assets: Asset[] = [
       name: "Charlie Davis",
     },
     avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+    status: "available",
   },
   {
     id: "A004",
@@ -59,6 +63,7 @@ const assets: Asset[] = [
       name: "Dana White",
     },
     avatarUrl: "https://randomuser.me/api/portraits/women/4.jpg",
+    status: "available",
   },
 ];
 

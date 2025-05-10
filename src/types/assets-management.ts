@@ -4,11 +4,11 @@ export interface Employee {
 }
 
 export interface Asset {
-  id: string;
   name: string;
   category: string;
   quantity: number;
-  status?: string;
+  status: string;
+  id?: string;
   assignedTo?: Employee;
   avatarUrl?: string;
 }

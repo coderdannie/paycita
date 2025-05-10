@@ -1,45 +1,45 @@
-'use client';
-import { useState } from 'react';
-import NoTransaction from '@/src/components/data/BillPayment/NoTransaction';
-import TopUpModal from '@/src/components/modals/TopUpModal';
-import SearchInput from '@/src/components/ui/SearchInput';
-import { PiSlidersHorizontal } from 'react-icons/pi';
-import TransactionsTable from '@/src/components/data/BillPayment/TransactionHistory';
-import BillsFilter from '@/src/components/modals/BillsFilter';
-const data = [
-  {
-    'Transaction ID': 'XN12375DFGT...',
-    'Transaction Type': 'Airtime',
-    Provider: 'MTN',
-    phoneNo: '09036275846',
-    Amount: '$10',
-    Date: 'Mar 18, 2025',
-    Status: 'Successful',
-  },
-  {
-    'Transaction ID': 'XN12375DFGT...',
-    'Transaction Type': 'Data',
-    Provider: 'Airtel',
-    phoneNo: '09036275846',
-    Amount: '$20',
-    Date: 'Mar 17, 2025',
-    Status: 'Successful',
-  },
-  {
-    'Transaction ID': 'XN12375DFGT',
-    'Transaction Type': 'Data',
-    Provider: '9Mobile',
-    phoneNo: '09036275846',
-    Amount: '$20',
-    Date: 'Mar 17, 2025',
-    Status: 'Failed',
-  },
-];
+"use client";
+import { useCallback, useState } from "react";
+import NoTransaction from "@/src/components/data/BillPayment/NoTransaction";
+import TopUpModal from "@/src/components/modals/TopUpModal";
+import SearchInput from "@/src/components/ui/SearchInput";
+import { PiSlidersHorizontal } from "react-icons/pi";
+import TransactionsTable from "@/src/components/data/BillPayment/TransactionHistory";
+import BillsFilter from "@/src/components/modals/BillsFilter";
+import { useGetTransactionHistory } from "@/src/hooks/bill-payment/useBillPayments";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import { useSearchParams } from "next/navigation";
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+
 const BillPayment = () => {
+  const searchParams = useSearchParams();
+  const updateSearchParams = useUpdateSearchParams();
+  const currentPage = searchParams.get("page") || "1";
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isShow, setIsShow] = useState(false);
 
+  const { transactionHistory, pagination } = useGetTransactionHistory({
+    page: currentPage.toString(),
+  });
+
+  const data = transactionHistory.length ? transactionHistory : [];
+
+  const handleBuyNow = () => {
+    setIsOpen(true);
+  };
+
+  const goToPage = useCallback(
+    (page: number) => {
+      updateSearchParams(
+        { page: page.toString() },
+        {
+          scroll: true,
+        }
+      );
+    },
+    [updateSearchParams]
+  );
   return (
     <>
       {data.length ? (
@@ -65,18 +65,28 @@ const BillPayment = () => {
             </div>
             <button
               className="bg-primary text-white py-[10px] px-4 rounded-md"
-              onClick={() => setIsOpen(true)}
+              onClick={handleBuyNow}
             >
               Buy Now
             </button>
           </div>
-          <TransactionsTable tableData={data} />
-          <TopUpModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+          <TransactionsTable tableData={data} />{" "}
+          <div className="mt-6">
+            {pagination?.total_pages > 1 && (
+              <CustomPagination
+                totalPages={pagination?.total_pages}
+                currentPage={+currentPage}
+                goToPage={goToPage}
+              />
+            )}
+          </div>
         </div>
       ) : (
-        <NoTransaction setIsOpen={() => setIsOpen(true)} />
+        <NoTransaction setIsOpen={handleBuyNow} />
       )}
       <BillsFilter isOpen={isShow} onClose={() => setIsShow(false)} />
+
+      <TopUpModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
 };
