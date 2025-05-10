@@ -1,5 +1,6 @@
-import { COLORS } from "@/constants/colors";
+// import { COLORS } from "@/constants/colors";
 import OtpInput from "react-otp-input";
+import { COLORS } from "../../colors";
 
 const OTP = ({ OTP, setOTP, length }: iOTP) => {
 	return (

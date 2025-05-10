@@ -1,9 +1,5 @@
-"use client";
-
 import { useState } from "react";
-
 import { AssignAssetModal } from "./assignAssetsModal";
-
 import { AssetDetailModal } from "./assetDetailModal";
 import { Asset } from "@/src/types/assets-management";
 import { InfoIcon } from "@/src/assets/Icons";
@@ -67,7 +63,6 @@ const assets: Asset[] = [
 ];
 
 export const AssignedTable = () => {
-  // const [currentPage, setCurrentPage] = useState(0);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
@@ -79,23 +74,20 @@ export const AssignedTable = () => {
   const columns = [
     {
       header: "Asset ID",
-      accessorKey: "id",
+      accessorKey: "id", // This column uses the accessorKey
     },
     {
       header: "Asset Name",
-      accessorKey: "name",
+      accessorKey: "name", // This column uses the accessorKey
     },
     {
       header: "Category",
-      accessorKey: "category",
+      accessorKey: "category", // This column uses the accessorKey
     },
     {
       header: "Assigned To",
-      cell: ({
-        row,
-      }: {
-        row: { original: Asset & { avatarUrl?: string } };
-      }) => (
+      accessorKey: "assignedTo", // Ensure you provide accessorKey even if you have a custom cell function
+      cell: ({ row }: { row: { original: Asset } }) => (
         <div className="flex items-center gap-3">
           <img
             src={row.original.avatarUrl || "https://via.placeholder.com/40"}
@@ -108,6 +100,7 @@ export const AssignedTable = () => {
     },
     {
       header: "Actions",
+      accessorKey: "actions", // Added accessorKey to maintain consistency
       cell: ({ row }: { row: { original: Asset } }) => (
         <button
           onClick={() => {
