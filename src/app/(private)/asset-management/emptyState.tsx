@@ -1,11 +1,10 @@
 "use client";
-// import { Employee } from "@/types/assets-management";
+
 import { useState } from "react";
 import { AddAssetModal } from "./addAssetsModal";
-import { Plus } from "lucide-react"; 
+import { Plus } from "lucide-react";
 import Image from "next/image";
 import { Employee } from "@/src/types/assets-management";
-// import { Employee } from "@/src/types/dashboard";
 
 interface AssetEmptyStateProps {
   onAddAsset: (asset) => void;
@@ -14,10 +13,9 @@ interface AssetEmptyStateProps {
 
 export const AssetEmptyState = ({
   onAddAsset,
-  // employees,
-}: AssetEmptyStateProps) => {
+}: // employees,
+AssetEmptyStateProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   if (typeof document !== "undefined" && isModalOpen) {
     document.body.classList.add("overflow-hidden");
