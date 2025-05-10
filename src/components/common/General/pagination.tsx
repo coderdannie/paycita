@@ -30,6 +30,9 @@ export function Pagination({
 		onClick: () => setPage(index),
 	});
 
+	 const handlePointerEvent = () => {};
+   const handleResize = () => {};
+
 	const renderPageNumbers = () => {
 		const pageNumbers = [];
 		for (let i = 1; i <= totalPages; i++) {
@@ -39,10 +42,18 @@ export function Pagination({
 				(i >= currentPage - 1 && i <= currentPage + 1)
 			) {
 				pageNumbers.push(
-					<IconButton key={i} {...getItemProps(i)}>
-						{i}
-					</IconButton>
-				);
+          <IconButton
+            onResize={handleResize}
+            onResizeCapture={handleResize}
+            onPointerEnterCapture={handlePointerEvent}
+            onPointerLeaveCapture={handlePointerEvent}
+            placeholder=""
+            key={i}
+            {...getItemProps(i)}
+          >
+            {i}
+          </IconButton>
+        );
 			} else if (i === currentPage - 2 || i === currentPage + 2) {
 				pageNumbers.push(
 					<span key={i} className='text-gray_3'>
@@ -55,36 +66,53 @@ export function Pagination({
 	};
 
 	return (
-		<div className='w-full'>
-			<div className='flex flex-col sm:flex-row justify-between items-center mt-4'>
-				<Typography className='mb-2 sm:mb-0 dark:text-gray_1'>
-					Showing{" "}
-					<span className='font-medium'>
-						{(currentPage - 1) * itemsPerPage + 1}-
-						{Math.min(currentPage * itemsPerPage, totalItems)}
-					</span>{" "}
-					of <span className='font-medium'>{totalItems}</span> results
-				</Typography>
-				<div className='flex items-center gap-4'>
-					<Button
-						variant='text'
-						className='flex items-center gap-2 dark:text-white'
-						onClick={prevPage}
-						disabled={currentPage === 1}
-					>
-						<CaretLeft />
-					</Button>
-					<div className='flex items-center gap-2'>{renderPageNumbers()}</div>
-					<Button
-						variant='text'
-						className='flex items-center gap-2 dark:text-white'
-						onClick={nextPage}
-						disabled={currentPage === totalPages}
-					>
-						<CaretRight />
-					</Button>
-				</div>
-			</div>
-		</div>
-	);
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-4">
+        <Typography
+          onResize={handleResize}
+          onResizeCapture={handleResize}
+          onPointerEnterCapture={handlePointerEvent}
+          onPointerLeaveCapture={handlePointerEvent}
+          placeholder=""
+          className="mb-2 sm:mb-0 dark:text-gray_1"
+        >
+          Showing{" "}
+          <span className="font-medium">
+            {(currentPage - 1) * itemsPerPage + 1}-
+            {Math.min(currentPage * itemsPerPage, totalItems)}
+          </span>{" "}
+          of <span className="font-medium">{totalItems}</span> results
+        </Typography>
+        <div className="flex items-center gap-4">
+          <Button
+		    onResize={handleResize}
+          onResizeCapture={handleResize}
+          onPointerEnterCapture={handlePointerEvent}
+          onPointerLeaveCapture={handlePointerEvent}
+          placeholder=""
+            variant="text"
+            className="flex items-center gap-2 dark:text-white"
+            onClick={prevPage}
+            disabled={currentPage === 1}
+          >
+            <CaretLeft />
+          </Button>
+          <div className="flex items-center gap-2">{renderPageNumbers()}</div>
+          <Button
+		    onResize={handleResize}
+          onResizeCapture={handleResize}
+          onPointerEnterCapture={handlePointerEvent}
+          onPointerLeaveCapture={handlePointerEvent}
+          placeholder=""
+            variant="text"
+            className="flex items-center gap-2 dark:text-white"
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+          >
+            <CaretRight />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }

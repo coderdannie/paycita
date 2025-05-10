@@ -35,6 +35,8 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
       </div>
     );
   }
+  const handlePointerEvent = () => {};
+  const handleResize = () => {};
 
   const approvalKeys = Object.keys(approvals).sort();
 
@@ -49,9 +51,11 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
           variant="h6"
           color="blue-gray"
           className="mb-4 font-semibold px-2"
+          onResize={handleResize}
+          onResizeCapture={handleResize}
+          onPointerEnterCapture={handlePointerEvent}
+          onPointerLeaveCapture={handlePointerEvent}
           placeholder=""
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
         >
           Approval Flow
         </Typography>
@@ -130,8 +134,10 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                                   src={actorPicture}
                                   alt={actorName || "User"}
                                   variant="circular"
+                                  onResize={handleResize}
+                                  onResizeCapture={handleResize}
+                                  onPointerEnterCapture={handlePointerEvent}
                                   placeholder={undefined}
-                                  onPointerEnterCapture={undefined}
                                   onPointerLeaveCapture={undefined}
                                 />
                               ) : (
@@ -143,8 +149,10 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                                 variant="small"
                                 color="blue-gray"
                                 className="font-medium"
+                                onResize={handleResize}
+                                onResizeCapture={handleResize}
+                                onPointerEnterCapture={handlePointerEvent}
                                 placeholder={undefined}
-                                onPointerEnterCapture={undefined}
                                 onPointerLeaveCapture={undefined}
                               >
                                 {actorName ||
@@ -158,8 +166,10 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                               <Typography
                                 variant="small"
                                 className={`font-semibold capitalize ${statusDetails.statusTextColor}`}
+                                onResize={handleResize}
+                                onResizeCapture={handleResize}
+                                onPointerEnterCapture={handlePointerEvent}
                                 placeholder={undefined}
-                                onPointerEnterCapture={undefined}
                                 onPointerLeaveCapture={undefined}
                               >
                                 {approval.status}
@@ -168,8 +178,10 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                                 variant="small"
                                 color="gray"
                                 className="text-xs"
+                                onResize={handleResize}
+                                onResizeCapture={handleResize}
+                                onPointerEnterCapture={handlePointerEvent}
                                 placeholder={undefined}
-                                onPointerEnterCapture={undefined}
                                 onPointerLeaveCapture={undefined}
                               >
                                 {formattedDate}
@@ -185,9 +197,11 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                                   variant="small"
                                   color="gray"
                                   className="font-semibold mb-1"
-                                  placeholder=""
-                                  onPointerEnterCapture={() => {}}
-                                  onPointerLeaveCapture={() => {}}
+                                  onResize={handleResize}
+                                  onResizeCapture={handleResize}
+                                  onPointerEnterCapture={handlePointerEvent}
+                                  placeholder={undefined}
+                                  onPointerLeaveCapture={undefined}
                                 >
                                   Comment
                                 </Typography>
@@ -196,9 +210,11 @@ const VerticalItemStepper: React.FC<VerticalItemStepperProps> = ({
                                     variant="small"
                                     color="blue-gray"
                                     className="text-xs flex-grow pr-2"
-                                    placeholder=""
-                                    onPointerEnterCapture={() => {}}
-                                    onPointerLeaveCapture={() => {}}
+                                    onResize={handleResize}
+                                    onResizeCapture={handleResize}
+                                    onPointerEnterCapture={handlePointerEvent}
+                                    placeholder={undefined}
+                                    onPointerLeaveCapture={undefined}
                                   >
                                     {approval.rejection_reason}
                                   </Typography>

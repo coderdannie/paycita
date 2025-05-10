@@ -1,26 +1,27 @@
 "use client";
 
-import { Asset, Employee } from "@/types/assets-management";
+// import { Asset, Employee } from "@/types/assets-management";
 import { useState } from "react";
 import { AssetTable } from "./assetsTable";
 import { AssignedTable } from "./assignedTable";
-import { AddAssetModal } from "./addAssetsModal";
-import { AssignAssetModal } from "./assignAssetsModal";
+// import { AddAssetModal } from "./addAssetsModal";
+// import { AssignAssetModal } from "./assignAssetsModal";
 import { AssetDetailModal } from "./assetDetailModal";
-import { Search, Sliders, Plus, Info } from "lucide-react"; // Using lucide-react icons
+import { Asset, Employee } from "@/src/types/assets-management";
+
 
 interface AssetTabsProps {
   assets: Asset[];
   employees: Employee[];
-  onAddAsset: (asset: any) => void;
+  onAddAsset: (asset) => void;
   onAssignAsset: (assetId: string, employeeId: string) => void;
 }
 
 export const AssetTabs = ({
   assets,
-  employees,
+  // employees,
   onAddAsset,
-  onAssignAsset,
+  // onAssignAsset,
 }: AssetTabsProps) => {
   const [activeTab, setActiveTab] = useState("assets");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

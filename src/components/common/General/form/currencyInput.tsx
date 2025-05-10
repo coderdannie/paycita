@@ -1,6 +1,7 @@
 import React from "react";
 import CurrencyInputNew from "react-currency-input-field";
-import { COLORS } from "@/constants/colors";
+import { COLORS } from "../../colors";
+// import { COLORS } from "@/constants/colors";
 
 const CurrencyInput = ({
 	label,
@@ -62,7 +63,7 @@ const CurrencyInput = ({
 					value={value}
 					onValueChange={(value, name) => {
 						if (onChange) {
-							// @ts-ignore
+							// @ts-expect-ignore
 							onChange({ target: { name: name!, value: value! } });
 						}
 					}}

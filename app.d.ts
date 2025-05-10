@@ -102,3 +102,10 @@ interface Filters {
   status?: string;
   job_title?: string;
 }
+
+interface PaginationProps {
+  current_page: number;
+  per_page: number;
+  total_records: number;
+  total_pages: number;
+}

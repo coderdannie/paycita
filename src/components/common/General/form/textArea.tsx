@@ -1,9 +1,10 @@
 import React from "react";
-import { COLORS } from "@/constants/colors";
+import { COLORS } from "../../colors";
+// import { COLORS } from "@/constants/colors";
 
 const FormTextArea = ({
 	label,
-	type,
+	// type,
 	value,
 	onChange,
 	error,

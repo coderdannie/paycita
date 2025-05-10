@@ -27,6 +27,7 @@ export function AppraisalTabs() {
   ];
 
   const handlePointerEvent = React.useCallback(() => {}, []);
+  const handleResize = React.useCallback(() => {}, []);
 
   return (
     <Tabs value={activeTab}>
@@ -39,6 +40,8 @@ export function AppraisalTabs() {
         placeholder=""
         onPointerEnterCapture={handlePointerEvent}
         onPointerLeaveCapture={handlePointerEvent}
+        onResize={handleResize}
+        onResizeCapture={handleResize}
       >
         {data.map(({ label, value }) => (
           <Tab
@@ -51,6 +54,8 @@ export function AppraisalTabs() {
             placeholder=""
             onPointerEnterCapture={handlePointerEvent}
             onPointerLeaveCapture={handlePointerEvent}
+            onResize={handleResize}
+            onResizeCapture={handleResize}
           >
             {label}
           </Tab>
@@ -60,6 +65,8 @@ export function AppraisalTabs() {
         placeholder=""
         onPointerEnterCapture={handlePointerEvent}
         onPointerLeaveCapture={handlePointerEvent}
+        onResize={handleResize}
+        onResizeCapture={handleResize}
       >
         {data.map(({ value, desc }) => (
           <TabPanel key={value} value={value}>

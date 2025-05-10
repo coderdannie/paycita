@@ -10,8 +10,15 @@ interface BackBtn {
 }
 const BackBtn = ({ backFunc, hideLabel, label }: BackBtn) => {
 	const router = useRouter();
-	return (
+	 const handlePointerEvent = () => {};
+	   const handleResize = () => {};
+		return (
 		<Button
+		  onResize={handleResize}
+		  onResizeCapture={handleResize}
+		  onPointerEnterCapture={handlePointerEvent}
+		  onPointerLeaveCapture={handlePointerEvent}
+		  placeholder=""
 			className='flex items-center gap-2 p-0 normal-case opacity-60 font-normal'
 			variant='text'
 			onClick={backFunc ? backFunc : () => router.back()}

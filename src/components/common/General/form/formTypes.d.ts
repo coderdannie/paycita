@@ -1,21 +1,21 @@
 interface iOTP {
-	OTP: string;
-	setOTP: Dispatch<string>;
-	length?: number;
-	width?: any;
-	height?: any;
-	textColor?: string;
-	bgColor?: string;
-	borderWidth?: number;
-	borderColor?: string;
-	inputType?: "text" | "password" | "tel" | "number";
+  OTP: string;
+  setOTP: Dispatch<string>;
+  length?: number;
+  width?: string | number;
+  height?: string | number;
+  textColor?: string;
+  bgColor?: string;
+  borderWidth?: number;
+  borderColor?: string;
+  inputType?: "text" | "password" | "tel" | "number";
 }
 
 interface iFormProps {
 	label?: string;
 	value?: string | number;
 	onChange?: ChangeEventHandler<HTMLInputElement>;
-	error?: any;
+	error?: boolean;
 	placeholder?: string;
 	type?: HTMLInputTypeAttribute;
 	required?: boolean;
@@ -28,7 +28,7 @@ interface iFormProps {
 	borderColor?: string;
 	className?: string;
 	color?: string;
-	inputRef?: any;
+	inputRef?: React.RefObject<HTMLInputElement>;
 	fontSize?: string;
 	min?: number;
 	max?: number;
@@ -48,7 +48,7 @@ interface iInputField extends iFormProps {
 
 interface iCheckForm extends iFormProps {
 	checked?: boolean;
-	setChecked?: any;
+	setChecked?: Dispatch<boolean>;
 	callback?: () => void;
 }
 

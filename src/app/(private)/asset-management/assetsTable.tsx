@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Asset } from "@/src/types/assets-management";
 import TanTable from "@/src/components/common/General/TanTable";
@@ -10,6 +8,10 @@ import { AddAssetModal } from "./addAssetsModal";
 interface AssetTableProps {
   assets: Asset[];
   onAddAsset: (asset: Asset) => void;
+  masterCheckbox?: boolean;
+  setMasterCheckbox?: (checked: boolean) => void;
+  onAssignAsset?: (assetId: string, employeeId: string) => void;
+  onMasterCheckboxChange?: (checked: boolean) => void;
 }
 
 export const AssetTable = ({ assets, onAddAsset }: AssetTableProps) => {
@@ -39,6 +41,7 @@ export const AssetTable = ({ assets, onAddAsset }: AssetTableProps) => {
     },
     {
       header: "Actions",
+      accessorKey: "", // Can be an empty string since no direct access to data needed
       cell: () => (
         <button className="text-gray-400 hover:text-gray-600">
           <svg

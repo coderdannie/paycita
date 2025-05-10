@@ -1,11 +1,11 @@
+import React from 'react';
 import { FC, useEffect, useMemo, useState } from "react";
 import {
-	useReactTable,
-	getCoreRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	getFilteredRowModel,
-	
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import Pagination from "./pagination";
 import TanBody from "./body";
@@ -14,10 +14,19 @@ import DropdownComp from "./dropdownComp";
 
 import { Spinner } from "react-activity";
 import ApiPagination from "./apiPagination";
+import { Asset } from '@/src/types/assets-management';
+
+
+
+interface Column {
+  header: string;
+  accessorKey: string;
+  cell?: (props: { row: { original: Asset } }) => React.ReactNode;
+}
 
 interface TanTableProps {
-  columnData: any[];
-  data: any[];
+  columnData: Column[]; // Update the columnData type
+  data: Asset[]; // Ensure data type matches
   loadingState?: boolean;
   onClick?: () => void;
   showSearch?: boolean;
@@ -26,11 +35,21 @@ interface TanTableProps {
   filterList?: string[];
   rightComp?: React.ReactNode;
   leftComp?: React.ReactNode;
-  className?: any;
+  className?: string;
   pagination?: PaginationProps;
   setCurrentPage?: (page: number) => void;
-  filterColumn?: string; // The column to filter
-  filterOptions?: string[]; // The options for the dropdown
+  filterColumn?: string;
+  filterOptions?: string[];
+}
+
+interface ColumnSort {
+  id: string;
+  desc: boolean;
+}
+
+interface ColumnFilter {
+  id: string;
+  value: string;
 }
 
 const TanTable: FC<TanTableProps> = ({
@@ -46,13 +65,13 @@ const TanTable: FC<TanTableProps> = ({
   className,
   pagination,
   setCurrentPage,
-  filterColumn, // Add this
-  filterOptions, // Add this
+  filterColumn,
+  filterOptions,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sorting, setSorting] = useState<any[]>([]);
+  const [sorting, setSorting] = useState<ColumnSort[]>([]);
   const [pageIndex, setPageIndex] = useState<number>(0);
-  const [columnFilters, setColumnFilters] = useState<any[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [selectedFilterValue, setSelectedFilterValue] = useState<string>("");
 
   const tableData = useMemo(() => data, [data]);
@@ -102,18 +121,18 @@ const TanTable: FC<TanTableProps> = ({
 
   const table = useReactTable(options);
 
- useEffect(() => {
-   if (filterColumn && selectedFilterValue && selectedFilterValue !== "All") {
-     setColumnFilters([
-       {
-         id: filterColumn,
-         value: selectedFilterValue,
-       },
-     ]);
-   } else {
-     setColumnFilters([]);
-   }
- }, [selectedFilterValue, filterColumn]);
+  useEffect(() => {
+    if (filterColumn && selectedFilterValue && selectedFilterValue !== "All") {
+      setColumnFilters([
+        {
+          id: filterColumn,
+          value: selectedFilterValue,
+        },
+      ]);
+    } else {
+      setColumnFilters([]);
+    }
+  }, [selectedFilterValue, filterColumn]);
 
   const startPage = useMemo(() => {
     const totalPages = table.getPageCount();
@@ -137,7 +156,7 @@ const TanTable: FC<TanTableProps> = ({
   const paginationButtons = useMemo(() => {
     const totalPages = table.getPageCount();
     if (totalPages <= 1) return [];
-    const buttons: JSX.Element[] = [];
+   const buttons: React.ReactElement[] = [];
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button

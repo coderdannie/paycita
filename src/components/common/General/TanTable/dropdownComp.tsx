@@ -12,20 +12,26 @@ const DropdownComp: React.FC<DropdownCompProps> = ({
   options,
   selectedValue,
   setSelectedValue,
-  placeholder,
+  // placeholder,
 }) => {
   const handleChange = (value: string | undefined) => {
     if (value) {
       setSelectedValue(value);
     }
   };
+   const handlePointerEvent = () => {};
+   const handleResize = () => {};
 
   return (
     <div className="w-32">
       <Select
         value={selectedValue}
         onChange={handleChange}
-        placeholder={placeholder}
+        onResize={handleResize}
+        onResizeCapture={handleResize}
+        onPointerEnterCapture={handlePointerEvent}
+        onPointerLeaveCapture={handlePointerEvent}
+        placeholder=""
         // label={placeholder}
         className="rounded-md p-2 border-[1px] pl-12 w-full bg-transparent border-borderLight dark:border-borderDark"
       >

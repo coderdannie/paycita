@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import { X } from "lucide-react";
-import { Asset } from "@/types/assets-management";
+import { Asset } from "@/src/types/assets-management";
+
 
 interface AssignmentDetailsModalProps {
   onClose: () => void;
