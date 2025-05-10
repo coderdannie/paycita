@@ -24,7 +24,7 @@ const NoTransaction: React.FC<OpenProp> = ({ setIsOpen }) => {
         </p>
         <button
           className="bg-primary text-white h-[40px] rounded-md px-12 mt-8 "
-          onClick={() => setIsOpen()}
+          onClick={setIsOpen}
         >
           Buy Now
         </button>

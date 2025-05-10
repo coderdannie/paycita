@@ -4,6 +4,21 @@ import TanTable from "@/src/components/common/General/TanTable";
 import FilterBtn from "@/src/components/common/General/TanTable/filterBtn";
 import ExportBtn from "@/src/components/common/General/TanTable/exportBtn";
 import { AddAssetModal } from "./addAssetsModal";
+import * as z from "zod";
+
+// Define the asset schema with Zod (matching AddAssetModal schema)
+export const assetSchema = z.object({
+  name: z.string().min(1, { message: "Asset name is required" }),
+  category: z.string().min(1, { message: "Category is required" }),
+  quantity: z
+    .string()
+    .min(1, { message: "Quantity is required" }),
+  status: z.enum(["In Stock", "Out of Stock", "On Order"], {
+    required_error: "Status is required",
+  }),
+});
+
+type AssetFormValues = z.infer<typeof assetSchema>;
 
 interface AssetTableProps {
   assets: Asset[];
@@ -16,6 +31,18 @@ interface AssetTableProps {
 
 export const AssetTable = ({ assets, onAddAsset }: AssetTableProps) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // This function handles the conversion from form values to Asset type
+  const handleAddAsset = (formValues: AssetFormValues) => {
+    // Convert form values to Asset type with all required properties explicitly set
+    const asset: Asset = {
+      name: formValues.name,
+      category: formValues.category,
+      quantity: parseInt(formValues.quantity) || 0,
+      status: formValues.status
+    };
+    onAddAsset(asset);
+  };
 
   const columns = [
     {
@@ -89,7 +116,7 @@ export const AssetTable = ({ assets, onAddAsset }: AssetTableProps) => {
         <AddAssetModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          onAddAsset={onAddAsset}
+          onAddAsset={handleAddAsset}
         />
       )}
     </div>

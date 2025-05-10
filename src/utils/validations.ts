@@ -90,12 +90,37 @@ export type ResumptionDetailsSchemaType = z.infer<
   typeof resumptionDetailsSchema
 >;
 
-export const topupSchema = z.object({
-  networkProvider: z.string().min(1, "Network provider is required"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
-  amount: z.string().min(1, "Amount is required").optional(),
-  dataPlan: z.string().min(1, "Data plan is required").optional(),
-});
+export const topupSchema = z
+  .object({
+    network: z.string().min(1, "Network provider is required"),
+    phone: z.string().min(10, "Phone number must be at least 10 digits"),
+    topupType: z.enum(["airtime", "data"]).default("airtime"),
+    amount: z.string().optional(),
+    dataPlan: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    // For airtime, amount is required but dataPlan should be ignored
+    if (data.topupType === "airtime") {
+      if (!data.amount) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Amount is required for airtime",
+          path: ["amount"],
+        });
+      }
+    }
+    
+    // For data, dataPlan is required but amount should be ignored
+    if (data.topupType === "data") {
+      if (!data.dataPlan) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Data plan is required for data",
+          path: ["dataPlan"],
+        });
+      }
+    }
+  });
 
 export type TopupSchemaType = z.infer<typeof topupSchema>;
 
