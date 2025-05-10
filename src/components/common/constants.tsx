@@ -15,6 +15,7 @@ import {
   ApprovalIcon,
   WalletIcon,
   ReimbursementIcon,
+  AssetMgtIcon,
 } from "@/src/assets/Icons";
 import { MyAttendanceRecord } from "@/src/types/attendance";
 
@@ -77,6 +78,13 @@ export const sidebarData = [
     sec: <EmployeeMgtIcon fill="#692E9F" />,
     hover: <EmployeeMgtIcon fill="#692E9F" />,
     path: "/employee-mgt",
+  },
+  {
+    title: "Asset Management",
+    icon: <AssetMgtIcon fill="#344054" />,
+    sec: <AssetMgtIcon fill="#692E9F" />,
+    hover: <AssetMgtIcon fill="#692E9F" />,
+    path: "/asset-management",
   },
   {
     title: "Expense Management",
