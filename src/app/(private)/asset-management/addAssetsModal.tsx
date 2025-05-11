@@ -67,13 +67,13 @@ export const AddAssetModal = ({
   const getStatusStyles = (statusValue: string) => {
     switch (statusValue) {
       case "In Stock":
-        return "border border-[#89D8A9] text-[#00AA4F]";
+        return "gren";
       case "Out of Stock":
-        return "border border-red-500 text-red-600";
+        return "reid";
       case "On Order":
-        return " border border-yellow-500 text-yellow-600";
+        return "yello";
       default:
-        return "border border-green-500 text-green-600";
+        return "gren";
     }
   };
 

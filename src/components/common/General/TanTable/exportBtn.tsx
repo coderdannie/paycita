@@ -7,8 +7,8 @@ const ExportBtn = ({ label, func }: { label?: string; func?: () => void }) => {
    const handleResize = () => {};
   return (
     <Button
-      // Using `any` here can be a quick fix
-      className="flex items-center gap-2 px-4 pr-3 bg-pry normal-case font-medium py-2 "
+      
+      className="flex items-center gap-2 px-4 pr-3 bg-primary normal-case font-medium py-2 "
       onClick={func}
       onResize={handleResize}
       onResizeCapture={handleResize}
