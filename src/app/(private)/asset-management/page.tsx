@@ -2,7 +2,7 @@
 
 import { AssetManagementDashboard } from "./assetsManagement";
 
-export default function Home() {
+export default function AssetManagementPage() {
   return (
     <main className="min-h-screen p-4 md:p-8">
       <AssetManagementDashboard />
