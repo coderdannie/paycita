@@ -1,26 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { AddAssetModal } from "./addAssetsModal";
-import { Plus } from "lucide-react";
-import Image from "next/image";
-import { Employee } from "@/src/types/assets-management";
+import { AddAssetModal } from './addAssetsModal';
+import { Plus } from 'lucide-react';
+import { AssetFormValues } from '@/src/utils/validations';
+import Image from 'next/image';
 
 interface AssetEmptyStateProps {
-  onAddAsset: (asset) => void;
-  employees: Employee[];
+  handleAddAsset: (formValues: AssetFormValues) => void;
+  isAddModalOpen: boolean;
+  setIsAddModalOpen: (prop: boolean) => void;
+  isPending: boolean;
 }
 
 export const AssetEmptyState = ({
-  onAddAsset,
-}: // employees,
-AssetEmptyStateProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  if (typeof document !== "undefined" && isModalOpen) {
-    document.body.classList.add("overflow-hidden");
-  } else if (typeof document !== "undefined") {
-    document.body.classList.remove("overflow-hidden");
+  handleAddAsset,
+  isAddModalOpen,
+  setIsAddModalOpen,
+  isPending,
+}: AssetEmptyStateProps) => {
+  if (typeof document !== 'undefined' && isAddModalOpen) {
+    document.body.classList.add('overflow-hidden');
+  } else if (typeof document !== 'undefined') {
+    document.body.classList.remove('overflow-hidden');
   }
 
   return (
@@ -40,16 +41,17 @@ AssetEmptyStateProps) => {
         such as laptops, monitors, office furniture, and more.
       </p>
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => setIsAddModalOpen(true)}
         className="flex items-center gap-2 px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800 transition"
       >
         <Plus className="h-5 w-5" />
         <span>Add New Asset</span>
       </button>
       <AddAssetModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddAsset={onAddAsset}
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddAsset={handleAddAsset}
+        isPending={isPending}
       />
     </div>
   );

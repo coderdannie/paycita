@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { Control, FieldValues, Path } from "react-hook-form";
-import { Input } from "../../components/ui/input";
+import { useState } from 'react';
+import { Control, FieldValues, Path } from 'react-hook-form';
+import { Input } from '../../components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
+} from '../../components/ui/select';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/form";
-import { FaEye } from "react-icons/fa";
-import { BiHide } from "react-icons/bi";
+} from '../../components/ui/form';
+import { FaEye } from 'react-icons/fa';
+import { BiHide } from 'react-icons/bi';
 
 type CustomFormFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -37,6 +37,7 @@ type CustomFormFieldProps<T extends FieldValues> = {
   textarea?: boolean; // Add textarea prop
   rows?: number; // Add rows prop for textarea
   auth?: boolean; // Add auth prop
+  type?: string;
 };
 
 export function CustomFormField<T extends FieldValues>({
@@ -56,6 +57,7 @@ export function CustomFormField<T extends FieldValues>({
   textarea = false,
   rows = 3,
   auth = false,
+  type = 'text',
 }: CustomFormFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -96,14 +98,14 @@ export function CustomFormField<T extends FieldValues>({
                   className={`w-full p-2 border-2 text-sm text-[#1D2939] bg-white
                     ${
                       error
-                        ? "border-red-500"
+                        ? 'border-red-500'
                         : auth
-                        ? "border-[#34006A]"
-                        : "border-[#E4E7EC]"
+                        ? 'border-[#34006A]'
+                        : 'border-[#E4E7EC]'
                     }
                     focus:outline-none focus:ring-0 
                     focus-visible:ring-0 ${
-                      auth ? "rounded-[123px]" : "rounded-[9px]"
+                      auth ? 'rounded-[123px]' : 'rounded-[9px]'
                     } resize-y`}
                 />
               ) : (
@@ -111,7 +113,7 @@ export function CustomFormField<T extends FieldValues>({
                   {...field}
                   id={name}
                   type={
-                    isPassword ? (showPassword ? "text" : "password") : "text"
+                    isPassword ? (showPassword ? 'text' : 'password') : type
                   }
                   // value={value}
                   placeholder={placeholder}
@@ -125,15 +127,15 @@ export function CustomFormField<T extends FieldValues>({
                   className={`w-full border-2 text-[#34006A] bg-white
                     ${
                       error
-                        ? "border-red-500"
+                        ? 'border-red-500'
                         : auth
-                        ? "border-[#CBD5E1]"
-                        : "border-[#E4E7EC]"
+                        ? 'border-[#CBD5E1]'
+                        : 'border-[#E4E7EC]'
                     }
-                    ${auth ? "h-[48px]" : "h-[40px]"}
+                    ${auth ? 'h-[48px]' : 'h-[40px]'}
                     focus:outline-none focus:ring-0 
                     focus-visible:ring-0 ${
-                      auth ? "rounded-[123px]" : "rounded-[9px]"
+                      auth ? 'rounded-[123px]' : 'rounded-[9px]'
                     }`}
                 />
               )}
@@ -151,7 +153,7 @@ export function CustomFormField<T extends FieldValues>({
               )}
             </div>
           </FormControl>
-          <FormMessage className="text-red-500">{error}</FormMessage>{" "}
+          <FormMessage className="text-red-500">{error}</FormMessage>{' '}
           {/* Display error message */}
         </FormItem>
       )}
@@ -190,7 +192,7 @@ export function CustomFormSelect<T extends FieldValues>({
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger
                   className={`bg-white ${
-                    error ? "border-red-500" : "border-[#E4E7EC]"
+                    error ? 'border-red-500' : 'border-[#E4E7EC]'
                   }`}
                 >
                   <SelectValue placeholder={holder || String(name)} />
@@ -198,8 +200,10 @@ export function CustomFormSelect<T extends FieldValues>({
                 <SelectContent className="bg-white">
                   {Array.isArray(items) &&
                     items?.map((item) => {
-                      const value = typeof item === 'string' ? item : item.value;
-                      const label = typeof item === 'string' ? item : item.label;
+                      const value =
+                        typeof item === 'string' ? item : item.value;
+                      const label =
+                        typeof item === 'string' ? item : item.label;
                       return (
                         <SelectItem key={value} value={value}>
                           {label}

@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { Asset, Employee } from "@/src/types/assets-management";
-// import { Asset, Employee } from "@/types/assets-management";
-import { useState } from "react";
-
+import { Button } from '@/components/ui/button';
+import { Asset, Employee } from '@/src/types/assets-management';
+import { Spinner } from 'react-activity';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
 
 interface AssignAssetModalProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface AssignAssetModalProps {
   assets: Asset[];
   employees: Employee[];
   onAssign: (assetId: string, employeeId: string) => void;
+  isSuccess: boolean;
+  isPending: boolean;
 }
 
 export const AssignAssetModal = ({
@@ -19,10 +22,12 @@ export const AssignAssetModal = ({
   assets,
   employees,
   onAssign,
+  isPending,
+  isSuccess,
 }: AssignAssetModalProps) => {
-  const [selectedEmployee, setSelectedEmployee] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedAsset, setSelectedAsset] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState('');
 
   const filteredAssets = selectedCategory
     ? assets.filter((asset) => asset.category === selectedCategory)
@@ -32,21 +37,46 @@ export const AssignAssetModal = ({
     e.preventDefault();
     if (selectedAsset && selectedEmployee) {
       onAssign(selectedAsset, selectedEmployee);
-      resetForm();
     }
   };
 
   const resetForm = () => {
-    setSelectedEmployee("");
-    setSelectedCategory("");
-    setSelectedAsset("");
+    setSelectedEmployee('');
+    setSelectedCategory('');
+    setSelectedAsset('');
   };
+  useEffect(() => {
+    if (isSuccess) {
+      resetForm();
+    }
+  }, [isSuccess]);
+
+  // Prepare options for React Select
+  const employeeOptions = employees.map((employee) => ({
+    value: employee.id,
+    label: employee.name,
+  }));
+
+  const categoryOptions = [
+    { value: '', label: 'All Categories' },
+    ...Array.from(new Set(assets.map((asset) => asset.category))).map(
+      (category) => ({
+        value: category,
+        label: category,
+      })
+    ),
+  ];
+
+  const assetOptions = filteredAssets.map((asset) => ({
+    value: asset.id,
+    label: asset.name,
+  }));
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-2">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Assign Asset</h2>
           <button
@@ -78,38 +108,21 @@ export const AssignAssetModal = ({
             >
               Employee Name
             </label>
-            <div className="relative">
-              <select
-                id="employee"
-                value={selectedEmployee}
-                onChange={(e) => setSelectedEmployee(e.target.value)}
-                className="appearance-none w-full px-3 py-2 border rounded-md pr-10"
-                required
-              >
-                <option value="">Select Employee</option>
-                {employees.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </div>
-            </div>
+            <Select
+              id="employee"
+              options={employeeOptions}
+              value={employeeOptions.find(
+                (option) => option.value === selectedEmployee
+              )}
+              onChange={(selectedOption) =>
+                setSelectedEmployee(selectedOption?.value || '')
+              }
+              placeholder="Select Employee"
+              isSearchable
+              required
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
 
           <div className="mb-4">
@@ -119,42 +132,21 @@ export const AssignAssetModal = ({
             >
               Category
             </label>
-            <div className="relative">
-              <select
-                id="category"
-                value={selectedCategory}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value);
-                  setSelectedAsset("");
-                }}
-                className="appearance-none w-full px-3 py-2 border rounded-md pr-10"
-              >
-                <option value="">All Categories</option>
-                {Array.from(new Set(assets.map((asset) => asset.category))).map(
-                  (category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  )
-                )}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </div>
-            </div>
+            <Select
+              id="category"
+              options={categoryOptions}
+              value={categoryOptions.find(
+                (option) => option.value === selectedCategory
+              )}
+              onChange={(selectedOption) => {
+                setSelectedCategory(selectedOption?.value || '');
+                setSelectedAsset('');
+              }}
+              placeholder="Select Category"
+              isSearchable
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
 
           <div className="mb-6">
@@ -164,47 +156,31 @@ export const AssignAssetModal = ({
             >
               Asset Name
             </label>
-            <div className="relative">
-              <select
-                id="asset"
-                value={selectedAsset}
-                onChange={(e) => setSelectedAsset(e.target.value)}
-                className="appearance-none w-full px-3 py-2 border rounded-md pr-10"
-                required
-              >
-                <option value="">Select Asset</option>
-                {filteredAssets.map((asset) => (
-                  <option key={asset.id} value={asset.id}>
-                    {asset.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </div>
-            </div>
+            <Select
+              id="asset"
+              options={assetOptions}
+              value={assetOptions.find(
+                (option) => option.value === selectedAsset
+              )}
+              onChange={(selectedOption) =>
+                setSelectedAsset(selectedOption?.value || '')
+              }
+              placeholder="Select Asset"
+              isSearchable
+              required
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
 
           <div className="flex justify-center">
-            <button
+            <Button
+              disabled={isPending}
               type="submit"
-              className="w-full px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800"
+              className="flex-1 px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800"
             >
-              Assign
-            </button>
+              {isPending ? <Spinner /> : 'Assign'}
+            </Button>
           </div>
         </form>
       </div>

@@ -3,11 +3,12 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+  UseMutationOptions,
+} from '@tanstack/react-query';
 
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { AxiosError, AxiosResponse } from "axios";
-import assetService from "@/src/service/api/asset-management.service";
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { AxiosError, AxiosResponse } from 'axios';
+import assetService from '@/src/service/api/asset-management.service';
 
 const useGetAllAssets = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending } = useQuery({
@@ -31,28 +32,28 @@ const useGetAllAssets = (filters?: { page: string }) => {
   };
 };
 
-const useCreateAsset = () => {
-  const queryClient = useQueryClient();
-  return useMutation<
+const useCreateAsset = (
+  options?: UseMutationOptions<
     AxiosResponse<{ message: string }>,
     Error,
     { name: string; category: string; quantity: number; status: string }
-  >({
-    mutationFn: (data: {
-      name: string;
-      category: string;
-      quantity: number;
-      status: string;
-    }) => assetService.createAsset(data),
-    onSuccess: () => {
-      // Invalidate and refetch
+  >
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => assetService.createAsset(data),
+    ...options,
+    onSuccess: (data, variables, context) => {
+      options?.onSuccess?.(data, variables, context);
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_ASSETS],
       });
     },
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context);
+    },
   });
 };
-
 const useGetAllCategory = () => {
   const { isError, isSuccess, data, isPending } = useQuery({
     queryKey: [QUERY_KEYS.GET_ALL_ASSET_CATEGORY],
@@ -91,23 +92,31 @@ const useGetAllUsers = () => {
   };
 };
 
-const useAssignAsset = () => {
-  const queryClient = useQueryClient();
-  return useMutation<
+const useAssignAsset = (
+  options?: UseMutationOptions<
     AxiosResponse<{ message: string }>,
     Error,
     { asset_id: string; user_id: string }
-  >({
+  >
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (data: { asset_id: string; user_id: string }) =>
       assetService.assignAsset(data),
-    onSuccess: () => {
-      // Invalidate and refetch
+    ...options,
+    onSuccess: (data, variables, context) => {
+      options?.onSuccess?.(data, variables, context);
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_ASSETS],
       });
     },
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context);
+    },
   });
 };
+
 const useGetAllAssignedAssets = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending } = useQuery({
     queryKey: [QUERY_KEYS.GET_ALL_ASSIGNED_ASSETS, filters],

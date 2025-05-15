@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { Asset } from "@/src/types/assets-management";
+import { Asset } from '@/src/types/assets-management';
 // import { Asset } from "@/types/assets-management";
 // import { Asset } from "@/types/assets-management";
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
+import Image from 'next/image';
 
 interface AssetDetailModalProps {
   isOpen: boolean;
@@ -18,10 +19,10 @@ export const AssetDetailModal = ({
 }: AssetDetailModalProps) => {
   if (!isOpen || !asset || !asset.assignedTo) return null;
 
-  if (typeof document !== "undefined" && isOpen) {
-    document.body.classList.add("overflow-hidden");
-  } else if (typeof document !== "undefined") {
-    document.body.classList.remove("overflow-hidden");
+  if (typeof document !== 'undefined' && isOpen) {
+    document.body.classList.add('overflow-hidden');
+  } else if (typeof document !== 'undefined') {
+    document.body.classList.remove('overflow-hidden');
   }
 
   return (
@@ -37,22 +38,33 @@ export const AssetDetailModal = ({
           </button>
         </div>
         <div className="space-y-4">
-          <div>
+          <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Category</p>
             <p className="font-medium">{asset.category}</p>
           </div>
-          <div>
+          <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Asset Name</p>
             <p className="font-medium">{asset.name}</p>
           </div>
-          <div>
+          <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Assigned To</p>
             <div className="flex items-center mt-1">
-              <div className="flex-shrink-0 h-8 w-8">
-                <span className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium">
-                  {asset.assignedTo.name.charAt(0)}
-                </span>
-              </div>
+              {asset.avatarUrl ? (
+                <Image
+                  src={asset.avatarUrl}
+                  alt={asset.name}
+                  className="w-8 h-8 rounded-full object-cover"
+                  width={100}
+                  height={100}
+                />
+              ) : (
+                <div className="flex-shrink-0 h-8 w-8">
+                  <span className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium">
+                    {asset.assignedTo.name.charAt(0)}
+                  </span>
+                </div>
+              )}
+
               <div className="ml-3">
                 <p className="font-medium">{asset.assignedTo.name}</p>
               </div>
