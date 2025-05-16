@@ -19,7 +19,6 @@ export const AssetTable = ({ assets }: AssetTableProps) => {
       { label: 'Category' },
       { label: 'Quantity' },
       { label: 'Status' },
-      { label: '' },
     ],
     []
   );
