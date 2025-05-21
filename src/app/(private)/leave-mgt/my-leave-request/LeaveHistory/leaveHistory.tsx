@@ -1,16 +1,16 @@
-"use client";
-import React, { useCallback, useMemo } from "react";
-import { Info, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+'use client';
+import React, { useCallback, useMemo } from 'react';
+import { Info, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-import CustomTable from "@/src/components/common/CustomTable";
-import TableEmptyState from "@/src/components/common/TableEmptyState";
-import { TableRow, TableCell } from "@/src/components/ui/table";
-import { formatDate } from "@/src/utils/helper";
-import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useSearchParams } from "next/navigation";
+import CustomTable from '@/src/components/common/CustomTable';
+import TableEmptyState from '@/src/components/common/TableEmptyState';
+import { TableRow, TableCell } from '@/src/components/ui/table';
+import { formatDate } from '@/src/utils/helper';
+import { Leave } from '@/src/components/data/EmployeeMgt/Tabs/LeaveHistory';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import { useSearchParams } from 'next/navigation';
 
 interface LeaveHistoryProps {
   leaves: Leave[];
@@ -25,7 +25,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
 }) => {
   const updateSearchParams = useUpdateSearchParams();
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page") || 1);
+  const currentPage = Number(searchParams.get('page') || 1);
 
   const leavesPerPage = 5;
 
@@ -38,17 +38,17 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
 
   const headers = [
     {
-      label: "Leave Type",
+      label: 'Leave Type',
     },
 
     {
-      label: "Start Date",
+      label: 'Start Date',
     },
     {
-      label: "End Date",
+      label: 'End Date',
     },
     {
-      label: "Duration (Days)",
+      label: 'Duration (Days)',
     },
 
     // {
@@ -56,10 +56,10 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
     // },
 
     {
-      label: "Status",
+      label: 'Status',
     },
     {
-      label: "",
+      label: 'Actions',
     },
   ];
 
@@ -75,7 +75,7 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
   }, [leaves, leavesPerPage]);
 
   return (
-    <div className={cn("mt-6 w-full", "hide-sidebar:px-4")}>
+    <div className={cn('mt-6 w-full', 'hide-sidebar:px-4')}>
       <h2 className="text-lg font-semibold text-gray-700 mb-4">
         Leave History
       </h2>
@@ -109,10 +109,11 @@ const LeaveHistory: React.FC<LeaveHistoryProps> = ({
                 </TableCell> */}
                 <TableCell>
                   <span
-                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${row?.status?.toLowerCase() === "approved"
-                      ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                      : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
-                      }`}
+                    className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer ${
+                      row?.status?.toLowerCase() === 'approved'
+                        ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                        : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
+                    }`}
                   >
                     {row?.status}
                   </span>
