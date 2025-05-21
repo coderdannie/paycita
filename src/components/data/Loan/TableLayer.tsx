@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import TableEmptyState from "../../common/TableEmptyState";
-import { useCallback, useState } from "react";
-import LoanDetails from "../../modals/LoanDetails";
-import { Info, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { useDeleteLoanRequest } from "@/src/hooks/loan/useLoan";
-import ConfirmationModal from "../../common/ConfirmationModal";
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import TableEmptyState from '../../common/TableEmptyState';
+import { useCallback, useState } from 'react';
+import LoanDetails from '../../modals/LoanDetails';
+import { Info, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useDeleteLoanRequest } from '@/src/hooks/loan/useLoan';
+import ConfirmationModal from '../../common/ConfirmationModal';
 
 export type loanData = {
   loan_date: string;
@@ -36,26 +36,26 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
   };
   const headers = [
     {
-      label: "Loan No",
+      label: 'Loan No',
     },
 
     {
-      label: "Loan Amount",
+      label: 'Loan Amount',
     },
     {
-      label: "Loan Period",
+      label: 'Loan Period',
     },
     {
-      label: "Outstanding",
+      label: 'Outstanding',
     },
     {
-      label: "Total Payment",
+      label: 'Total Payment',
     },
     {
-      label: "Status",
+      label: 'Status',
     },
     {
-      label: "",
+      label: 'Actions',
     },
   ];
 
@@ -64,9 +64,9 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
       <span
         className={`py-[5px] w-[50%] text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
         ${
-          status === "pending"
-            ? "text-[#FFA80A] border-[#FFD384] bg-[#FFFF]"
-            : "text-[#3D7AEA] border-[#3D7AEA] bg-[#FFFF]"
+          status === 'pending'
+            ? 'text-[#FFA80A] border-[#FFD384] bg-[#FFFF]'
+            : 'text-[#3D7AEA] border-[#3D7AEA] bg-[#FFFF]'
         }`}
       >
         {status}
@@ -89,12 +89,12 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
     if (loanToDelete) {
       mutateDeleteLoanRequest(loanToDelete.id.toString(), {
         onSuccess: () => {
-          toast.success("Loan request deleted successfully");
+          toast.success('Loan request deleted successfully');
           setIsDeleteModalOpen(false);
           setLoanToDelete(null);
         },
         onError: () => {
-          toast.error("Failed to delete loan request");
+          toast.error('Failed to delete loan request');
         },
       });
     }
@@ -117,7 +117,7 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
               <TableCell>₦{row.total_payment}</TableCell>
               <TableCell>{renderStatusBadge(row.payment_status)}</TableCell>
               <TableCell>
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleOpen(row)}
                     className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"

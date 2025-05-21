@@ -1,78 +1,78 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import Select, { StylesConfig } from "react-select";
-import { SingleValue } from "@/src/types/attendance";
-import Image from "next/image";
-import Link from "next/link";
-import { PiSlidersHorizontal } from "react-icons/pi";
-import { AiOutlinePlus } from "react-icons/ai";
-import { IoIosArrowDown } from "react-icons/io";
+import { useCallback, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Controller, useForm } from 'react-hook-form';
+import Select, { StylesConfig } from 'react-select';
+import { SingleValue } from '@/src/types/attendance';
+import Image from 'next/image';
+import Link from 'next/link';
+import { PiSlidersHorizontal } from 'react-icons/pi';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { IoIosArrowDown } from 'react-icons/io';
 
-import SearchInput from "@/src/components/ui/SearchInput";
-import CustomTable from "@/src/components/common/CustomTable";
-import { TableCell, TableRow } from "@/src/components/ui/table";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import FilterDrawer from "@/src/components/common/FilterDrawer";
-import TableEmptyState from "@/src/components/common/TableEmptyState";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useGetAllEmployees } from "@/src/hooks/dashboard/useDashboard";
-import { jobOptions, levelOptions } from "@/src/utils/constants";
+import SearchInput from '@/src/components/ui/SearchInput';
+import CustomTable from '@/src/components/common/CustomTable';
+import { TableCell, TableRow } from '@/src/components/ui/table';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import FilterDrawer from '@/src/components/common/FilterDrawer';
+import TableEmptyState from '@/src/components/common/TableEmptyState';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import { useGetAllEmployees } from '@/src/hooks/dashboard/useDashboard';
+import { jobOptions, levelOptions } from '@/src/utils/constants';
 
 const statusOptions = [
-  { value: "", label: "All Status" },
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
+  { value: '', label: 'All Status' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
 ] as const;
 
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
     ...provided,
-    display: "flex",
-    alignItems: "center",
-    backgroundColor: "transparent",
-    border: "2px solid #E4E7EC",
-    borderRadius: "8px",
-    boxShadow: "none",
-    minHeight: "40px",
-    padding: "0 12px",
-    fontSize: "14px",
-    color: "#1D2939",
-    outline: "none",
-    "&:hover": {
-      borderColor: "#692E9F",
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    border: '2px solid #E4E7EC',
+    borderRadius: '8px',
+    boxShadow: 'none',
+    minHeight: '40px',
+    padding: '0 12px',
+    fontSize: '14px',
+    color: '#1D2939',
+    outline: 'none',
+    '&:hover': {
+      borderColor: '#692E9F',
     },
-    "&:focus": {
-      borderColor: "transparent",
-      outline: "none",
+    '&:focus': {
+      borderColor: 'transparent',
+      outline: 'none',
     },
   }),
   placeholder: (provided) => ({
     ...provided,
-    fontSize: "12px",
-    color: "#b3b3b3",
+    fontSize: '12px',
+    color: '#b3b3b3',
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: "10px",
-    marginTop: "4px",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+    borderRadius: '10px',
+    marginTop: '4px',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
     zIndex: 10,
   }),
   indicatorSeparator: () => ({
-    display: "none",
+    display: 'none',
   }),
   option: (base, state) => ({
     ...base,
-    backgroundColor: state.isFocused ? "#F0EAF5" : "transparent",
-    color: "#333333",
-    fontSize: "12px",
-    padding: "10px 8px",
-    cursor: "pointer",
-    "&:active": {
-      backgroundColor: "#EAEAEA",
+    backgroundColor: state.isFocused ? '#F0EAF5' : 'transparent',
+    color: '#333333',
+    fontSize: '12px',
+    padding: '10px 8px',
+    cursor: 'pointer',
+    '&:active': {
+      backgroundColor: '#EAEAEA',
     },
   }),
 };
@@ -89,11 +89,11 @@ const EmployeeMgt = () => {
   const updateSearchParams = useUpdateSearchParams();
 
   // Get query params with defaults
-  const currentPage = searchParams.get("page") || "1";
-  const search = searchParams.get("search") || "";
-  const title = searchParams.get("job_title") || "";
-  const status = searchParams.get("status") || "";
-  const jobLevel = searchParams.get("job_level") || "";
+  const currentPage = searchParams.get('page') || '1';
+  const search = searchParams.get('search') || '';
+  const title = searchParams.get('job_title') || '';
+  const status = searchParams.get('status') || '';
+  const jobLevel = searchParams.get('job_level') || '';
 
   const [searchTerm, setSearchTerm] = useState(search);
   const [isOpen, setIsOpen] = useState(false);
@@ -122,7 +122,7 @@ const EmployeeMgt = () => {
 
   const onSubmit = useCallback(
     (data: FilterFormValues) => {
-      updateSearchParams({ ...filters, ...data, page: "1" });
+      updateSearchParams({ ...filters, ...data, page: '1' });
       setIsOpen(false);
     },
     [filters, updateSearchParams]
@@ -134,21 +134,21 @@ const EmployeeMgt = () => {
     form.reset();
     updateSearchParams({
       ...filters,
-      page: "1",
-      status: "",
-      job_title: "",
-      job_level: "",
+      page: '1',
+      status: '',
+      job_title: '',
+      job_level: '',
     });
   }, [filters, form, updateSearchParams]);
 
   const headers = useMemo(
     () => [
-      { label: "Employee Name" },
-      { label: "Employee Email" },
-      { label: "Job Title" },
-      { label: "Job Level" },
-      { label: "Employee Status" },
-      { label: "" },
+      { label: 'Employee Name' },
+      { label: 'Employee Email' },
+      { label: 'Job Title' },
+      { label: 'Job Level' },
+      { label: 'Employee Status' },
+      { label: '' },
     ],
     []
   );
@@ -168,9 +168,9 @@ const EmployeeMgt = () => {
       <span
         className={`py-[5px]  text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
         ${
-          status?.toLowerCase() === "active"
-            ? "text-green-600 border-[#89D8A9] bg-[#F5FFFA]"
-            : "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+          status?.toLowerCase() === 'active'
+            ? 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]'
+            : 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]'
         }`}
       >
         {status}
@@ -186,7 +186,7 @@ const EmployeeMgt = () => {
         {
           ...filters,
           employee_name: value,
-          page: "1",
+          page: '1',
         },
         { debounce: 300 }
       );
@@ -220,7 +220,7 @@ const EmployeeMgt = () => {
 
         <button
           className="flex items-center gap-2 bg-primary text-white h-10 px-4 rounded-md text-sm whitespace-nowrap"
-          onClick={() => router.push("/employee-mgt/add-personal-info")}
+          onClick={() => router.push('/employee-mgt/add-personal-info')}
         >
           <span>Add Employee</span>
           <AiOutlinePlus />
@@ -234,12 +234,12 @@ const EmployeeMgt = () => {
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
                 <TableCell>{row.full_name}</TableCell>
                 <TableCell>{row.email}</TableCell>
-                <TableCell>{row.job_title ?? "N/A"}</TableCell>
-                <TableCell>{row.job_level ?? "N/A"}</TableCell>
+                <TableCell>{row.job_title ?? 'N/A'}</TableCell>
+                <TableCell>{row.job_level ?? 'N/A'}</TableCell>
                 <TableCell>
-                  {renderStatusBadge(row.status?.replace("_", " "))}
+                  {renderStatusBadge(row.status?.replace('_', ' '))}
                 </TableCell>
-                <TableCell>
+                <TableCell className="flex justify-center">
                   <Link
                     href={`/employee-mgt/${row.id}`}
                     className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
@@ -294,7 +294,7 @@ const EmployeeMgt = () => {
                       null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || "");
+                      field.onChange(selectedOption?.value || '');
                     }}
                     styles={customStyles}
                     placeholder="Select title"
@@ -325,7 +325,7 @@ const EmployeeMgt = () => {
                       null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || "");
+                      field.onChange(selectedOption?.value || '');
                     }}
                     styles={customStyles}
                     placeholder="Select Job Level"
@@ -354,7 +354,7 @@ const EmployeeMgt = () => {
                       null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || "");
+                      field.onChange(selectedOption?.value || '');
                     }}
                     styles={customStyles}
                     placeholder="Select Status"

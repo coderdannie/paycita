@@ -152,7 +152,7 @@ const Procurement = () => {
   }
   return (
     <>
-      <div className="flex justify-between items-center gap-2">
+      <div className="flex justify-between flex-col sm:flex-row items-center gap-2">
         <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl">
           Procurement
         </h2>
