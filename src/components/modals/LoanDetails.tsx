@@ -49,7 +49,7 @@ interface ModalProps {
 }
 
 const loanHistoryHeaders = [
-  { label: 'Installment No.' },
+  { label: 'Loan Number' },
   { label: 'Payment Date' },
   { label: 'Amount Paid' },
   { label: 'Status' },
@@ -160,7 +160,7 @@ const LoanDetails: React.FC<ModalProps> = ({
                 label="Disbursement Date"
                 value={loanData?.loan_date ?? loanData?.loan_date ?? 'N/A'}
               />
-              <DetailRow label="Due Date" value={loanData?.due_date ?? 'N/A'} />
+
               <DetailRow
                 label="Total Paid"
                 value={
@@ -169,14 +169,7 @@ const LoanDetails: React.FC<ModalProps> = ({
                     : '₦0'
                 }
               />
-              <DetailRow
-                label="Outstanding"
-                value={
-                  loanData?.outstanding
-                    ? formatCurrency(Number(loanData?.outstanding))
-                    : formatCurrency(Number(loanData?.loan_amount))
-                }
-              />
+
               <DetailRow
                 label="Status"
                 value={renderStatusBadge(loanData?.payment_status ?? 'N/A')}
