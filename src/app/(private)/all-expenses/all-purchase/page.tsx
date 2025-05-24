@@ -103,11 +103,7 @@ const AllPurchase = () => {
   const status = searchParams.get('status') || '';
   const dateParam = searchParams.get('date') || '';
 
-  const {
-    expenses,
-    pagination,
-    isLoading: isPending,
-  } = useGetAllPurchaseExpenses({
+  const { expenses, pagination, isLoading } = useGetAllPurchaseExpenses({
     page: currentPage.toString(),
   });
 
@@ -185,7 +181,7 @@ const AllPurchase = () => {
 
       return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [searchTerm, status, dateParam]);
+  }, [searchTerm, status, dateParam, expenses]);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -209,10 +205,6 @@ const AllPurchase = () => {
     },
     [updateSearchParams]
   );
-
-  if (isPending) {
-    return <LoadingOverlay />;
-  }
 
   return (
     <div>
@@ -240,11 +232,11 @@ const AllPurchase = () => {
         </button>
       </div>
       <div className="mt-5">
-        <CustomTable headers={headers}>
-          {expenses?.length > 0 ? (
+        <CustomTable headers={headers} isLoading={isLoading}>
+          {filteredData?.length > 0 ? (
             filteredData?.map((row: ExpenseRequest) => (
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
-                <TableCell>{row.id}</TableCell>
+                <TableCell>{row.expense_number}</TableCell>
                 <TableCell>{row.employee_name}</TableCell>
                 <TableCell>{row.department}</TableCell>
                 <TableCell>{formatDate(row.date)}</TableCell>

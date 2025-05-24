@@ -1,8 +1,7 @@
 'use client';
 
-import { X, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/src/components/ui/badge';
 import {
   Dialog,
   DialogContent,

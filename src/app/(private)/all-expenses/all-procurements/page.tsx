@@ -22,9 +22,7 @@ import CustomPagination from '@/src/components/common/pagination/Pagination';
 import { formatDate } from '@/src/utils/helper';
 import { ProcurementRequest } from '@/src/types/procurement';
 import { useGetSingleProcurement } from '@/src/hooks/procurement/useProcurement';
-
 import { statusOptions } from '@/src/components/common/constants';
-import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
@@ -94,7 +92,7 @@ const AllProcurement = () => {
     useState<ProcurementRequest | null>(null);
   const [procurementId, setProcurementId] = useState('');
 
-  const { procurement} = useGetSingleProcurement(procurementId);
+  const { procurement } = useGetSingleProcurement(procurementId);
 
   const [isOpen, setIsOpen] = useState(false);
   const onClose = useCallback(() => setIsOpen(false), []);
@@ -168,11 +166,7 @@ const AllProcurement = () => {
     []
   );
 
-  const {
-    procurements,
-    pagination,
-    isLoading: isPending,
-  } = useGetAllProcurements({
+  const { procurements, pagination, isLoading } = useGetAllProcurements({
     page: currentPage.toString(),
   });
 
@@ -200,8 +194,8 @@ const AllProcurement = () => {
   );
 
   const filteredData = useMemo(() => {
-    return procurements.filter((item: ProcurementRequest) => {
-      const matchesSearch = item.employee_name
+    return procurements?.filter((item: ProcurementRequest) => {
+      const matchesSearch = item?.employee_name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
@@ -211,11 +205,7 @@ const AllProcurement = () => {
 
       return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [searchTerm, status, dateParam]);
-
-  if (isPending) {
-    return <LoadingOverlay />;
-  }
+  }, [searchTerm, status, dateParam, procurements]);
 
   return (
     <div>
@@ -243,8 +233,8 @@ const AllProcurement = () => {
         </button>
       </div>
       <div className="mt-5">
-        <CustomTable headers={headers} isLoading={isPending}>
-          {procurements?.length > 0 ? (
+        <CustomTable headers={headers} isLoading={isLoading}>
+          {filteredData?.length > 0 ? (
             filteredData?.map((row: ProcurementRequest) => (
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
                 <TableCell>{row.id}</TableCell>
