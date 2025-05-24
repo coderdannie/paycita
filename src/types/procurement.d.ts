@@ -17,7 +17,7 @@ interface Actor {
   full_name: string;
   profile_picture?: string | null;
 }
-type ApprovalStatus = "approved" | "rejected" | "pending" | "waiting";
+type ApprovalStatus = 'approved' | 'rejected' | 'pending' | 'waiting';
 type Approval = {
   approved_at?: string | null;
   approved_by: Actor | null;
@@ -67,10 +67,37 @@ interface Expenses {
 
 export type ApprovalStep = {
   name: string;
-  status: "approved" | "rejected" | "pending";
+  status: 'approved' | 'rejected' | 'pending';
   date: string;
   comment?: string;
 };
+
+interface ProcurementItem {
+  id: string;
+  itemName: string;
+  quantity: string;
+  unitPrice: string;
+  totalCost: string;
+  description?: string;
+  vendorName?: string;
+}
+
+interface ProcurementRequest {
+  amount: string;
+  procurement_number: string;
+  employee_name: string;
+  id: string;
+  employeeName: string;
+  department: string;
+  itemName: string;
+  date: string;
+  totalCost: string;
+  status: 'approved' | 'rejected' | 'pending';
+  requestDate?: string;
+  expectedDeliveryDate?: string;
+  vendorName?: string;
+  items: ProcurementItem[];
+}
 
 export {
   Procurement,
@@ -82,4 +109,5 @@ export {
   Actor,
   Comments,
   CommentThread,
+  ProcurementRequest,
 };

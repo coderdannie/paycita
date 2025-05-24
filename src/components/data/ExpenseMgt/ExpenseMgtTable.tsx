@@ -41,7 +41,7 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
   ];
 
   const getStatusStyle = (status: string) => {
-    switch (status) {
+    switch (status?.toLocaleLowerCase()) {
       case 'successful':
         return 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]';
       case 'pending':
