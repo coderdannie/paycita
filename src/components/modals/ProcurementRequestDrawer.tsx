@@ -76,7 +76,7 @@ const ProcurementRequestDrawer = ({
           <div className="flex items-center justify-between">
             <p className="font-medium text-[#344054]">Request Id</p>
             <p className="text-[#1D2939] font-semibold">
-              {selectedProcurement?.id}
+              {selectedProcurement?.procurement_number}
             </p>
           </div>
 

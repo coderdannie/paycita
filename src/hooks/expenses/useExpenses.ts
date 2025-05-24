@@ -407,7 +407,7 @@ export const useGetAllProcurements = (filters?: { page: string }) => {
   return {
     isError,
     isSuccess,
-    isLoading: isPending && !isFetching,
+    isLoading: isPending,
     isFetching,
     procurements: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
@@ -441,7 +441,7 @@ export const useGetAllPurchaseExpenses = (filters?: { page: string }) => {
   return {
     isError,
     isSuccess,
-    isLoading: isPending && !isFetching,
+    isLoading: isPending,
     isFetching,
     expenses: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
@@ -475,7 +475,7 @@ export const useGetAllReimbursements = (filters?: { page: string }) => {
   return {
     isError,
     isSuccess,
-    isLoading: isPending && !isFetching,
+    isLoading: isPending,
     isFetching,
     reimbursements: data?.data?.data || [],
     pagination: data?.data?.pagination || {},

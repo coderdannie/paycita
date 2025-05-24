@@ -21,7 +21,6 @@ import { useGetAllReimbursements } from '@/src/hooks/expenses/useExpenses';
 import { statusOptions } from '@/src/components/common/constants';
 import { ReimbursementItem } from '@/src/types/allReimbursement';
 import { formatDate } from '@/src/utils/helper';
-import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
@@ -152,11 +151,7 @@ const AllReimbursement = () => {
     }
   };
 
-  const {
-    reimbursements,
-    pagination,
-    isLoading: isPending,
-  } = useGetAllReimbursements({
+  const { reimbursements, pagination, isLoading } = useGetAllReimbursements({
     page: currentPage.toString(),
   });
 
@@ -172,7 +167,7 @@ const AllReimbursement = () => {
 
       return matchesSearch && matchesStatus;
     });
-  }, [searchTerm, status]);
+  }, [searchTerm, status, reimbursements]);
 
   const goToPage = useCallback(
     (page: number) => {
@@ -185,10 +180,6 @@ const AllReimbursement = () => {
     },
     [updateSearchParams]
   );
-
-  if (isPending) {
-    return <LoadingOverlay />;
-  }
 
   return (
     <div>
@@ -212,11 +203,11 @@ const AllReimbursement = () => {
         </button>
       </div>
       <div className="mt-5">
-        <CustomTable headers={headers}>
-          {reimbursements?.length > 0 ? (
+        <CustomTable headers={headers} isLoading={isLoading}>
+          {filteredData?.length > 0 ? (
             filteredData?.map((row: ReimbursementItem) => (
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
-                <TableCell>{row.id}</TableCell>
+                <TableCell>{row?.reimbursement_number}</TableCell>
                 <TableCell>{row.employee_name}</TableCell>
                 <TableCell>{row.department}</TableCell>
                 <TableCell>{row.description}</TableCell>
