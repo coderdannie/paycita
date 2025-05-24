@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import SearchInput from "../../ui/SearchInput";
-import { useState, useMemo, useCallback } from "react";
-import { PiSlidersHorizontal } from "react-icons/pi";
-import WalletFilterDrawer from "../../modals/WalletFilterDrawer";
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import TableEmptyState from "../../common/TableEmptyState";
-import { formatDate } from "@/src/utils/helper";
+import SearchInput from '../../ui/SearchInput';
+import { useState, useMemo, useCallback } from 'react';
+import { PiSlidersHorizontal } from 'react-icons/pi';
+import WalletFilterDrawer from '../../modals/WalletFilterDrawer';
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import TableEmptyState from '../../common/TableEmptyState';
+import { formatDate } from '@/src/utils/helper';
 
 const TableLayer = ({
   walletHistory,
@@ -24,17 +24,16 @@ const TableLayer = ({
     status: string;
   }>;
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const headers = useMemo(
     () => [
-      { label: "Description" },
-      { label: "Date" },
-      { label: "Transaction Type" },
-      { label: "Amount Type" },
-      { label: "Amount" },
-      { label: "Status" },
+      { label: 'Description' },
+      { label: 'Date' },
+      { label: 'Amount Type' },
+      { label: 'Amount' },
+      { label: 'Status' },
     ],
     []
   );
@@ -44,11 +43,11 @@ const TableLayer = ({
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
             ${
-              status.toLowerCase() === "success"
-                ? "text-[#008000] bg-[#EDFCED]"
-                : status.toLowerCase() === "pending"
-                ? "text-[#5252FF] bg-[#EDEDFB]"
-                : "text-red-600 bg-[#FFF5F5]"
+              status.toLowerCase() === 'success'
+                ? 'text-[#008000] bg-[#EDFCED]'
+                : status.toLowerCase() === 'pending'
+                ? 'text-[#5252FF] bg-[#EDEDFB]'
+                : 'text-red-600 bg-[#FFF5F5]'
             }`}
       >
         {status}
@@ -81,13 +80,13 @@ const TableLayer = ({
           {walletHistory?.length ? (
             walletHistory.map((row, index) => (
               <TableRow key={index} className="text-[#1D2939] text-sm">
-                <TableCell>{row.description || "-"}</TableCell>
+                <TableCell>{row.description || '-'}</TableCell>
                 <TableCell>{formatDate(row.created_at)}</TableCell>
                 <TableCell>{row.transaction_type}</TableCell>
-                <TableCell>{row.amount_type || "-"}</TableCell>
+
                 <TableCell>
-                  {" "}
-                  ₦{Number(row?.amount)?.toLocaleString() || "0.00"}
+                  {' '}
+                  ₦{Number(row?.amount)?.toLocaleString() || '0.00'}
                 </TableCell>
                 <TableCell>{renderStatusBadge(row.status)}</TableCell>
               </TableRow>

@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useGetAllLoan } from "@/src/hooks/loan/useLoan";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import TableLayer from "@/src/components/data/Loan/TableLayer";
-import { Button } from "@/src/components/ui/button";
-import SearchInput from "@/src/components/ui/SearchInput";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import { useGetAllLoan, useGetLoanHistory } from '@/src/hooks/loan/useLoan';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import TableLayer from '@/src/components/data/Loan/TableLayer';
+import { Button } from '@/src/components/ui/button';
+import SearchInput from '@/src/components/ui/SearchInput';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useState } from 'react';
 
 const Loan = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
-  const currentPage = searchParams.get("page") || "1";
-  const [searchTerm, setSearchTerm] = useState("");
+  const currentPage = searchParams.get('page') || '1';
+  const [searchTerm, setSearchTerm] = useState('');
 
   const router = useRouter();
 
@@ -52,11 +52,11 @@ const Loan = () => {
             setValue={setSearchTerm}
           />
         </div>
-        <Button onClick={() => router.push("/loan/request")}>
+        <Button onClick={() => router.push('/loan/request')}>
           Create Loan
         </Button>
       </div>
-      <TableLayer loans={loans} />{" "}
+      <TableLayer loans={loans} />{' '}
       <div className="mt-6">
         {pagination?.total_pages > 1 && (
           <CustomPagination
