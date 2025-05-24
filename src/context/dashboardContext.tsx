@@ -153,7 +153,9 @@ const DashboardProvider = ({
   }, []);
 
   useEffect(() => {
-    loadData();
+    if (typeof window !== 'undefined') {
+      loadData();
+    }
   }, []);
 
   const queryClient = useQueryClient();

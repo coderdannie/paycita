@@ -91,7 +91,7 @@ const Sidebar = () => {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="pb-4">
-          {filteredSidebarData.map((item) => (
+          {filteredSidebarData?.map((item) => (
             <div key={item.title} className="mb-2">
               <div
                 className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${

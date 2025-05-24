@@ -7,7 +7,10 @@ import { useCallback, useState } from 'react';
 import LoanDetails from '../../modals/LoanDetails';
 import { Info, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useDeleteLoanRequest } from '@/src/hooks/loan/useLoan';
+import {
+  useDeleteLoanRequest,
+  useGetLoanHistory,
+} from '@/src/hooks/loan/useLoan';
 import ConfirmationModal from '../../common/ConfirmationModal';
 
 export type loanData = {
@@ -17,7 +20,7 @@ export type loanData = {
   total_payment: string;
   loan_period: string;
   loan_amount: string;
-  outstanding: string;
+  outstanding?: string;
   loan_number: string;
   staff_name: string;
 };
@@ -76,6 +79,10 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [loanToDelete, setLoanToDelete] = useState<loanData | null>(null);
+
+  const { loanHistory, isLoading } = useGetLoanHistory(details?.loan_number);
+
+  console.log('history', loanHistory);
 
   const handleDelete = useCallback((loan: loanData) => {
     setLoanToDelete(loan);
@@ -138,7 +145,13 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
           <TableEmptyState headers={headers} />
         )}
       </CustomTable>
-      <LoanDetails isOpen={isOpen} onClose={handleClose} details={details} />
+      <LoanDetails
+        isOpen={isOpen}
+        onClose={handleClose}
+        details={loanHistory}
+        loanData={details}
+        isLoading={isLoading}
+      />
 
       <ConfirmationModal
         isOpen={isDeleteModalOpen}

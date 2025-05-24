@@ -237,7 +237,7 @@ const AllProcurement = () => {
           {filteredData?.length > 0 ? (
             filteredData?.map((row: ProcurementRequest) => (
               <TableRow key={row.id} className="text-[#1D2939] text-sm">
-                <TableCell>{row.id}</TableCell>
+                <TableCell>{row.procurement_number}</TableCell>
                 <TableCell>{row.employee_name}</TableCell>
                 <TableCell>{row.department}</TableCell>
                 <TableCell>{formatDate(row.date)}</TableCell>
