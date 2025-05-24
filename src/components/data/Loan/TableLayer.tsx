@@ -82,8 +82,6 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
 
   const { loanHistory, isLoading } = useGetLoanHistory(details?.loan_number);
 
-  console.log('history', loanHistory);
-
   const handleDelete = useCallback((loan: loanData) => {
     setLoanToDelete(loan);
     setIsDeleteModalOpen(true);

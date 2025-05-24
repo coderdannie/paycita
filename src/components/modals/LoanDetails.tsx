@@ -150,42 +150,42 @@ const LoanDetails: React.FC<ModalProps> = ({
             <div className="space-y-4 mb-6">
               <DetailRow
                 label="Loan Amount"
-                value={formatCurrency(+details?.loan_details.amount)}
+                value={formatCurrency(+details?.loan_details?.amount)}
               />
               <DetailRow
                 label="Loan Period"
-                value={details?.loan_details.repayment_period ?? 'N/A'}
+                value={details?.loan_details?.repayment_period ?? 'N/A'}
               />
               <DetailRow
                 label="Disbursement Date"
-                value={loanData?.loan_date ?? loanData.loan_date ?? 'N/A'}
+                value={loanData?.loan_date ?? loanData?.loan_date ?? 'N/A'}
               />
               <DetailRow label="Due Date" value={loanData?.due_date ?? 'N/A'} />
               <DetailRow
                 label="Total Paid"
                 value={
-                  loanData.total_paid
-                    ? formatCurrency(loanData.total_paid)
+                  loanData?.total_paid
+                    ? formatCurrency(loanData?.total_paid)
                     : '₦0'
                 }
               />
               <DetailRow
                 label="Outstanding"
                 value={
-                  loanData.outstanding
-                    ? formatCurrency(Number(loanData.outstanding))
-                    : formatCurrency(Number(loanData.loan_amount))
+                  loanData?.outstanding
+                    ? formatCurrency(Number(loanData?.outstanding))
+                    : formatCurrency(Number(loanData?.loan_amount))
                 }
               />
               <DetailRow
                 label="Status"
-                value={renderStatusBadge(loanData.payment_status ?? 'N/A')}
+                value={renderStatusBadge(loanData?.payment_status ?? 'N/A')}
               />
             </div>
 
             {/* Loan History Section */}
-            {details.repayment_history &&
-              details.repayment_history.length > 0 && (
+            {details?.repayment_history &&
+              details?.repayment_history?.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-base font-medium text-[#1D2939] mb-4">
                     Loan History
@@ -194,7 +194,7 @@ const LoanDetails: React.FC<ModalProps> = ({
                     headers={loanHistoryHeaders}
                     isLoading={isLoading}
                   >
-                    {details.repayment_history.map((item) => (
+                    {details?.repayment_history.map((item) => (
                       <TableRow
                         key={item.id}
                         className="text-sm text-[#1D2939]"
