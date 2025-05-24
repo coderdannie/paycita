@@ -25,7 +25,6 @@ import { ExpenseRequest } from '@/src/types/allPurchaseExpenses';
 import { formatDate } from '@/src/utils/helper';
 import { statusOptions } from '@/src/components/common/constants';
 import CustomPagination from '@/src/components/common/pagination/Pagination';
-import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
