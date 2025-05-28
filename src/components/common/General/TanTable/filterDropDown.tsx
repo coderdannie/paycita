@@ -24,9 +24,17 @@ const FilterBtn: React.FC<FilterBtnProps> = ({
     onSelect?.(value);
   };
 
+  const handlePointerEvent = () => {};
+  const handleResize = () => {};
+
   return (
     <div className="relative">
       <Button
+        onResize={handleResize}
+        onResizeCapture={handleResize}
+        onPointerEnterCapture={handlePointerEvent}
+        onPointerLeaveCapture={handlePointerEvent}
+        placeholder=""
         onClick={() => {
           toggleDropdown();
           func();

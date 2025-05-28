@@ -8,7 +8,7 @@ const EmployeeDetails = ({
     office_items_given: string[];
     tax_method: string;
     pension_company: string;
-    tax_number: string;
+    pension_number: string;
     tax_status: string;
     salary: string;
     employee_number?: string;
@@ -132,8 +132,8 @@ const EmployeeDetails = ({
               </span>
             </p>
             <p className="flex gap-6">
-              <strong className="text-[#667085] font-normal">Tax Number</strong>
-              {userDetails?.tax_number ?? "N/A"}
+              <strong className="text-[#667085] font-normal">Pension Number</strong>
+              {userDetails?.pension_number ?? "N/A"}
             </p>
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">Tax Method</strong>
