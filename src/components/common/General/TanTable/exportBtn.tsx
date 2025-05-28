@@ -1,14 +1,14 @@
-import { Button } from "@material-tailwind/react";
-import React from "react";
-import { Plus } from "lucide-react";
+import { Button } from '@material-tailwind/react';
+import React from 'react';
+import { Plus } from 'lucide-react';
 
 const ExportBtn = ({ label, func }: { label?: string; func?: () => void }) => {
-   const handlePointerEvent = () => {};
-   const handleResize = () => {};
+  const handlePointerEvent = () => {};
+  const handleResize = () => {};
   return (
     <Button
-      
-      className="flex items-center gap-2 px-4 pr-3 bg-primary normal-case font-medium py-2 "
+      // Using `any` here can be a quick fix
+      className="flex bg-primary items-center gap-2 px-4 pr-3  normal-case font-medium py-2 "
       onClick={func}
       onResize={handleResize}
       onResizeCapture={handleResize}

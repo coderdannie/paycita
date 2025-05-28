@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { AssetManagementDashboard } from "./assetsManagement";
+import { AssetManagementDashboard } from './assetsManagement';
 
 export default function AssetManagementPage() {
   return (

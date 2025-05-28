@@ -12,3 +12,16 @@ export interface Asset {
   assignedTo?: Employee;
   avatarUrl?: string;
 }
+
+export interface AssignedAsset {
+  id: number;
+  asset_id: string;
+  asset_name: string;
+  category: string;
+  assigned_to: {
+    id: string;
+    full_name: string;
+    email: string;
+    profile_picture: string;
+  };
+}

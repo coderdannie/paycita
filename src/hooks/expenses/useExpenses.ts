@@ -3,12 +3,12 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { AxiosError } from "axios";
-import expenseService from "@/src/service/api/expenses.service";
-import { Expenses } from "@/src/types/procurement";
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { AxiosError } from 'axios';
+import expenseService from '@/src/service/api/expenses.service';
+import { Expenses } from '@/src/types/procurement';
 
 export const useGetAllExpenses = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -93,7 +93,7 @@ export const useCreateExpenses = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to create event";
+          err.response?.data?.message || 'Failed to create event';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -290,10 +290,10 @@ export const useResolveExpensesCommentThread = () => {
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
-          throw new Error(error.message || "Failed to resolve comment thread");
+          throw new Error(error.message || 'Failed to resolve comment thread');
         }
         throw new Error(
-          "An unknown error occurred while resolving the comment thread."
+          'An unknown error occurred while resolving the comment thread.'
         );
       },
       onSettled: () => {
@@ -360,7 +360,7 @@ export const useUpdateExpenses = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to create event";
+          err.response?.data?.message || 'Failed to create event';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -379,4 +379,106 @@ export const useUpdateExpenses = () => {
       });
     },
   });
+};
+
+export const useGetAllProcurements = (filters?: { page: string }) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_PROCUREMENTS, filters],
+    queryFn: async () => {
+      const response = await expenseService.getAllProcurements(filters);
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    // Only retry on server errors, not 404s
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending,
+    isFetching,
+    procurements: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
+};
+
+export const useGetAllPurchaseExpenses = (filters?: { page: string }) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_EXPENSES, filters],
+    queryFn: async () => {
+      const response = await expenseService.getAllPurchaseExpenses(filters);
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    // Only retry on server errors, not 404s
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending,
+    isFetching,
+    expenses: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
+};
+
+export const useGetAllReimbursements = (filters?: { page: string }) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_REIMBURSEMENTS, filters],
+    queryFn: async () => {
+      const response = await expenseService.getAllReimbursements(filters);
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    // Only retry on server errors, not 404s
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending,
+    isFetching,
+    reimbursements: data?.data?.data || [],
+    pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
 };

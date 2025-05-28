@@ -38,7 +38,7 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
     // { label: "Quantity" },
     { label: 'Total Cost' },
     { label: 'Status' },
-    { label: '' },
+    { label: 'Actions' },
   ];
   const getStatusStyle = (status: string) => {
     switch (status) {

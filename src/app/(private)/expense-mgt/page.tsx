@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { useCallback, useState } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
 import ExpenseMgtTable, {
   ExpenseData,
-} from "@/src/components/data/ExpenseMgt/ExpenseMgtTable";
-import AddExpenseDrawer from "@/src/components/modals/AddExpenseDrawer";
-import ExpenseMgtDetailDrawer from "@/src/components/modals/ExpenseDetailsDrawer";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+} from '@/src/components/data/ExpenseMgt/ExpenseMgtTable';
+import AddExpenseDrawer from '@/src/components/modals/AddExpenseDrawer';
+import ExpenseMgtDetailDrawer from '@/src/components/modals/ExpenseDetailsDrawer';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import {
   useDeleteExpense,
   useGetAllExpenses,
   useGetSingleExpense,
-} from "@/src/hooks/expenses/useExpenses";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import ConfirmationModal from "@/src/components/common/ConfirmationModal";
-import toast from "react-hot-toast";
-import CommentModal from "@/src/components/modals/CommentModal";
-import { Comments } from "@/src/types/procurement";
-import { useAddApprovalComment } from "@/src/hooks/approvals/useApprovals";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+} from '@/src/hooks/expenses/useExpenses';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import ConfirmationModal from '@/src/components/common/ConfirmationModal';
+import toast from 'react-hot-toast';
+import CommentModal from '@/src/components/modals/CommentModal';
+import { Comments } from '@/src/types/procurement';
+import { useAddApprovalComment } from '@/src/hooks/approvals/useApprovals';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 const ExpenseMgt = () => {
   const searchParams = useSearchParams();
@@ -36,12 +36,12 @@ const ExpenseMgt = () => {
     null
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [expenseId, setExpenseId] = useState("");
+  const [expenseId, setExpenseId] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
 
-  const currentPage = searchParams.get("page") || "1";
+  const currentPage = searchParams.get('page') || '1';
 
   const {
     expenses,
@@ -69,15 +69,15 @@ const ExpenseMgt = () => {
   const currentThreadId = expense?.comment_thread?.thread_id;
 
   const { mutate: mutateAddComment, isPending: isAddingComment } =
-    useAddApprovalComment("add-expense-comment");
+    useAddApprovalComment('add-expense-comment');
 
   const handleSend = (message: string) => {
     if (!currentThreadId) {
-      toast.error("Cannot add comment: Thread ID is missing.");
+      toast.error('Cannot add comment: Thread ID is missing.');
       return;
     }
     if (!expenseId) {
-      toast.error("Cannot add comment: Expense ID is missing.");
+      toast.error('Cannot add comment: Expense ID is missing.');
       return;
     }
 
@@ -88,7 +88,7 @@ const ExpenseMgt = () => {
 
     mutateAddComment(payload, {
       onSuccess: () => {
-        toast.success("Comment added successfully");
+        toast.success('Comment added successfully');
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, expenseId],
         });
@@ -97,9 +97,9 @@ const ExpenseMgt = () => {
       onError: (error) => {
         if (error instanceof AxiosError)
           toast.error(
-            error?.response?.data?.message || "Failed to add comment"
+            error?.response?.data?.message || 'Failed to add comment'
           );
-        else toast.error("An unexpected error occurred while adding comment.");
+        else toast.error('An unexpected error occurred while adding comment.');
       },
     });
   };
@@ -119,7 +119,7 @@ const ExpenseMgt = () => {
   const handleDeleteExpense = () => {
     deleteExpense(expenseToDelete?.id, {
       onSuccess: () => {
-        toast.success("Expense deleted successfully");
+        toast.success('Expense deleted successfully');
         setIsDeleteModalOpen(false);
       },
       onError: (error) => {
@@ -133,7 +133,7 @@ const ExpenseMgt = () => {
   }
   return (
     <>
-      <div className="flex justify-between items-center gap-2">
+      <div className="flex justify-between flex-col sm:flex-row items-center gap-2">
         <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl">
           Expense management
         </h2>
@@ -142,7 +142,7 @@ const ExpenseMgt = () => {
             className="flex items-center gap-2 bg-primary text-white h-[40px] px-4 rounded-md  text-sm"
             onClick={() => setIsOpen(true)}
           >
-            <span> Add </span>
+            <span> Create Expense </span>
             <AiOutlinePlus />
           </button>
         </div>

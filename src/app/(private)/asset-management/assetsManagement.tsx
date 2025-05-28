@@ -1,69 +1,84 @@
-"use client";
-// import { Asset, Employee } from "@/types/assets-management";
-import { useState } from "react";
-import { AssetEmptyState } from "./emptyState";
-import { AssetTabs } from "./assetTabs";
-// import { Employee } from "@/src/types/dashboard";
-import { Asset, Employee } from "@/src/types/assets-management";
+'use client';
+
+import { useEffect, useState } from 'react';
+import { AssetEmptyState } from './emptyState';
+import { AssetTabs } from './assetTabs';
+import { Asset, Employee } from '@/src/types/assets-management';
 import {
   useCreateAsset,
   useGetAllAssets,
-} from "@/src/hooks/asset-management/useAssetManagement";
+  useGetAllAssignedAssets,
+  useGetAllUsers,
+} from '@/src/hooks/asset-management/useAssetManagement';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import { AssetFormValues } from '@/src/utils/validations';
 
 export const AssetManagementDashboard = () => {
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [employees] = useState<Employee[]>([
-    { id: "E-001", name: "Sarah Johnson" },
-    { id: "E-002", name: "John Doe" },
-  ]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const { mutate: mutateAddAsset } = useCreateAsset();
-  const addAsset = (asset: Omit<Asset, "id">) => {
-    // const newAsset: Asset = {
-    //   ...asset,
-    //   id: `A-${(assets.length + 1001).toString()}`,
-    // };
-    mutateAddAsset(asset, {
-      onSuccess: (data) => {
-        console.log("Asset created successfully:", data);
-      },
-    });
-    // setAssets([...assets, newAsset]);
+  const { users } = useGetAllUsers();
+
+  useEffect(() => {
+    if (users && users.length > 0) {
+      setEmployees(
+        users?.map((user) => ({
+          id: user?.id,
+          name: user?.full_name,
+        }))
+      );
+    }
+  }, [users]);
+  const { mutate: createAsset, isPending } = useCreateAsset({
+    onSuccess: () => {
+      toast.success('Asset created successfully');
+      setIsAddModalOpen(false);
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error?.response?.data?.message || 'Something went wrong');
+      }
+    },
+  });
+
+  const handleAddAsset = (formValues: AssetFormValues) => {
+    const asset: Asset = {
+      name: formValues.name,
+      category: formValues.category,
+      quantity: parseInt(formValues.quantity) || 0,
+      status: formValues.status,
+    };
+    createAsset(asset);
   };
-
-  const assignAsset = (assetId: string, employeeId: string) => {
-    setAssets(
-      assets.map((asset) => {
-        if (asset.id === assetId) {
-          const employee = employees.find((emp) => emp.id === employeeId);
-          return {
-            ...asset,
-            assignedTo: employee,
-          };
-        }
-        return asset;
-      })
-    );
-  };
-
   const { allAssets } = useGetAllAssets({
-    page: "1",
+    page: '1',
+  });
+
+  const { assignedAssets } = useGetAllAssignedAssets({
+    page: '1',
   });
 
   return (
     <div className="max-w-7xl mx-auto">
-      {allAssets.length > 0 ? (
+      {allAssets?.length ? (
         <>
           <h1 className="text-2xl font-bold mb-6">Assets</h1>
           <AssetTabs
             assets={allAssets}
             employees={employees}
-            onAddAsset={addAsset}
-            onAssignAsset={assignAsset}
+            assignedAssets={assignedAssets}
+            isPending={isPending}
+            handleAddAsset={handleAddAsset}
           />
         </>
       ) : (
-        <AssetEmptyState onAddAsset={addAsset} employees={employees} />
+        <AssetEmptyState
+          handleAddAsset={handleAddAsset}
+          isPending={isPending}
+          isAddModalOpen={isAddModalOpen}
+          setIsAddModalOpen={setIsAddModalOpen}
+        />
       )}
     </div>
   );
