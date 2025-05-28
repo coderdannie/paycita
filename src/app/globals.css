@@ -225,3 +225,30 @@ abbr[title] {
     @apply h-[40px]  gap-1 border-2 rounded-lg bg-primary text-white font-semibold text-sm;
   }
 }
+
+.yello {
+  background-color: #fffcf5;
+  color: #ffa80a;
+  font-weight: 600;
+  border: 1px solid #ffd384;
+}
+
+.reid {
+  background-color: #fdf4f4;
+  color: #ff3d00;
+  font-weight: 600;
+  border: 1px solid #ffb2b2;
+}
+
+.gren {
+  background-color: #f4fffc;
+  color: #00aa4f;
+  border: 1px solid #b2ffb2;
+}
+
+.bleu {
+  background-color: #f4f8ff;
+  color: #0052cc;
+  font-weight: 600;
+  border: 1px solid #b2cfff;
+}

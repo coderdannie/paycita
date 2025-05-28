@@ -54,10 +54,7 @@ const ROLE = [
     value: "finance_manager",
     label: "Finance Manager",
   },
-  {
-    value: "procurement_manager",
-    label: "Procurement Manager",
-  },
+
 ];
 
 const TAX_STATUSES = ["Taxable", "Non-Taxable"] as string[];
@@ -140,7 +137,7 @@ const EmployeeDetails = () => {
       hire_date: "",
       salary: "",
       tax_status: "",
-      tax_number: "",
+      pension_number: "",
       pension_company: "",
       company_email: "",
     },
@@ -243,7 +240,7 @@ const EmployeeDetails = () => {
   };
   const handleChangeCompany = (selectedOption: SingleValue | null) => {
     const companyValue = selectedOption?.label || "";
-    form.setValue("pension_company", companyValue, { shouldValidate: true });
+    form.setValue("pension_company", companyValue, { shouldValidate: false });
   };
 
   return (
@@ -418,11 +415,11 @@ const EmployeeDetails = () => {
               />
 
               <CustomFormField
-                name="tax_number"
+                name="pension_number"
                 control={control}
-                label="Tax Number"
+                label="Pension Number"
                 placeholder="Enter tax number"
-                error={errors.tax_number?.message}
+                error={errors.pension_number?.message}
               />
 
               <div className="w-full">
