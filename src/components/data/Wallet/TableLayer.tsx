@@ -58,9 +58,6 @@ const TableLayer = ({
   return (
     <div>
       <div>
-        <h2 className="text-[#1D2939] pt-6 font-bold text-lg md:text-xl">
-          Wallet Transactions
-        </h2>
         <div className="flex mt-10 mb-6 justify-between items-center gap-2 flex-wrap">
           <div className="h-[40px] max-w-[338px] w-full">
             <SearchInput

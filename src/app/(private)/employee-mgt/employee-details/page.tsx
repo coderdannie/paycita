@@ -1,112 +1,111 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { IoMdArrowBack } from "react-icons/io";
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { IoMdArrowBack } from 'react-icons/io';
 import {
   CustomFormField,
   CustomFormSelect,
-} from "@/src/components/common/CustomInput";
+} from '@/src/components/common/CustomInput';
 import {
   employeeDetailsSchema,
   EmployeeDetailsSchemaType,
-} from "@/src/utils/validations";
-import { Form } from "@/src/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import Calendar from "react-calendar";
-import { FiCalendar } from "react-icons/fi";
-import { formatDate } from "@/src/utils/helper";
-import { IoIosCheckmarkCircle } from "react-icons/io";
-import { Checkbox } from "@/src/components/ui/checkbox";
+} from '@/src/utils/validations';
+import { Form } from '@/src/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import Calendar from 'react-calendar';
+import { FiCalendar } from 'react-icons/fi';
+import { formatDate } from '@/src/utils/helper';
+import { IoIosCheckmarkCircle } from 'react-icons/io';
+import { Checkbox } from '@/src/components/ui/checkbox';
 import {
   useAddEmployee,
   useGetDepartments,
   useGetGivenItems,
   useGetPensionCompanies,
-} from "@/src/hooks/dashboard/useDashboard";
-import { useUserDetailSelector } from "@/src/Redux/selectors";
-import { useDispatch } from "react-redux";
-import { resetUserDetails } from "@/src/Redux/features/userDetailsSlice";
-import Select, { StylesConfig } from "react-select";
-import { SingleValue } from "@/src/types/attendance";
-import { useToast } from "@/src/context/ToastContext";
+} from '@/src/hooks/dashboard/useDashboard';
+import { useUserDetailSelector } from '@/src/Redux/selectors';
+import { useDispatch } from 'react-redux';
+import { resetUserDetails } from '@/src/Redux/features/userDetailsSlice';
+import Select, { StylesConfig } from 'react-select';
+import { SingleValue } from '@/src/types/attendance';
+import { useToast } from '@/src/context/ToastContext';
 
-const JOB_LEVELS = ["Staff", "Mid", "Senior", "Executive"] as string[];
+const JOB_LEVELS = ['Staff', 'Mid', 'Senior', 'Executive'] as string[];
 const EMPLOYMENT_TYPES = [
-  "Full-Time",
-  "Part-Time",
-  "Contract",
-  "Internship",
+  'Full-Time',
+  'Part-Time',
+  'Contract',
+  'Internship',
 ] as string[];
-const LOCATION_TYPES = ["Onsite", "Remote", "Hybrid"] as string[];
+const LOCATION_TYPES = ['Onsite', 'Remote', 'Hybrid'] as string[];
 
 const ROLE = [
   {
-    value: "user",
-    label: "User",
+    value: 'user',
+    label: 'User',
   },
   {
-    value: "hr",
-    label: "Hr",
+    value: 'hr',
+    label: 'Hr',
   },
   {
-    value: "finance_manager",
-    label: "Finance Manager",
+    value: 'finance_manager',
+    label: 'Finance Manager',
   },
-
 ];
 
-const TAX_STATUSES = ["Taxable", "Non-Taxable"] as string[];
+const TAX_STATUSES = ['Taxable', 'Non-Taxable'] as string[];
 
 const EmployeeDetails = () => {
   const customStyles: StylesConfig<SingleValue, false> = useMemo(
     () => ({
       control: (provided) => ({
         ...provided,
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#ffff",
-        border: "1px solid #E4E7EC",
-        borderRadius: "8px",
-        boxShadow: "none",
-        minHeight: "40px",
-        padding: "0 12px",
-        fontSize: "14px",
-        color: "#1D2939",
-        outline: "none",
-        "&:hover": {
-          borderColor: "#692E9F",
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#ffff',
+        border: '1px solid #E4E7EC',
+        borderRadius: '8px',
+        boxShadow: 'none',
+        minHeight: '40px',
+        padding: '0 12px',
+        fontSize: '14px',
+        color: '#1D2939',
+        outline: 'none',
+        '&:hover': {
+          borderColor: '#692E9F',
         },
-        "&:focus": {
-          borderColor: "transparent",
-          outline: "none",
+        '&:focus': {
+          borderColor: 'transparent',
+          outline: 'none',
         },
       }),
       placeholder: (provided) => ({
         ...provided,
-        fontSize: "12px",
-        color: "#b3b3b3",
+        fontSize: '12px',
+        color: '#b3b3b3',
       }),
       menu: (provided) => ({
         ...provided,
-        borderRadius: "10px",
-        marginTop: "4px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+        borderRadius: '10px',
+        marginTop: '4px',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
         zIndex: 10,
       }),
       indicatorSeparator: () => ({
-        display: "none",
+        display: 'none',
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? "#F0EAF5" : "transparent",
-        color: "#333333",
-        fontSize: "12px",
-        padding: "10px 8px",
-        cursor: "pointer",
-        "&:active": {
-          backgroundColor: "#EAEAEA",
+        backgroundColor: state.isFocused ? '#F0EAF5' : 'transparent',
+        color: '#333333',
+        fontSize: '12px',
+        padding: '10px 8px',
+        cursor: 'pointer',
+        '&:active': {
+          backgroundColor: '#EAEAEA',
         },
       }),
     }),
@@ -128,20 +127,20 @@ const EmployeeDetails = () => {
   const form = useForm<EmployeeDetailsSchemaType>({
     resolver: zodResolver(employeeDetailsSchema),
     defaultValues: {
-      department_id: departmentOptions?.[0]?.value || "",
-      job_title: "",
-      job_level: "",
-      role: "",
-      employment_type: "",
-      job_location: "",
-      hire_date: "",
-      salary: "",
-      tax_status: "",
-      pension_number: "",
-      pension_company: "",
-      company_email: "",
+      department_id: departmentOptions?.[0]?.value || '',
+      job_title: '',
+      job_level: '',
+      role: '',
+      employment_type: '',
+      job_location: '',
+      hire_date: '',
+      salary: '',
+      tax_status: '',
+      pension_number: '',
+      pension_company: '',
+      company_email: '',
     },
-    mode: "onTouched",
+    mode: 'onTouched',
   });
 
   const {
@@ -153,7 +152,7 @@ const EmployeeDetails = () => {
     trigger,
   } = form;
 
-  const hire_date = watch("hire_date");
+  const hire_date = watch('hire_date');
 
   const { mutateAddEmployee, isPending } = useAddEmployee();
 
@@ -167,7 +166,7 @@ const EmployeeDetails = () => {
     value: Date | Date[] | [Date | null, Date | null] | null
   ) => {
     if (value instanceof Date) {
-      setValue("hire_date", formatDate(value), { shouldValidate: true });
+      setValue('hire_date', formatDate(value), { shouldValidate: true });
       setShowCalendar(false);
     }
   };
@@ -185,7 +184,7 @@ const EmployeeDetails = () => {
       emergency_contact_phone:
         userDetails?.emergencyContact?.emergency_contact_phone,
       office_items_given: selectedItems,
-      offer_letter: isOfficeLetter ? "yes" : "no",
+      offer_letter: isOfficeLetter ? 'yes' : 'no',
       guarantor_1_name: userDetails?.guarantors[0]?.fullName,
       guarantor_1_phone: userDetails?.guarantors[0]?.phoneNumber,
       guarantor_1_address: userDetails?.guarantors[0]?.address,
@@ -200,8 +199,8 @@ const EmployeeDetails = () => {
     mutateAddEmployee(payload, {
       onSuccess: (res) => {
         dispatch(resetUserDetails());
-        addToast(res.data.message || "Employee Added Successfully", "success");
-        router.push("/employee-mgt");
+        addToast(res.data.message || 'Employee Added Successfully', 'success');
+        router.push('/employee-mgt');
       },
       onError: (error: {
         response: {
@@ -210,10 +209,10 @@ const EmployeeDetails = () => {
           };
         };
       }) => {
-        console.error("Error adding employee:", error);
+        console.error('Error adding employee:', error);
         addToast(
-          error?.response?.data?.message || "Error adding employee",
-          "error"
+          error?.response?.data?.message || 'Error adding employee',
+          'error'
         );
       },
     });
@@ -226,21 +225,21 @@ const EmployeeDetails = () => {
   // Trigger validation when hire_date changes
   useEffect(() => {
     if (hire_date) {
-      trigger("hire_date");
+      trigger('hire_date');
     }
   }, [hire_date, trigger]);
 
   const handleChangeDepartment = (selectedOption: SingleValue | null) => {
-    const departmentValue = selectedOption?.value || "";
-    form.setValue("department_id", +departmentValue, { shouldValidate: true });
+    const departmentValue = selectedOption?.value || '';
+    form.setValue('department_id', +departmentValue, { shouldValidate: true });
   };
   const handleChangeRole = (selectedOption: SingleValue | null) => {
-    const roleValue = selectedOption?.value || "";
-    form.setValue("role", roleValue, { shouldValidate: true });
+    const roleValue = selectedOption?.value || '';
+    form.setValue('role', roleValue, { shouldValidate: true });
   };
   const handleChangeCompany = (selectedOption: SingleValue | null) => {
-    const companyValue = selectedOption?.label || "";
-    form.setValue("pension_company", companyValue, { shouldValidate: false });
+    const companyValue = selectedOption?.label || '';
+    form.setValue('pension_company', companyValue, { shouldValidate: false });
   };
 
   return (
@@ -321,7 +320,7 @@ const EmployeeDetails = () => {
                   placeholder="Select Department"
                   onChange={handleChangeDepartment}
                   value={departmentOptions?.find(
-                    (option) => option.value === form.watch("department_id")
+                    (option) => option.value === form.watch('department_id')
                   )}
                 />
                 {errors.department_id?.message && (
@@ -329,7 +328,7 @@ const EmployeeDetails = () => {
                     {errors.department_id.message}
                   </p>
                 )}
-              </div> 
+              </div>
               <div className="w-full">
                 <p className="font-semibold text-sm text-[#292D32] pb-2">
                   Role
@@ -341,7 +340,7 @@ const EmployeeDetails = () => {
                   placeholder="Select Role"
                   onChange={handleChangeRole}
                   value={ROLE?.find(
-                    (option) => option.value === form.watch("role")
+                    (option) => option.value === form.watch('role')
                   )}
                 />
                 {errors.role?.message && (
@@ -355,12 +354,12 @@ const EmployeeDetails = () => {
                 <div className="w-full relative">
                   <div
                     className={`flex gap-4 border-2 bg-[#ffff] border-[#E4E7EC] h-[40px] w-full rounded-[10px] cursor-pointer ${
-                      hire_date ? "justify-between" : "justify-end"
+                      hire_date ? 'justify-between' : 'justify-end'
                     } items-center p-[10px]`}
                     onClick={() => setShowCalendar((prev) => !prev)}
                   >
                     <p className="text-xs text-[#292D32]">
-                      {hire_date || "Pick date"}
+                      {hire_date || 'Pick date'}
                     </p>
                     <FiCalendar className="mr-2 h-4 w-4 text-[#5B5B5B]" />
                   </div>
@@ -373,8 +372,8 @@ const EmployeeDetails = () => {
                         maxDate={new Date()}
                         tileClassName={({ date }) =>
                           date.getDay() === 0 || date.getDay() === 6
-                            ? "weekend"
-                            : ""
+                            ? 'weekend'
+                            : ''
                         }
                       />
                     </div>
@@ -418,7 +417,7 @@ const EmployeeDetails = () => {
                 name="pension_number"
                 control={control}
                 label="Pension Number"
-                placeholder="Enter tax number"
+                placeholder="Enter Pension Number"
                 error={errors.pension_number?.message}
               />
 
@@ -434,7 +433,7 @@ const EmployeeDetails = () => {
                   placeholder="Select Company"
                   onChange={handleChangeCompany}
                   value={pensionCompanyOptions?.find(
-                    (option) => option.value === form.watch("pension_company")
+                    (option) => option.value === form.watch('pension_company')
                   )}
                 />
                 {errors.pension_company?.message && (
@@ -443,7 +442,6 @@ const EmployeeDetails = () => {
                   </p>
                 )}
               </div>
-           
             </div>
 
             <div className="space-y-3">
@@ -490,11 +488,11 @@ const EmployeeDetails = () => {
               <button
                 type="submit"
                 className={`btn-primary px-[30px] ${
-                  (!isValid || isPending) && "opacity-50 cursor-not-allowed"
+                  (!isValid || isPending) && 'opacity-50 cursor-not-allowed'
                 }`}
                 disabled={!isValid || isPending}
               >
-                {isPending ? "Submitting..." : "Submit"}
+                {isPending ? 'Submitting...' : 'Submit'}
               </button>
             </div>
           </form>
