@@ -1,41 +1,48 @@
-"use client";
+'use client';
 
-import { walletCounts } from "@/src/components/common/constants";
-import TableLayer from "@/src/components/data/Wallet/TableLayer";
-import { RequestFundModal } from "@/src/components/modals/RequestFundModal";
-import { Button } from "@/src/components/ui/button";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { walletCounts } from '@/src/components/common/constants';
+import MyRequest from '@/src/components/data/Wallet/MyRequest';
+import TableLayer from '@/src/components/data/Wallet/TableLayer';
+import { RequestFundModal } from '@/src/components/modals/RequestFundModal';
+import { Button } from '@/src/components/ui/button';
+import { Skeleton } from '@/src/components/ui/skeleton';
 import {
   useGetWalletHistory,
   useRequestFunds,
-} from "@/src/hooks/wallet/useWallet";
-import { AxiosError } from "axios";
-import { useState } from "react";
-import toast from "react-hot-toast";
+  useGetDepartmentWalletRequest,
+} from '@/src/hooks/wallet/useWallet';
+import { AxiosError } from 'axios';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
-
+const tabs = ['Wallet Transaction', 'My Request'];
 const WalletPage = () => {
   const { wallet, isLoading } = useGetWalletHistory();
+  const { walletRequestData, isLoading: isLoadingRequestData } =
+    useGetDepartmentWalletRequest();
+
+  console.log(walletRequestData);
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const [open, setOpen] = useState(false);
 
   const { mutate: mutateRequestFund, isPending } = useRequestFunds();
 
   const handleSubmit = (data: { amount: string; reason: string }) => {
-    console.log("Submitted data:", data);
+    console.log('Submitted data:', data);
     mutateRequestFund(data, {
       onSuccess: (res) => {
-        toast.success(res.data.message || "Fund requested successfully!");
+        toast.success(res.data.message || 'Fund requested successfully!');
         setOpen(false);
       },
       onError: (error) => {
-        console.error("Error requesting fund:", error);
+        console.error('Error requesting fund:', error);
         if (error instanceof AxiosError) {
           toast.error(
-            error?.response?.data?.message || "Something went wrong!"
+            error?.response?.data?.message || 'Something went wrong!'
           );
         } else {
-          toast.error("An unexpected error occurred.");
+          toast.error('An unexpected error occurred.');
         }
       },
     });
@@ -63,7 +70,7 @@ const WalletPage = () => {
                 <h4 className="text-[#808191] text-sm">{data?.title}</h4>
                 <div className="flex items-center gap-2">
                   <p className="text-[#11142D] text-2xl font-bold">
-                    ₦{Number(data?.amount)?.toLocaleString() || "0.00"}
+                    ₦{Number(data?.amount)?.toLocaleString() || '0.00'}
                   </p>
                   {/* <div>
                     <div className="flex items-center border border-[#3440544D] rounded-lg p-[5px] gap-1">
@@ -80,7 +87,29 @@ const WalletPage = () => {
           </>
         )}
       </div>
-      <TableLayer walletHistory={wallet.wallet_history} />
+      <h2 className="text-[#1D2939] pt-6 font-bold text-lg md:text-xl">
+        Wallet Transactions
+      </h2>
+      <ul className="flex items-center gap-6 mt-6 border-b border-[#E4E7EC] ">
+        {tabs.map((item, i) => (
+          <li
+            key={i}
+            className={`border-b border-[#E4E7EC] py-3 text-sm font-semibold  ${
+              item === activeTab
+                ? 'text-primary border-b border-primary'
+                : 'text-[#667085]'
+            }`}
+          >
+            <button onClick={() => setActiveTab(item)}>{item}</button>
+          </li>
+        ))}
+      </ul>
+      {activeTab.includes('Wallet') ? (
+        <TableLayer walletHistory={wallet.wallet_history} />
+      ) : (
+        <MyRequest walletRequestData={walletRequestData} />
+      )}
+
       <RequestFundModal
         open={open}
         onClose={() => setOpen(false)}

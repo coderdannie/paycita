@@ -3,11 +3,11 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
-import { AxiosError } from "axios";
+} from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import approvalService from "@/src/service/api/approvals.service";
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import approvalService from '@/src/service/api/approvals.service';
 
 // --- Query Hooks ---
 
@@ -63,10 +63,10 @@ export const useAddApprovalComment = (route: string) => {
       });
     },
     onError: (error) => {
-      console.error("Error adding approval comment:", error);
+      console.error('Error adding approval comment:', error);
       if (error instanceof AxiosError) {
         const errorMessage =
-          error.response?.data?.message || "Failed to add comment";
+          error.response?.data?.message || 'Failed to add comment';
         throw new Error(errorMessage);
       }
       throw error;
@@ -153,10 +153,10 @@ export const useUpdateApproval = (route: string) => {
         );
       }
 
-      console.error("Error updating approval:", err);
+      console.error('Error updating approval:', err);
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to update approval";
+          err.response?.data?.message || 'Failed to update approval';
         throw new Error(errorMessage);
       }
       throw err;
@@ -196,10 +196,10 @@ export const useResolveCommentThread = (route: string) => {
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
-          throw new Error(error.message || "Failed to resolve comment thread");
+          throw new Error(error.message || 'Failed to resolve comment thread');
         }
         throw new Error(
-          "An unknown error occurred while resolving the comment thread."
+          'An unknown error occurred while resolving the comment thread.'
         );
       },
       onSettled: () => {
@@ -210,4 +210,26 @@ export const useResolveCommentThread = (route: string) => {
       },
     }
   );
+};
+
+export const useVerifyApprovalOtp = (options = {}) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: approvalService.verifyApprovalOtp,
+    ...options,
+  });
+
+  return { mutate, isPending };
+};
+
+export const useResendApprovalOtp = (options = {}) => {
+  const {
+    mutate,
+    isPending: isLoading,
+    data,
+  } = useMutation({
+    mutationFn: approvalService.resendApprovalOtp,
+    ...options,
+  });
+
+  return { mutate, isLoading, data };
 };
