@@ -31,7 +31,7 @@ const Password = ({ id }: Props) => {
   };
 
   return (
-    <div className="min-h-[236px] border bg-white border-[#E4E7EC] pt-6 px-5 rounded-xl">
+    <div className="min-h-[236px] border bg-white border-[#E4E7EC] pt-6 px-5 rounded-xl gap-4">
       <div className="flex justify-between items-center flex-wrap">
         <div>
           <h2 className="font-medium max-w-[600px] w-full">
