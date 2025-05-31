@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import Image from "next/image";
-import { formatDate } from "@/src/utils/helper";
-import { useAuthSelector } from "@/src/Redux/selectors";
+import { useState } from 'react';
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import Image from 'next/image';
+import { formatDate } from '@/src/utils/helper';
+import { useAuthSelector } from '@/src/Redux/selectors';
 
 const PaymentHisTable = ({
   payroll,
@@ -21,28 +21,28 @@ const PaymentHisTable = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
-  const [status] = useState("Paid");
+  const [status] = useState('Paid');
   const headers = [
     {
-      label: "Period",
+      label: 'Period',
     },
 
     {
-      label: "Base Salary",
+      label: 'Base Salary',
     },
     {
-      label: "Deductions",
+      label: 'Deductions',
     },
     {
-      label: "PAYE",
+      label: 'PAYE',
     },
     {
-      label: "Net Pay",
+      label: 'Net Pay',
     },
     {
-      label: "Status",
+      label: 'Status',
     },
   ];
 
@@ -82,9 +82,9 @@ const PaymentHisTable = ({
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                     ${
-                      status === "Paid"
-                        ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                        : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
+                      status === 'Paid'
+                        ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                        : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
                     }
                   `}
                   >
@@ -98,15 +98,16 @@ const PaymentHisTable = ({
               <TableCell colSpan={headers.length} className="text-center py-6">
                 <div className="flex flex-col items-center">
                   <Image
-                    src="/assets/avatar.jpeg"
-                    alt="No Attendance Records"
-                    className="w-20 h-20 mb-4"
+                    src="/assets/emptystate.svg"
+                    alt="No Matching Records"
+                    width={80}
+                    height={80}
                   />
                   <p className="text-lg font-semibold text-gray-700">
-                    No Attendance Records
+                    No Payroll Records
                   </p>
                   <p className="text-sm text-gray-500">
-                    Clock in and out to track your attendance
+                    No Payroll record at the moment
                   </p>
                 </div>
               </TableCell>

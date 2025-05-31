@@ -3,22 +3,22 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import dashboardService from "@/src/service/api/dashboard.service";
+import dashboardService from '@/src/service/api/dashboard.service';
 
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 import {
   setEmployeeAttendance,
   setEmployeeAttendancePagination,
-} from "@/src/Redux/features/dashboardSlice";
-import { useEffect, useState } from "react";
-import { AddEmployee } from "@/src/utils/validations";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+} from '@/src/Redux/features/dashboardSlice';
+import { useEffect, useState } from 'react';
+import { AddEmployee } from '@/src/utils/validations';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 const checkIsAuthenticated = (): boolean => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token");
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
     return !!token;
   }
   return false;
@@ -38,11 +38,11 @@ export const useGetAttendance = (filters: {
     const handleStorageChange = () => {
       setIsAuthenticated(checkIsAuthenticated());
     };
-    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener('storage', handleStorageChange);
 
     setIsAuthenticated(checkIsAuthenticated());
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -131,7 +131,7 @@ export const useAddEmployee = () => {
         };
       };
     }) => {
-      console.error("Error adding employee:", error.response.data);
+      console.error('Error adding employee:', error.response.data);
     },
   });
   return {
@@ -294,7 +294,7 @@ export const useOffBoardEmployee = () => {
         };
       };
     }) => {
-      console.error("Error offboarding employee:", error.response.data.message);
+      console.error('Error offboarding employee:', error.response.data.message);
     },
   });
 
@@ -304,4 +304,17 @@ export const useOffBoardEmployee = () => {
     isSuccess, // Success state
     isError, // Error state
   };
+};
+
+export const useResetEmployeePassword = (options = {}) => {
+  const {
+    mutate,
+    isPending: isLoading,
+    data,
+  } = useMutation({
+    mutationFn: dashboardService.resetEmployeePassword,
+    ...options,
+  });
+
+  return { mutate, isLoading, data };
 };

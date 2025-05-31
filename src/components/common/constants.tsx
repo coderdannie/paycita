@@ -305,6 +305,7 @@ export const employeeDetailsTabs = [
   'Payroll History',
   'Leave History',
   'Documents',
+  'Password',
   'Off Boarding',
 ];
 
