@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
 
-import { Leave } from "./Tabs/LeaveHistory";
-import TableEmptyState from "../../common/TableEmptyState";
-import { formatDate } from "@/src/utils/helper";
+import { Leave } from './Tabs/LeaveHistory';
+import TableEmptyState from '../../common/TableEmptyState';
+import { formatDate } from '@/src/utils/helper';
 
 const LeaveHistoryTable = ({ leave }: { leave: Leave[] }) => {
   const headers = [
     {
-      label: "Request Date",
+      label: 'Request Date',
     },
 
     {
-      label: "Leave Type",
+      label: 'Leave Type',
     },
     {
-      label: "Leave Date",
+      label: 'Leave Date',
     },
     {
-      label: "Duration",
+      label: 'Duration',
     },
 
     {
-      label: "Status",
+      label: 'Status',
     },
   ];
 
@@ -43,17 +43,18 @@ const LeaveHistoryTable = ({ leave }: { leave: Leave[] }) => {
                 </TableCell>
                 <TableCell>{row.leave_type}</TableCell>
                 <TableCell>
-                  {formatDate(row.start_date).split(" ").slice(0, 2).join(" ")}{" "}
+                  {formatDate(row.start_date).split(' ').slice(0, 2).join(' ')}{' '}
                   - {formatDate(row.end_date)}
                 </TableCell>
                 <TableCell>{row.duration} Days</TableCell>
                 <TableCell>
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
-                    ${row?.status?.toLowerCase() === "approved"
-                        ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                        : "text-red-600   border-[#F49E9E] bg-[#FFF5F5]"
-                      }
+                    ${
+                      row?.status?.toLowerCase() === 'approved'
+                        ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                        : 'text-red-600   border-[#F49E9E] bg-[#FFF5F5]'
+                    }
                   `}
                   >
                     {row?.status}
@@ -62,11 +63,7 @@ const LeaveHistoryTable = ({ leave }: { leave: Leave[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableEmptyState
-              headers={headers}
-              messageTitle="No Attendance Records"
-              desc="Clock in and out to track your attendance"
-            />
+            <TableEmptyState headers={headers} />
           )}
         </CustomTable>
       </div>

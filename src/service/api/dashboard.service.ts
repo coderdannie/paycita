@@ -1,5 +1,5 @@
-import { api } from ".";
-import { AddEmployee } from "../../utils/validations";
+import { api } from '.';
+import { AddEmployee } from '../../utils/validations';
 
 const getAttendance = (filters: {
   page: string;
@@ -12,47 +12,47 @@ const getAttendance = (filters: {
   if (
     filters.page !== null &&
     filters.page !== undefined &&
-    filters.page !== ""
+    filters.page !== ''
   ) {
-    queryParams.append("page", filters.page);
+    queryParams.append('page', filters.page);
   }
   if (
     filters.employee_name !== null &&
     filters.employee_name !== undefined &&
-    filters.employee_name !== ""
+    filters.employee_name !== ''
   ) {
-    queryParams.append("employee_name", filters.employee_name.toString());
+    queryParams.append('employee_name', filters.employee_name.toString());
   }
   if (
     filters.status !== null &&
     filters.status !== undefined &&
-    filters.status !== ""
+    filters.status !== ''
   ) {
-    queryParams.append("status", filters.status.toString());
+    queryParams.append('status', filters.status.toString());
   }
   if (
     filters.job_title !== null &&
     filters.job_title !== undefined &&
-    filters.job_title !== ""
+    filters.job_title !== ''
   ) {
-    queryParams.append("job_title", filters.job_title.toString());
+    queryParams.append('job_title', filters.job_title.toString());
   }
   return api.get(`/hr/employee-attendance?${queryParams.toString()}`);
 };
 
 const addEmployee = (data: AddEmployee) => {
-  return api.post("/hr/employee", data);
+  return api.post('/hr/employee', data);
 };
 
 const getDepartments = () => {
-  return api.get("/hr/department");
+  return api.get('/hr/department');
 };
 
 const getPensionCompanies = () => {
-  return api.get("/hr/get-pensions");
+  return api.get('/hr/get-pensions');
 };
 const getGivenItems = () => {
-  return api.get("/hr/item");
+  return api.get('/hr/item');
 };
 
 const getAllEmployees = (filters: {
@@ -67,37 +67,37 @@ const getAllEmployees = (filters: {
   if (
     filters.page !== null &&
     filters.page !== undefined &&
-    filters.page !== ""
+    filters.page !== ''
   ) {
-    queryParams.append("page", filters.page);
+    queryParams.append('page', filters.page);
   }
   if (
     filters.employee_name !== null &&
     filters.employee_name !== undefined &&
-    filters.employee_name !== ""
+    filters.employee_name !== ''
   ) {
-    queryParams.append("employee_name", filters.employee_name.toString());
+    queryParams.append('employee_name', filters.employee_name.toString());
   }
   if (
     filters.status !== null &&
     filters.status !== undefined &&
-    filters.status !== ""
+    filters.status !== ''
   ) {
-    queryParams.append("status", filters.status.toString());
+    queryParams.append('status', filters.status.toString());
   }
   if (
     filters.job_title !== null &&
     filters.job_title !== undefined &&
-    filters.job_title !== ""
+    filters.job_title !== ''
   ) {
-    queryParams.append("job_title", filters.job_title.toString());
+    queryParams.append('job_title', filters.job_title.toString());
   }
   if (
     filters.job_level !== null &&
     filters.job_level !== undefined &&
-    filters.job_level !== ""
+    filters.job_level !== ''
   ) {
-    queryParams.append("job_level", filters.job_level.toString());
+    queryParams.append('job_level', filters.job_level.toString());
   }
   return api.get(`/hr/employee?${queryParams.toString()}`);
 };
@@ -107,9 +107,16 @@ const getEmployeeById = (id: string) => {
 };
 
 const offBoardEmployee = (data: { items: string[]; employee_id: string }) => {
-  return api.delete("/hr/employee-offboarding", {
+  return api.delete('/hr/employee-offboarding', {
     data,
   });
+};
+
+const resetEmployeePassword = async (query: { userId: string }) => {
+  const RESET_EMPLOYEE_PASSWORD = (userId = '') =>
+    `/hr/change-password/${userId}`;
+  const res = await api.post(RESET_EMPLOYEE_PASSWORD(query.userId));
+  return res.data;
 };
 
 const dashboardService = {
@@ -121,6 +128,7 @@ const dashboardService = {
   getAllEmployees,
   getEmployeeById,
   offBoardEmployee,
+  resetEmployeePassword,
 };
 
 export default dashboardService;

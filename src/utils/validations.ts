@@ -48,12 +48,12 @@ export const userDetailsSchema = z.object({
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({
-  employeeNumber: z.string().min(1, { message: "Employee Number is required" }),
+  employeeNumber: z.string().min(1, { message: 'Employee Number is required' }),
   job_title: z.string().min(1, { message: 'Job Title is required' }),
   job_level: z.string().min(1, { message: 'Job Level is required' }),
   role: z.string().min(1, { message: 'Role is required' }),
   department_id: z.number().min(1, { message: 'Department is required' }),
-  company_email: z.string().email({ message: 'Invalid email address' }),
+  company_email: z.string().optional(),
   employment_type: z
     .string()
     .min(1, { message: 'Employment Type is required' }),
@@ -61,11 +61,9 @@ export const employeeDetailsSchema = z.object({
   hire_date: z.string().min(1, { message: 'Hire Date is required' }), // Assuming hire date is a string (e.g., YYYY-MM-DD)
   salary: z.string().min(1, { message: 'Basic Salary is required' }),
   tax_status: z.string().min(1, { message: 'Tax Status is required' }),
-  pension_number: z.string().min(1, { message: 'Pension Number is required' }),
+  pension_number: z.string().optional(),
 
-  pension_company: z
-    .string()
-    .min(1, { message: 'Pension Company is required' }),
+  pension_company: z.string().optional(),
   offer_letter: z.string().optional(),
 });
 
