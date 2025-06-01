@@ -1,4 +1,4 @@
-import { api } from ".";
+import { api } from '.';
 
 const getAllAssets = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();
@@ -6,9 +6,9 @@ const getAllAssets = (filters?: { page: string }) => {
   if (
     filters.page !== null &&
     filters.page !== undefined &&
-    filters.page !== ""
+    filters.page !== ''
   ) {
-    queryParams.append("page", filters.page);
+    queryParams.append('page', filters.page);
   }
   return api.get(`/hr/all-assets?${queryParams.toString()}`);
 };
@@ -40,11 +40,18 @@ const getAllAssignedAssets = (filters?: { page: string }) => {
   if (
     filters.page !== null &&
     filters.page !== undefined &&
-    filters.page !== ""
+    filters.page !== ''
   ) {
-    queryParams.append("page", filters.page);
+    queryParams.append('page', filters.page);
   }
   return api.get(`/hr/all-assigned-assets?${queryParams.toString()}`);
+};
+
+const revokeAssets = async (query: { assetTrackingId: string }) => {
+  const REVOKE_ASSETS = (assetTrackingId = '') =>
+    `/hr/revoke-asset/${assetTrackingId}`;
+  const res = await api.post(REVOKE_ASSETS(query.assetTrackingId));
+  return res.data;
 };
 
 const assetService = {
@@ -54,6 +61,7 @@ const assetService = {
   getAllUsers,
   assignAsset,
   getAllAssignedAssets,
+  revokeAssets,
 };
 
 export default assetService;
