@@ -44,7 +44,7 @@ export const AssignedTable = ({
       avatarUrl: assignedAsset.assigned_to.profile_picture,
     };
     onInfoClick(asset, action);
-    setAssignId(assignedAsset.id);
+    setAssignId(assignedAsset.id.toString());
   };
 
   return (

@@ -19,6 +19,7 @@ const useGetAllAssets = (filters?: { page: string }) => {
       return response;
     },
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: true,
   });
 
   const allAssets = data?.data?.data || [];
@@ -126,6 +127,7 @@ const useGetAllAssignedAssets = (filters?: { page: string }) => {
       return response;
     },
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: true,
   });
 
   const assignedAssets = data?.data?.data || [];
