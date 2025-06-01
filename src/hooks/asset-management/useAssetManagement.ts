@@ -139,6 +139,19 @@ const useGetAllAssignedAssets = (filters?: { page: string }) => {
   };
 };
 
+export const useRevokeAssets = (options = {}) => {
+  const {
+    mutate,
+    isPending: isLoading,
+    data,
+  } = useMutation({
+    mutationFn: assetService.revokeAssets,
+    ...options,
+  });
+
+  return { mutate, isLoading, data };
+};
+
 export {
   useGetAllAssets,
   useCreateAsset,

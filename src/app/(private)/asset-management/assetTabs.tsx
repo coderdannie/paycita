@@ -7,11 +7,17 @@ import { AssetDetailModal } from './assetDetailModal';
 import { Asset, Employee, AssignedAsset } from '@/src/types/assets-management';
 import { Plus, Search, Sliders } from 'lucide-react';
 import { AssignAssetModal } from './assignAssetsModal';
-import { useAssignAsset } from '@/src/hooks/asset-management/useAssetManagement';
+import {
+  useAssignAsset,
+  useRevokeAssets,
+} from '@/src/hooks/asset-management/useAssetManagement';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { AddAssetModal } from './addAssetsModal';
 import { AssetFormValues } from '@/src/utils/validations';
+import RevokeAsset from '@/src/components/modals/RevokeAsset';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 interface AssetTabsProps {
   assets: Asset[];
@@ -35,6 +41,9 @@ export const AssetTabs = ({
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [masterCheckbox, setMasterCheckbox] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [assignId, setAssignId] = useState('');
+  const queryClient = useQueryClient();
 
   const {
     mutate: assignAsset,
@@ -72,6 +81,27 @@ export const AssetTabs = ({
 
   const handleMasterCheckboxChange = (checked: boolean) => {
     setMasterCheckbox(checked);
+  };
+
+  const { mutate, isLoading } = useRevokeAssets({
+    onSuccess: (res: any) => {
+      toast.success(res?.message);
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_ASSIGNED_ASSETS],
+      });
+      setIsOpen(false);
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error?.response?.data?.message || 'Something went wrong');
+      }
+    },
+  });
+
+  const handleRevoke = () => {
+    mutate({
+      assetTrackingId: assignId,
+    });
   };
 
   // Prevent body scroll when modals are open
@@ -164,9 +194,15 @@ export const AssetTabs = ({
           employees={employees}
           assets={assets}
           assignedAssets={filteredAssignedAssets}
-          onInfoClick={(asset: Asset) => {
+          setIsOpen={setIsOpen}
+          setAssignId={setAssignId}
+          onInfoClick={(asset: Asset, action: string) => {
             setSelectedAsset(asset);
-            setIsDetailModalOpen(true);
+            if (action.includes('Revoke')) {
+              setIsOpen(true);
+            } else {
+              setIsDetailModalOpen(true);
+            }
           }}
         />
       )}
@@ -205,6 +241,12 @@ export const AssetTabs = ({
           asset={selectedAsset}
         />
       )}
+      <RevokeAsset
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleRevoke={handleRevoke}
+        isPending={isLoading}
+      />
     </div>
   );
 };

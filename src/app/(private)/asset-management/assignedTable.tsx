@@ -8,23 +8,29 @@ import Image from 'next/image';
 interface Props {
   employees: Employee[];
   assets: Asset[];
-  onInfoClick: (asset: Asset) => void;
+  onInfoClick: (asset: Asset, action: string) => void;
   assignedAssets: AssignedAsset[];
+  setIsOpen: (prop: boolean) => void;
+  setAssignId: (prop: string) => void;
 }
 
-export const AssignedTable = ({ assignedAssets, onInfoClick }: Props) => {
+export const AssignedTable = ({
+  assignedAssets,
+  onInfoClick,
+  setAssignId,
+}: Props) => {
   const headers = useMemo(
     () => [
       { label: 'Asset ID' },
       { label: 'Asset Name' },
       { label: 'Category' },
       { label: 'Assigned To' },
-      { label: '' },
+      { label: 'Actions' },
     ],
     []
   );
 
-  const handleInfoClick = (assignedAsset: AssignedAsset) => {
+  const handleInfoClick = (assignedAsset: AssignedAsset, action: string) => {
     const asset: Asset = {
       id: assignedAsset.asset_id,
       name: assignedAsset.asset_name,
@@ -37,7 +43,8 @@ export const AssignedTable = ({ assignedAssets, onInfoClick }: Props) => {
       },
       avatarUrl: assignedAsset.assigned_to.profile_picture,
     };
-    onInfoClick(asset);
+    onInfoClick(asset, action);
+    setAssignId(assignedAsset.id);
   };
 
   return (
@@ -65,12 +72,18 @@ export const AssignedTable = ({ assignedAssets, onInfoClick }: Props) => {
                     <span>{row.assigned_to?.full_name}</span>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="flex gap-4">
                   <button
-                    onClick={() => handleInfoClick(row)}
+                    onClick={() => handleInfoClick(row, 'view')}
                     className="text-indigo-500 hover:underline"
                   >
                     <InfoIcon />
+                  </button>
+                  <button
+                    onClick={() => handleInfoClick(row, 'Revoke')}
+                    className="border-red-500  text-red-500 rounded-md border bg-white  p-2"
+                  >
+                    Revoke Asset
                   </button>
                 </TableCell>
               </TableRow>
