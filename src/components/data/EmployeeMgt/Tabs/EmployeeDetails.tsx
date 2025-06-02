@@ -1,6 +1,12 @@
 import { useAuthSelector } from "@/src/Redux/selectors";
 import { formatLongCurrency } from "@/src/utils/helper";
 import { TbEdit } from "react-icons/tb";
+import { useState } from "react";
+import EditBasicInformationModal from "../modals/detail-basics";
+import EditPayrollTaxModal from "../modals/payroll-tax";
+import EditItemsGivenModal from "../modals/items-given";
+
+
 const EmployeeDetails = ({
   userDetails,
 }: {
@@ -24,15 +30,94 @@ const EmployeeDetails = ({
     job_level?: string;
     job_location?: string;
     job_title?: string;
+    gender?: string;
+    date_of_birth?: string;
+    marital_status?: string;
   };
 }) => {
   const userData = useAuthSelector();
+  const [isEditBasicInfoModalOpen, setIsEditBasicInfoModalOpen] =
+    useState(false);
+  const [isEditPayrollTaxModalOpen, setIsEditPayrollTaxModalOpen] =
+    useState(false);
+  const [isEditItemsGivenModalOpen, setIsEditItemsGivenModalOpen] =
+    useState(false);
 
   const currency = userData?.user?.currency || "NGN";
 
+  // Prepare employee data for the EditBasicInformationModal
+  const employeeDataForModal = {
+    id: 1, // You might want to pass this as a prop or get it from userDetails
+    employee_number: userDetails?.employee_number || "",
+    full_name: userDetails?.full_name || "",
+    job_title: userDetails?.job_title || "",
+    job_level: userDetails?.job_level || "",
+    employment_type: userDetails?.employment_type || "",
+    job_location: userDetails?.job_location || "",
+    hire_date: userDetails?.hire_date || "",
+    email: userDetails?.email || "",
+    salary: userDetails?.salary || "",
+    bank_name: userDetails?.bank_name || null,
+    bank_account_number: userDetails?.bank_account_number || null,
+    bank_account_name: userDetails?.bank_account_name || null,
+    department: {
+      id: 1, // You might need to map this from your actual department data
+      name: "Engineering", // This should come from your actual department data
+    },
+  };
+
+  const handleOpenEditBasicInfoModal = () => {
+    setIsEditBasicInfoModalOpen(true);
+  };
+
+  const handleCloseEditBasicInfoModal = () => {
+    setIsEditBasicInfoModalOpen(false);
+  };
+
+  const handleSaveBasicInfo = (updatedData: unknown) => {
+    // Handle the updated data here
+    console.log("Updated employee data:", updatedData);
+    // You would typically make an API call here to update the employee data
+    // and then refresh the component or update the local state
+  };
+
+  // Add handlers for Payroll Tax Modal
+  const handleOpenEditPayrollTaxModal = () => {
+    setIsEditPayrollTaxModalOpen(true);
+  };
+
+  const handleCloseEditPayrollTaxModal = () => {
+    setIsEditPayrollTaxModalOpen(false);
+  };
+
+  const handleSavePayrollTax = (updatedData: unknown) => {
+    // Handle the updated payroll tax data here
+    console.log("Updated payroll tax data:", updatedData);
+    // You would typically make an API call here to update the payroll tax data
+    // and then refresh the component or update the local state
+
+    // For now, you might want to update the userDetails state if it's managed by parent component
+    // or trigger a refetch of the employee data
+  };
+
+  // Add handlers for Items Given Modal
+  const handleOpenEditItemsGivenModal = () => {
+    setIsEditItemsGivenModalOpen(true);
+  };
+
+  const handleCloseEditItemsGivenModal = () => {
+    setIsEditItemsGivenModalOpen(false);
+  };
+
+  const handleSaveItemsGiven = (updatedItems: string[]) => {
+    // Handle the updated items data here
+    console.log("Updated items given data:", updatedItems);
+    // You would typically make an API call here to update the items given data
+    // and then refresh the component or update the local state
+  };
+
   return (
     <div>
-      {" "}
       <p className="text-[#1D2939] font-semibold text-lg">Employee Details</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {/* Basic Information */}
@@ -41,7 +126,11 @@ const EmployeeDetails = ({
             <div className="font-semibold text-[#1D2939]">
               Basic Information
             </div>
-            <TbEdit className="text-primary" size={20} />
+            <TbEdit
+              className="text-primary cursor-pointer"
+              size={20}
+              onClick={handleOpenEditBasicInfoModal}
+            />
           </div>
           <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[450px]">
             <p className="flex gap-10">
@@ -84,6 +173,7 @@ const EmployeeDetails = ({
             </p>
           </div>
         </div>
+
         {/* Bank Account */}
         <div className="bg-white px-5 py-6 shadow-md rounded-lg">
           <div className="flex items-center gap-1 mb-5">
@@ -116,7 +206,11 @@ const EmployeeDetails = ({
         <div className="bg-white px-5 py-6 shadow-md rounded-lg">
           <div className="flex items-center gap-1 mb-5">
             <div className="font-semibold text-[#1D2939]">Payroll & Tax</div>
-            <TbEdit className="text-primary" size={20} />
+            <TbEdit
+              className="text-primary cursor-pointer"
+              size={20}
+              onClick={handleOpenEditPayrollTaxModal}
+            />
           </div>
           <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
             <p className="flex gap-6">
@@ -132,7 +226,9 @@ const EmployeeDetails = ({
               </span>
             </p>
             <p className="flex gap-6">
-              <strong className="text-[#667085] font-normal">Pension Number</strong>
+              <strong className="text-[#667085] font-normal">
+                Pension Number
+              </strong>
               {userDetails?.pension_number ?? "N/A"}
             </p>
             <p className="flex gap-6">
@@ -152,7 +248,11 @@ const EmployeeDetails = ({
         <div className="bg-white px-5 py-6 shadow-md rounded-lg">
           <div className="flex items-center gap-1 mb-5">
             <div className="font-semibold text-[#1D2939]">Item given</div>
-            <TbEdit className="text-primary" size={20} />
+            <TbEdit
+              className="text-primary cursor-pointer"
+              size={20}
+              onClick={handleOpenEditItemsGivenModal}
+            />
           </div>
           {userDetails?.office_items_given?.length > 0 ? (
             <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
@@ -175,7 +275,32 @@ const EmployeeDetails = ({
           )}
         </div>
       </div>
+
+      {/* Edit Basic Information Modal */}
+      <EditBasicInformationModal
+        isOpen={isEditBasicInfoModalOpen}
+        onClose={handleCloseEditBasicInfoModal}
+        employee={employeeDataForModal}
+        onSave={handleSaveBasicInfo}
+      />
+
+      {/* Edit Payroll Tax Modal */}
+      <EditPayrollTaxModal
+        isOpen={isEditPayrollTaxModalOpen}
+        onClose={handleCloseEditPayrollTaxModal}
+        employee={employeeDataForModal}
+        onSave={handleSavePayrollTax}
+      />
+
+      {/* Edit Items Given Modal */}
+      <EditItemsGivenModal
+        isOpen={isEditItemsGivenModalOpen}
+        onClose={handleCloseEditItemsGivenModal}
+        currentItems={userDetails?.office_items_given || []}
+        onSave={handleSaveItemsGiven}
+      />
     </div>
   );
 };
+
 export default EmployeeDetails;
