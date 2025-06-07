@@ -4,7 +4,7 @@ import CustomTable from '../../common/CustomTable';
 import { TableCell, TableRow } from '../../ui/table';
 import TableEmptyState from '../../common/TableEmptyState';
 import { useCallback, useState } from 'react';
-import LoanDetails from '../../modals/LoanDetails';
+import LoanDetailsDrawer from '../../modals/LoanDetails';
 import { Info, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -143,14 +143,13 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
           <TableEmptyState headers={headers} />
         )}
       </CustomTable>
-      <LoanDetails
-        isOpen={isOpen}
-        onClose={handleClose}
+      <LoanDetailsDrawer
+        open={isOpen}
+        onOpenChange={setIsOpen}
         details={loanHistory}
         loanData={details}
         isLoading={isLoading}
       />
-
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onCancel={() => {
