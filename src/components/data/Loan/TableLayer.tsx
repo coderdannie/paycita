@@ -23,8 +23,31 @@ export type loanData = {
   outstanding?: string;
   loan_number: string;
   staff_name: string;
+  // Add the missing properties
+  loan_type: string;
+  status: string;
+  created_at: string;
+  // Optional properties
+  disbursement_date?: string;
+  due_date?: string;
+  total_paid?: number;
+  repayment_history?: Array<{
+    id: number;
+    tenant_id: string;
+    user_id: string;
+    loan_number: string;
+    amount: string;
+    status:
+      | 'pending'
+      | 'approved'
+      | 'rejected'
+      | 'completed'
+      | 'paid'
+      | 'success';
+    created_at: string | null;
+    updated_at: string | null;
+  }>;
 };
-
 const TableLayer = ({ loans }: { loans: loanData[] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [details, setDetails] = useState<loanData | null>(null);
