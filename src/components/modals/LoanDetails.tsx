@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RiCloseLargeFill } from 'react-icons/ri';
-import { Button } from '@/components/ui/button';
-import { TableCell, TableRow } from '@/src/components/ui/table';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '../../components/ui/sheet';
+import { Button } from '../../components/ui/button';
+import { TableCell, TableRow } from '../../components/ui/table';
 import CustomTable from '../common/CustomTable';
-import { loanData } from '../data/Loan/TableLayer';
 import { formatDate } from '@/src/utils/helper';
+import Image from 'next/image';
 
 interface LoanDetails {
   loan_number: string;
@@ -23,216 +27,259 @@ interface RepaymentHistoryItem {
   user_id: string;
   loan_number: string;
   amount: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'paid';
   created_at: string;
   updated_at: string;
 }
 
-interface ExtendedLoanData extends loanData {
+interface ExtendedLoanData {
+  loan_number: string;
+  loan_amount: string;
+  loan_period: string;
+  loan_type: string;
+  outstanding: number;
+  total_payment: string;
+  payment_status: string;
+  staff_name: string;
+  status: string;
+  created_at: string;
   disbursement_date?: string;
   due_date?: string;
   total_paid?: number;
-  outstanding?: string;
+  repayment_history?: RepaymentHistoryItem[];
 }
+
 // Main API response interface
 interface LoanApiResponse {
   loan_details: LoanDetails;
   repayment_history: RepaymentHistoryItem[];
 }
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface DrawerProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   details: LoanApiResponse;
   loanData: ExtendedLoanData;
   isLoading: boolean;
+  setOpenComment?: (open: boolean) => void;
 }
 
 const loanHistoryHeaders = [
-  { label: 'Loan Number' },
-  { label: 'Payment Date' },
-  { label: 'Amount Paid' },
+  { label: 'NO' },
+  { label: 'Amount' },
   { label: 'Status' },
 ];
 
-const LoanDetails: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
+const LoanDetailsDrawer: React.FC<DrawerProps> = ({
+  open,
+  onOpenChange,
   details,
   loanData,
   isLoading,
+  setOpenComment,
 }) => {
-  const formatCurrency = (amount: number) => {
-    return `₦${amount?.toLocaleString()}`;
+  const formatCurrency = (amount: number | string) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return `₦${numAmount?.toLocaleString()}`;
   };
 
-  const renderStatusBadge = useCallback(
-    (status: string) => (
+  const renderStatusBadge = useCallback((status: string) => {
+    const statusLower = status?.toLowerCase();
+    let badgeClass = '';
+
+    switch (statusLower) {
+      case 'pending':
+        badgeClass = 'text-[#FFA80A] bg-[#FFFCF5] border-[#FFD384]';
+        break;
+      case 'success':
+      case 'paid':
+      case 'successful':
+      case 'completed':
+        badgeClass = 'text-[#16A34A] bg-[#F0FDF4] border-[#16A34A]';
+        break;
+      case 'failed':
+      case 'rejected':
+        badgeClass = 'text-[#DC2626] bg-[#FEF2F2] border-[#DC2626]';
+        break;
+      default:
+        badgeClass = 'text-[#3D7AEA] bg-[#FFFF] border-[#3D7AEA]';
+    }
+
+    return (
       <span
-        className={`py-[5px] w-full text-center block px-[10px] relative border-2 rounded-md cursor-pointer
-         ${
-           status.toLowerCase() === 'pending'
-             ? 'text-[#FFA80A] border-[#FFD384] bg-[#FFFCF5]'
-             : status.toLowerCase() === 'successful'
-             ? 'text-[#16A34A] border-[#16A34A] bg-[#F0FDF4]'
-             : status.toLowerCase() === 'failed'
-             ? 'text-[#DC2626] border-[#DC2626] bg-[#FEF2F2]'
-             : 'text-[#3D7AEA] border-[#3D7AEA] bg-[#FFFF]'
-         }`}
+        className={`inline-block px-3 py-[2px] rounded-md w-fit capitalize border ${badgeClass}`}
       >
         {status}
       </span>
-    ),
-    []
-  );
+    );
+  }, []);
 
-  const getHistoryStatusBadge = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'successful':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#16A34A] text-sm">
-            <div className="w-2 h-2 bg-[#16A34A] rounded-full"></div>
-            Successful
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#FFA80A] text-sm">
-            <div className="w-2 h-2 bg-[#FFA80A] rounded-full"></div>
-            Pending
-          </span>
-        );
-      case 'failed':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#DC2626] text-sm">
-            <div className="w-2 h-2 bg-[#DC2626] rounded-full"></div>
-            Failed
-          </span>
-        );
-      default:
-        return status;
+  const getHistoryData = () => {
+    if (details?.repayment_history?.length > 0) {
+      return details.repayment_history.map((item) => ({
+        id: item.id,
+        amount: formatCurrency(item.amount),
+        date: item.created_at ? formatDate(item.created_at) : 'N/A',
+        status: item.status,
+      }));
     }
+    return [];
   };
 
+  const historyData = getHistoryData();
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6 pb-4 border-b">
-              <h2 className="text-lg font-semibold text-[#1D2939]">
-                Loan Summary
-              </h2>
-              <button
-                onClick={onClose}
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
-              >
-                <RiCloseLargeFill />
-              </button>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-2xl p-0 flex flex-col h-full"
+      >
+        <SheetHeader className="px-4 md:px-6 py-4 border-b flex-shrink-0">
+          <SheetTitle>Loan History</SheetTitle>
+        </SheetHeader>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 md:px-6 py-4">
+            {/* Loan Details Section */}
+            <div className="grid gap-6 text-sm text-[#667085]">
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan No</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {details?.loan_details?.loan_number || 'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Status</p>
+                <div>
+                  {renderStatusBadge(
+                    loanData?.payment_status || loanData?.status || 'N/A'
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Date</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {formatDate(
+                    loanData?.created_at || details?.loan_details?.created_at
+                  ) || 'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Full Name</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.staff_name || 'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Amount</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {formatCurrency(
+                    loanData?.loan_amount ||
+                      details?.loan_details?.amount ||
+                      '0'
+                  )}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Period</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.loan_period ||
+                    details?.loan_details?.repayment_period ||
+                    'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Purpose</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.loan_type || 'N/A'}
+                </p>
+              </div>
+
+              {/* Comments section */}
+              {setOpenComment && (
+                <div className="flex justify-end">
+                  <button
+                    className="flex gap-1 items-center"
+                    onClick={() => {
+                      setOpenComment(true);
+                      onOpenChange(false);
+                    }}
+                  >
+                    <Image
+                      src="/assets/messages.png"
+                      alt="message icon"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-sm text-[#344054] font-semibold">
+                      0 comments
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Loan Summary Details */}
-            <div className="space-y-4 mb-6">
-              <DetailRow
-                label="Loan Amount"
-                value={formatCurrency(+details?.loan_details?.amount)}
-              />
-              <DetailRow
-                label="Loan Period"
-                value={details?.loan_details?.repayment_period ?? 'N/A'}
-              />
-              <DetailRow
-                label="Disbursement Date"
-                value={loanData?.loan_date ?? loanData?.loan_date ?? 'N/A'}
-              />
-
-              <DetailRow
-                label="Total Paid"
-                value={
-                  loanData?.total_paid
-                    ? formatCurrency(loanData?.total_paid)
-                    : '₦0'
-                }
-              />
-
-              <DetailRow
-                label="Status"
-                value={renderStatusBadge(loanData?.payment_status ?? 'N/A')}
-              />
-            </div>
-
-            {/* Loan History Section */}
-            {details?.repayment_history &&
-              details?.repayment_history?.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-base font-medium text-[#1D2939] mb-4">
-                    Loan History
-                  </h3>
+            {/* Loan History Table */}
+            <div className="mt-8">
+              {/* Table Container with horizontal scroll */}
+              <div className="overflow-x-auto -mx-4 md:mx-0">
+                <div className="min-w-full px-4 md:px-0">
                   <CustomTable
                     headers={loanHistoryHeaders}
                     isLoading={isLoading}
                   >
-                    {details?.repayment_history.map((item) => (
-                      <TableRow
-                        key={item.id}
-                        className="text-sm text-[#1D2939]"
-                      >
-                        <TableCell className="font-medium">
-                          {item.loan_number}
-                        </TableCell>
-                        <TableCell>{formatDate(item?.created_at)}</TableCell>
-                        <TableCell>{formatCurrency(+item?.amount)}</TableCell>
-                        <TableCell>
-                          {getHistoryStatusBadge(item.status)}
+                    {historyData?.length > 0 ? (
+                      historyData.map((item, index) => (
+                        <TableRow
+                          key={item.id}
+                          className="text-sm text-[#1D2939]"
+                        >
+                          <TableCell className="font-medium">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {item.amount}
+                          </TableCell>
+                          <TableCell>
+                            {renderStatusBadge(item.status)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={3}
+                          className="text-center py-8 text-[#667085]"
+                        >
+                          No repayment history available
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </CustomTable>
                 </div>
-              )}
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button variant="outline" className="flex-1" onClick={onClose}>
-                Close
-              </Button>
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Fixed Action Buttons */}
+        <div className="border-t px-4 md:px-6 py-4 flex-shrink-0">
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
-// Enhanced Detail Row Component
-const DetailRow = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | React.ReactNode;
-}) => (
-  <div className="flex justify-between items-center">
-    <p className="text-sm text-[#667085] font-medium">{label}</p>
-    <div className="text-sm font-semibold text-[#344054]">
-      {typeof value === 'string' ? value : value}
-    </div>
-  </div>
-);
-
-export default LoanDetails;
+export default LoanDetailsDrawer;
