@@ -260,10 +260,10 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                             {index + 1}
                           </TableCell>{' '}
                           <TableCell className="whitespace-nowrap">
-                            {item.date}
+                            {item.amount}
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
-                            {item.amount}
+                            {item.date}
                           </TableCell>
                           <TableCell>
                             {renderStatusBadge(item.status)}
