@@ -2,13 +2,13 @@
 
 import React, { useCallback } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '../../components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { TableCell, TableRow } from '@/src/components/ui/table';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '../../components/ui/sheet';
+import { Button } from '../../components/ui/button';
+import { TableCell, TableRow } from '../../components/ui/table';
 import CustomTable from '../common/CustomTable';
 import { formatDate } from '@/src/utils/helper';
 import Image from 'next/image';
@@ -46,6 +46,7 @@ interface ExtendedLoanData {
   disbursement_date?: string;
   due_date?: string;
   total_paid?: number;
+  repayment_history?: RepaymentHistoryItem[];
 }
 
 // Main API response interface
@@ -66,36 +67,7 @@ interface DrawerProps {
 const loanHistoryHeaders = [
   { label: 'NO' },
   { label: 'Amount' },
-  { label: 'Date' },
   { label: 'Status' },
-];
-
-// Dummy data for loan history table
-const dummyLoanHistory = [
-  {
-    id: 1,
-    amount: '₦5,000',
-    date: '1 Aug 2024',
-    status: 'Paid',
-  },
-  {
-    id: 2,
-    amount: '₦5,000',
-    date: '1 Oct 2024',
-    status: 'Paid',
-  },
-  {
-    id: 3,
-    amount: '₦5,000',
-    date: '3 Nov 2024',
-    status: 'Paid',
-  },
-  {
-    id: 4,
-    amount: '₦5,000',
-    date: '4 Dec 2024',
-    status: 'Paid',
-  },
 ];
 
 const LoanDetailsDrawer: React.FC<DrawerProps> = ({
@@ -119,6 +91,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
       case 'pending':
         badgeClass = 'text-[#FFA80A] bg-[#FFFCF5] border-[#FFD384]';
         break;
+      case 'success':
       case 'paid':
       case 'successful':
       case 'completed':
@@ -141,164 +114,171 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
     );
   }, []);
 
-  const getHistoryStatusBadge = (status: string) => {
-    const statusLower = status?.toLowerCase();
-
-    switch (statusLower) {
-      case 'paid':
-      case 'successful':
-      case 'completed':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#16A34A] text-sm">
-            <div className="w-2 h-2 bg-[#16A34A] rounded-full"></div>
-            Paid
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#FFA80A] text-sm">
-            <div className="w-2 h-2 bg-[#FFA80A] rounded-full"></div>
-            Pending
-          </span>
-        );
-      case 'failed':
-      case 'rejected':
-        return (
-          <span className="inline-flex items-center gap-1 text-[#DC2626] text-sm">
-            <div className="w-2 h-2 bg-[#DC2626] rounded-full"></div>
-            Failed
-          </span>
-        );
-      default:
-        return status;
+  const getHistoryData = () => {
+    if (details?.repayment_history?.length > 0) {
+      return details.repayment_history.map((item) => ({
+        id: item.id,
+        amount: formatCurrency(item.amount),
+        date: item.created_at ? formatDate(item.created_at) : 'N/A',
+        status: item.status,
+      }));
     }
+    return [];
   };
 
-  // Use actual loan history if available, otherwise use dummy data
-  const historyData =
-    details?.repayment_history?.length > 0
-      ? details.repayment_history.map((item, index) => ({
-          id: item.id,
-          amount: formatCurrency(item.amount),
-          date: formatDate(item.created_at),
-          status: item.status,
-        }))
-      : dummyLoanHistory;
+  const historyData = getHistoryData();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl px-4 md:px-8 py-6 overflow-y-auto max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>Loan History</DialogTitle>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-2xl p-0 flex flex-col h-full"
+      >
+        <SheetHeader className="px-4 md:px-6 py-4 border-b flex-shrink-0">
+          <SheetTitle>Loan History</SheetTitle>
+        </SheetHeader>
 
-        {/* Loan Details Section */}
-        <div className="grid gap-6 text-sm text-[#667085] mt-4">
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Loan No</p>
-            <p className="text-[#1D2939] font-semibold">
-              {loanData?.loan_number ||
-                details?.loan_details?.loan_number ||
-                'N/A'}
-            </p>
-          </div>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 md:px-6 py-4">
+            {/* Loan Details Section */}
+            <div className="grid gap-6 text-sm text-[#667085]">
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan No</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {details?.loan_details?.loan_number || 'N/A'}
+                </p>
+              </div>
 
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Status</p>
-            <div>
-              {renderStatusBadge(
-                loanData?.payment_status || loanData?.status || 'N/A'
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Status</p>
+                <div>
+                  {renderStatusBadge(
+                    loanData?.payment_status || loanData?.status || 'N/A'
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Date</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {formatDate(
+                    loanData?.created_at || details?.loan_details?.created_at
+                  ) || 'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Full Name</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.staff_name || 'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Amount</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {formatCurrency(
+                    loanData?.loan_amount ||
+                      details?.loan_details?.amount ||
+                      '0'
+                  )}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Period</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.loan_period ||
+                    details?.loan_details?.repayment_period ||
+                    'N/A'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-[#344054]">Loan Purpose</p>
+                <p className="text-[#1D2939] font-semibold">
+                  {loanData?.loan_type || 'N/A'}
+                </p>
+              </div>
+
+              {/* Comments section */}
+              {setOpenComment && (
+                <div className="flex justify-end">
+                  <button
+                    className="flex gap-1 items-center"
+                    onClick={() => {
+                      setOpenComment(true);
+                      onOpenChange(false);
+                    }}
+                  >
+                    <Image
+                      src="/assets/messages.png"
+                      alt="message icon"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-sm text-[#344054] font-semibold">
+                      0 comments
+                    </span>
+                  </button>
+                </div>
               )}
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Loan Date</p>
-            <p className="text-[#1D2939] font-semibold">
-              {formatDate(
-                loanData?.created_at || details?.loan_details?.created_at
-              ) || 'N/A'}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Full Name</p>
-            <p className="text-[#1D2939] font-semibold">
-              {loanData?.staff_name || 'N/A'}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Loan Amount</p>
-            <p className="text-[#1D2939] font-semibold">
-              {formatCurrency(
-                loanData?.loan_amount || details?.loan_details?.amount || '0'
-              )}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Period</p>
-            <p className="text-[#1D2939] font-semibold">
-              {loanData?.loan_period ||
-                details?.loan_details?.repayment_period ||
-                'N/A'}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-[#344054]">Loan Purpose</p>
-            <p className="text-[#1D2939] font-semibold">
-              {loanData?.loan_type || 'N/A'}
-            </p>
-          </div>
-
-          {/* Comments section - similar to expense drawer */}
-          {setOpenComment && (
-            <div className="flex justify-end">
-              <button
-                className="flex gap-1 items-center"
-                onClick={() => {
-                  setOpenComment(true);
-                  onOpenChange(false);
-                }}
-              >
-                <Image
-                  src="/assets/messages.png"
-                  alt="message icon"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-sm text-[#344054] text-semibold gap-1">
-                  0 comments
-                </span>
-              </button>
+            {/* Loan History Table */}
+            <div className="mt-8">
+              {/* Table Container with horizontal scroll */}
+              <div className="overflow-x-auto -mx-4 md:mx-0">
+                <div className="min-w-full px-4 md:px-0">
+                  <CustomTable
+                    headers={loanHistoryHeaders}
+                    isLoading={isLoading}
+                  >
+                    {historyData?.length > 0 ? (
+                      historyData.map((item, index) => (
+                        <TableRow
+                          key={item.id}
+                          className="text-sm text-[#1D2939]"
+                        >
+                          <TableCell className="font-medium">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {item.amount}
+                          </TableCell>
+                          <TableCell>
+                            {renderStatusBadge(item.status)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={3}
+                          className="text-center py-8 text-[#667085]"
+                        >
+                          No repayment history available
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </CustomTable>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Loan History Table */}
-        <div className="mt-6">
-          <CustomTable headers={loanHistoryHeaders} isLoading={isLoading}>
-            {historyData.map((item, index) => (
-              <TableRow key={item.id} className="text-sm text-[#1D2939]">
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{item.amount}</TableCell>
-                <TableCell>{item.date}</TableCell>
-                <TableCell>{getHistoryStatusBadge(item.status)}</TableCell>
-              </TableRow>
-            ))}
-          </CustomTable>
+        {/* Fixed Action Buttons */}
+        <div className="border-t px-4 md:px-6 py-4 flex-shrink-0">
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+          </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-4 mt-8">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

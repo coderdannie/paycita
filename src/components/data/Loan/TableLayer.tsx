@@ -34,9 +34,6 @@ const TableLayer = ({ loans }: { loans: loanData[] }) => {
     setIsOpen(true);
   };
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
   const headers = [
     {
       label: 'Loan No',
