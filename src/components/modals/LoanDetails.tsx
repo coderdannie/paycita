@@ -27,9 +27,15 @@ interface RepaymentHistoryItem {
   user_id: string;
   loan_number: string;
   amount: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'paid';
-  created_at: string;
-  updated_at: string;
+  status:
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'completed'
+    | 'paid'
+    | 'success';
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface ExtendedLoanData {
@@ -37,7 +43,7 @@ interface ExtendedLoanData {
   loan_amount: string;
   loan_period: string;
   loan_type: string;
-  outstanding: number;
+  outstanding?: number | string;
   total_payment: string;
   payment_status: string;
   staff_name: string;
@@ -67,6 +73,7 @@ interface DrawerProps {
 const loanHistoryHeaders = [
   { label: 'NO' },
   { label: 'Amount' },
+  { label: 'Date' },
   { label: 'Status' },
 ];
 
@@ -82,6 +89,8 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
     const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     return `₦${numAmount?.toLocaleString()}`;
   };
+
+  console.log(details);
 
   const renderStatusBadge = useCallback((status: string) => {
     const statusLower = status?.toLowerCase();
@@ -127,6 +136,8 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
   };
 
   const historyData = getHistoryData();
+
+  console.log('history', historyData);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -228,6 +239,10 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
 
             {/* Loan History Table */}
             <div className="mt-8">
+              <h3 className="text-lg font-semibold text-[#1D2939] mb-4">
+                Repayment History
+              </h3>
+
               {/* Table Container with horizontal scroll */}
               <div className="overflow-x-auto -mx-4 md:mx-0">
                 <div className="min-w-full px-4 md:px-0">
@@ -243,6 +258,9 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                         >
                           <TableCell className="font-medium">
                             {index + 1}
+                          </TableCell>{' '}
+                          <TableCell className="whitespace-nowrap">
+                            {item.date}
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
                             {item.amount}
