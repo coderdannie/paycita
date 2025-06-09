@@ -436,7 +436,7 @@ const PersonalInfo = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h4 className="font-semibold text-[#1D2939]">
-                    Guarantors (Required: 2)
+                    Guarantors (Optional)
                   </h4>
                   {errors.guarantors?.message && (
                     <p className="text-red-500 text-sm mb-4">

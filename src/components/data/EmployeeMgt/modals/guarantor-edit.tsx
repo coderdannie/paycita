@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, ChangeEvent } from "react";
-import { X, ChevronDown } from "lucide-react";
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { X, ChevronDown } from 'lucide-react';
 
 interface GuarantorFormData {
   guarantor_name: string;
@@ -16,6 +16,7 @@ interface GuarantorEditModalProps {
   onUpdate: (data: GuarantorFormData) => void;
   initialData: GuarantorFormData;
   guarantorNumber: 1 | 2; // To specify which guarantor is being edited
+  isUpdating;
 }
 
 // FormInput component
@@ -76,12 +77,13 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
   onUpdate,
   initialData,
   guarantorNumber,
+  isUpdating,
 }) => {
   const [formData, setFormData] = useState<GuarantorFormData>(initialData);
 
   useEffect(() => {
     setFormData(initialData);
-  }, [initialData]);
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -93,7 +95,6 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onUpdate(formData);
-    onClose();
   };
 
   const handleCancel = () => {
@@ -134,7 +135,7 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
               placeholder="Enter guarantor full name"
               value={formData.guarantor_name}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleInputChange("guarantor_name", e.target.value)
+                handleInputChange('guarantor_name', e.target.value)
               }
               required
             />
@@ -143,15 +144,15 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
               label="Relationship"
               value={formData.guarantor_relationship}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("guarantor_relationship", e.target.value)
+                handleInputChange('guarantor_relationship', e.target.value)
               }
               options={[
-                "Spouse",
-                "Parent",
-                "Child",
-                "Sibling",
-                "Friend",
-                "Other",
+                'Spouse',
+                'Parent',
+                'Child',
+                'Sibling',
+                'Friend',
+                'Other',
               ]}
               required
             />
@@ -161,7 +162,7 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
               placeholder="Enter guarantor address"
               value={formData.guarantor_address}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleInputChange("guarantor_address", e.target.value)
+                handleInputChange('guarantor_address', e.target.value)
               }
               required
             />
@@ -171,7 +172,7 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
               placeholder="Enter guarantor phone number"
               value={formData.guarantor_phone}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleInputChange("guarantor_phone", e.target.value)
+                handleInputChange('guarantor_phone', e.target.value)
               }
               required
             />
@@ -189,9 +190,14 @@ const GuarantorEditModal: React.FC<GuarantorEditModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium bg-[#F2F4F7] text-[#98A2B3]  rounded-lg  transition-colors"
+                disabled={isUpdating}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isUpdating
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+                }`}
               >
-                Update
+                {isUpdating ? 'Updating...' : 'Update'}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define TypeScript types based on the Zod schema
 export type UserAddress = {
@@ -31,12 +31,13 @@ export type UserDetails = {
   date_of_birth?: string | null;
 };
 
+
 // Define the initial state
 const initialState: UserDetails = null as UserDetails;
 
 // Create the slice
 const userDetailsSlice = createSlice({
-  name: "userDetails",
+  name: 'userDetails',
   initialState,
   reducers: {
     setUserDetails: (state, action: PayloadAction<Partial<UserDetails>>) => {
@@ -92,10 +93,10 @@ const userDetailsSlice = createSlice({
 
         while (state.guarantors.length < 2) {
           state.guarantors.push({
-            fullName: "",
-            address: "",
-            phoneNumber: "",
-            relationship: "",
+            fullName: '',
+            address: '',
+            phoneNumber: '',
+            relationship: '',
           });
         }
       }

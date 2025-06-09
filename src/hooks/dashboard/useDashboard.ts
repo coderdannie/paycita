@@ -15,6 +15,14 @@ import {
 import { useEffect, useState } from 'react';
 import { AddEmployee } from '@/src/utils/validations';
 import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import {
+  CompensationDetails,
+  EmergencyContact,
+  FirstGuarantor,
+  JobDetails,
+  SecondGuarantor,
+  UpdateBasicEmployeePayload,
+} from '@/src/types/dashboard';
 
 const checkIsAuthenticated = (): boolean => {
   if (typeof window !== 'undefined') {
@@ -317,4 +325,102 @@ export const useResetEmployeePassword = (options = {}) => {
   });
 
   return { mutate, isLoading, data };
+};
+
+export const useUpdateBasicEmployeeDetails = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: UpdateBasicEmployeePayload) =>
+      dashboardService.updateBasicEmployeeDetails(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: [QUERY_KEYS.UPDATE_BASIC_EMPLOYEE_DETAILS],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeAddress = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: { address: string } }) =>
+      dashboardService.updateEmployeeAddress(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: [QUERY_KEYS.UPDATE_EMPLOYEE_ADDRESS],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeFirstGuarantor = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: FirstGuarantor }) =>
+      dashboardService.updateEmployeeFirstGuarantor(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: [QUERY_KEYS.UPDATE_EMPLOYEE_FIRST_GUARANTOR],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeSecondGuarantor = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: SecondGuarantor }) =>
+      dashboardService.updateEmployeeSecondGuarantor(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: [QUERY_KEYS.UPDATE_EMPLOYEE_SECOND_GUARANTOR],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeEmergencyContact = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: EmergencyContact }) =>
+      dashboardService.updateEmployeeEmergencyContact(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: [QUERY_KEYS.UPDATE_EMERGENCY_CONTACT],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeWorkDetails = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: JobDetails }) =>
+      dashboardService.updateEmployeeWorkDetails(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: ['UPDATE_WORK_DETAILS'],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
+};
+
+export const useUpdateEmployeeSalaryDetails = (options = {}) => {
+  const { mutate, isPending, ...rest } = useMutation({
+    mutationFn: (payload: { userId: string; data: CompensationDetails }) =>
+      dashboardService.updateEmployeeSalaryDetails(
+        { userId: payload.userId },
+        payload.data
+      ),
+    mutationKey: ['UPDATE_SALARY_DETAILS'],
+    ...options,
+  });
+
+  return { mutate, isPending, ...rest };
 };

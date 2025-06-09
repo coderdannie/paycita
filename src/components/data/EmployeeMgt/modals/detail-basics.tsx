@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { X, Calendar } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { X, Calendar } from 'lucide-react';
+import { useGetDepartments } from '@/src/hooks/dashboard/useDashboard';
 
 interface Employee {
   id: number;
@@ -23,6 +24,7 @@ interface EditBasicInformationModalProps {
   onClose: () => void;
   employee: Employee;
   onSave?: (updatedData: Partial<Employee>) => void;
+  isUpdating: boolean;
 }
 
 const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
@@ -30,86 +32,47 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
   onClose,
   employee,
   onSave,
+  isUpdating,
 }) => {
   const [formData, setFormData] = useState({
-    full_name: employee.full_name || "",
-    job_title: employee.job_title || "",
-    job_level: employee.job_level || "",
-    department: employee.department?.name || "",
-    employment_type: employee.employment_type || "",
-    email: employee.email || "",
-    job_location: employee.job_location || "",
+    full_name: employee.full_name || '',
+    job_title: employee.job_title || '',
+    job_level: employee.job_level || '',
+    department: employee.department?.name || '',
+    employment_type: employee.employment_type || '',
+    email: employee.email || '',
+    job_location: employee.job_location || '',
     hire_date: employee.hire_date
-      ? new Date(employee.hire_date).toISOString().split("T")[0]
-      : "",
+      ? new Date(employee.hire_date).toISOString().split('T')[0]
+      : '',
   });
 
+  const { departmentOptions } = useGetDepartments();
   // Job title options - matching the structure from the employee management system
   const jobTitleOptions = [
-    "Backend Developer",
-    "Frontend Developer",
-    "Full Stack Developer",
-    "UI/UX Designer",
-    "Product Manager",
-    "Data Analyst",
-    "DevOps Engineer",
-    "QA Engineer",
-    "Software Engineer",
-    "Senior Software Engineer",
-    "Lead Developer",
-    "Technical Lead",
-    "Engineering Manager",
+    'Backend Developer',
+    'Frontend Developer',
+    'Full Stack Developer',
+    'UI/UX Designer',
+    'Product Manager',
+    'Data Analyst',
+    'DevOps Engineer',
+    'QA Engineer',
+    'Software Engineer',
+    'Senior Software Engineer',
+    'Lead Developer',
+    'Technical Lead',
+    'Engineering Manager',
   ];
 
   // Job level options - matching the actual data structure
-  const jobLevelOptions = [
-    "Junior",
-    "Mid-level",
-    "Senior",
-    "Lead",
-    "Principal",
-    "Staff",
-    "Manager",
-    "Senior Manager",
-    "Director",
-  ];
-
-  // Department options - matching the actual department structure
-  const departmentOptions = [
-    "Engineering",
-    "Hr",
-    "Design",
-    "Product",
-    "Marketing",
-    "Sales",
-    "Finance",
-    "Operations",
-    "Customer Support",
-    "Legal",
-    "Admin",
-  ];
+  const jobLevelOptions = ['Staff', 'Mid', 'Senior', 'Executive'];
 
   // Employment type options - matching actual data
-  const employmentTypeOptions = [
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Freelance",
-    "Internship",
-    "Temporary",
-  ];
+  const employmentTypeOptions = ['Full-time', 'Part-time', 'Contract'];
 
   // Location type options - using job_location field
-  const locationTypeOptions = [
-    "Remote",
-    "On-site",
-    "Hybrid",
-    "Lagos",
-    "Abuja",
-    "Port Harcourt",
-    "Kano",
-    "Ibadan",
-  ];
+  const locationTypeOptions = ['Remote', 'On-site', 'Hybrid'];
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -129,22 +92,21 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
         },
       });
     }
-    onClose();
   };
 
   const handleCancel = () => {
     // Reset form data to original values
     setFormData({
-      full_name: employee.full_name || "",
-      job_title: employee.job_title || "",
-      job_level: employee.job_level || "",
-      department: employee.department?.name || "",
-      employment_type: employee.employment_type || "",
-      email: employee.email || "",
-      job_location: employee.job_location || "",
+      full_name: employee.full_name || '',
+      job_title: employee.job_title || '',
+      job_level: employee.job_level || '',
+      department: employee.department?.name || '',
+      employment_type: employee.employment_type || '',
+      email: employee.email || '',
+      job_location: employee.job_location || '',
       hire_date: employee.hire_date
-        ? new Date(employee.hire_date).toISOString().split("T")[0]
-        : "",
+        ? new Date(employee.hire_date).toISOString().split('T')[0]
+        : '',
     });
     onClose();
   };
@@ -152,16 +114,16 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
   // Reset form when employee changes
   useEffect(() => {
     setFormData({
-      full_name: employee.full_name || "",
-      job_title: employee.job_title || "",
-      job_level: employee.job_level || "",
-      department: employee.department?.name || "",
-      employment_type: employee.employment_type || "",
-      email: employee.email || "",
-      job_location: employee.job_location || "",
+      full_name: employee.full_name || '',
+      job_title: employee.job_title || '',
+      job_level: employee.job_level || '',
+      department: employee.department?.name || '',
+      employment_type: employee.employment_type || '',
+      email: employee.email || '',
+      job_location: employee.job_location || '',
       hire_date: employee.hire_date
-        ? new Date(employee.hire_date).toISOString().split("T")[0]
-        : "",
+        ? new Date(employee.hire_date).toISOString().split('T')[0]
+        : '',
     });
   }, [employee]);
 
@@ -178,7 +140,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
       {/* Modal */}
       <div
         className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
@@ -207,7 +169,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   type="text"
                   value={formData.full_name}
                   onChange={(e) =>
-                    handleInputChange("full_name", e.target.value)
+                    handleInputChange('full_name', e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter employee name"
@@ -220,20 +182,16 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   Job Title
                 </label>
                 <div className="relative">
-                  <select
+                  <input
+                    type="job_title"
                     value={formData.job_title}
                     onChange={(e) =>
-                      handleInputChange("job_title", e.target.value)
+                      handleInputChange('job_title', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-                  >
-                    <option value="">Select job title</option>
-                    {jobTitleOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Frontend Engineer"
+                  />
+
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg
                       className="w-4 h-4 text-gray-400"
@@ -261,7 +219,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   <select
                     value={formData.job_level}
                     onChange={(e) =>
-                      handleInputChange("job_level", e.target.value)
+                      handleInputChange('job_level', e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
                   >
@@ -299,14 +257,14 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   <select
                     value={formData.department}
                     onChange={(e) =>
-                      handleInputChange("department", e.target.value)
+                      handleInputChange('department', e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
                   >
                     <option value="">Select department</option>
-                    {departmentOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    {departmentOptions?.map((option) => (
+                      <option key={option.label} value={option.label}>
+                        {option.label}
                       </option>
                     ))}
                   </select>
@@ -337,7 +295,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   <select
                     value={formData.employment_type}
                     onChange={(e) =>
-                      handleInputChange("employment_type", e.target.value)
+                      handleInputChange('employment_type', e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
                   >
@@ -374,7 +332,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="employee@company.com"
                 />
@@ -389,7 +347,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                   <select
                     value={formData.job_location}
                     onChange={(e) =>
-                      handleInputChange("job_location", e.target.value)
+                      handleInputChange('job_location', e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
                   >
@@ -428,7 +386,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                     type="date"
                     value={formData.hire_date}
                     onChange={(e) =>
-                      handleInputChange("hire_date", e.target.value)
+                      handleInputChange('hire_date', e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -450,9 +408,14 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-4 py-2 text-sm font-medium bg-[#692E9F] text-white rounded-md hover:bg-[#692E9F]/90 transition-colors"
+              disabled={isUpdating}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                isUpdating
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+              }`}
             >
-              Update
+              {isUpdating ? 'Updating...' : 'Update'}
             </button>
           </div>
         </div>

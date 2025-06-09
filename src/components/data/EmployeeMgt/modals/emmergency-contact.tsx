@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, ChangeEvent } from "react";
-import { X, ChevronDown } from "lucide-react";
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { X, ChevronDown } from 'lucide-react';
 
 interface FormDataType {
   emergency_contact_name: string;
@@ -14,6 +14,7 @@ interface EmergencyContactEditModalProps {
   onClose: () => void;
   onUpdate: (data: FormDataType) => void;
   initialData: FormDataType;
+  isUpdating: boolean;
 }
 
 // FormInput component
@@ -73,12 +74,13 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
   onClose,
   onUpdate,
   initialData,
+  isUpdating,
 }) => {
   const [formData, setFormData] = useState<FormDataType>(initialData);
 
   useEffect(() => {
     setFormData(initialData);
-  }, [initialData]);
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -90,7 +92,6 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onUpdate(formData);
-    onClose();
   };
 
   const handleCancel = () => {
@@ -131,7 +132,7 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
               placeholder="Enter emergency contact full name"
               value={formData.emergency_contact_name}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleInputChange("emergency_contact_name", e.target.value)
+                handleInputChange('emergency_contact_name', e.target.value)
               }
               required
             />
@@ -141,17 +142,17 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
               value={formData.emergency_contact_relationship}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleInputChange(
-                  "emergency_contact_relationship",
+                  'emergency_contact_relationship',
                   e.target.value
                 )
               }
               options={[
-                "Spouse",
-                "Parent",
-                "Child",
-                "Sibling",
-                "Friend",
-                "Other",
+                'Spouse',
+                'Parent',
+                'Child',
+                'Sibling',
+                'Friend',
+                'Other',
               ]}
               required
             />
@@ -161,7 +162,7 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
               placeholder="Enter emergency contact phone number"
               value={formData.emergency_contact_phone}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleInputChange("emergency_contact_phone", e.target.value)
+                handleInputChange('emergency_contact_phone', e.target.value)
               }
               required
             />
@@ -179,9 +180,14 @@ const EmergencyContactEditModal: React.FC<EmergencyContactEditModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium bg-[#F2F4F7] text-[#98A2B3]  transition-colors"
+                disabled={isUpdating}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isUpdating
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+                }`}
               >
-                Update
+                {isUpdating ? 'Updating...' : 'Update'}
               </button>
             </div>
           </div>

@@ -42,9 +42,9 @@ export const userDetailsSchema = z.object({
       })
     )
     .min(2, { message: 'Exactly two guarantors are required' })
-    .max(2, { message: 'Maximum two guarantors allowed' }),
+    .max(2, { message: 'Maximum two guarantors allowed' })
+    .optional(),
 });
-
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({

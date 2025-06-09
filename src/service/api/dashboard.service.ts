@@ -1,5 +1,13 @@
+import {
+  CompensationDetails,
+  FirstGuarantor,
+  JobDetails,
+  SecondGuarantor,
+  UserBasicDetails,
+} from '@/src/types/dashboard';
 import { api } from '.';
 import { AddEmployee } from '../../utils/validations';
+import { EmergencyContact } from '@/src/Redux/features/userDetailsSlice';
 
 const getAttendance = (filters: {
   page: string;
@@ -119,6 +127,85 @@ const resetEmployeePassword = async (query: { userId: string }) => {
   return res.data;
 };
 
+const updateBasicEmployeeDetails = async (
+  query: { userId: string },
+  data: UserBasicDetails
+) => {
+  const UPDATE_BASIC_EMPLOYEE_DETAILS = (userId = '') =>
+    `/hr/change-employee-info/${userId}`;
+  const res = await api.post(UPDATE_BASIC_EMPLOYEE_DETAILS(query.userId), data);
+  return res.data;
+};
+
+const updateEmployeeAddress = async (
+  query: { userId: string },
+  data: { address: string }
+) => {
+  const UPDATE_EMPLOYEE_ADDRESS = (userId = '') =>
+    `/hr/change-employee-address/${userId}`;
+  const res = await api.post(UPDATE_EMPLOYEE_ADDRESS(query.userId), data);
+  return res.data;
+};
+
+const updateEmployeeFirstGuarantor = async (
+  query: { userId: string },
+  data: FirstGuarantor
+) => {
+  const UPDATE_EMPLOYEE_FIRST_GUARANTOR = (userId = '') =>
+    `/hr/change-employee-first-guarantor/${userId}`;
+  const res = await api.post(
+    UPDATE_EMPLOYEE_FIRST_GUARANTOR(query.userId),
+    data
+  );
+  return res.data;
+};
+
+const updateEmployeeSecondGuarantor = async (
+  query: { userId: string },
+  data: SecondGuarantor
+) => {
+  const UPDATE_EMPLOYEE_SECOND_GUARANTOR = (userId = '') =>
+    `/hr/change-employee-second-guarantor/${userId}`;
+  const res = await api.post(
+    UPDATE_EMPLOYEE_SECOND_GUARANTOR(query.userId),
+    data
+  );
+  return res.data;
+};
+
+const updateEmployeeEmergencyContact = async (
+  query: { userId: string },
+  data: EmergencyContact
+) => {
+  const UPDATE_EMERGENCY_CONTACT = (userId = '') =>
+    `/hr/change-employee-emergency/${userId}`;
+  const res = await api.post(UPDATE_EMERGENCY_CONTACT(query.userId), data);
+  return res.data;
+};
+
+const updateEmployeeWorkDetails = async (
+  query: { userId: string },
+  data: JobDetails
+) => {
+  const UPDATE_EMPLOYEE_WORK_DETAILS = (userId = '') =>
+    `/hr/change-employee-work-details/${userId}`;
+  const res = await api.post(UPDATE_EMPLOYEE_WORK_DETAILS(query.userId), data);
+  return res.data;
+};
+
+const updateEmployeeSalaryDetails = async (
+  query: { userId: string },
+  data: CompensationDetails
+) => {
+  const UPDATE_EMPLOYEE_SALARY_DETAILS = (userId = '') =>
+    `/hr/change-employee-salary-details/${userId}`;
+  const res = await api.post(
+    UPDATE_EMPLOYEE_SALARY_DETAILS(query.userId),
+    data
+  );
+  return res.data;
+};
+
 const dashboardService = {
   getAttendance,
   addEmployee,
@@ -129,6 +216,13 @@ const dashboardService = {
   getEmployeeById,
   offBoardEmployee,
   resetEmployeePassword,
+  updateBasicEmployeeDetails,
+  updateEmployeeAddress,
+  updateEmployeeFirstGuarantor,
+  updateEmployeeSecondGuarantor,
+  updateEmployeeEmergencyContact,
+  updateEmployeeWorkDetails,
+  updateEmployeeSalaryDetails,
 };
 
 export default dashboardService;

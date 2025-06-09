@@ -1,12 +1,21 @@
-import { useState } from "react";
-import { Mail, Phone } from "lucide-react";
-import Image from "next/image";
-import { TbEdit } from "react-icons/tb";
-import EditBasicInfoModal from "../modals/basic-information";
-import AddressEditModal from "../modals/address-edit";
-import EmergencyContactEditModal from "../modals/emmergency-contact";
-import GuarantorEditModal from "../modals/guarantor-edit";
-
+import { useState } from 'react';
+import { Mail, Phone } from 'lucide-react';
+import Image from 'next/image';
+import { TbEdit } from 'react-icons/tb';
+import EditBasicInfoModal from '../modals/basic-information';
+import AddressEditModal from '../modals/address-edit';
+import EmergencyContactEditModal from '../modals/emmergency-contact';
+import GuarantorEditModal from '../modals/guarantor-edit';
+import { useToast } from '@/src/context/ToastContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { useParams } from 'next/navigation';
+import {
+  useUpdateEmployeeAddress,
+  useUpdateEmployeeEmergencyContact,
+  useUpdateEmployeeFirstGuarantor,
+  useUpdateEmployeeSecondGuarantor,
+} from '@/src/hooks/dashboard/useDashboard';
 
 interface PersonalInfoProps {
   full_name?: string;
@@ -65,6 +74,25 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
   const [isGuarantor2EditModalOpen, setIsGuarantor2EditModalOpen] =
     useState(false);
 
+  const { id } = useParams();
+  const employeeId = id as string;
+  const queryClient = useQueryClient();
+
+  const { addToast } = useToast();
+
+  const { mutate: mutateAddress, isPending: isUpdatingAddress } =
+    useUpdateEmployeeAddress();
+
+  const {
+    mutate: mutateSecondGuarantor,
+    isPending: isUpdatingSecondGuarantor,
+  } = useUpdateEmployeeSecondGuarantor();
+
+  const { mutate: mutateFirstGuarantor, isPending: isUpdatingFirstGuarantor } =
+    useUpdateEmployeeFirstGuarantor();
+
+  const { mutate, isPending } = useUpdateEmployeeEmergencyContact();
+
   const handleEditClick = () => {
     setIsEditModalOpen(true);
   };
@@ -106,61 +134,151 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
   };
 
   const handleAddressUpdate = (data: AddressFormDataType) => {
-    // Handle the address update logic here
-    console.log("Updated address data:", data);
-    // You can add your API call or state update logic here
+    mutateAddress(
+      {
+        userId: employeeId,
+        data: {
+          address: data.address,
+        },
+      },
+      {
+        onSuccess: () => {
+          addToast('Updated successfully', 'success');
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+          });
+          handleCloseAddressModal();
+        },
+        onError: () => {
+          addToast('Update failed', 'error');
+        },
+      }
+    );
   };
 
   const handleEmergencyContactUpdate = (data: EmergencyContactFormDataType) => {
-    // Handle the emergency contact update logic here
-    console.log("Updated emergency contact data:", data);
-    // You can add your API call or state update logic here
+    mutate(
+      {
+        userId: employeeId,
+        data: {
+          emergency_contact_name: data.emergency_contact_name,
+          emergency_contact_relationship: data.emergency_contact_relationship,
+          emergency_contact_phone: data.emergency_contact_phone,
+        },
+      },
+      {
+        onSuccess: () => {
+          addToast('Updated successfully', 'success');
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+          });
+          handleCloseEmergencyContactModal();
+        },
+        onError: () => {
+          addToast('Update failed', 'error');
+        },
+      }
+    );
   };
 
   const handleGuarantor1Update = (data: GuarantorFormData) => {
     // Handle the guarantor 1 update logic here
-    console.log("Updated guarantor 1 data:", data);
-    // You can add your API call or state update logic here
+    console.log('Updated guarantor 1 data:', data);
+    mutateFirstGuarantor(
+      {
+        userId: employeeId,
+        data: {
+          guarantor_1_address: data.guarantor_address,
+          guarantor_1_relationship: data.guarantor_relationship,
+          guarantor_1_phone: data.guarantor_phone,
+          guarantor_1_name: data.guarantor_name,
+        },
+      },
+      {
+        onSuccess: () => {
+          addToast('Updated successfully', 'success');
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+          });
+          handleCloseGuarantor1Modal();
+        },
+        onError: () => {
+          addToast('Update failed', 'error');
+        },
+      }
+    );
   };
 
   const handleGuarantor2Update = (data: GuarantorFormData) => {
-    // Handle the guarantor 2 update logic here
-    console.log("Updated guarantor 2 data:", data);
-    // You can add your API call or state update logic here
+    mutateSecondGuarantor(
+      {
+        userId: employeeId,
+        data: {
+          guarantor_2_address: data.guarantor_address,
+          guarantor_2_relationship: data.guarantor_relationship,
+          guarantor_2_phone: data.guarantor_phone,
+          guarantor_2_name: data.guarantor_name,
+        },
+      },
+      {
+        onSuccess: () => {
+          addToast('Updated successfully', 'success');
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+          });
+          handleCloseGuarantor2Modal();
+        },
+        onError: () => {
+          addToast('Update failed', 'error');
+        },
+      }
+    );
   };
 
   // Prepare initial address data for the modal
   const initialAddressData: AddressFormDataType = {
-    country: user?.country || "Nigeria",
+    country: user?.country || 'Nigeria',
     address:
       user?.address ||
-      "Adetokumbo Ademola Crescent, Abuja, Federal Capital Territory, Nigeria",
-    state: user?.state || "Abuja",
-    city: user?.city || "Abuja",
-    post_code: user?.post_code || "900001",
+      'Adetokumbo Ademola Crescent, Abuja, Federal Capital Territory, Nigeria',
+    state: user?.state || 'Abuja',
+    city: user?.city || 'Abuja',
+    post_code: user?.post_code || '900001',
   };
 
   // Prepare initial emergency contact data for the modal
   const initialEmergencyContactData: EmergencyContactFormDataType = {
-    emergency_contact_name: user?.emergency_contact_name || "",
-    emergency_contact_relationship: user?.emergency_contact_relationship || "",
-    emergency_contact_phone: user?.emergency_contact_phone || "",
+    emergency_contact_name: user?.emergency_contact_name || '',
+    emergency_contact_relationship: user?.emergency_contact_relationship || '',
+    emergency_contact_phone: user?.emergency_contact_phone || '',
   };
 
   // Prepare initial guarantor 1 data for the modal
   const initialGuarantor1Data: GuarantorFormData = {
-    guarantor_name: user?.guarantor_1_name || "",
-    guarantor_relationship: user?.guarantor_1_relationship || "",
-    guarantor_address: user?.guarantor_1_address || "",
-    guarantor_phone: user?.guarantor_1_phone || "",
+    guarantor_name: user?.guarantor_1_name || '',
+    guarantor_relationship: user?.guarantor_1_relationship || '',
+    guarantor_address: user?.guarantor_1_address || '',
+    guarantor_phone: user?.guarantor_1_phone || '',
   };
 
   // Prepare initial guarantor 2 data for the modal
   const initialGuarantor2Data: GuarantorFormData = {
-    guarantor_name: user?.guarantor_2_name || "",
-    guarantor_relationship: user?.guarantor_2_relationship || "",
-    guarantor_address: user?.guarantor_2_address || "",
-    guarantor_phone: user?.guarantor_2_phone || "",
+    guarantor_name: user?.guarantor_2_name || '',
+    guarantor_relationship: user?.guarantor_2_relationship || '',
+    guarantor_address: user?.guarantor_2_address || '',
+    guarantor_phone: user?.guarantor_2_phone || '',
   };
 
   return (
@@ -185,7 +303,7 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
                 </button>
               </div>
               <Image
-                src={user?.profile_picture ?? "/assets/avatar.jpeg"}
+                src={user?.profile_picture ?? '/assets/avatar.jpeg'}
                 alt="Profile"
                 className="w-[140px] h-[140px] rounded-full object-top object-cover"
                 width={100}
@@ -195,16 +313,16 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
 
             <div className="text-sm text-[#667085] grid gap-3">
               <h3 className="font-semibold text-[#1D2939] text-base">
-                {user?.full_name ?? "N/A"}
+                {user?.full_name ?? 'N/A'}
               </h3>
-              <p>♀ {user?.gender ?? "N/A"}</p>
+              <p>♀ {user?.gender ?? 'N/A'}</p>
               <p className="flex items-center gap-2 ">
-                <Mail className="text-gray-500 w-4 h-4" />{" "}
-                {user?.email ?? "N/A"}
+                <Mail className="text-gray-500 w-4 h-4" />{' '}
+                {user?.email ?? 'N/A'}
               </p>
               <p className="flex items-center gap-2 ">
-                <Phone className="text-gray-500 w-4 h-4" />{" "}
-                {user?.phone_number ?? "N/A"}
+                <Phone className="text-gray-500 w-4 h-4" />{' '}
+                {user?.phone_number ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -212,20 +330,20 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
             <p className="flex justify-between">
               <strong className=" text-[#667085] font-normal">
                 Birth Date:
-              </strong>{" "}
-              {user?.date_of_birth ?? "N/A"}
+              </strong>{' '}
+              {user?.date_of_birth ?? 'N/A'}
             </p>
             <p className="flex justify-between">
               <strong className="text-[#667085] font-normal">
                 Nationality:
-              </strong>{" "}
-              {user?.country ?? "N/A"}
+              </strong>{' '}
+              {user?.country ?? 'N/A'}
             </p>
             <p className="flex justify-between">
               <strong className=" text-[#667085] font-normal">
                 Marital Status:
               </strong>
-              {user?.marital_status ?? "N/A"}
+              {user?.marital_status ?? 'N/A'}
             </p>
           </div>
         </div>
@@ -247,26 +365,26 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
               <p className="flex gap-2 justify-between">
                 <strong className=" text-[#667085] font-normal">
                   Primary Address:
-                </strong>{" "}
-                {user?.address ?? "N/A"}
+                </strong>{' '}
+                {user?.address ?? 'N/A'}
               </p>
               <p className="flex justify-between">
-                <strong className="text-[#667085] font-normal">Country:</strong>{" "}
-                {user?.country ?? "N/A"}
+                <strong className="text-[#667085] font-normal">Country:</strong>{' '}
+                {user?.country ?? 'N/A'}
               </p>
               <p className="flex justify-between">
-                <strong className="text-[#667085] font-normal">State:</strong>{" "}
-                {user?.state ?? "N/A"}
+                <strong className="text-[#667085] font-normal">State:</strong>{' '}
+                {user?.state ?? 'N/A'}
               </p>
               <p className="flex justify-between">
-                <strong className="text-[#667085] font-normal">City:</strong>{" "}
-                {user?.city ?? "N/A"}
+                <strong className="text-[#667085] font-normal">City:</strong>{' '}
+                {user?.city ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className="text-[#667085] font-normal">
                   Post Code:
-                </strong>{" "}
-                {user?.post_code ?? "N/A"}
+                </strong>{' '}
+                {user?.post_code ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -285,23 +403,23 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
             </div>
             <div className="flex font-semibold text-sm flex-col justify-center space-y-2 max-w-[450px] ">
               <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">Name</strong>{" "}
-                {user?.emergency_contact_name ?? "N/A"}
+                <strong className=" text-[#667085] font-normal">Name</strong>{' '}
+                {user?.emergency_contact_name ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className="text-[#667085] font-normal">
-                  {" "}
+                  {' '}
                   Relationship
-                </strong>{" "}
-                {user?.emergency_contact_relationship ?? "N/A"}
+                </strong>{' '}
+                {user?.emergency_contact_relationship ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className=" text-[#667085] font-normal">
                   Phone Number
                 </strong>
 
-                {user?.emergency_contact_phone ?? "N/A"}
-              </p>{" "}
+                {user?.emergency_contact_phone ?? 'N/A'}
+              </p>{' '}
             </div>
           </div>
         </div>
@@ -321,27 +439,27 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
             </div>
             <div className="flex font-semibold text-sm flex-col justify-center space-y-2 max-w-[450px] ">
               <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">Name</strong>{" "}
-                {user?.guarantor_1_name ?? "N/A"}
+                <strong className=" text-[#667085] font-normal">Name</strong>{' '}
+                {user?.guarantor_1_name ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className="text-[#667085] font-normal">
-                  {" "}
+                  {' '}
                   Relationship
-                </strong>{" "}
-                {user?.guarantor_1_relationship ?? "N/A"}
-              </p>{" "}
+                </strong>{' '}
+                {user?.guarantor_1_relationship ?? 'N/A'}
+              </p>{' '}
               <p className="flex justify-between">
-                <strong className="text-[#667085] font-normal"> Address</strong>{" "}
-                {user?.guarantor_1_address ?? "N/A"}
+                <strong className="text-[#667085] font-normal"> Address</strong>{' '}
+                {user?.guarantor_1_address ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className=" text-[#667085] font-normal">
                   Phone Number
                 </strong>
 
-                {user?.guarantor_1_phone ?? "N/A"}
-              </p>{" "}
+                {user?.guarantor_1_phone ?? 'N/A'}
+              </p>{' '}
             </div>
           </div>
           <div className="bg-white px-5 h-fit  py-6 shadow-md  rounded-lg">
@@ -357,27 +475,27 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
             </div>
             <div className="flex font-semibold text-sm flex-col justify-center space-y-2 max-w-[450px] ">
               <p className="flex justify-between">
-                <strong className=" text-[#667085] font-normal">Name</strong>{" "}
-                {user?.guarantor_2_name ?? "N/A"}
+                <strong className=" text-[#667085] font-normal">Name</strong>{' '}
+                {user?.guarantor_2_name ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className="text-[#667085] font-normal">
-                  {" "}
+                  {' '}
                   Relationship
-                </strong>{" "}
-                {user?.guarantor_2_relationship ?? "N/A"}
-              </p>{" "}
+                </strong>{' '}
+                {user?.guarantor_2_relationship ?? 'N/A'}
+              </p>{' '}
               <p className="flex justify-between">
-                <strong className="text-[#667085] font-normal"> Address</strong>{" "}
-                {user?.guarantor_2_address ?? "N/A"}
+                <strong className="text-[#667085] font-normal"> Address</strong>{' '}
+                {user?.guarantor_2_address ?? 'N/A'}
               </p>
               <p className="flex justify-between">
                 <strong className=" text-[#667085] font-normal">
                   Phone Number
                 </strong>
 
-                {user?.guarantor_2_phone ?? "N/A"}
-              </p>{" "}
+                {user?.guarantor_2_phone ?? 'N/A'}
+              </p>{' '}
             </div>
           </div>
         </div>
@@ -388,12 +506,12 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
         isOpen={isEditModalOpen}
         onClose={handleCloseModal}
         employee={{
-          full_name: user?.full_name || "",
-          email: user?.email || "",
-          phone_number: user?.phone_number || "",
-          gender: user?.gender || "",
-          date_of_birth: user?.date_of_birth || "",
-          marital_status: user?.marital_status || "",
+          full_name: user?.full_name || '',
+          email: user?.email || '',
+          phone_number: user?.phone_number || '',
+          gender: user?.gender || '',
+          date_of_birth: user?.date_of_birth || '',
+          marital_status: user?.marital_status || '',
         }}
       />
 
@@ -403,6 +521,7 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
         onClose={handleCloseAddressModal}
         onUpdate={handleAddressUpdate}
         initialData={initialAddressData}
+        isUpdating={isUpdatingAddress}
       />
 
       {/* Emergency Contact Edit Modal */}
@@ -411,6 +530,7 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
         onClose={handleCloseEmergencyContactModal}
         onUpdate={handleEmergencyContactUpdate}
         initialData={initialEmergencyContactData}
+        isUpdating={isPending}
       />
 
       {/* Guarantor 1 Edit Modal */}
@@ -420,6 +540,7 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
         onUpdate={handleGuarantor1Update}
         initialData={initialGuarantor1Data}
         guarantorNumber={1}
+        isUpdating={isUpdatingFirstGuarantor}
       />
 
       {/* Guarantor 2 Edit Modal */}
@@ -429,6 +550,7 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
         onUpdate={handleGuarantor2Update}
         initialData={initialGuarantor2Data}
         guarantorNumber={2}
+        isUpdating={isUpdatingSecondGuarantor}
       />
     </div>
   );

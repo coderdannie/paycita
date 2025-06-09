@@ -51,3 +51,53 @@ export interface DashboardResponse {
     employee: Employee[];
   };
 }
+
+export interface UserBasicDetails {
+  full_name: string;
+  email: string;
+  phone_number: string;
+  gender: 'male' | 'female' | 'other';
+  date_of_birth: string;
+  marital_status: string;
+}
+
+export interface UpdateBasicEmployeePayload {
+  userId: string;
+  data: UserBasicDetails;
+}
+
+export interface FirstGuarantor {
+  guarantor_1_name: string;
+  guarantor_1_relationship: string; // or use specific union type
+  guarantor_1_phone: string;
+  guarantor_1_address: string;
+}
+export interface SecondGuarantor {
+  guarantor_2_name: string;
+  guarantor_2_relationship: string; // or use specific union type
+  guarantor_2_phone: string;
+  guarantor_2_address: string;
+}
+
+export interface EmergencyContact {
+  emergency_contact_name: string;
+  emergency_contact_relationship: string;
+  emergency_contact_phone: string;
+}
+
+export interface JobDetails {
+  job_title: string;
+  job_level: string;
+  department_id: number;
+  employment_type: string;
+  job_location: string;
+  hire_date: string;
+}
+
+
+export interface CompensationDetails {
+  salary: `${number}`; // Ensures string contains only numbers
+  tax_status: string;
+  pension_number: string;
+  pension_company: string;
+}
