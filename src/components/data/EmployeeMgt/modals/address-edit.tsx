@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 
 interface FormDataType {
   country: string;
@@ -14,19 +14,21 @@ interface AddressEditModalProps {
   onClose: () => void;
   onUpdate: (data: FormDataType) => void;
   initialData?: FormDataType;
+  isUpdating: boolean;
 }
 
 const AddressEditModal: React.FC<AddressEditModalProps> = ({
   isOpen,
   onClose,
   onUpdate,
+  isUpdating,
   initialData = {
-    country: "Nigeria",
+    country: 'Nigeria',
     address:
-      "Adetokumbo Ademola Crescent, Abuja, Federal Capital Territory, Nigeria",
-    state: "Abuja",
-    city: "Abuja",
-    post_code: "900001",
+      'Adetokumbo Ademola Crescent, Abuja, Federal Capital Territory, Nigeria',
+    state: 'Abuja',
+    city: 'Abuja',
+    post_code: '900001',
   },
 }) => {
   const [formData, setFormData] = useState<FormDataType>(initialData);
@@ -46,7 +48,6 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
 
   const handleUpdate = () => {
     onUpdate(formData);
-    onClose();
   };
 
   const handleCancel = () => {
@@ -67,7 +68,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
       {/* Modal */}
       <div
         className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
@@ -95,7 +96,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
                 <textarea
                   rows={3}
                   value={formData.address}
-                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   placeholder="Enter primary address"
                 />
@@ -108,7 +109,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
                 </label>
                 <select
                   value={formData.country}
-                  onChange={(e) => handleInputChange("country", e.target.value)}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 >
                   <option value="Nigeria">Nigeria</option>
@@ -126,7 +127,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
                 <input
                   type="text"
                   value={formData.state}
-                  onChange={(e) => handleInputChange("state", e.target.value)}
+                  onChange={(e) => handleInputChange('state', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter state or province"
                 />
@@ -140,7 +141,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
                 <input
                   type="text"
                   value={formData.city}
-                  onChange={(e) => handleInputChange("city", e.target.value)}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter city"
                 />
@@ -155,7 +156,7 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
                   type="text"
                   value={formData.post_code}
                   onChange={(e) =>
-                    handleInputChange("post_code", e.target.value)
+                    handleInputChange('post_code', e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter post code"
@@ -175,9 +176,14 @@ const AddressEditModal: React.FC<AddressEditModalProps> = ({
               </button>
               <button
                 onClick={handleUpdate}
-                className="px-6 py-2 bg-[#F2F4F7] text-[#98A2B3] rounded-md hover:bg-gray-200 transition-colors duration-200 font-medium"
+                disabled={isUpdating}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isUpdating
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+                }`}
               >
-                Update
+                {isUpdating ? 'Updating...' : 'Update'}
               </button>
             </div>
           </div>

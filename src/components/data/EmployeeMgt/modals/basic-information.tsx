@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { X, Calendar, ChevronDown } from "lucide-react";
+import React, { useState } from 'react';
+import { X, Calendar, ChevronDown } from 'lucide-react';
+import { useUpdateBasicEmployeeDetails } from '@/src/hooks/dashboard/useDashboard';
+import { useParams } from 'next/navigation';
+import { useToast } from '@/src/context/ToastContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 const mockEmployeeData = {
-  full_name: "Sarah Johnson",
-  email: "sarah.johnson@email.com",
-  phone_number: "08127954621",
-  gender: "Female",
-  date_of_birth: "1995-04-25",
-  marital_status: "Married",
+  full_name: 'Sarah Johnson',
+  email: 'sarah.johnson@email.com',
+  phone_number: '08127954621',
+  gender: 'Female',
+  date_of_birth: '1995-04-25',
+  marital_status: 'Married',
 };
 
 interface Employee {
@@ -31,13 +36,51 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
   employee = mockEmployeeData,
 }) => {
   const [formData, setFormData] = useState({
-    full_name: employee?.full_name || "",
-    email: employee?.email || "",
-    phone_number: employee?.phone_number || "",
-    gender: employee?.gender || "",
-    date_of_birth: employee?.date_of_birth || "",
-    marital_status: employee?.marital_status || "",
+    full_name: employee?.full_name || '',
+    email: employee?.email || '',
+    phone_number: employee?.phone_number || '',
+    gender: employee?.gender || '',
+    date_of_birth: employee?.date_of_birth || '',
+    marital_status: employee?.marital_status || '',
   });
+
+  const { id } = useParams();
+  const employeeId = id as string;
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useUpdateBasicEmployeeDetails();
+  const { addToast } = useToast();
+
+  const handleSubmit = () => {
+    mutate(
+      {
+        userId: employeeId,
+        data: {
+          full_name: formData.full_name,
+          email: formData.email,
+          phone_number: formData.phone_number,
+          gender: formData.gender.toLowerCase() as 'male' | 'female' | 'other',
+          date_of_birth: formData.date_of_birth,
+          marital_status: formData.marital_status.toLowerCase(),
+        },
+      },
+      {
+        onSuccess: () => {
+          addToast('Updated successfully', 'success');
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+          });
+          onClose();
+        },
+        onError: () => {
+          addToast('Update failed', 'error');
+        },
+      }
+    );
+  };
 
   const [dropdownStates, setDropdownStates] = useState({
     gender: false,
@@ -59,17 +102,17 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
   };
 
   const formatDateForDisplay = (dateString: string | number | Date) => {
-    if (!dateString) return "";
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
-  const genderOptions = ["Male", "Female", "Other"];
-  const maritalStatusOptions = ["Single", "Married", "Divorced", "Widowed"];
+  const genderOptions = ['Male', 'Female', 'Other'];
+  const maritalStatusOptions = ['Single', 'Married', 'Divorced', 'Widowed'];
 
   if (!isOpen) return null;
 
@@ -105,7 +148,7 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
               <input
                 type="text"
                 value={formData.full_name}
-                onChange={(e) => handleInputChange("full_name", e.target.value)}
+                onChange={(e) => handleInputChange('full_name', e.target.value)}
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 placeholder="Enter full name"
               />
@@ -119,7 +162,7 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 placeholder="Enter email address"
               />
@@ -134,7 +177,7 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
                 type="tel"
                 value={formData.phone_number}
                 onChange={(e) =>
-                  handleInputChange("phone_number", e.target.value)
+                  handleInputChange('phone_number', e.target.value)
                 }
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 placeholder="Enter phone number"
@@ -149,19 +192,19 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() => toggleDropdown("gender")}
+                  onClick={() => toggleDropdown('gender')}
                   className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between bg-white"
                 >
                   <span
                     className={
-                      formData.gender ? "text-gray-900" : "text-gray-500"
+                      formData.gender ? 'text-gray-900' : 'text-gray-500'
                     }
                   >
-                    {formData.gender || "Select gender"}
+                    {formData.gender || 'Select gender'}
                   </span>
                   <ChevronDown
                     className={`w-4 h-4 text-gray-500 transition-transform ${
-                      dropdownStates.gender ? "rotate-180" : ""
+                      dropdownStates.gender ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
@@ -173,8 +216,8 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
                         key={option}
                         type="button"
                         onClick={() => {
-                          handleInputChange("gender", option);
-                          toggleDropdown("gender");
+                          handleInputChange('gender', option);
+                          toggleDropdown('gender');
                         }}
                         className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
                       >
@@ -196,7 +239,7 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
                   type="date"
                   value={formData.date_of_birth}
                   onChange={(e) =>
-                    handleInputChange("date_of_birth", e.target.value)
+                    handleInputChange('date_of_birth', e.target.value)
                   }
                   className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
@@ -217,21 +260,21 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() => toggleDropdown("marital_status")}
+                  onClick={() => toggleDropdown('marital_status')}
                   className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between bg-white"
                 >
                   <span
                     className={
                       formData.marital_status
-                        ? "text-gray-900"
-                        : "text-gray-500"
+                        ? 'text-gray-900'
+                        : 'text-gray-500'
                     }
                   >
-                    {formData.marital_status || "Select marital status"}
+                    {formData.marital_status || 'Select marital status'}
                   </span>
                   <ChevronDown
                     className={`w-4 h-4 text-gray-500 transition-transform ${
-                      dropdownStates.marital_status ? "rotate-180" : ""
+                      dropdownStates.marital_status ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
@@ -243,8 +286,8 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
                         key={option}
                         type="button"
                         onClick={() => {
-                          handleInputChange("marital_status", option);
-                          toggleDropdown("marital_status");
+                          handleInputChange('marital_status', option);
+                          toggleDropdown('marital_status');
                         }}
                         className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
                       >
@@ -270,14 +313,15 @@ const EditBasicInfoModal: React.FC<EditBasicInfoModalProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => {
-                // Handle update logic here
-                console.log("Updated employee data:", formData);
-                onClose();
-              }}
-              className="px-4 py-2 text-sm font-medium bg-[#F2F4F7] text-[#98A2B3] rounded-lg transition-colors"
+              onClick={handleSubmit}
+              disabled={isPending}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                isPending
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+              }`}
             >
-              Update
+              {isPending ? 'Updating...' : 'Update'}
             </button>
           </div>
         </div>
