@@ -3,13 +3,13 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import settingsService from "@/src/service/api/settings.service";
+import settingsService from '@/src/service/api/settings.service';
 
-import { AxiosError } from "axios";
-import toast from "react-hot-toast";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 export const useGetAllProfileSettings = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -86,7 +86,7 @@ export const useUpdateProfilePicture = () => {
 
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to update profile picture";
+          err.response?.data?.message || 'Failed to update profile picture';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -112,7 +112,7 @@ export const useChangePassword = () => {
     onError: (err: AxiosError) => {
       const errorMessage =
         (err.response?.data as { message?: string })?.message ||
-        "Failed to change password";
+        'Failed to change password';
       throw new Error(errorMessage);
     },
   });
@@ -149,7 +149,7 @@ export const useAddResumptionDate = () => {
       // More robust error handling
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to add resumption date";
+          err.response?.data?.message || 'Failed to add resumption date';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -239,7 +239,7 @@ export const useUploadDocument = () => {
 
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to upload document";
+          err.response?.data?.message || 'Failed to upload document';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -252,7 +252,6 @@ export const useUploadDocument = () => {
     },
   });
 };
-
 
 export const useUpdateBankDetails = () => {
   const queryClient = useQueryClient();
@@ -272,10 +271,12 @@ export const useUpdateBankDetails = () => {
       toast.success('Bank details updated successfully');
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(error?.response?.data?.message || 'Failed to update bank details');
+      toast.error(
+        error?.response?.data?.message || 'Failed to update bank details'
+      );
     },
   });
-}
+};
 
 export const useAddBankDetails = () => {
   const queryClient = useQueryClient();
@@ -294,8 +295,43 @@ export const useAddBankDetails = () => {
       toast.success('Bank details added successfully');
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(error?.response?.data?.message || 'Failed to add bank details');
+      toast.error(
+        error?.response?.data?.message || 'Failed to add bank details'
+      );
     },
   });
 };
 
+export const useGetBanks = () => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_BANKS],
+    queryFn: async () => {
+      const response = await settingsService.getBanks();
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    // Only retry on server errors, not 404s
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching, // Distinguish between initial load and background refresh
+    isFetching,
+    banks: data?.data?.data || {},
+    pagination: data?.data?.pagination || {},
+    rawData: data, // Provide access to raw response if needed
+  };
+};

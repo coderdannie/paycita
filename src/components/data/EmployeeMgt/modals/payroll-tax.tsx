@@ -144,7 +144,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
                   const formatted = formatSalaryInput(e.target.value);
                   handleInputChange('salary', formatted);
                 }}
-                placeholder="$2,679"
+                placeholder="Enter Amount"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               />
             </div>
