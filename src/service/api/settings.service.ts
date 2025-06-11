@@ -1,30 +1,30 @@
-import { api, api2 } from ".";
+import { api, api2 } from '.';
 
 const getAllProfileSettings = () => {
   return api.get(`/hr/profile`);
 };
 
 const updateProfilePicture = (data: FormData) => {
-  return api2.post("/hr/profile-picture", data);
+  return api2.post('/hr/profile-picture', data);
 };
 const changePassword = (data: {
   old_password: string;
   new_password: string;
 }) => {
-  return api.post("/hr/change-password", data);
+  return api.post('/hr/change-password', data);
 };
 const addResumptionDate = (data: {
   resumption_time: string;
   closing_time: string;
 }) => {
-  return api.post("/hr/resumption_time", data);
+  return api.post('/hr/resumption_time', data);
 };
 const getResumptionTime = () => {
   return api.get(`/hr/resumption_time`);
 };
 
 const uploadDocuments = (data: FormData) => {
-  return api2.post("/hr/upload-document", data);
+  return api2.post('/hr/upload-document', data);
 };
 
 const addBankDetails = (data: {
@@ -33,7 +33,11 @@ const addBankDetails = (data: {
   account_name: string;
   bank_code?: string; //nullable
 }) => {
-  return api.post("/hr/bank-account", data);
+  return api.post('/hr/bank-account', data);
+};
+
+const getBanks = () => {
+  return api.get(`/hr/all-banks`);
 };
 
 const updateBankDetails = (data: {
@@ -62,6 +66,7 @@ const settingsService = {
   uploadDocuments,
   addBankDetails,
   updateBankDetails,
+  getBanks,
 };
 
 export default settingsService;

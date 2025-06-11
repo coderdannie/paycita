@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import BankDetailsModal from "./modals/BankDetailsModal";
-import { Pencil, Plus } from "lucide-react";
-import { useGetAllProfileSettings } from "@/src/hooks/settings/useSettings";
+import React, { useState } from 'react';
+import BankDetailsModal from './modals/BankDetailsModal';
+import { Pencil, Plus } from 'lucide-react';
+import {
+  useGetAllProfileSettings,
+  useGetBanks,
+} from '@/src/hooks/settings/useSettings';
 
 export interface BankDetails {
   id: string;
@@ -14,7 +17,13 @@ const BankAccountTab: React.FC = () => {
   const { profile } = useGetAllProfileSettings();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const hasBankDetails = profile.bank_name && profile.bank_account_number && profile.bank_account_name;
+  const hasBankDetails =
+    profile.bank_name &&
+    profile.bank_account_number &&
+    profile.bank_account_name;
+
+  const { banks } = useGetBanks();
+  console.log(banks);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -77,7 +86,16 @@ const BankAccountTab: React.FC = () => {
         <BankDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          currentDetails={hasBankDetails ? profile : { id: "", bank_name: "", bank_account_number: "", bank_account_name: "" }}
+          currentDetails={
+            hasBankDetails
+              ? profile
+              : {
+                  id: '',
+                  bank_name: '',
+                  bank_account_number: '',
+                  bank_account_name: '',
+                }
+          }
         />
       )}
     </div>

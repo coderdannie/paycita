@@ -30,20 +30,20 @@ export const userDetailsSchema = z.object({
   guarantors: z
     .array(
       z.object({
-        fullName: z.string().min(1, { message: 'Full Name is required' }),
-        address: z.string().min(1, { message: 'Address is required' }),
+        fullName: z.string().optional().default(''),
+        address: z.string().optional().default(''),
         phoneNumber: z
           .string()
-          .min(1, { message: 'Phone Number is required' })
-          .regex(/^\d{10,15}$/, { message: 'Invalid phone number' }),
-        relationship: z
-          .string()
-          .min(1, { message: 'Relationship is required' }),
+          .optional()
+          .refine((val) => !val || /^\d{10,15}$/.test(val), {
+            message: 'Invalid phone number format',
+          })
+          .default(''),
+        relationship: z.string().optional().default(''),
       })
     )
-    .min(2, { message: 'Exactly two guarantors are required' })
-    .max(2, { message: 'Maximum two guarantors allowed' })
-    .optional(),
+    .optional()
+    .default([]),
 });
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 

@@ -1,27 +1,28 @@
-"use client";
-import { useCallback, useState } from "react";
-import NoTransaction from "@/src/components/data/BillPayment/NoTransaction";
-import TopUpModal from "@/src/components/modals/TopUpModal";
-import SearchInput from "@/src/components/ui/SearchInput";
-import { PiSlidersHorizontal } from "react-icons/pi";
-import TransactionsTable from "@/src/components/data/BillPayment/TransactionHistory";
-import BillsFilter from "@/src/components/modals/BillsFilter";
-import { useGetTransactionHistory } from "@/src/hooks/bill-payment/useBillPayments";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+'use client';
+import { useCallback, useState } from 'react';
+import NoTransaction from '@/src/components/data/BillPayment/NoTransaction';
+import TopUpModal from '@/src/components/modals/TopUpModal';
+import SearchInput from '@/src/components/ui/SearchInput';
+import { PiSlidersHorizontal } from 'react-icons/pi';
+import TransactionsTable from '@/src/components/data/BillPayment/TransactionHistory';
+import BillsFilter from '@/src/components/modals/BillsFilter';
+import { useGetTransactionHistory } from '@/src/hooks/bill-payment/useBillPayments';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 
 const BillPayment = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
-  const currentPage = searchParams.get("page") || "1";
+  const currentPage = searchParams.get('page') || '1';
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isShow, setIsShow] = useState(false);
 
-  const { transactionHistory, pagination } = useGetTransactionHistory({
-    page: currentPage.toString(),
-  });
+  const { transactionHistory, pagination, isLoading } =
+    useGetTransactionHistory({
+      page: currentPage.toString(),
+    });
 
   const data = transactionHistory.length ? transactionHistory : [];
 
@@ -70,7 +71,7 @@ const BillPayment = () => {
               Buy Now
             </button>
           </div>
-          <TransactionsTable tableData={data} />{" "}
+          <TransactionsTable tableData={data} isLoading={isLoading} />{' '}
           <div className="mt-6">
             {pagination?.total_pages > 1 && (
               <CustomPagination

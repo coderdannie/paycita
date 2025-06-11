@@ -1,24 +1,24 @@
-"use client";
-import React, { useState, useMemo, useCallback } from "react";
-import Filters from "./Filters/filters";
+'use client';
+import React, { useState, useMemo, useCallback } from 'react';
+import Filters from './Filters/filters';
 
 import {
   useDeleteLeaveRequest,
   useGetEmployeeLeave,
   useUpdateEmployeeLeave,
-} from "@/src/hooks/leave/useLeave";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import CustomTable from "@/src/components/common/CustomTable";
-import { TableCell, TableRow } from "@/src/components/ui/table";
-import { formatDate } from "@/src/utils/helper";
-import { Info, Trash2 } from "lucide-react";
-import TableEmptyState from "@/src/components/common/TableEmptyState";
-import EmployeeLeaveDetailsModal from "./Modals/EmployeeLeaveDetailsModal";
-import ConfirmationModal from "../../../../components/common/ConfirmationModal";
-import { toast } from "react-hot-toast";
+} from '@/src/hooks/leave/useLeave';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import CustomTable from '@/src/components/common/CustomTable';
+import { TableCell, TableRow } from '@/src/components/ui/table';
+import { formatDate } from '@/src/utils/helper';
+import { Info, Trash2 } from 'lucide-react';
+import TableEmptyState from '@/src/components/common/TableEmptyState';
+import EmployeeLeaveDetailsModal from './Modals/EmployeeLeaveDetailsModal';
+import ConfirmationModal from '../../../../components/common/ConfirmationModal';
+import { toast } from 'react-hot-toast';
 
 interface LeaveRequest {
   id: number;
@@ -38,7 +38,7 @@ interface LeaveRequestType {
   leaveType: string;
   leaveDate: string;
   duration: number;
-  status: "Pending" | "Approved" | "Rejected";
+  status: 'Pending' | 'Approved' | 'Rejected';
   comment?: string;
 }
 
@@ -47,10 +47,10 @@ const LeaveRequest: React.FC = () => {
 
   const updateSearchParams = useUpdateSearchParams();
 
-  const currentPage = searchParams.get("page") || "1";
-  const search = searchParams.get("search") || "";
-  const leaveType = searchParams.get("leave_type") || "";
-  const status = searchParams.get("status") || "";
+  const currentPage = searchParams.get('page') || '1';
+  const search = searchParams.get('search') || '';
+  const leaveType = searchParams.get('leave_type') || '';
+  const status = searchParams.get('status') || '';
 
   const [searchTerm, setSearchTerm] = useState<string>(search);
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequestType | null>(
@@ -58,9 +58,9 @@ const LeaveRequest: React.FC = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const [actionType, setActionType] = useState<"approve" | "reject">("approve");
+  const [actionType, setActionType] = useState<'approve' | 'reject'>('approve');
   const [selectedLeaveId, setSelectedLeaveId] = useState<number | null>(null);
-  const [rejectionComment, setRejectionComment] = useState<string>("");
+  const [rejectionComment, setRejectionComment] = useState<string>('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [leaveToDelete, setLeaveToDelete] = useState<LeaveRequestType | null>(
     null
@@ -101,7 +101,7 @@ const LeaveRequest: React.FC = () => {
         {
           ...filters,
           employee_name: value,
-          page: "1",
+          page: '1',
         },
         { debounce: 300 }
       );
@@ -118,7 +118,7 @@ const LeaveRequest: React.FC = () => {
       leaveType: row.leave_type,
       leaveDate: `${formatDate(row.start_date)} - ${formatDate(row.end_date)}`,
       duration: row.duration,
-      status: row.status as "Pending" | "Approved" | "Rejected",
+      status: row.status as 'Pending' | 'Approved' | 'Rejected',
     };
     setSelectedLeave(transformedData);
     setIsModalOpen(true);
@@ -126,7 +126,7 @@ const LeaveRequest: React.FC = () => {
 
   const handleApprove = useCallback(() => {
     if (selectedLeave) {
-      setActionType("approve");
+      setActionType('approve');
       setSelectedLeaveId(selectedLeave.id);
       setIsConfirmationModalOpen(true);
     }
@@ -134,9 +134,9 @@ const LeaveRequest: React.FC = () => {
 
   const handleReject = useCallback(() => {
     if (selectedLeave) {
-      setActionType("reject");
+      setActionType('reject');
       setSelectedLeaveId(selectedLeave.id);
-      setRejectionComment("");
+      setRejectionComment('');
       setIsConfirmationModalOpen(true);
     }
   }, [selectedLeave]);
@@ -144,22 +144,22 @@ const LeaveRequest: React.FC = () => {
   const handleConfirmAction = useCallback(() => {
     if (selectedLeaveId) {
       // For rejection, require a comment
-      if (actionType === "reject" && !rejectionComment.trim()) {
-        toast.error("Please provide a reason for rejection");
+      if (actionType === 'reject' && !rejectionComment.trim()) {
+        toast.error('Please provide a reason for rejection');
         return;
       }
 
       mutateUpdateEmployeeLeave(
         {
           id: selectedLeaveId.toString(),
-          status: actionType === "approve" ? "approved" : "rejected",
-          comment: actionType === "reject" ? rejectionComment : undefined,
+          status: actionType === 'approve' ? 'approved' : 'rejected',
+          comment: actionType === 'reject' ? rejectionComment : undefined,
         },
         {
           onSuccess: () => {
             toast.success(
               `Leave request ${
-                actionType === "approve" ? "approved" : "rejected"
+                actionType === 'approve' ? 'approved' : 'rejected'
               } successfully`
             );
             setIsConfirmationModalOpen(false);
@@ -187,12 +187,12 @@ const LeaveRequest: React.FC = () => {
     if (leaveToDelete) {
       mutateDeleteLeaveRequest(leaveToDelete.id.toString(), {
         onSuccess: () => {
-          toast.success("Leave request deleted successfully");
+          toast.success('Leave request deleted successfully');
           setIsDeleteModalOpen(false);
           setLeaveToDelete(null);
         },
         onError: () => {
-          toast.error("Failed to delete leave request");
+          toast.error('Failed to delete leave request');
         },
       });
     }
@@ -204,21 +204,21 @@ const LeaveRequest: React.FC = () => {
 
   const headers = [
     {
-      label: "Request Date",
+      label: 'Request Date',
     },
     {
-      label: "Employee Name",
+      label: 'Employee Name',
     },
     {
-      label: "Leave Type",
-    },
-
-    {
-      label: "Leave Date",
+      label: 'Leave Type',
     },
 
     {
-      label: "Duration (Days)",
+      label: 'Leave Date',
+    },
+
+    {
+      label: 'Duration (Days)',
     },
 
     // {
@@ -226,10 +226,10 @@ const LeaveRequest: React.FC = () => {
     // },
 
     {
-      label: "Status",
+      label: 'Status',
     },
     {
-      label: "Actions",
+      label: 'Actions',
     },
   ];
 
@@ -243,21 +243,21 @@ const LeaveRequest: React.FC = () => {
         onTypeChange={(value) =>
           updateSearchParams({
             ...filters,
-            leave_type: value === "All Type" ? "" : value,
-            page: "1",
+            leave_type: value === 'All Type' ? '' : value,
+            page: '1',
           })
         }
         onStatusChange={(value) =>
           updateSearchParams({
             ...filters,
-            status: value === "All Status" ? "" : value,
-            page: "1",
+            status: value === 'All Status' ? '' : value,
+            page: '1',
           })
         }
       />
 
       <div className="rounded-lg shadow-sm">
-        <CustomTable headers={headers} center={true}>
+        <CustomTable headers={headers} center={true} isLoading={isPending}>
           {employeeLeave?.length ? (
             employeeLeave.map((row, rowIndex) => (
               <TableRow
@@ -268,7 +268,7 @@ const LeaveRequest: React.FC = () => {
                 <TableCell>{row.employee_name}</TableCell>
                 <TableCell>{row.leave_type}</TableCell>
                 <TableCell>
-                  {formatDate(row.start_date).split(" ").slice(0, 2).join(" ")}{" "}
+                  {formatDate(row.start_date).split(' ').slice(0, 2).join(' ')}{' '}
                   - {formatDate(row.end_date)}
                 </TableCell>
                 <TableCell>{row.duration}</TableCell>
@@ -293,11 +293,11 @@ const LeaveRequest: React.FC = () => {
                   <span
                     className={`py-[5px] px-[10px] relative border-2 rounded-md cursor-pointer 
                             ${
-                              row?.status?.toLowerCase() === "approved"
-                                ? "text-green-600  border-[#89D8A9]  bg-[#F5FFFA]"
-                                : row?.status?.toLowerCase() === "rejected"
-                                ? "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
-                                : "text-yellow-600 border-[#FCD34D] bg-[#FFFBEB]"
+                              row?.status?.toLowerCase() === 'approved'
+                                ? 'text-green-600  border-[#89D8A9]  bg-[#F5FFFA]'
+                                : row?.status?.toLowerCase() === 'rejected'
+                                ? 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]'
+                                : 'text-yellow-600 border-[#FCD34D] bg-[#FFFBEB]'
                             }
                           `}
                   >
@@ -354,10 +354,10 @@ const LeaveRequest: React.FC = () => {
         onCancel={() => setIsConfirmationModalOpen(false)}
         onConfirm={handleConfirmAction}
         title={`${
-          actionType === "approve" ? "Approve" : "Reject"
+          actionType === 'approve' ? 'Approve' : 'Reject'
         } Leave Request`}
-        actionLabel={actionType === "approve" ? "Approve" : "Reject"}
-        isReject={actionType === "reject"}
+        actionLabel={actionType === 'approve' ? 'Approve' : 'Reject'}
+        isReject={actionType === 'reject'}
         comment={rejectionComment}
         onCommentChange={setRejectionComment}
         isLoading={isPendingUpdateLeave}
