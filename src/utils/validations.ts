@@ -61,6 +61,7 @@ export const employeeDetailsSchema = z.object({
   hire_date: z.string().min(1, { message: 'Hire Date is required' }), // Assuming hire date is a string (e.g., YYYY-MM-DD)
   salary: z.string().min(1, { message: 'Basic Salary is required' }),
   tax_status: z.string().min(1, { message: 'Tax Status is required' }),
+  branch_id: z.number().min(1, { message: 'Branch is required' }),
   pension_number: z.string().optional(),
 
   pension_company: z.string().optional(),

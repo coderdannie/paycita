@@ -424,3 +424,28 @@ export const useUpdateEmployeeSalaryDetails = (options = {}) => {
 
   return { mutate, isPending, ...rest };
 };
+
+export const useGetAllBranches = () => {
+  const { data, isSuccess, isError, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_BRANCHES],
+    queryFn: async () => {
+      const response = await dashboardService.getAllBranches();
+      return response;
+    },
+  });
+
+  const allBranches = data?.data?.data || [];
+  const allBranchesOptions = allBranches.map(
+    (allBranches: { id: string; name: string }) => ({
+      label: allBranches.name,
+      value: allBranches.id,
+    })
+  );
+
+  return {
+    allBranchesOptions,
+    isSuccess,
+    isError,
+    isPending,
+  };
+};
