@@ -142,7 +142,7 @@ const EmployeeDetails = () => {
       pension_number: '',
       pension_company: '',
       company_email: '',
-      branch_id: '',
+      branch_id: allBranchesOptions?.[0]?.value || '',
     },
     mode: 'onTouched',
   });
