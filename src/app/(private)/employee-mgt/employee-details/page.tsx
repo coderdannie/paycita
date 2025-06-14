@@ -21,6 +21,7 @@ import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { Checkbox } from '@/src/components/ui/checkbox';
 import {
   useAddEmployee,
+  useGetAllBranches,
   useGetDepartments,
   useGetGivenItems,
   useGetPensionCompanies,
@@ -123,6 +124,8 @@ const EmployeeDetails = () => {
   const { pensionCompanyOptions, isPending: isPendingPensionCompany } =
     useGetPensionCompanies();
   const { givenItemsOptions } = useGetGivenItems();
+  const { allBranchesOptions, isPending: isPendingBranch } =
+    useGetAllBranches();
 
   const form = useForm<EmployeeDetailsSchemaType>({
     resolver: zodResolver(employeeDetailsSchema),
@@ -139,6 +142,7 @@ const EmployeeDetails = () => {
       pension_number: '',
       pension_company: '',
       company_email: '',
+      branch_id: '',
     },
     mode: 'onTouched',
   });
@@ -242,6 +246,11 @@ const EmployeeDetails = () => {
     form.setValue('pension_company', companyValue, { shouldValidate: false });
   };
 
+  const handleChangeBranch = (selectedOption: SingleValue | null) => {
+    const branchValue = selectedOption?.value || '';
+    form.setValue('branch_id', +branchValue, { shouldValidate: true });
+  };
+
   return (
     <div>
       <div className="flex items-center gap-1">
@@ -326,6 +335,27 @@ const EmployeeDetails = () => {
                 {errors.department_id?.message && (
                   <p className="text-red-500 text-sm">
                     {errors.department_id.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <p className="font-semibold text-sm text-[#292D32] pb-2">
+                  Branch
+                </p>
+                <Select
+                  instanceId="country_branch_id"
+                  options={allBranchesOptions}
+                  isLoading={isPendingBranch}
+                  styles={customStyles}
+                  placeholder="Select Branch"
+                  onChange={handleChangeBranch}
+                  value={allBranchesOptions?.find(
+                    (option) => option.value === form.watch('branch_id')
+                  )}
+                />
+                {errors.branch_id?.message && (
+                  <p className="text-red-500 text-sm">
+                    {errors.branch_id.message}
                   </p>
                 )}
               </div>
@@ -416,14 +446,14 @@ const EmployeeDetails = () => {
               <CustomFormField
                 name="pension_number"
                 control={control}
-                label="Pension Number"
+                label="Pension Number (optional)"
                 placeholder="Enter Pension Number"
                 error={errors.pension_number?.message}
               />
 
               <div className="w-full">
                 <p className="font-semibold text-sm text-[#292D32] pb-2">
-                  Pension Company
+                  Pension Company (optional)
                 </p>
                 <Select
                   instanceId="pension_company"

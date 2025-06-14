@@ -56,6 +56,10 @@ const getDepartments = () => {
   return api.get('/hr/department');
 };
 
+const getAllBranches = () => {
+  return api.get('/hr/branch');
+};
+
 const getPensionCompanies = () => {
   return api.get('/hr/get-pensions');
 };
@@ -223,6 +227,7 @@ const dashboardService = {
   updateEmployeeEmergencyContact,
   updateEmployeeWorkDetails,
   updateEmployeeSalaryDetails,
+  getAllBranches,
 };
 
 export default dashboardService;
