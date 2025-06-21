@@ -4,11 +4,11 @@ import {
   useMutation,
   useQueryClient,
   UseMutationOptions,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
-import { AxiosError, AxiosResponse } from 'axios';
-import assetService from '@/src/service/api/asset-management.service';
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { AxiosResponse } from "axios";
+import assetService from "@/src/service/api/asset-management.service";
 
 const useGetAllAssets = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending } = useQuery({
