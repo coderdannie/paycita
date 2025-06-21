@@ -1,4 +1,5 @@
 import { logoutUser } from "@/src/service/api/logout.service";
+import { safeLocalStorage } from "../utils/safeLocalStorage";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -19,10 +20,8 @@ export const useLogOut = () => {
       toast.success(res.data.message || "Logout Successfully");
 
       // Remove all queries from the cache
-      queryClient.removeQueries();
-
-      // Clear localStorage
-      localStorage.clear();
+      queryClient.removeQueries();      // Clear localStorage
+      safeLocalStorage.clear();
 
       // Cancel any ongoing queries
       queryClient.cancelQueries();
