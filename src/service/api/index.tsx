@@ -1,16 +1,22 @@
 import axios from "axios";
 import Router from "next/router";
+import { safeLocalStorage } from "../../utils/safeLocalStorage";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const handleUnauthorizedError = (error) => {
   if (axios.isAxiosError(error) && error.response) {
     if (error.response.status === 401) {
-      localStorage.clear();
+      // Safe localStorage clear for iPhone/Safari
+      safeLocalStorage.clear();
 
-      //   window.location.href = "/login";
-
-      Router.push("/login");
+      // Use window.location.href as fallback for better iPhone compatibility
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      } else {
+        // Fallback for SSR
+        Router.push("/login");
+      }
 
       return Promise.reject(new Error("Unauthorized, redirecting to login."));
     }
@@ -36,7 +42,7 @@ export const api2 = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access_token");
+    const token = safeLocalStorage.getItem("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -54,7 +60,7 @@ api.interceptors.response.use((response) => {
 
 api2.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access_token");
+    const token = safeLocalStorage.getItem("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
