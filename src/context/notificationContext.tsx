@@ -55,23 +55,29 @@ export function NotificationProvider({
             [data.chat_id]: (prev[data.chat_id] || 0) + 1,
           }));
 
-          incrementUnreadCount();
-
-          // Show browser notification if permission granted
-          if (Notification.permission === "granted") {
-            new Notification("New Message", {
-              body: `${data.sender_name || "Someone"}: ${data.message}`,
-              icon: "/favicon.ico",
-              tag: data.chat_id, // Prevent multiple notifications from same chat
-            });
+          incrementUnreadCount();          // Show browser notification if permission granted and API is available
+          if (typeof window !== 'undefined' && 'Notification' in window) {
+            if (Notification.permission === "granted") {
+              try {
+                new Notification("New Message", {
+                  body: `${data.sender_name || "Someone"}: ${data.message}`,
+                  icon: "/favicon.ico",
+                  tag: data.chat_id, // Prevent multiple notifications from same chat
+                });
+              } catch (error) {
+                console.warn("Failed to show notification:", error);
+              }
+            }
           }
         }
       }
-    );
-
-    // Request notification permission on mount
-    if (Notification.permission === "default") {
-      Notification.requestPermission();
+    );    // Request notification permission on mount (safely)
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === "default") {
+        Notification.requestPermission().catch((error) => {
+          console.warn("Failed to request notification permission:", error);
+        });
+      }
     }
 
     return () => unsubscribe();

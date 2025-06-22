@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
 import NotificationItem from "./notificationItem";
-import { Notification } from "@/src/types/notifications";
+import { AppNotification } from "@/src/types/notifications";
 
 
 
 interface NotificationListProps {
-  notifications: Notification[];
+  notifications: AppNotification[];
   onToggleSelect: (id: string) => void;
 }
 

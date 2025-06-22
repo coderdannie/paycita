@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import NotificationHeader from "./notificationHeader";
 import NotificationList from "./notificationList";
-import { Notification } from "@/src/types/notifications";
+import { AppNotification } from "@/src/types/notifications";
 import { useGetAppNotifications, useDeleteAppNotification, useDeleteAllAppNotifications } from "@/src/hooks/app-notifications/useAppNotifications";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -13,6 +13,8 @@ interface NotificationsPanelProps {
 }
 
 const lockScroll = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
   const scrollY = window.scrollY;
   document.body.style.position = "fixed";
   document.body.style.top = `-${scrollY}px`;
@@ -21,6 +23,8 @@ const lockScroll = () => {
 };
 
 const unlockScroll = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
   const scrollY = Number(document.body.dataset.scrollY || "0");
   document.body.style.position = "";
   document.body.style.top = "";
@@ -35,10 +39,9 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   const { appNotifications, isLoading, isError } = useGetAppNotifications();
   const { mutate: deleteNotification } = useDeleteAppNotification();
   const { mutate: deleteAllNotifications } = useDeleteAllAppNotifications();
-
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const prevAppNotificationsRef = useRef<Notification[] | undefined>(undefined); // Initialize useRef with undefined
+  const prevAppNotificationsRef = useRef<AppNotification[] | undefined>(undefined); // Initialize useRef with undefined
 
   useEffect(() => {
     const hasDataChanged = JSON.stringify(appNotifications) !== JSON.stringify(prevAppNotificationsRef.current);

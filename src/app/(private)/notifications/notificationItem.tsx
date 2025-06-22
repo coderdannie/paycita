@@ -2,11 +2,11 @@
 import React from "react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { Notification } from "@/src/types/notifications";
+import { AppNotification } from "@/src/types/notifications";
 import Image from "next/image";
 
 interface NotificationItemProps {
-  notification: Notification;
+  notification: AppNotification;
   onToggleSelect: (id: string) => void;
 }
 
