@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import dashboardService from '@/src/service/api/dashboard.service';
+import { safeLocalStorage } from '@/src/utils/safeLocalStorage';
 
 import { useDispatch } from 'react-redux';
 import {
@@ -26,7 +27,7 @@ import {
 
 const checkIsAuthenticated = (): boolean => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('access_token');
+    const token = safeLocalStorage.getItem('access_token');
     return !!token;
   }
   return false;

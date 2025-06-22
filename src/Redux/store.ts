@@ -22,10 +22,23 @@ const createNoopStorage = () => {
   };
 };
 
-const storage =
-  typeof window !== "undefined"
-    ? createWebStorage("local")
-    : createNoopStorage();
+// Enhanced storage check for iPhone/Safari compatibility
+const createSafeStorage = () => {
+  try {
+    if (typeof window !== "undefined") {
+      // Test localStorage availability
+      const test = 'redux-persist-test';
+      window.localStorage.setItem(test, test);
+      window.localStorage.removeItem(test);
+      return createWebStorage("local");
+    }
+  } catch (error) {
+    console.warn("localStorage not available, using noop storage:", error);
+  }
+  return createNoopStorage();
+};
+
+const storage = createSafeStorage();
 
 const rootReducer = combineReducers({
   auth: authReducer,

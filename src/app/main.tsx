@@ -9,11 +9,19 @@ import { NotificationProvider } from "../context/notificationContext";
 import DashboardProvider from "../context/dashboardContext";
 import AuthProvider from "../context/authContext";
 import ErrorBoundary from "../components/ErrorBoundary";
+import { iPhoneDebug } from "../utils/iPhoneDebug";
+import IPhoneDebugComponent from "../components/IPhoneDebugComponent";
 
 import LoadingOverlay from "../components/common/LoadingOverlay";
 import { Providers } from "./Providers";
 
 const MainWrapper = ({ children }: { children: ReactNode }) => {
+  // Debug iPhone issues on app startup
+  React.useEffect(() => {
+    iPhoneDebug.log("MainWrapper mounted");
+    iPhoneDebug.checkEnvironment();
+  }, []);
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<LoadingOverlay />}>
@@ -22,8 +30,8 @@ const MainWrapper = ({ children }: { children: ReactNode }) => {
             <Providers>
               <GlobalProvider>
                 <AuthProvider>
-                  <NotificationProvider>
-                    <DashboardProvider>
+                  <NotificationProvider>                    <DashboardProvider>
+                      <IPhoneDebugComponent />
                       <Toaster position="top-right" />
                       {children}
                     </DashboardProvider>

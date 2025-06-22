@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
-import { Button } from '@/components/ui/button';
-import ExpenseDrawer from '../../modals/ExpenseDrawer';
-import { useGetSingleExpense } from '@/src/hooks/expenses/useExpenses';
-import RejectModal from '../../modals/RejectModal';
+import { useCallback, useMemo, useState } from "react";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { Button } from "@/components/ui/button";
+import ExpenseDrawer from "../../modals/ExpenseDrawer";
+import { useGetSingleExpense } from "@/src/hooks/expenses/useExpenses";
+import RejectModal from "../../modals/RejectModal";
 import {
   useAddApprovalComment,
   useUpdateApproval,
-} from '@/src/hooks/approvals/useApprovals';
-import toast from 'react-hot-toast';
-import { AxiosError } from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
-import CommentModal from '../../modals/CommentModal';
-import { Comments } from '@/src/types/procurement';
+} from "@/src/hooks/approvals/useApprovals";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import CommentModal from "../../modals/CommentModal";
+import { Comments } from "@/src/types/procurement";
 
 import {
   useVerifyApprovalOtp,
   useResendApprovalOtp,
-} from '../../../hooks/approvals/useApprovals';
-import ApprovalModal from '../../modals/VerifyOtpModal';
+} from "../../../hooks/approvals/useApprovals";
+import ApprovalModal from "../../modals/VerifyOtpModal";
 
 const ExpenseTable = ({
   approvals,
@@ -40,15 +40,15 @@ const ExpenseTable = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(180);
-  const [dataId, setDataId] = useState('');
+  const [dataId, setDataId] = useState("");
 
   const headers = useMemo(
     () => [
       // { label: "Employee Name" },
-      { label: 'Employee Number' },
-      { label: 'Total Cost' },
-      { label: 'Status' },
-      { label: 'Action' },
+      { label: "Employee Number" },
+      { label: "Total Cost" },
+      { label: "Status" },
+      { label: "Action" },
     ],
     []
   );
@@ -58,11 +58,11 @@ const ExpenseTable = ({
       <span
         className={`py-[5px] w-[70%] text-center block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -70,8 +70,8 @@ const ExpenseTable = ({
     );
   }, []);
 
-  const [expenseId, setExpenseId] = useState('');
-  const [approvalId, setApprovalId] = useState('');
+  const [expenseId, setExpenseId] = useState("");
+  const [approvalId, setApprovalId] = useState("");
 
   const { expense } = useGetSingleExpense(expenseId);
 
@@ -86,14 +86,14 @@ const ExpenseTable = ({
   );
 
   const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
-    useUpdateApproval('update-expenses-requests');
+    useUpdateApproval("update-expenses-requests");
 
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const handleReject = (comment: string) => {
     const payload = {
       id: approvalId,
       data: {
-        status: 'rejected',
+        status: "rejected",
         reason: comment,
       },
     };
@@ -101,12 +101,12 @@ const ExpenseTable = ({
       onSuccess: () => {
         setIsRejectOpen(false);
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-expenses-requests'],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
         });
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
@@ -116,7 +116,7 @@ const ExpenseTable = ({
     const payload = {
       id: approvalId,
       data: {
-        status: 'approved',
+        status: "approved",
       },
     };
     mutateUpdateApprovalStatus(payload, {
@@ -129,13 +129,13 @@ const ExpenseTable = ({
         }, 200);
 
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-expenses-requests'],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-expenses-requests"],
         });
         setIsOpen(false);
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
@@ -146,15 +146,15 @@ const ExpenseTable = ({
   const currentThreadId = expense?.comment_thread?.thread_id;
 
   const { mutate: mutateAddComment, isPending: isAddingComment } =
-    useAddApprovalComment('add-expense-comment');
+    useAddApprovalComment("add-expense-comment");
 
   const handleSend = (message: string) => {
     if (!currentThreadId) {
-      toast.error('Cannot add comment: Thread ID is missing.');
+      toast.error("Cannot add comment: Thread ID is missing.");
       return;
     }
     if (!expenseId) {
-      toast.error('Cannot add comment: Expense ID is missing.');
+      toast.error("Cannot add comment: Expense ID is missing.");
       return;
     }
 
@@ -165,7 +165,7 @@ const ExpenseTable = ({
 
     mutateAddComment(payload, {
       onSuccess: () => {
-        toast.success('Comment added successfully');
+        toast.success("Comment added successfully");
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.GET_SINGLE_EXPENSE, expenseId],
         });
@@ -174,16 +174,16 @@ const ExpenseTable = ({
       onError: (error) => {
         if (error instanceof AxiosError)
           toast.error(
-            error?.response?.data?.message || 'Failed to add comment'
+            error?.response?.data?.message || "Failed to add comment"
           );
-        else toast.error('An unexpected error occurred while adding comment.');
+        else toast.error("An unexpected error occurred while adding comment.");
       },
     });
   };
 
   const { mutate: mutateVerifyOtp, isPending: isVerifying } =
     useVerifyApprovalOtp({
-      onSuccess: (res: any) => {
+      onSuccess: (res: { data: { message: string } }) => {
         toast.success(res?.data?.message);
         setIsShow(false);
         queryClient.invalidateQueries({
@@ -192,19 +192,19 @@ const ExpenseTable = ({
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
 
   const { mutate: mutateResendOtp, isLoading } = useResendApprovalOtp({
-    onSuccess: (res: any) => {
+    onSuccess: (res: { message: string }) => {
       toast.success(res?.message);
       setTimeLeft(180);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || 'Something went wrong');
+        toast.error(error?.response?.data?.message || "Something went wrong");
       }
     },
   });
