@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { X, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/src/components/ui/badge';
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { TableCell, TableRow } from '../../components/ui/table';
-import CustomTable from '../common/CustomTable';
-import { formatDate } from '@/src/utils/helper';
-import { ProcurementData, ProcurementRequest } from '@/src/types/procurement';
-import { useAuthSelector } from '@/src/Redux/selectors';
+} from "../../components/ui/dialog";
+import { TableCell, TableRow } from "../../components/ui/table";
+import CustomTable from "../common/CustomTable";
+import { formatDate } from "@/src/utils/helper";
+import { ProcurementData, ProcurementRequest } from "@/src/types/procurement";
+import { useAuthSelector } from "@/src/Redux/selectors";
 
 const expenseHeaders = [
-  { label: 'Item Name' },
-  { label: 'Quantity' },
-  { label: 'Unit Price' },
-  { label: 'Total Cost' },
+  { label: "Item Name" },
+  { label: "Quantity" },
+  { label: "Unit Price" },
+  { label: "Total Cost" },
 ];
 
 interface ProcurementRequestProps {
@@ -35,25 +35,25 @@ const ProcurementRequestDrawer = ({
   onOpenChange,
   selectedProcurement,
 }: ProcurementRequestProps) => {
-  console.log('pro', procurement);
+  console.log("pro", procurement);
   const formatCurrency = (amount: number) => {
     return `₦${amount.toLocaleString()}`;
   };
 
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || 'NGN';
+  const currency = userData?.user?.currency || "NGN";
 
   const getStatusBadgeColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'approved':
-        return 'bg-[#EDEDFB] text-[#5252FF]';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
+      case "approved":
+        return "bg-[#EDEDFB] text-[#5252FF]";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 

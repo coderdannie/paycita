@@ -30,6 +30,7 @@ import isEqual from 'lodash.isequal';
 import { v4 as uuidv4 } from 'uuid';
 import { QUERY_KEYS } from '../service/tanstack-query/queryKey';
 import { useNotification } from './notificationContext';
+import { safeLocalStorage } from '../utils/safeLocalStorage';
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -116,9 +117,8 @@ const DashboardProvider = ({
         getAttendance();
       }
     });
-
   const loadData = () => {
-    const token = localStorage.getItem('access_token');
+    const token = safeLocalStorage.getItem('access_token');
     if (!token) {
       router.replace('/');
     } else {

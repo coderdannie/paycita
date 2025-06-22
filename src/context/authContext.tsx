@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import { loginUser } from "../Redux/features/authSlice";
 import { LoginSchemaType } from "../utils/validations";
 import { useAuthSelector } from "../Redux/selectors";
+import { safeLocalStorage } from "../utils/safeLocalStorage";
+import { iPhoneDebug } from "../utils/iPhoneDebug";
 
 
 interface AuthContextType {
@@ -26,24 +28,35 @@ const AuthProvider = ({
   const router = useRouter();
   const authState = useAuthSelector();
   const user = authState.user;
-
-  const handleLogin = async (formData: LoginSchemaType) =>
-    await postRequest(
+  const handleLogin = async (formData: LoginSchemaType) => {
+    iPhoneDebug.log("Starting login process", { email: formData.email });
+    iPhoneDebug.checkEnvironment();
+    
+    return await postRequest(
       "/login",
       formData,
       (data: {
         success: boolean;
         data: { token: string; user: LoggedInUserProps };
       }) => {
+        iPhoneDebug.log("Login response received", { success: data.success });
+        
         if (data.success && data.data) {
           const token = data?.data?.token;
           const user = data?.data?.user;
-          localStorage.setItem("access_token", token);
+          
+          iPhoneDebug.log("Attempting to store token", { tokenLength: token?.length });
+          safeLocalStorage.setItem("access_token", token);
+          
+          iPhoneDebug.log("Dispatching user data to Redux");
           dispatch(loginUser(user));
+          
+          iPhoneDebug.log("Navigating to dashboard");
           router.push("/dashboard");
         }
       }
     );
+  };
 
   const value: AuthContextType = { handleLogin, isLogginIn, user };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
