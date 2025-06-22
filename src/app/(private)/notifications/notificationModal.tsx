@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import NotificationList from "./notificationList";
 import NotificationHeader from "./notificationHeader";
-import { Notification } from "@/src/types/notifications";
+import { AppNotification } from "@/src/types/notifications";
 
 
 
@@ -16,7 +16,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
+  const [notifications, setNotifications] = useState<AppNotification[]>([
     {
       id: "1",
       title: "Welcome Aboard",

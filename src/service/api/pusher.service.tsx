@@ -1,6 +1,7 @@
 import Pusher from "pusher-js";
 import { playMessageSound } from "@/src/utils/audio";
 import toast from "react-hot-toast";
+import { safeLocalStorage } from "@/src/utils/safeLocalStorage";
 
 interface PusherError {
   type: string;
@@ -33,39 +34,79 @@ if (!PUSHER_APP_KEY || !PUSHER_APP_CLUSTER) {
 const pusher = new Pusher(PUSHER_APP_KEY, {
   cluster: PUSHER_APP_CLUSTER,
   forceTLS: true,
-
-  enableStats: true,
-  activityTimeout: 30000,
-  pongTimeout: 10000,
-  // Add reconnection settings
+  enableStats: false, // Disable stats for better iPhone compatibility
+  activityTimeout: 120000, // Increase timeout for mobile networks (2 minutes)
+  pongTimeout: 30000, // Increase pong timeout (30 seconds)
+  unavailableTimeout: 10000, // Time to wait before attempting reconnection
+  // Better transport configuration for iPhone Safari
   enabledTransports: ["ws", "wss"],
-  disableStats: false,
+  disableStats: true,
+  // Connection configuration for mobile stability
+  wsHost: undefined, // Let Pusher determine the best host
+  wsPort: 443,
+  wssPort: 443,
+  httpHost: undefined, // Let Pusher determine the best host
+  httpPort: 80,
+  httpsPort: 443,  // Add auth endpoint if needed - can be extended for private channels
+  authorizer: () => {
+    return {
+      authorize: (socketId: string, callback: (error: Error | null, authData: { auth: string } | null) => void) => {
+        try {
+          // Add custom authorization logic if needed
+          // For now, return empty auth for public channels
+          callback(null, { auth: "" });
+        } catch (error) {
+          console.error("Pusher authorization error:", error);
+          callback(error as Error, null);
+        }
+      }
+    };
+  }
 });
 
 // Add connection state logging
 pusher.connection.bind("state_change", (states: PusherConnectionState) => {
   console.log("Pusher connection state changed:", states);
+  
   if (states.current === "connected") {
-    console.log("Pusher reconnected successfully");
-    // Re-subscribe to all channels
-    pusher.allChannels().forEach((channel) => {
-      if (!channel.subscribed) {
-        channel.subscribe();
-      }
-    });
+    console.log("Pusher connected successfully");
+    // Store connection state in safe storage for debugging
+    safeLocalStorage.setItem("pusher_connection_state", "connected");
+    safeLocalStorage.setItem("pusher_last_connected", new Date().toISOString());
+  } else if (states.current === "disconnected") {
+    console.log("Pusher disconnected");
+    safeLocalStorage.setItem("pusher_connection_state", "disconnected");
+  } else if (states.current === "connecting") {
+    console.log("Pusher attempting to connect...");
+    safeLocalStorage.setItem("pusher_connection_state", "connecting");
   }
 });
 
 pusher.connection.bind("error", (err: PusherError) => {
   console.error("Pusher connection error:", err);
+  safeLocalStorage.setItem("pusher_last_error", JSON.stringify({
+    error: err,
+    timestamp: new Date().toISOString()
+  }));
+  
+  // Attempt reconnection after a delay for mobile networks
+  if (err.type === "WebSocketError" || err.status >= 4000) {
+    setTimeout(() => {
+      console.log("Attempting Pusher reconnection after error...");
+      pusher.connect();
+    }, 5000);
+  }
 });
 
 pusher.connection.bind("reconnecting", () => {
   console.log("Pusher attempting to reconnect...");
+  safeLocalStorage.setItem("pusher_connection_state", "reconnecting");
 });
 
 pusher.connection.bind("reconnected", () => {
   console.log("Pusher reconnected successfully");
+  safeLocalStorage.setItem("pusher_connection_state", "reconnected");
+  safeLocalStorage.setItem("pusher_last_reconnected", new Date().toISOString());
 });
 
 export const subscribeToChannel = (
@@ -77,37 +118,120 @@ export const subscribeToChannel = (
   const channel = pusher.subscribe(channelName);
 
   channel.bind(eventName, async (data: PusherMessage) => {
-    // Only show notification and play sound if the message is from someone else
+    try {
+      // Only show notification and play sound if the message is from someone else
+      if (currentUserId && data.sender_id !== currentUserId) {
+        await playMessageSound();
 
-    if (currentUserId && data.sender_id === currentUserId) {
-      await playMessageSound();
+        toast.success("New Message\nKindly Reply", { duration: 5000 });
 
-      toast.success("New Message\nKindly Reply", { duration: 5000 });
-      if (Notification.permission === "granted") {
-        new Notification("New Message", {
-          body: `${data.message}`,
-          icon: "/logo.jpg",
-          tag: data.chat_id || "default-chat",
-        });
-      } else if (Notification.permission === "default") {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          new Notification("New Message", {
-            body: `${data.message}`,
-            icon: "/logo.jpg",
-            tag: data.chat_id || "default-chat",
-          });
+        // Safely check for Notification API availability (iPhone Safari compatibility)
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+          if (Notification.permission === "granted") {
+            new Notification("New Message", {
+              body: `${data.message}`,
+              icon: "/logo.jpg",
+              tag: data.chat_id || "default-chat",
+            });
+          } else if (Notification.permission === "default") {
+            try {
+              const permission = await Notification.requestPermission();
+              if (permission === "granted") {
+                new Notification("New Message", {
+                  body: `${data.message}`,
+                  icon: "/logo.jpg",
+                  tag: data.chat_id || "default-chat",
+                });
+              }
+            } catch (error) {
+              console.warn("Notification permission request failed:", error);
+            }
+          }
+        } else {
+          console.log("Notification API not available on this browser");
         }
       }
+
+      callback(data);
+    } catch (error) {
+      console.error("Error processing Pusher message:", error);
+      // Still call callback to ensure message processing continues
+      callback(data);
     }
-
-    callback(data);
   });
-
   return () => {
-    channel.unbind(eventName);
-    pusher.unsubscribe(channelName);
+    try {
+      channel.unbind(eventName);
+      pusher.unsubscribe(channelName);
+      console.log(`Unsubscribed from Pusher channel: ${channelName}`);
+    } catch (error) {
+      console.error(`Error unsubscribing from Pusher channel ${channelName}:`, error);
+    }
   };
+};
+
+// Utility functions for Pusher health and debugging
+export const getPusherConnectionState = () => {
+  return pusher.connection.state;
+};
+
+export const getPusherConnectionInfo = () => {
+  return {
+    state: pusher.connection.state,
+    socketId: pusher.connection.socket_id,
+    lastConnected: safeLocalStorage.getItem("pusher_last_connected"),
+    lastReconnected: safeLocalStorage.getItem("pusher_last_reconnected"),
+    lastError: safeLocalStorage.getItem("pusher_last_error"),
+    connectionState: safeLocalStorage.getItem("pusher_connection_state")
+  };
+};
+
+export const forcePusherReconnect = () => {
+  try {
+    console.log("Forcing Pusher reconnection...");
+    pusher.disconnect();
+    setTimeout(() => {
+      pusher.connect();
+    }, 1000);
+  } catch (error) {
+    console.error("Error forcing Pusher reconnection:", error);
+  }
+};
+
+export const isPusherConnected = () => {
+  return pusher.connection.state === "connected";
+};
+
+// Enhanced subscription with error handling and retry logic
+export const subscribeToChannelWithRetry = (
+  channelName: string,
+  eventName: string,
+  currentUserId: string,
+  callback: (data: PusherMessage) => void,
+  maxRetries: number = 3
+) => {
+  let retryCount = 0;
+  
+  const attemptSubscription = (): (() => void) | null => {
+    try {
+      return subscribeToChannel(channelName, eventName, currentUserId, callback);
+    } catch (error) {
+      console.error(`Pusher subscription attempt ${retryCount + 1} failed:`, error);
+      retryCount++;
+      
+      if (retryCount < maxRetries) {
+        console.log(`Retrying Pusher subscription in 2 seconds... (${retryCount}/${maxRetries})`);
+        setTimeout(() => {
+          attemptSubscription();
+        }, 2000);
+      } else {
+        console.error(`Failed to subscribe to Pusher channel ${channelName} after ${maxRetries} attempts`);
+      }
+      return null;
+    }
+  };
+  
+  return attemptSubscription();
 };
 
 export default pusher;

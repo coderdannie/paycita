@@ -1,7 +1,7 @@
-import { Notification } from "@/src/types/notifications";
+import { AppNotification } from "@/src/types/notifications";
 
 
-export const mockNotifications: Notification[] = [
+export const mockNotifications: AppNotification[] = [
   {
     id: "1",
     title: "Welcome Aboard",

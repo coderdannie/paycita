@@ -94,6 +94,7 @@ export interface JobDetails {
   employment_type: string;
   job_location: string;
   hire_date: string;
+  branch_id: string;
 }
 
 export interface CompensationDetails {
