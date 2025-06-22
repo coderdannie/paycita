@@ -40,6 +40,14 @@ const EmployeeDetails = ({
     gender?: string;
     date_of_birth?: string;
     marital_status?: string;
+    department?: {
+      id: number;
+      name: string;
+    };
+    branch?: {
+      id: number;
+      name: string;
+    };
   };
 }) => {
   const userData = useAuthSelector();
@@ -71,9 +79,14 @@ const EmployeeDetails = ({
     bank_name: userDetails?.bank_name || null,
     bank_account_number: userDetails?.bank_account_number || null,
     bank_account_name: userDetails?.bank_account_name || null,
+
     department: {
-      id: 1, // You might need to map this from your actual department data
-      name: 'Engineering', // This should come from your actual department data
+      id: userDetails?.department?.id,
+      name: userDetails?.department?.name,
+    },
+    branch: {
+      id: userDetails?.branch?.id,
+      name: userDetails?.branch?.name,
     },
   };
 
@@ -98,6 +111,7 @@ const EmployeeDetails = ({
           job_title: updatedData.job_title,
           job_level: updatedData.job_level,
           department_id: updatedData.department.id,
+          branch_id: updatedData.branch.id,
           employment_type: updatedData.employment_type,
           job_location: updatedData.job_location,
           hire_date: updatedData.hire_date,
@@ -202,6 +216,7 @@ const EmployeeDetails = ({
                 ● {userDetails?.status ?? 'N/A'}
               </span>
             </p>
+
             <p className="text-[#667085] font-normal">
               Employee Number:{userDetails?.employee_number ?? 'N/A'}
             </p>
@@ -209,6 +224,14 @@ const EmployeeDetails = ({
             <p className="flex gap-10 pt-5">
               <strong className="text-[#667085] font-normal">Job Title</strong>
               {userDetails?.job_title ?? 'N/A'}
+            </p>
+            <p className="flex gap-10">
+              <strong className="text-[#667085] font-normal">Department</strong>
+              {userDetails?.department?.name ?? 'N/A'}
+            </p>
+            <p className="flex gap-10">
+              <strong className="text-[#667085] font-normal">Branch</strong>
+              {userDetails?.branch?.name ?? 'N/A'}
             </p>
             <p className="flex gap-10">
               <strong className="text-[#667085] font-normal">Job Level</strong>

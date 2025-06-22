@@ -136,22 +136,20 @@ export const eventSchema = (notificationType: string) => {
     description: z.string().min(1, {
       message: 'Description is required',
     }),
-    date: z.string().min(1, { message: 'Date is required' }),
-    // start_time: z.string().min(1, { message: "Start Time is required" }),
-    time: z.string().min(1, { message: 'End Time is required' }),
-    meeting_link: z.string().min(1, {
-      message: 'Meeting Link is required',
-    }),
+    date: z.string().optional().nullable(),
+    time: z.string().optional().nullable(),
+    meeting_link: z.string().optional().nullable(),
     notification_type: z.string().min(1, {
       message: 'Notification Type is required',
     }),
     department_id:
       notificationType === 'department'
         ? z.string().min(1)
-        : z.string().optional(),
-
+        : z.string().optional().nullable(),
     emails:
-      notificationType === 'emails' ? z.string().min(1) : z.string().optional(),
+      notificationType === 'emails'
+        ? z.string().min(1)
+        : z.string().optional().nullable(),
   });
 };
 

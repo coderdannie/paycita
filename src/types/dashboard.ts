@@ -59,6 +59,8 @@ export interface UserBasicDetails {
   gender: 'male' | 'female' | 'other';
   date_of_birth: string;
   marital_status: string;
+  branch_id: string;
+  department_id: string;
 }
 
 export interface UpdateBasicEmployeePayload {
@@ -93,7 +95,6 @@ export interface JobDetails {
   job_location: string;
   hire_date: string;
 }
-
 
 export interface CompensationDetails {
   salary: `${number}`; // Ensures string contains only numbers

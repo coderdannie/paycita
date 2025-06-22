@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar } from 'lucide-react';
-import { useGetDepartments } from '@/src/hooks/dashboard/useDashboard';
+import {
+  useGetAllBranches,
+  useGetDepartments,
+} from '@/src/hooks/dashboard/useDashboard';
 
 interface Employee {
   id: number;
@@ -13,7 +16,11 @@ interface Employee {
   hire_date: string;
   email?: string;
   salary: string;
-  department: {
+  department?: {
+    id: number;
+    name: string;
+  };
+  branch?: {
     id: number;
     name: string;
   };
@@ -34,11 +41,16 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
   onSave,
   isUpdating,
 }) => {
+  const { allBranchesOptions } = useGetAllBranches();
+
+  console.log('id', employee.branch?.id);
+
   const [formData, setFormData] = useState({
     full_name: employee.full_name || '',
     job_title: employee.job_title || '',
     job_level: employee.job_level || '',
     department: employee.department?.name || '',
+    branch_id: employee.branch?.name,
     employment_type: employee.employment_type || '',
     email: employee.email || '',
     job_location: employee.job_location || '',
@@ -48,27 +60,9 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
   });
 
   const { departmentOptions } = useGetDepartments();
-  // Job title options - matching the structure from the employee management system
-  const jobTitleOptions = [
-    'Backend Developer',
-    'Frontend Developer',
-    'Full Stack Developer',
-    'UI/UX Designer',
-    'Product Manager',
-    'Data Analyst',
-    'DevOps Engineer',
-    'QA Engineer',
-    'Software Engineer',
-    'Senior Software Engineer',
-    'Lead Developer',
-    'Technical Lead',
-    'Engineering Manager',
-  ];
 
-  // Job level options - matching the actual data structure
   const jobLevelOptions = ['Staff', 'Mid', 'Senior', 'Executive'];
 
-  // Employment type options - matching actual data
   const employmentTypeOptions = ['Full-time', 'Part-time', 'Contract'];
 
   // Location type options - using job_location field
@@ -84,11 +78,25 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onSave) {
+      // Find the selected department
+      const selectedDepartment = departmentOptions.find(
+        (dept) => dept.label === formData.department
+      );
+
+      // Find the selected branch
+      const selectedBranch = allBranchesOptions.find(
+        (branch) => branch.label === formData.branch_id
+      );
+
       onSave({
         ...formData,
         department: {
-          id: employee.department?.id || 0,
+          id: selectedDepartment?.value || employee.department?.id || 0,
           name: formData.department,
+        },
+        branch: {
+          id: selectedBranch?.value || employee.branch?.id || 0,
+          name: selectedBranch?.label || employee.branch?.name || '',
         },
       });
     }
@@ -104,6 +112,7 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
       employment_type: employee.employment_type || '',
       email: employee.email || '',
       job_location: employee.job_location || '',
+      branch_id: employee.branch.name,
       hire_date: employee.hire_date
         ? new Date(employee.hire_date).toISOString().split('T')[0]
         : '',
@@ -121,11 +130,12 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
       employment_type: employee.employment_type || '',
       email: employee.email || '',
       job_location: employee.job_location || '',
+      branch_id: employee?.branch.name || '',
       hire_date: employee.hire_date
         ? new Date(employee.hire_date).toISOString().split('T')[0]
         : '',
     });
-  }, [employee]);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -286,6 +296,42 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
                 </div>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Branch
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.branch_id}
+                    onChange={(e) =>
+                      handleInputChange('branch_id', e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                  >
+                    <option value="">Select branch</option>
+                    {allBranchesOptions?.map((option) => (
+                      <option key={option.label} value={option.label}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
               {/* Employment Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
