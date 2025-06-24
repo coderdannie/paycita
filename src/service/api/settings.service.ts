@@ -1,4 +1,6 @@
+import { ResolveAccountNameResponse } from '@/src/types/dashboard';
 import { api, api2 } from '.';
+import { AxiosResponse } from 'axios';
 
 const getAllProfileSettings = () => {
   return api.get(`/hr/profile`);
@@ -57,6 +59,13 @@ const updateBankDetails = (data: {
   return api.put(`/hr/bank-account/${data.id}`, payload);
 };
 
+const resolveAccountName = (data: {
+  account_number: string;
+  bank_code: string;
+}): Promise<AxiosResponse<ResolveAccountNameResponse>> => {
+  return api.post('/hr/resolve-account', data);
+};
+
 const settingsService = {
   getAllProfileSettings,
   updateProfilePicture,
@@ -67,6 +76,7 @@ const settingsService = {
   addBankDetails,
   updateBankDetails,
   getBanks,
+  resolveAccountName,
 };
 
 export default settingsService;

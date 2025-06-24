@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FiX } from 'react-icons/fi';
 import { BankDetails } from '../BankAccountTab';
 import { useForm } from 'react-hook-form';
@@ -7,6 +7,7 @@ import { z } from 'zod';
 import {
   useAddBankDetails,
   useGetBanks,
+  useResolveAccountName,
 } from '@/src/hooks/settings/useSettings';
 import toast from 'react-hot-toast';
 import Select, { StylesConfig } from 'react-select';
@@ -19,6 +20,7 @@ const bankDetailsSchema = z.object({
     .min(10, 'Account number must be at least 10 digits')
     .max(10, 'Account number must be 10 digits'),
   bank_account_name: z.string().min(1, 'Account name is required'),
+  bank_code: z.string().min(1, 'Bank code is required'),
 });
 
 type BankDetailsFormValues = z.infer<typeof bankDetailsSchema>;
@@ -43,8 +45,42 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
       bank_name: currentDetails.bank_name || '',
       bank_account_number: currentDetails.bank_account_number || '',
       bank_account_name: currentDetails.bank_account_name || '',
+      bank_code: '',
     },
   });
+
+  const { mutate: mutateResolveName, isPending: isResolvingName } =
+    useResolveAccountName();
+
+  const values = form.getValues();
+  console.log('account name', values.bank_account_name);
+  useEffect(() => {
+    const accountNumber = form.watch('bank_account_number');
+    const bankCode = form.watch('bank_code');
+
+    if (bankCode && accountNumber?.length === 10) {
+      mutateResolveName(
+        { bank_code: bankCode, account_number: accountNumber },
+        {
+          onSuccess: (accountDetails) => {
+            form.setValue('bank_account_name', accountDetails.account_name, {
+              shouldValidate: true,
+            });
+          },
+          onError: (error) => {
+            const errorMessage = error.message;
+
+            toast.error(errorMessage);
+
+            // Clear account name if resolution failed
+            form.setValue('bank_account_name', '', {
+              shouldValidate: true,
+            });
+          },
+        }
+      );
+    }
+  }, [form.watch('bank_account_number'), form.watch('bank_code')]);
 
   const onSubmit = async (data: BankDetailsFormValues) => {
     addBankDetails(
@@ -106,7 +142,10 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
 
   const handleBankChange = (selectedOption: SingleValue | null) => {
     const bankValue = selectedOption?.value || '';
+    const bankCode = (selectedOption as any)?.code || ''; // TypeScript might complain, so we use 'as any'
+
     form.setValue('bank_name', bankValue, { shouldValidate: true });
+    form.setValue('bank_code', bankCode); // Add this field to your form values if needed
   };
   const { banks, isLoading } = useGetBanks();
   console.log(banks);
@@ -117,6 +156,7 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
     return banks?.map((bank) => ({
       value: bank.bank_name,
       label: bank.bank_name,
+      code: bank.bank_code,
     }));
   }, [banks]);
 
@@ -214,6 +254,7 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                   value={bankOptions?.find(
                     (option) => option.value === form.watch('bank_name')
                   )}
+                  getOptionValue={(option) => option.value}
                 />
                 {form.formState.errors.bank_name && (
                   <p className="text-red-500 text-sm">
@@ -230,6 +271,15 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                   type="text"
                   {...form.register('bank_account_number')}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  onChange={(e) => {
+                    // Only allow numbers and limit to 10 digits
+                    const value = e.target.value
+                      .replace(/\D/g, '')
+                      .slice(0, 10);
+                    form.setValue('bank_account_number', value, {
+                      shouldValidate: true,
+                    });
+                  }}
                 />
                 {form.formState.errors.bank_account_number && (
                   <p className="mt-1 text-sm text-red-600">
@@ -237,22 +287,37 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
                   </p>
                 )}
               </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Account Name
-                </label>
-                <input
-                  type="text"
-                  {...form.register('bank_account_name')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-                {form.formState.errors.bank_account_name && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.bank_account_name.message}
-                  </p>
-                )}
-              </div>
+              {isResolvingName ? (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  {values.bank_account_name && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Account Name
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          {...form.register('bank_account_name')}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                          readOnly
+                        />
+                        {isResolvingName && (
+                          <div className="absolute right-3 top-2.5">
+                            <span className="loading loading-spinner loading-xs text-primary"></span>
+                          </div>
+                        )}
+                      </div>
+                      {form.formState.errors.bank_account_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {form.formState.errors.bank_account_name.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
 
               <div className="flex justify-end gap-2">
                 <button

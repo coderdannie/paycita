@@ -10,6 +10,7 @@ import settingsService from '@/src/service/api/settings.service';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { ErrorMeta, ResolvedAccountDetails } from '@/src/types/dashboard';
 
 export const useGetAllProfileSettings = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -334,4 +335,29 @@ export const useGetBanks = () => {
     pagination: data?.data?.pagination || {},
     rawData: data, // Provide access to raw response if needed
   };
+};
+
+export const useResolveAccountName = () => {
+  return useMutation<
+    ResolvedAccountDetails, // Success data type
+    { message: string; meta?: ErrorMeta }, // Error type
+    { account_number: string; bank_code: string }
+  >({
+    mutationFn: async (data) => {
+      const response = await settingsService.resolveAccountName(data);
+      const result = response.data.data[0];
+
+      if (result.status && result.data) {
+        return result.data; // Return account details on success
+      }
+
+      // Throw structured error on failure
+      throw {
+        message: result.message,
+        meta: result.meta,
+        type: result.type,
+        code: result.code,
+      };
+    },
+  });
 };

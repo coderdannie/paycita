@@ -59,8 +59,8 @@ export interface UserBasicDetails {
   gender: 'male' | 'female' | 'other';
   date_of_birth: string;
   marital_status: string;
-  branch_id: string;
-  department_id: string;
+  branch_id?: string;
+  department_id?: string;
 }
 
 export interface UpdateBasicEmployeePayload {
@@ -91,6 +91,7 @@ export interface JobDetails {
   job_title: string;
   job_level: string;
   department_id: number;
+  branch_id: number;
   employment_type: string;
   job_location: string;
   hire_date: string;
@@ -102,3 +103,31 @@ export interface CompensationDetails {
   pension_number: string;
   pension_company: string;
 }
+
+export type ResolvedAccountDetails = {
+  account_number: string;
+  account_name: string;
+  bank_id: number;
+};
+
+export type ErrorMeta = {
+  nextStep?: string;
+  [key: string]: any;
+};
+
+type AccountResolutionResult = {
+  status: boolean;
+  message: string;
+  data?: ResolvedAccountDetails;
+  meta?: ErrorMeta;
+  type?: string;
+  code?: string;
+};
+
+export type ResolveAccountNameResponse = {
+  status: number;
+  success: boolean;
+  message: string;
+  data: AccountResolutionResult[];
+  pagination: null;
+};
