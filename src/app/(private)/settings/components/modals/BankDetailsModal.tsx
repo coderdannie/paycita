@@ -53,7 +53,7 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
     useResolveAccountName();
 
   const values = form.getValues();
-  console.log('account name', values.bank_account_name);
+
   useEffect(() => {
     const accountNumber = form.watch('bank_account_number');
     const bankCode = form.watch('bank_code');
@@ -72,7 +72,6 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
 
             toast.error(errorMessage);
 
-            // Clear account name if resolution failed
             form.setValue('bank_account_name', '', {
               shouldValidate: true,
             });
@@ -142,10 +141,10 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
 
   const handleBankChange = (selectedOption: SingleValue | null) => {
     const bankValue = selectedOption?.value || '';
-    const bankCode = (selectedOption as any)?.code || ''; // TypeScript might complain, so we use 'as any'
+    const bankCode = (selectedOption as any)?.code || '';
 
     form.setValue('bank_name', bankValue, { shouldValidate: true });
-    form.setValue('bank_code', bankCode); // Add this field to your form values if needed
+    form.setValue('bank_code', bankCode);
   };
   const { banks, isLoading } = useGetBanks();
   console.log(banks);
