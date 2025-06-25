@@ -31,6 +31,10 @@ export interface Employee {
   employee_status: string;
 }
 
+export interface LeaveOverview {
+  leave_type: string;
+  total: string;
+}
 export interface DashboardResponse {
   status: number;
   success: boolean;
@@ -49,6 +53,7 @@ export interface DashboardResponse {
       birthday_celebrant: BirthdayCelebrant[];
     };
     employee: Employee[];
+    leave_overview: LeaveOverview[];
   };
 }
 

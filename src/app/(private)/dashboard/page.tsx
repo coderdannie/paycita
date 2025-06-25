@@ -5,8 +5,9 @@ import EmployeeTable from './EmployeeTable/employeeTable';
 import EventsCard from './EventsCard/eventsCard';
 import MetricCard from './MetricCard/metricCard';
 import { useDashboard } from '@/src/context/dashboardContext';
-import { DashboardResponse } from '@/src/types/dashboard';
+import { DashboardResponse, LeaveOverview } from '@/src/types/dashboard';
 import { Skeleton } from '@/src/components/ui/skeleton';
+import { formatLabel } from '@/src/utils/helper';
 
 interface Metric {
   label: string;
@@ -14,11 +15,13 @@ interface Metric {
   color?: 'purple' | 'lightpurple' | 'gray';
 }
 type AttendanceType = DashboardResponse['data']['attendance'];
+type LeaveType = DashboardResponse['data']['leave_overview'];
 
 const Page = () => {
   const { dashboardDetails } = useDashboardSelector();
   const { isDashboardDetailsFetching } = useDashboard();
   const attendance = dashboardDetails?.attendance as AttendanceType;
+  const leaveOverview = dashboardDetails?.leave_overview as LeaveType;
 
   const attendanceMetrics: Metric[] = [
     { label: 'On Time', value: attendance?.present, color: 'purple' },
@@ -34,11 +37,22 @@ const Page = () => {
     },
   ];
 
-  const leaveMetrics: Metric[] = [
-    { label: 'Annual Leave', value: 128, color: 'purple' },
-    { label: 'Maternity Leave', value: 76, color: 'lightpurple' },
-    { label: 'Sick Leave', value: 234, color: 'gray' },
-  ];
+  const getColorForLeaveType = (
+    leaveType: string
+  ): 'purple' | 'lightpurple' | 'gray' => {
+    const colorMap: Record<string, 'purple' | 'lightpurple' | 'gray'> = {
+      'annual leave': 'purple',
+      'sick leave': 'gray',
+      'maternity leave': 'lightpurple',
+    };
+    return colorMap[leaveType.toLowerCase()] || 'purple';
+  };
+
+  const leaveMetrics: Metric[] = leaveOverview.map((item: LeaveOverview) => ({
+    label: formatLabel(item.leave_type),
+    value: parseInt(item.total, 10),
+    color: getColorForLeaveType(item.leave_type),
+  }));
 
   return (
     <div className="w-full min-h-screen bg-gray-100 flex flex-col">
@@ -53,7 +67,7 @@ const Page = () => {
         {isDashboardDetailsFetching ? (
           <Skeleton className="h-[290px]  rounded-xl" />
         ) : (
-          <MetricCard title="Leave overview" metrics={leaveMetrics} />
+          <MetricCard title="" metrics={leaveMetrics} />
         )}
       </div>
 
