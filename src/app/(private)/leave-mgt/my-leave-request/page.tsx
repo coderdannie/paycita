@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import React, { useCallback, useState } from "react";
-import LeaveRequestButton from "./LeaveRequest/leaveRequest";
-import LeaveSummary from "./LeaveSummary/leaveSummary";
-import LeaveHistory from "./LeaveHistory/leaveHistory";
-import LeaveRequestModal from "./LeaveRequestModal/leaveRequestModal";
-import LeaveDetailsModal from "./LeaveDetailsModal/leaveDetailsModal";
+import React, { useCallback, useState } from 'react';
+import LeaveRequestButton from './LeaveRequest/leaveRequest';
+import LeaveSummary from './LeaveSummary/leaveSummary';
+import LeaveHistory from './LeaveHistory/leaveHistory';
+import LeaveRequestModal from './LeaveRequestModal/leaveRequestModal';
+import LeaveDetailsModal from './LeaveDetailsModal/leaveDetailsModal';
 import {
   useCreateLeave,
   useDeleteLeaveRequest,
   useGetAllLeave,
-} from "@/src/hooks/leave/useLeave";
-import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/src/hooks/leave/useLeave';
+import { Leave } from '@/src/components/data/EmployeeMgt/Tabs/LeaveHistory';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   leaveRequestSchema,
   LeaveRequestSchemaType,
-} from "@/src/utils/validations";
-import LoadingOverlay from "@/src/components/common/LoadingOverlay";
-import { toast } from "react-hot-toast";
-import ConfirmationModal from "../../../../components/common/ConfirmationModal";
+} from '@/src/utils/validations';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import { toast } from 'react-hot-toast';
+import ConfirmationModal from '../../../../components/common/ConfirmationModal';
 
 interface LeaveTypeInfo {
   type: string;
@@ -37,39 +37,39 @@ const Page: React.FC = () => {
   const [leaveToDelete, setLeaveToDelete] = useState<Leave | null>(null);
 
   const leaveTypesInfo: Record<string, LeaveTypeInfo> = {
-    "Annual Leave": {
-      type: "Annual Leave",
+    'Annual Leave': {
+      type: 'Annual Leave',
       totalDays: 20,
       usedDays: 15,
       remainingDays: 5,
     },
-    "Sick Leave": {
-      type: "Sick Leave",
+    'Sick Leave': {
+      type: 'Sick Leave',
       totalDays: 10,
       usedDays: 3,
       remainingDays: 7,
     },
-    "Personal Leave": {
-      type: "Personal Leave",
+    'Personal Leave': {
+      type: 'Personal Leave',
       totalDays: 5,
       usedDays: 3,
       remainingDays: 2,
     },
-    "Maternity Leave": {
-      type: "Maternity Leave",
+    'Maternity Leave': {
+      type: 'Maternity Leave',
       totalDays: 90,
       usedDays: 90,
       remainingDays: 0,
     },
-    "Emergency Leave": {
-      type: "Emergency Leave",
+    'Emergency Leave': {
+      type: 'Emergency Leave',
       totalDays: 3,
       usedDays: 0,
       remainingDays: 3,
     },
   };
 
-  const { leave, isPending } = useGetAllLeave({ page: "1" });
+  const { leave, isPending } = useGetAllLeave({ page: '1' });
 
   const handleOpenLeaveRequest = () => {
     setShowLeaveRequestModal(true);
@@ -98,9 +98,9 @@ const Page: React.FC = () => {
   const form = useForm<LeaveRequestSchemaType>({
     resolver: zodResolver(leaveRequestSchema),
     defaultValues: {
-      leave_type: "",
-      start_date: "",
-      end_date: "",
+      leave_type: '',
+      start_date: '',
+      end_date: '',
     },
   });
 
@@ -111,9 +111,7 @@ const Page: React.FC = () => {
           form.reset();
           setShowLeaveRequestModal(false);
         },
-        onError: (error) => {
-          console.error("Error creating event:", error);
-        },
+        onError: (error) => {},
       });
     },
     [form, mutateCreateLeave]
@@ -128,12 +126,12 @@ const Page: React.FC = () => {
     if (leaveToDelete) {
       mutateDeleteLeaveRequest(leaveToDelete.id.toString(), {
         onSuccess: () => {
-          toast.success("Leave request deleted successfully");
+          toast.success('Leave request deleted successfully');
           setIsDeleteModalOpen(false);
           setLeaveToDelete(null);
         },
         onError: () => {
-          toast.error("Failed to delete leave request");
+          toast.error('Failed to delete leave request');
         },
       });
     }
@@ -149,9 +147,9 @@ const Page: React.FC = () => {
         <LeaveRequestButton onOpen={handleOpenLeaveRequest} />
       </div>
       <LeaveSummary
-        used={leave?.approved_leave ?? "N/A"}
-        pending={leave?.pending_leave ?? "N/A"}
-        rejected={leave?.rejected_leave ?? "N/A"}
+        used={leave?.approved_leave ?? 'N/A'}
+        pending={leave?.pending_leave ?? 'N/A'}
+        rejected={leave?.rejected_leave ?? 'N/A'}
       />
       <LeaveHistory
         leaves={leave?.leave_requests ?? []}

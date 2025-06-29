@@ -184,10 +184,7 @@ const CreateAppraisalModal: FC<CreateAppraisalModalProps> = ({
         toast.success(res.data.message || "Appraisal created successfully");
       },
       onError: (error: { response?: { data?: { message?: string } } }) => {
-        console.error(
-          "Error creating appraisal:",
-          error.response?.data?.message || "Failed to create appraisal"
-        );
+   
         toast.error(
           error.response?.data?.message || "Failed to create appraisal"
         );

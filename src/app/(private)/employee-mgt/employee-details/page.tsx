@@ -212,7 +212,7 @@ const EmployeeDetails = () => {
           };
         };
       }) => {
-        console.error('Error adding employee:', error);
+
         addToast(
           error?.response?.data?.message || 'Error adding employee',
           'error'

@@ -91,7 +91,6 @@ const DashboardProvider = ({
         }
       });
     } catch (error) {
-      console.error('Error fetching dashboard details:', error);
     } finally {
       setIsDashboardDetailsFetching(false);
     }
@@ -274,8 +273,6 @@ const DashboardProvider = ({
         'NewMessageSent',
         userId,
         (data: PusherMessage) => {
-
-          pdate the chat list for any new message
           queryClient.invalidateQueries({
             queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
           });

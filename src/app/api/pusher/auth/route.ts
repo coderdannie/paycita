@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
     const authHeader = req.headers.get('authorization');
 
     if (!authHeader?.startsWith('Bearer ')) {
-      console.error('No Bearer token found in header');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -36,10 +35,6 @@ export async function POST(req: NextRequest) {
 
       // Verify that the user is trying to access their own channel
       if (channelUserId !== decoded.id) {
-        console.error('User ID mismatch:', {
-          channelUserId,
-          decodedId: decoded.id,
-        });
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
 
@@ -53,11 +48,9 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json(auth);
     } catch (error) {
-      console.error('Token verification error:', error);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
   } catch (error) {
-    console.error('Pusher auth error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

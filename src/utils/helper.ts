@@ -254,7 +254,7 @@ export const imageToBase64 = (url) => {
       })
       .catch((error) => {
         // Handle fetch errors (network issues, CORS blockage)
-        console.error('Failed to fetch or process image:', error);
+
         reject(
           new Error(
             'Failed to fetch image. Check URL and CORS policy. ' + error
@@ -293,10 +293,7 @@ export const downloadTemplate = (
 
     return { success: true, message: 'Template downloaded successfully' };
   } catch (error) {
-    console.error('Error downloading template:', error);
-
     if (showToast && typeof window !== 'undefined') {
-      console.error('Failed to download template');
     }
 
     return {

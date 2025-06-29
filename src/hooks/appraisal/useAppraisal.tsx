@@ -3,14 +3,14 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
 import appraisalService, {
   AssessmentData,
-} from "@/src/service/api/appraisal.service";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { AxiosError, AxiosResponse } from "axios";
-import { AppraisalFormValues } from "@/src/types/appraisal";
+} from '@/src/service/api/appraisal.service';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { AxiosError, AxiosResponse } from 'axios';
+import { AppraisalFormValues } from '@/src/types/appraisal';
 
 export const useGetAppraisals = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -71,9 +71,7 @@ export const useCreateAppraisal = () => {
           message: string;
         };
       };
-    }) => {
-      console.error("Error creating appraisal:", error.response.data.message);
-    },
+    }) => {},
   });
 };
 

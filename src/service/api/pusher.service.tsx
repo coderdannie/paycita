@@ -62,7 +62,6 @@ const pusher = new Pusher(PUSHER_APP_KEY, {
           // For now, return empty auth for public channels
           callback(null, { auth: '' });
         } catch (error) {
-          console.error('Pusher authorization error:', error);
           callback(error as Error, null);
         }
       },
@@ -84,7 +83,6 @@ pusher.connection.bind('state_change', (states: PusherConnectionState) => {
 });
 
 pusher.connection.bind('error', (err: PusherError) => {
-  console.error('Pusher connection error:', err);
   safeLocalStorage.setItem(
     'pusher_last_error',
     JSON.stringify({
@@ -155,7 +153,6 @@ export const subscribeToChannel = (
 
       callback(data);
     } catch (error) {
-      console.error('Error processing Pusher message:', error);
       // Still call callback to ensure message processing continues
       callback(data);
     }
@@ -164,12 +161,7 @@ export const subscribeToChannel = (
     try {
       channel.unbind(eventName);
       pusher.unsubscribe(channelName);
-    } catch (error) {
-      console.error(
-        `Error unsubscribing from Pusher channel ${channelName}:`,
-        error
-      );
-    }
+    } catch (error) {}
   };
 };
 
@@ -195,9 +187,7 @@ export const forcePusherReconnect = () => {
     setTimeout(() => {
       pusher.connect();
     }, 1000);
-  } catch (error) {
-    console.error('Error forcing Pusher reconnection:', error);
-  }
+  } catch (error) {}
 };
 
 export const isPusherConnected = () => {
@@ -223,10 +213,6 @@ export const subscribeToChannelWithRetry = (
         callback
       );
     } catch (error) {
-      console.error(
-        `Pusher subscription attempt ${retryCount + 1} failed:`,
-        error
-      );
       retryCount++;
 
       if (retryCount < maxRetries) {
@@ -234,9 +220,6 @@ export const subscribeToChannelWithRetry = (
           attemptSubscription();
         }, 2000);
       } else {
-        console.error(
-          `Failed to subscribe to Pusher channel ${channelName} after ${maxRetries} attempts`
-        );
       }
       return null;
     }

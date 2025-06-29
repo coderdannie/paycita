@@ -52,7 +52,7 @@ const PaySlips = () => {
   const handleDownloadPdf = () => {
     const input = payslipRef.current;
     if (!input) {
-      console.error('Payslip element not found');
+
       return;
     }
 
@@ -104,7 +104,7 @@ const PaySlips = () => {
         pdf.save(filename);
       })
       .catch((err) => {
-        console.error('Error generating PDF with html2canvas:', err);
+
         alert(
           'An error occurred while generating the PDF. Please check the console for details.'
         );

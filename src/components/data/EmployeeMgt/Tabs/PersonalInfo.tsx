@@ -188,7 +188,9 @@ const PersonalInfo = ({ user }: { user: PersonalInfoProps }) => {
   };
 
   const handleGuarantor1Update = (data: GuarantorFormData) => {
-    // Handle the guarantor 1 update logic here    mutateFirstGuarantor(
+    // Handle the guarantor 1 update logic here
+
+    mutateFirstGuarantor(
       {
         userId: employeeId,
         data: {
