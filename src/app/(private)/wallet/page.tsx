@@ -11,6 +11,8 @@ import {
   useRequestFunds,
   useGetDepartmentWalletRequest,
 } from '@/src/hooks/wallet/useWallet';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -18,9 +20,8 @@ import toast from 'react-hot-toast';
 const tabs = ['Wallet Transaction', 'My Request'];
 const WalletPage = () => {
   const { wallet, isLoading } = useGetWalletHistory();
-  const { walletRequestData, isLoading: isLoadingRequestData } =
-    useGetDepartmentWalletRequest();
-
+  const { walletRequestData } = useGetDepartmentWalletRequest();
+  const queryClient = useQueryClient();
   console.log(walletRequestData);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -29,9 +30,14 @@ const WalletPage = () => {
   const { mutate: mutateRequestFund, isPending } = useRequestFunds();
 
   const handleSubmit = (data: { amount: string; reason: string }) => {
-    console.log('Submitted data:', data);
     mutateRequestFund(data, {
       onSuccess: (res) => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_WALLET_HISTORY],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_DEPARTMENT_WALLET_REQUEST],
+        });
         toast.success(res.data.message || 'Fund requested successfully!');
         setOpen(false);
       },

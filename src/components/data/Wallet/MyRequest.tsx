@@ -37,7 +37,7 @@ const TableLayer = ({
       <span
         className={`py-[5px] text-center block px-[10px] rounded-md 
             ${
-              status.toLowerCase() === 'success'
+              status.toLowerCase() === 'approved'
                 ? 'text-[#008000] bg-[#EDFCED]'
                 : status.toLowerCase() === 'pending'
                 ? 'text-[#5252FF] bg-[#EDEDFB]'
