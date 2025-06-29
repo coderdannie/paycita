@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useAuthSelector } from "@/src/Redux/selectors";
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import Image from "next/image";
-import Link from "next/link";
+import { useAuthSelector } from '@/src/Redux/selectors';
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import Image from 'next/image';
+import Link from 'next/link';
+import TableEmptyState from '../../common/TableEmptyState';
 
 const MonthlyPayrollTable = ({
   payrollByMonthData,
@@ -21,28 +22,28 @@ const MonthlyPayrollTable = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const headers = [
     {
-      label: "Pension",
+      label: 'Pension',
     },
     {
-      label: "Employee Name",
+      label: 'Employee Name',
     },
     {
-      label: "Base Salary",
+      label: 'Base Salary',
     },
     {
-      label: "PAYE",
+      label: 'PAYE',
     },
     {
-      label: "Deductions",
+      label: 'Deductions',
     },
     {
-      label: "Net Pay",
+      label: 'Net Pay',
     },
-    { label: "" },
+    { label: '' },
   ];
   return (
     <div className="mt-[20px]">
@@ -55,7 +56,7 @@ const MonthlyPayrollTable = ({
             >
               <TableCell className="py-5">
                 <div className="flex gap-6">
-                  <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{" "}
+                  <div className="border-2 border-[#E4E7EC] w-5 h-5 rounded bg-white"></div>{' '}
                   {currency}
                   {row.pension}
                 </div>
@@ -91,21 +92,17 @@ const MonthlyPayrollTable = ({
                       width={15}
                       height={15}
                     />
-                  </Link>{" "}
+                  </Link>{' '}
                 </div>
               </TableCell>
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={headers.length} className="text-center py-6">
-              <div className="flex flex-col items-center">
-                <p className="text-lg font-semibold text-gray-700">
-                  No Payroll Records yet
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
+          <TableEmptyState
+            headers={headers}
+            messageTitle="No Payroll Records"
+            desc="Payroll details will appear here once they’re available."
+          />
         )}
       </CustomTable>
     </div>

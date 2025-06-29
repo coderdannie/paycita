@@ -4,6 +4,7 @@ import { InfoIcon } from '@/src/assets/Icons';
 import CustomTable from '@/src/components/common/CustomTable';
 import { TableCell, TableRow } from '@/src/components/ui/table';
 import Image from 'next/image';
+import TableEmptyState from '@/src/components/common/TableEmptyState';
 
 interface Props {
   employees: Employee[];
@@ -89,11 +90,10 @@ export const AssignedTable = ({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={headers.length} className="text-center">
-                No assigned assets found
-              </TableCell>
-            </TableRow>
+            <TableEmptyState
+              headers={headers}
+              messageTitle="No assigned assets found"
+            />
           )}
         </CustomTable>
       </div>

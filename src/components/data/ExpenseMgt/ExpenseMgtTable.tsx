@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { formatLongCurrency } from '@/src/utils/helper';
 import { FaRegEdit } from 'react-icons/fa';
 import { Trash2 } from 'lucide-react';
+import TableEmptyState from '../../common/TableEmptyState';
 
 export interface ExpenseData {
   id: string;
@@ -111,18 +112,11 @@ const ExpenseMgtTable: React.FC<ExpenseTableProps> = ({
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={headers.length} className="text-center py-6">
-              <div className="flex flex-col items-center">
-                <p className="text-lg font-semibold text-gray-700">
-                  No Expense Records
-                </p>
-                <p className="text-sm text-gray-500">
-                  Expense Records will appear here.
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
+          <TableEmptyState
+            headers={headers}
+            messageTitle="No Expense Records"
+            desc="Expense Records will appear here."
+          />
         )}
       </CustomTable>
     </div>

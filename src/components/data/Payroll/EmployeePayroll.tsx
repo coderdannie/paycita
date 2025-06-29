@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import Image from "next/image";
-import Link from "next/link";
-import { LuArrowDownToLine } from "react-icons/lu";
-import { useGetPayRoll } from "@/src/hooks/payroll/usePayroll";
-import { useAuthSelector } from "@/src/Redux/selectors";
-import { formatDate } from "@/src/utils/helper";
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import Image from 'next/image';
+import Link from 'next/link';
+import { LuArrowDownToLine } from 'react-icons/lu';
+import { useGetPayRoll } from '@/src/hooks/payroll/usePayroll';
+import { useAuthSelector } from '@/src/Redux/selectors';
+import { formatDate } from '@/src/utils/helper';
+import TableEmptyState from '../../common/TableEmptyState';
 
 interface Header {
   label: string;
@@ -21,7 +22,7 @@ interface MyPayrollTableProps {
 const EmployeePayroll: React.FC<MyPayrollTableProps> = ({ headers }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const { payrolls, isLoading } = useGetPayRoll();
 
@@ -68,7 +69,7 @@ const EmployeePayroll: React.FC<MyPayrollTableProps> = ({ headers }) => {
                       width={15}
                       height={15}
                     />
-                  </Link>{" "}
+                  </Link>{' '}
                   <button className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded">
                     <LuArrowDownToLine />
                   </button>
@@ -77,18 +78,11 @@ const EmployeePayroll: React.FC<MyPayrollTableProps> = ({ headers }) => {
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={headers.length} className="text-center py-6">
-              <div className="flex flex-col items-center">
-                <p className="text-lg font-semibold text-gray-700">
-                  No Attendance Records
-                </p>
-                <p className="text-sm text-gray-500">
-                  Clock in and out to track your attendance
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
+          <TableEmptyState
+            headers={headers}
+            messageTitle="No Payroll Records"
+            desc="Employee Payroll details will appear here once they’re available."
+          />
         )}
       </CustomTable>
     </div>

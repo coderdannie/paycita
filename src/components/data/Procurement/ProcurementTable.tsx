@@ -7,6 +7,7 @@ import { formatLongCurrency } from '@/src/utils/helper';
 import { Dispatch, SetStateAction } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import { Trash2 } from 'lucide-react';
+import TableEmptyState from '../../common/TableEmptyState';
 
 export type ProcurementData = {
   id: string;
@@ -113,18 +114,11 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={headers.length} className="text-center py-6">
-              <div className="flex flex-col items-center">
-                <p className="text-lg font-semibold text-gray-700">
-                  No Procurement Records
-                </p>
-                <p className="text-sm text-gray-500">
-                  Procurement Records will appear here.
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
+          <TableEmptyState
+            headers={headers}
+            messageTitle="No Procurement Records"
+            desc="Procurement Records will appear here."
+          />
         )}
       </CustomTable>
     </div>

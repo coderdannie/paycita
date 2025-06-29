@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 import {
   BarChart,
   Bar,
@@ -7,12 +7,12 @@ import {
   YAxis,
   ResponsiveContainer,
   LabelList,
-} from "recharts";
+} from 'recharts';
 
 const colorMap = {
-  purple: "#692E9F",
-  lightpurple: "#D1BEE1",
-  gray: "#E5E5E5",
+  purple: '#692E9F',
+  lightpurple: '#D1BEE1',
+  gray: '#E5E5E5',
 };
 
 const MetricCard = ({
@@ -26,13 +26,13 @@ const MetricCard = ({
     value: number;
   }>;
 }) => {
-  const maxValue = Math.max(...metrics.map((m) => m.value));
+  const maxValue = Math.max(...(metrics?.map((m) => m.value) ?? []));
 
   return (
     <div className="bg-white shadow rounded-lg p-6 w-full">
       <h2 className="text-[1rem] font-semibold text-gray-800 mb-4">{title}</h2>
       <div className="space-y-4">
-        {metrics.map((metric, index) => {
+        {metrics?.map((metric, index) => {
           const data = [
             {
               name: metric.label,
@@ -58,7 +58,7 @@ const MetricCard = ({
                     <Bar
                       dataKey="value"
                       radius={[4, 4, 4, 4]}
-                      fill={colorMap[metric.color || "purple"]}
+                      fill={colorMap[metric.color || 'purple']}
                     >
                       <LabelList
                         dataKey="value"
@@ -67,8 +67,8 @@ const MetricCard = ({
                         fill="#000000"
                         style={{
                           fontWeight: 600,
-                          fontSize: "14px",
-                          fill: "#000000",
+                          fontSize: '14px',
+                          fill: '#000000',
                         }}
                       />
                     </Bar>

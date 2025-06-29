@@ -11,6 +11,7 @@ import { LeaveInfo } from '@/src/types/dashboard';
 import { useDashboard } from '@/src/context/dashboardContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import Progress from '@/src/components/common/Progress';
+import NoDataState from '@/src/components/common/NoDataState';
 
 const EventIndicator = ({
   title,
@@ -106,6 +107,24 @@ const EventsCard = () => {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {!isDashboardDetailsFetching &&
+          !todayEvents?.length &&
+          !tomorrowEvents?.length &&
+          !birthdayCelebrants?.length &&
+          !isLeaveHasValue && (
+            <NoDataState
+              icon={
+                <Image
+                  src={SpiralCalendar}
+                  alt="Calendar"
+                  width={48}
+                  height={48}
+                />
+              }
+              header="No Upcoming Events"
+              subheader="You're all caught up. No scheduled events, birthdays, or leaves for today or tomorrow."
+            />
+          )}
         {isDashboardDetailsFetching ? (
           <>
             <EventIndicator loading />
