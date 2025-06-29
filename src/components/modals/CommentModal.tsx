@@ -15,7 +15,6 @@ const formatCommentTime = (dateString: string | undefined): string => {
   try {
     return formatDistanceToNow(new Date(dateString), { addSuffix: true });
   } catch (error) {
-    console.error("Error formatting date:", dateString, error);
     return "Invalid Date";
   }
 };

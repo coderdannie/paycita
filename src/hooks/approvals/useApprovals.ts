@@ -63,7 +63,6 @@ export const useAddApprovalComment = (route: string) => {
       });
     },
     onError: (error) => {
-      console.error('Error adding approval comment:', error);
       if (error instanceof AxiosError) {
         const errorMessage =
           error.response?.data?.message || 'Failed to add comment';
@@ -153,7 +152,6 @@ export const useUpdateApproval = (route: string) => {
         );
       }
 
-      console.error('Error updating approval:', err);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message || 'Failed to update approval';
@@ -192,7 +190,6 @@ export const useResolveCommentThread = (route: string) => {
         error: AxiosError<{ message?: string }> | Error,
         threadId: string
       ) => {
-        console.error(`Error resolving comment thread ${threadId}:`, error);
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {

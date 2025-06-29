@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { FaAt } from "react-icons/fa";
+import { useState } from 'react';
+import { FaAt } from 'react-icons/fa';
 
-import SendIcon from "../../../../assets/Send.svg";
-import Image from "next/image";
-import { useComposeChat } from "@/src/hooks/chat/useChatQuery";
-import { useDashboard } from "@/src/context/dashboardContext";
+import SendIcon from '../../../../assets/Send.svg';
+import Image from 'next/image';
+import { useComposeChat } from '@/src/hooks/chat/useChatQuery';
+import { useDashboard } from '@/src/context/dashboardContext';
 
 export const ChatInput = () => {
   const { currentChat, sendMessage } = useDashboard();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const { mutate: mutateComposeMessage } = useComposeChat();
 
@@ -25,11 +25,9 @@ export const ChatInput = () => {
       mutateComposeMessage(payload, {
         onSuccess: () => {
           sendMessage(message);
-          setMessage("");
+          setMessage('');
         },
-        onError: (error) => {
-          console.log(error);
-        },
+        onError: (error) => {},
       });
     }
   };
@@ -60,7 +58,7 @@ export const ChatInput = () => {
               height={24}
               width={24}
               alt="Send"
-              style={{ filter: "brightness(0) invert(1)" }}
+              style={{ filter: 'brightness(0) invert(1)' }}
             />
           </button>
         </div>

@@ -72,7 +72,6 @@ const ProfileTab: React.FC = () => {
   };
 
   const handleSaveChanges = () => {
-    console.log("Saving profile data:", profileData);
     setIsModalOpen(false);
   };
 

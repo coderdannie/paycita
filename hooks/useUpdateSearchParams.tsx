@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type FilterValue = string | number | undefined | null;
 type Filters = Record<string, FilterValue>;
@@ -10,7 +10,7 @@ interface UpdateSearchParamsOptions {
    * - 'merge': merge with existing params (default)
    * - 'replace': replace all existing params
    */
-  strategy?: "merge" | "replace";
+  strategy?: 'merge' | 'replace';
   /**
    * Path to use instead of current path
    */
@@ -46,7 +46,7 @@ export function useUpdateSearchParams() {
         try {
           let params: URLSearchParams;
 
-          if (options.strategy === "replace") {
+          if (options.strategy === 'replace') {
             params = new URLSearchParams();
           } else {
             params = new URLSearchParams(searchParams.toString());
@@ -56,7 +56,7 @@ export function useUpdateSearchParams() {
             if (Object.prototype.hasOwnProperty.call(filters, key)) {
               const value = filters[key];
 
-              if (value === "" || value === null || value === undefined) {
+              if (value === '' || value === null || value === undefined) {
                 params.delete(key);
               } else {
                 params.set(key, String(value));
@@ -73,12 +73,10 @@ export function useUpdateSearchParams() {
           if (options.scroll === true && !options.disableScroll) {
             window.scrollTo({
               top: 0,
-              behavior: "smooth",
+              behavior: 'smooth',
             });
           }
-        } catch (error) {
-          console.error("Error updating search params:", error);
-        }
+        } catch (error) {}
       };
 
       if (options.debounce && options.debounce > 0) {

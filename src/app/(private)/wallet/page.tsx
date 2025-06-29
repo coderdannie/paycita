@@ -22,7 +22,7 @@ const WalletPage = () => {
   const { wallet, isLoading } = useGetWalletHistory();
   const { walletRequestData } = useGetDepartmentWalletRequest();
   const queryClient = useQueryClient();
-  console.log(walletRequestData);
+
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const [open, setOpen] = useState(false);
@@ -42,7 +42,7 @@ const WalletPage = () => {
         setOpen(false);
       },
       onError: (error) => {
-        console.error('Error requesting fund:', error);
+
         if (error instanceof AxiosError) {
           toast.error(
             error?.response?.data?.message || 'Something went wrong!'

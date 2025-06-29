@@ -1,11 +1,11 @@
-"use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "./authContext";
+'use client';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from './authContext';
 import {
   PusherMessage,
   subscribeToChannel,
-} from "../service/api/pusher.service";
-import { playReceivedSound, initAudio } from "../utils/audio";
+} from '../service/api/pusher.service';
+import { playReceivedSound, initAudio } from '../utils/audio';
 
 interface NotificationContextType {
   unreadCount: number;
@@ -40,11 +40,9 @@ export function NotificationProvider({
 
     const unsubscribe = subscribeToChannel(
       `chat.${user.id}`,
-      "new-message",
+      'new-message',
       user.id,
       (data: PusherMessage) => {
-        console.log("New message received:", data);
-
         // Only play sound and increment count for messages from others
         if (data.sender_id !== user.id) {
           playReceivedSound();
@@ -55,27 +53,27 @@ export function NotificationProvider({
             [data.chat_id]: (prev[data.chat_id] || 0) + 1,
           }));
 
-          incrementUnreadCount();          // Show browser notification if permission granted and API is available
+          incrementUnreadCount(); // Show browser notification if permission granted and API is available
           if (typeof window !== 'undefined' && 'Notification' in window) {
-            if (Notification.permission === "granted") {
+            if (Notification.permission === 'granted') {
               try {
-                new Notification("New Message", {
-                  body: `${data.sender_name || "Someone"}: ${data.message}`,
-                  icon: "/favicon.ico",
+                new Notification('New Message', {
+                  body: `${data.sender_name || 'Someone'}: ${data.message}`,
+                  icon: '/favicon.ico',
                   tag: data.chat_id, // Prevent multiple notifications from same chat
                 });
               } catch (error) {
-                console.warn("Failed to show notification:", error);
+                console.warn('Failed to show notification:', error);
               }
             }
           }
         }
       }
-    );    // Request notification permission on mount (safely)
+    ); // Request notification permission on mount (safely)
     if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === "default") {
+      if (Notification.permission === 'default') {
         Notification.requestPermission().catch((error) => {
-          console.warn("Failed to request notification permission:", error);
+          console.warn('Failed to request notification permission:', error);
         });
       }
     }
@@ -122,7 +120,7 @@ export function useNotification() {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     throw new Error(
-      "useNotification must be used within a NotificationProvider"
+      'useNotification must be used within a NotificationProvider'
     );
   }
   return context;

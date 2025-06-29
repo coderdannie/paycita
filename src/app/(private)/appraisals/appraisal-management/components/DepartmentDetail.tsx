@@ -21,7 +21,6 @@ const DepartmentDetail: FC = () => {
   const router = useRouter();
   const departmentId = localStorage.getItem("departmentID") || "";
 
-  console.log(pathname);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);

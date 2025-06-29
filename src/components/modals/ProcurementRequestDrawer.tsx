@@ -35,7 +35,7 @@ const ProcurementRequestDrawer = ({
   onOpenChange,
   selectedProcurement,
 }: ProcurementRequestProps) => {
-  console.log("pro", procurement);
+
   const formatCurrency = (amount: number) => {
     return `₦${amount.toLocaleString()}`;
   };

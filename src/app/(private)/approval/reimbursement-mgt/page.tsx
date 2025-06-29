@@ -99,7 +99,7 @@ const Reimbursement = () => {
   );
 
   const handleResetFilters = useCallback(() => {
-    console.log("Resetting filters...");
+   
 
     setSearchTerm("");
     updateSearchParams({

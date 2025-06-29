@@ -147,7 +147,6 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
     form.setValue('bank_code', bankCode);
   };
   const { banks, isLoading } = useGetBanks();
-  console.log(banks);
 
   const bankOptions = useMemo(() => {
     if (!banks) return [];

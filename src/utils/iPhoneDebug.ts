@@ -2,17 +2,18 @@
 export const iPhoneDebug = {
   log: (message: string, data?: unknown) => {
     if (typeof window !== 'undefined') {
-      console.log(`[iPhone Debug] ${message}`, data);
-      
       // Also try to store debug info in sessionStorage for debugging
       try {
         const debugInfo = {
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
           message,
-          data
+          data,
         };
-        sessionStorage.setItem(`debug_${Date.now()}`, JSON.stringify(debugInfo));
+        sessionStorage.setItem(
+          `debug_${Date.now()}`,
+          JSON.stringify(debugInfo)
+        );
       } catch (error) {
         console.warn('Failed to store debug info:', error);
       }
@@ -21,13 +22,18 @@ export const iPhoneDebug = {
 
   checkEnvironment: () => {
     if (typeof window === 'undefined') {
-      return { isClient: false, isIOS: false, isSafari: false, hasLocalStorage: false };
+      return {
+        isClient: false,
+        isIOS: false,
+        isSafari: false,
+        hasLocalStorage: false,
+      };
     }
 
     const userAgent = navigator.userAgent;
     const isIOS = /iPad|iPhone|iPod/.test(userAgent);
     const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-    
+
     let hasLocalStorage = false;
     try {
       const test = 'localStorage_test';
@@ -43,16 +49,15 @@ export const iPhoneDebug = {
       isIOS,
       isSafari,
       hasLocalStorage,
-      userAgent
+      userAgent,
     };
 
-    console.log('[iPhone Debug] Environment check:', env);
     return env;
   },
 
   getDebugLogs: () => {
     if (typeof window === 'undefined') return [];
-    
+
     try {
       const logs = [];
       for (let i = 0; i < sessionStorage.length; i++) {
@@ -73,7 +78,7 @@ export const iPhoneDebug = {
 
   clearDebugLogs: () => {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const keysToRemove = [];
       for (let i = 0; i < sessionStorage.length; i++) {
@@ -82,14 +87,15 @@ export const iPhoneDebug = {
           keysToRemove.push(key);
         }
       }
-      keysToRemove.forEach(key => sessionStorage.removeItem(key));
+      keysToRemove.forEach((key) => sessionStorage.removeItem(key));
     } catch (error) {
       console.warn('Failed to clear debug logs:', error);
     }
-  }
+  },
 };
 
 // Expose to window for debugging in production
 if (typeof window !== 'undefined') {
-  (window as typeof window & { iPhoneDebug: typeof iPhoneDebug }).iPhoneDebug = iPhoneDebug;
+  (window as typeof window & { iPhoneDebug: typeof iPhoneDebug }).iPhoneDebug =
+    iPhoneDebug;
 }
