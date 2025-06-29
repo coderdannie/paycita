@@ -90,8 +90,6 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
     return `₦${numAmount?.toLocaleString()}`;
   };
 
-  console.log(details);
-
   const renderStatusBadge = useCallback((status: string) => {
     const statusLower = status?.toLowerCase();
     let badgeClass = '';
@@ -136,8 +134,6 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
   };
 
   const historyData = getHistoryData();
-
-  console.log('history', historyData);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

@@ -1,36 +1,34 @@
-"use client";
+'use client';
 
-import ExpenseTable from "@/src/components/data/Approval/ExpenseTable";
-import ApprovalFilter from "@/src/components/modals/ApprovalFilter";
-import SearchInput from "@/src/components/ui/SearchInput";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { PiSlidersHorizontal } from "react-icons/pi";
-import { useGetAllApprovals } from "@/src/hooks/approvals/useApprovals";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import debounce from "lodash/debounce";
+import ExpenseTable from '@/src/components/data/Approval/ExpenseTable';
+import ApprovalFilter from '@/src/components/modals/ApprovalFilter';
+import SearchInput from '@/src/components/ui/SearchInput';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { PiSlidersHorizontal } from 'react-icons/pi';
+import { useGetAllApprovals } from '@/src/hooks/approvals/useApprovals';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import debounce from 'lodash/debounce';
 
 const ExpensePage = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
 
-  const currentPage = searchParams.get("page") || "1";
-  const currentSearch = searchParams.get("search") || "";
-  const currentStartDate = searchParams.get("start_date") || "";
-  const currentEndDate = searchParams.get("end_date") || "";
-  const currentStatus = searchParams.get("status") || "";
-  const currentExpenseType = searchParams.get("expense_type") || "";
+  const currentPage = searchParams.get('page') || '1';
+  const currentSearch = searchParams.get('search') || '';
+  const currentStartDate = searchParams.get('start_date') || '';
+  const currentEndDate = searchParams.get('end_date') || '';
+  const currentStatus = searchParams.get('status') || '';
+  const currentExpenseType = searchParams.get('expense_type') || '';
 
-  
   const [searchTerm, setSearchTerm] = useState(currentSearch);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
- 
   const debouncedUpdateSearch = useMemo(() => {
     return debounce((newSearchTerm: string) => {
-      if (newSearchTerm !== (searchParams.get("search") || "")) {
-        updateSearchParams({ search: newSearchTerm, page: "1" });
+      if (newSearchTerm !== (searchParams.get('search') || '')) {
+        updateSearchParams({ search: newSearchTerm, page: '1' });
       }
     }, 300);
   }, [updateSearchParams, searchParams]);
@@ -42,14 +40,12 @@ const ExpensePage = () => {
     };
   }, [searchTerm, debouncedUpdateSearch]);
 
- 
   useEffect(() => {
     if (currentSearch !== searchTerm) {
       setSearchTerm(currentSearch);
     }
   }, [currentSearch]);
 
- 
   const queryFilters = useMemo(() => {
     const filters: Record<string, string> = { page: currentPage };
     if (currentSearch) filters.search = currentSearch;
@@ -69,7 +65,7 @@ const ExpensePage = () => {
 
   // --- Fetch data using the hook ---
   const { approvals, isLoading, isError, isFetching, pagination } =
-    useGetAllApprovals("pending-expenses-requests", queryFilters);
+    useGetAllApprovals('pending-expenses-requests', queryFilters);
 
   const handleApplyFilters = useCallback(
     (appliedFilters: Record<string, string>) => {
@@ -79,7 +75,7 @@ const ExpensePage = () => {
           cleanFilters[key] = appliedFilters[key];
         }
       }
-      updateSearchParams({ ...cleanFilters, page: "1" });
+      updateSearchParams({ ...cleanFilters, page: '1' });
       setIsFilterModalOpen(false);
     },
     [updateSearchParams]
@@ -103,16 +99,14 @@ const ExpensePage = () => {
   );
 
   const handleResetFilters = useCallback(() => {
-    console.log("Resetting filters...");
-
-    setSearchTerm("");
+    setSearchTerm('');
     updateSearchParams({
       search: undefined,
       start_date: undefined,
       end_date: undefined,
       status: undefined,
       expense_type: undefined,
-      page: "1",
+      page: '1',
     });
     // Optionally close the modal if the reset button is inside it
     // setIsFilterModalOpen(false);

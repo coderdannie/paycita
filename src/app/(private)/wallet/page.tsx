@@ -22,7 +22,7 @@ const WalletPage = () => {
   const { wallet, isLoading } = useGetWalletHistory();
   const { walletRequestData } = useGetDepartmentWalletRequest();
   const queryClient = useQueryClient();
-  console.log(walletRequestData);
+
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const [open, setOpen] = useState(false);

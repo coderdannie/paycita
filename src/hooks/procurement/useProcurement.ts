@@ -232,7 +232,6 @@ export const useGetSingleProcurement = (id: string) => {
     queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, id],
     enabled: !!id,
     queryFn: async () => {
-      console.log("Fetching single procurement for ID:", id); // Log inside queryFn too
       const response = await procurementService.getSingleProcurement(id);
       return response;
     },

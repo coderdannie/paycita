@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import CustomTable from "../../common/CustomTable";
-import { TableCell, TableRow } from "../../ui/table";
-import TableEmptyState from "../../common/TableEmptyState";
-import { Button } from "@/components/ui/button";
-import RejectModal from "../../modals/RejectModal";
-import StatusModal from "../../modals/StatusModal";
+import { useCallback, useMemo, useState } from 'react';
+import CustomTable from '../../common/CustomTable';
+import { TableCell, TableRow } from '../../ui/table';
+import TableEmptyState from '../../common/TableEmptyState';
+import { Button } from '@/components/ui/button';
+import RejectModal from '../../modals/RejectModal';
+import StatusModal from '../../modals/StatusModal';
 import {
   useResendApprovalOtp,
   useUpdateApproval,
   useVerifyApprovalOtp,
-} from "@/src/hooks/approvals/useApprovals";
-import { AxiosError } from "axios";
-import toast from "react-hot-toast";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { useQueryClient } from "@tanstack/react-query";
-import { Spinner } from "react-activity";
-import ApprovalModal from "../../modals/VerifyOtpModal";
+} from '@/src/hooks/approvals/useApprovals';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
+import { Spinner } from 'react-activity';
+import ApprovalModal from '../../modals/VerifyOtpModal';
 
 const LeaveTable = ({
   approvals,
@@ -39,23 +39,23 @@ const LeaveTable = ({
   const queryClient = useQueryClient();
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("Approved");
-  const [approvalId, setApprovalId] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState('Approved');
+  const [approvalId, setApprovalId] = useState('');
   const [isShow, setIsShow] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(180);
 
   const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
-    useUpdateApproval("update-leave-requests");
+    useUpdateApproval('update-leave-requests');
   const headers = useMemo(
     () => [
-      { label: "Employee" },
-      { label: "Leave Type" },
-      { label: "Start Date" },
-      { label: "End Date" },
-      { label: "Status" },
+      { label: 'Employee' },
+      { label: 'Leave Type' },
+      { label: 'Start Date' },
+      { label: 'End Date' },
+      { label: 'Status' },
       // { label: "Applied Date" },
       // { label: "Action Time" },
-      { label: "Action" },
+      { label: 'Action' },
     ],
     []
   );
@@ -65,11 +65,11 @@ const LeaveTable = ({
       <span
         className={`py-[5px] block px-[10px] rounded-md 
         ${
-          status === "approved"
-            ? "text-[#008000] bg-[#EDFCED]"
-            : status === "pending"
-            ? "text-[#5252FF] bg-[#EDEDFB]"
-            : "text-red-600 bg-[#FFF5F5]"
+          status === 'approved'
+            ? 'text-[#008000] bg-[#EDFCED]'
+            : status === 'pending'
+            ? 'text-[#5252FF] bg-[#EDEDFB]'
+            : 'text-red-600 bg-[#FFF5F5]'
         }`}
       >
         {status}
@@ -88,7 +88,6 @@ const LeaveTable = ({
   };
 
   const handleStatusChange = (newStatus: string) => {
-    console.log("Changed to:", newStatus);
     const payload = {
       id: approvalId,
       data: {
@@ -105,15 +104,15 @@ const LeaveTable = ({
         }, 200);
 
         queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
         });
 
         setIsStatusModalOpen(false);
-        setApprovalId("");
+        setApprovalId('');
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         }
       },
     });
@@ -132,7 +131,7 @@ const LeaveTable = ({
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         }
       },
     });
@@ -144,7 +143,7 @@ const LeaveTable = ({
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || "Something went wrong");
+        toast.error(error?.response?.data?.message || 'Something went wrong');
       }
     },
   });
@@ -166,22 +165,22 @@ const LeaveTable = ({
       const payload = {
         id: approvalId,
         data: {
-          status: "approved",
+          status: 'approved',
         },
       };
       mutateUpdateApprovalStatus(payload, {
         onSuccess: () => {
-          toast.success("Status updated successfully");
+          toast.success('Status updated successfully');
           queryClient.refetchQueries({
-            queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
+            queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
           });
           // setIsOpen("");
-          setApprovalId("");
+          setApprovalId('');
         },
         onError: (error) => {
           if (error instanceof AxiosError) {
             toast.error(
-              error?.response?.data?.message || "Something went wrong"
+              error?.response?.data?.message || 'Something went wrong'
             );
           }
         },
@@ -193,13 +192,13 @@ const LeaveTable = ({
   const renderActionButtons = useCallback(
     (item: { status: string; approval_status_id: string }) => {
       switch (item.status.toLowerCase()) {
-        case "approved":
+        case 'approved':
           return (
             <Button onClick={() => handleOpenStatusModal(item)}>
               Change status
             </Button>
           );
-        case "pending":
+        case 'pending':
           return (
             <div className="flex gap-2">
               <Button
@@ -219,7 +218,7 @@ const LeaveTable = ({
               </button>
             </div>
           );
-        case "rejected":
+        case 'rejected':
           return (
             <button
               onClick={() => handleOpenStatusModal(item)}
@@ -237,25 +236,24 @@ const LeaveTable = ({
   );
 
   const handleReject = (comment: string) => {
-    console.log("Request rejected with comment:", comment);
     const payload = {
       id: approvalId,
       data: {
-        status: "rejected",
+        status: 'rejected',
         reason: comment,
       },
     };
     mutateUpdateApprovalStatus(payload, {
       onSuccess: () => {
-        toast.success("Status updated successfully");
+        toast.success('Status updated successfully');
         queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
         });
         setIsRejectOpen(false);
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         }
       },
     });

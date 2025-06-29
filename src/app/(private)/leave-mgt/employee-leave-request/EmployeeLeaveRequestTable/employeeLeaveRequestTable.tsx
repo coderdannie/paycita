@@ -1,15 +1,14 @@
-import React, { useState } from "react";
-import { ChevronsUpDown, Info, Trash2 } from "lucide-react";
-import { LeaveRequestType } from "../types";
-import LeaveDetailsModal from "../Modals/EmployeeLeaveDetailsModal";
-import ConfirmationModal from "../../../../../components/common/ConfirmationModal";
-import { useToast } from "../../../../../context/ToastContext";
-import Pagination from "../../Pagination/pagination";
-
+import React, { useState } from 'react';
+import { ChevronsUpDown, Info, Trash2 } from 'lucide-react';
+import { LeaveRequestType } from '../types';
+import LeaveDetailsModal from '../Modals/EmployeeLeaveDetailsModal';
+import ConfirmationModal from '../../../../../components/common/ConfirmationModal';
+import { useToast } from '../../../../../context/ToastContext';
+import Pagination from '../../Pagination/pagination';
 
 interface LeaveRequestTableProps {
   requests: LeaveRequestType[];
-  onStatusUpdate?: (id: number, newStatus: LeaveRequestType["status"]) => void;
+  onStatusUpdate?: (id: number, newStatus: LeaveRequestType['status']) => void;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -65,19 +64,19 @@ const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
 
   const handleApprove = () => {
     if (selectedRequest && onStatusUpdate) {
-      onStatusUpdate(selectedRequest.id, "Approved");
+      onStatusUpdate(selectedRequest.id, 'Approved');
       setIsApproveModalOpen(false);
       setIsDetailsModalOpen(false);
-      addToast("Leave request approved", "success");
+      addToast('Leave request approved', 'success');
     }
   };
 
   const handleReject = () => {
     if (selectedRequest && onStatusUpdate) {
-      onStatusUpdate(selectedRequest.id, "Rejected");
+      onStatusUpdate(selectedRequest.id, 'Rejected');
       setIsRejectModalOpen(false);
       setIsDetailsModalOpen(false);
-      addToast("Leave request rejected", "error");
+      addToast('Leave request rejected', 'error');
     }
   };
 
@@ -93,7 +92,6 @@ const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
 
   const handleDeleteRequest = (id: number) => {
     // Implement delete functionality
-    console.log(`Delete request ${id}`);
   };
 
   const handlePageChange = (page: number) => {
@@ -171,11 +169,11 @@ const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
                   <td className="px-3 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-lg ${
-                        request.status === "Pending"
-                          ? "border border-[#FFD384] text-[#FFA80A]"
-                          : request.status === "Approved"
-                          ? "border border-[#89D8A9]  text-[#00AA4F]"
-                          : "border border-[#F49E9E] text-[#EA3D3D]"
+                        request.status === 'Pending'
+                          ? 'border border-[#FFD384] text-[#FFA80A]'
+                          : request.status === 'Approved'
+                          ? 'border border-[#89D8A9]  text-[#00AA4F]'
+                          : 'border border-[#F49E9E] text-[#EA3D3D]'
                       }`}
                     >
                       {request.status}
@@ -229,7 +227,7 @@ const EmployeeLeaveRequestTable: React.FC<LeaveRequestTableProps> = ({
         title="Approve leave request?"
         actionLabel="Confirm"
       />
-  
+
       <ConfirmationModal
         isOpen={isRejectModalOpen}
         onCancel={() => setIsRejectModalOpen(false)}
@@ -245,10 +243,16 @@ const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   // Use UTC methods to ensure consistent formatting
   const day = date.getUTCDate();
-  const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+  const month = date.toLocaleString('en-US', {
+    month: 'short',
+    timeZone: 'UTC',
+  });
   const year = date.getUTCFullYear();
-  const weekday = date.toLocaleString('en-US', { weekday: 'short', timeZone: 'UTC' });
-  
+  const weekday = date.toLocaleString('en-US', {
+    weekday: 'short',
+    timeZone: 'UTC',
+  });
+
   return `${weekday}, ${day} ${month} ${year}`;
 };
 

@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from "react";
-import { FaLink, FaTimes } from "react-icons/fa";
+import { useState, useRef, useEffect } from 'react';
+import { FaLink, FaTimes } from 'react-icons/fa';
 
-import { SubmitHandler, UseFormReturn } from "react-hook-form";
-import { EventSchemaType } from "@/src/utils/validations";
+import { SubmitHandler, UseFormReturn } from 'react-hook-form';
+import { EventSchemaType } from '@/src/utils/validations';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/components/ui/select";
-import { useGetDepartments } from "@/src/hooks/dashboard/useDashboard";
-import { Spinner } from "react-activity";
+} from '@/src/components/ui/select';
+import { useGetDepartments } from '@/src/hooks/dashboard/useDashboard';
+import { Spinner } from 'react-activity';
 
 interface EventModalProps {
   form: UseFormReturn<EventSchemaType>;
@@ -34,13 +34,13 @@ const EventModal: React.FC<EventModalProps> = ({
   isEdit,
   isUpdating,
 }) => {
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [email, setEmail] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [email, setEmail] = useState('');
   // const [startTime, setStartTime] = useState("");
   // const [endTime, setEndTime] = useState("");
   // const [timeError, setTimeError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [departmentError, setDepartmentError] = useState("");
+  const [emailError, setEmailError] = useState('');
+  const [departmentError, setDepartmentError] = useState('');
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +54,7 @@ const EventModal: React.FC<EventModalProps> = ({
       const isSelectElement =
         target.closest('[role="listbox"]') ||
         target.closest('[role="option"]') ||
-        target.closest("[data-radix-select-trigger]");
+        target.closest('[data-radix-select-trigger]');
 
       if (
         modalRef.current &&
@@ -65,35 +65,35 @@ const EventModal: React.FC<EventModalProps> = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
 
   const handleGuestTypeChange = (value: string) => {
-    setEmail("");
-    setSelectedDepartment("");
-    setEmailError("");
-    setDepartmentError("");
+    setEmail('');
+    setSelectedDepartment('');
+    setEmailError('');
+    setDepartmentError('');
 
     handleNotificationTypeChange(value);
   };
 
   const validateEmail = (emailValue: string) => {
     if (!emailValue) {
-      setEmailError("Email is required");
+      setEmailError('Email is required');
       return false;
     }
 
     // Split by commas and filter out empty strings
     const emails = emailValue
-      .split(",")
+      .split(',')
       .map((e) => e.trim())
       .filter((e) => e);
 
     if (emails.length === 0) {
-      setEmailError("At least one email is required");
+      setEmailError('At least one email is required');
       return false;
     }
 
@@ -101,33 +101,32 @@ const EventModal: React.FC<EventModalProps> = ({
 
     for (const email of emails) {
       if (!emailRegex.test(email)) {
-        setEmailError("Please enter valid email addresses");
+        setEmailError('Please enter valid email addresses');
         return false;
       }
     }
 
-    setEmailError("");
+    setEmailError('');
     return true;
   };
 
   const validateDepartment = (deptValue: string) => {
     if (!deptValue) {
-      setDepartmentError("Department is required");
+      setDepartmentError('Department is required');
       return false;
     }
 
-    setDepartmentError("");
+    setDepartmentError('');
     return true;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form.formState.errors);
     let isValid = true;
 
-    if (guestType === "emails" && !isEdit) {
+    if (guestType === 'emails' && !isEdit) {
       isValid = validateEmail(email) && isValid;
-    } else if (guestType === "department") {
+    } else if (guestType === 'department') {
       isValid = validateDepartment(selectedDepartment) && isValid;
     }
 
@@ -141,7 +140,7 @@ const EventModal: React.FC<EventModalProps> = ({
       <div ref={modalRef} className="bg-white rounded-lg w-full max-w-md">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-semibold">
-            {isEdit ? "Edit Event" : "Create Event"}{" "}
+            {isEdit ? 'Edit Event' : 'Create Event'}{' '}
           </h2>
           <button
             onClick={onClose}
@@ -157,7 +156,7 @@ const EventModal: React.FC<EventModalProps> = ({
               Event Name
             </label>
             <input
-              {...form.register("event_name")}
+              {...form.register('event_name')}
               className="w-full p-2 border rounded-md"
               placeholder="Event Name"
             />
@@ -173,7 +172,7 @@ const EventModal: React.FC<EventModalProps> = ({
               Description
             </label>
             <textarea
-              {...form.register("description")}
+              {...form.register('description')}
               className="w-full p-2 border rounded-md h-24"
               placeholder="Description"
             />
@@ -190,7 +189,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 Date
               </label>
               <input
-                {...form.register("date")}
+                {...form.register('date')}
                 type="date"
                 className="w-full p-2 border rounded-md appearance-none"
               />
@@ -201,12 +200,12 @@ const EventModal: React.FC<EventModalProps> = ({
               )}
             </div>
             <div className="relative flex-1">
-              {" "}
+              {' '}
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Time
               </label>
               <input
-                {...form.register("time")}
+                {...form.register('time')}
                 type="time"
                 // value={startTime}
                 // onChange={(e) => setStartTime(e.target.value)}
@@ -254,7 +253,7 @@ const EventModal: React.FC<EventModalProps> = ({
             </label>
             <div className="relative">
               <input
-                {...form.register("meeting_link")}
+                {...form.register('meeting_link')}
                 type="url"
                 className="w-full p-2 border rounded-md pl-8"
                 placeholder="Link to the meeting"
@@ -289,16 +288,16 @@ const EventModal: React.FC<EventModalProps> = ({
                   </Select>
                 </div>
 
-                {guestType === "department" ? (
+                {guestType === 'department' ? (
                   <div className="flex-1">
                     <select
                       className="w-full h-full px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg appearance-none bg-transparent"
                       value={selectedDepartment}
                       onChange={(e) => {
                         const value = e.target.value;
-                        console.log(value);
+
                         setSelectedDepartment(value);
-                        form.setValue("department_id", value);
+                        form.setValue('department_id', value);
                         validateDepartment(value);
                       }}
                       disabled={isPendingDepartment}
@@ -316,35 +315,35 @@ const EventModal: React.FC<EventModalProps> = ({
                       </p>
                     )}
                   </div>
-                ) : guestType === "all" ? (
+                ) : guestType === 'all' ? (
                   <div className="flex-1 flex items-center px-3 py-1 text-[#667085] text-lg">
                     All
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col">
                     <input
-                      type={"text"}
+                      type={'text'}
                       value={email}
                       onChange={(e) => {
                         const value = e.target.value;
                         setEmail(value);
-                        if (guestType === "emails") {
+                        if (guestType === 'emails') {
                           // Store the raw comma-separated string in the form
-                          form.setValue("emails", value);
+                          form.setValue('emails', value);
                           validateEmail(value);
                         }
                       }}
                       onKeyDown={(e) => {
                         // Allow comma key in email input
-                        if (e.key === ",") {
+                        if (e.key === ',') {
                           e.stopPropagation();
                         }
                       }}
                       className="flex-1 px-3 py-1 border-0 focus:outline-none text-[#667085] text-lg"
                       placeholder={
-                        guestType === "emails"
-                          ? "email1@example.com, email2@example.com"
-                          : "Search..."
+                        guestType === 'emails'
+                          ? 'email1@example.com, email2@example.com'
+                          : 'Search...'
                       }
                     />
                     {emailError && (
@@ -353,7 +352,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   </div>
                 )}
               </div>
-              {guestType === "emails" && (
+              {guestType === 'emails' && (
                 <div className="text-xs text-gray-500 mt-1">
                   Separate multiple emails with commas
                 </div>
@@ -366,14 +365,14 @@ const EventModal: React.FC<EventModalProps> = ({
             type="submit"
             className="w-full bg-[#692E9F] hover:bg-purple-800 flex items-center justify-center gap-3 text-white py-2 rounded-md"
           >
-            {(isPending || isUpdating) && <Spinner />}{" "}
+            {(isPending || isUpdating) && <Spinner />}{' '}
             {isPending
-              ? "Creating Event..."
+              ? 'Creating Event...'
               : isUpdating
-              ? "Updating Event..."
+              ? 'Updating Event...'
               : isEdit
-              ? "Update Event"
-              : "Create Event"}
+              ? 'Update Event'
+              : 'Create Event'}
           </button>
         </form>
       </div>

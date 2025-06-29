@@ -78,8 +78,6 @@ const PersonalInfo = () => {
 
   const { countries, isPending } = useGetCountries();
 
-  console.log(countries);
-
   const handleDateChange = (
     value: Date | Date[] | [Date | null, Date | null] | null
   ) => {

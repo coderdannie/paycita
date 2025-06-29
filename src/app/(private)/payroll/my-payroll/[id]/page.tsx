@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useGetSinglePayslip } from "@/src/hooks/payroll/usePayroll";
-import { formatDate, imageToBase64, numberToWords } from "@/src/utils/helper";
-import { usePathname } from "next/navigation";
-import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
-import { useAuthSelector } from "@/src/Redux/selectors";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { useGetSinglePayslip } from '@/src/hooks/payroll/usePayroll';
+import { formatDate, imageToBase64, numberToWords } from '@/src/utils/helper';
+import { usePathname } from 'next/navigation';
+import { BsFileEarmarkArrowDownFill } from 'react-icons/bs';
+import { useAuthSelector } from '@/src/Redux/selectors';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const PaySlips = () => {
   const pathname = usePathname();
-  const id = pathname.split("/").pop();
+  const id = pathname.split('/').pop();
   const payslipRef = useRef<HTMLDivElement>(null);
 
   const [profilePicBase64, setProfilePicBase64] = useState<string | null>(null);
@@ -23,7 +23,7 @@ const PaySlips = () => {
 
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const { singlePayslipData, isLoading } = useGetSinglePayslip(id);
 
@@ -36,13 +36,11 @@ const PaySlips = () => {
     if (imageUrl && !isLoading) {
       imageToBase64(imageUrl)
         .then((base64String) => {
-          console.log("Image converted to Base64:", base64String);
           setProfilePicBase64(base64String as string);
           setImageConversionError(null);
         })
         .catch((error) => {
-          console.error("Image conversion failed:", error);
-          setImageConversionError("Could not load profile picture for PDF.");
+          setImageConversionError('Could not load profile picture for PDF.');
           setProfilePicBase64(null);
         });
     } else {
@@ -54,7 +52,7 @@ const PaySlips = () => {
   const handleDownloadPdf = () => {
     const input = payslipRef.current;
     if (!input) {
-      console.error("Payslip element not found");
+      console.error('Payslip element not found');
       return;
     }
 
@@ -71,11 +69,11 @@ const PaySlips = () => {
       // logging: true, // Enable logging for debugging html2canvas itself
     })
       .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
+        const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: "a4",
+          orientation: 'portrait',
+          unit: 'pt',
+          format: 'a4',
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -94,21 +92,21 @@ const PaySlips = () => {
         const xPos = (pdfWidth - imgWidth) / 2;
         const yPos = 20;
 
-        pdf.addImage(imgData, "PNG", xPos, yPos, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
 
         const dateStr = singlePayslipData?.date
-          ? formatDate(singlePayslipData.date).split(" ").slice(1, 3).join("_")
-          : "payslip";
+          ? formatDate(singlePayslipData.date).split(' ').slice(1, 3).join('_')
+          : 'payslip';
         const employeeName =
-          singlePayslipData?.employee_name?.replace(/\s+/g, "_") || "employee";
+          singlePayslipData?.employee_name?.replace(/\s+/g, '_') || 'employee';
         const filename = `Payslip_${employeeName}_${dateStr}.pdf`;
 
         pdf.save(filename);
       })
       .catch((err) => {
-        console.error("Error generating PDF with html2canvas:", err);
+        console.error('Error generating PDF with html2canvas:', err);
         alert(
-          "An error occurred while generating the PDF. Please check the console for details."
+          'An error occurred while generating the PDF. Please check the console for details.'
         );
       });
   };
@@ -118,8 +116,8 @@ const PaySlips = () => {
   }
 
   const netPayInWords = singlePayslipData?.net_pay
-    ? numberToWords(singlePayslipData?.net_pay.replace(/,/g, ""))
-    : "";
+    ? numberToWords(singlePayslipData?.net_pay.replace(/,/g, ''))
+    : '';
 
   const imageSrc = profilePicBase64 || singlePayslipData?.profile_picture; // Prefer Base64
 
@@ -151,11 +149,11 @@ const PaySlips = () => {
           {/* Header */}
           <div className="flex justify-between gap-4 flex-wrap px-4 md:px-8 pt-8 ">
             <p className="text-lg font-semibold">
-              Payslip of{" "}
+              Payslip of{' '}
               {formatDate(singlePayslipData?.date)
-                .split(" ")
+                .split(' ')
                 .slice(1, 3)
-                .join(" ")}
+                .join(' ')}
             </p>
             <p>Date: {formatDate(singlePayslipData?.date)}</p>
           </div>
@@ -178,7 +176,7 @@ const PaySlips = () => {
                   </p>
                   <div className="text-[#667085] pt-4">
                     <p className="text-sm">
-                      {singlePayslipData?.bank_name} <br /> Account number:{" "}
+                      {singlePayslipData?.bank_name} <br /> Account number:{' '}
                       {singlePayslipData?.bank_account_number}
                     </p>
                     <p className="text-xs">
@@ -190,7 +188,7 @@ const PaySlips = () => {
             </div>
             <div className="flex-1 text-right">
               <p className="font-semibold pb-5  md:text-lg">
-                {singlePayslipData?.employee_name}{" "}
+                {singlePayslipData?.employee_name}{' '}
               </p>
               <p className="text-sm pb-1">{singlePayslipData?.job_title} </p>
               <p className="text-sm">{singlePayslipData?.employment_type} </p>
@@ -238,7 +236,7 @@ const PaySlips = () => {
                 <p>Total Income</p>
                 <p className="text-right">
                   {currency}
-                  {singlePayslipData?.gross_income}{" "}
+                  {singlePayslipData?.gross_income}{' '}
                 </p>
               </div>
             </div>
@@ -316,7 +314,7 @@ const PaySlips = () => {
             <div>
               <p className="font-semibold">
                 {currency}
-                {singlePayslipData?.net_pay}{" "}
+                {singlePayslipData?.net_pay}{' '}
               </p>
               <p className=" text-gray-600 capitalize max-w-96">
                 ({netPayInWords})

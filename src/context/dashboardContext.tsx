@@ -223,7 +223,6 @@ const DashboardProvider = ({
   }, [currentChat?.chat_id]);
 
   const addNewChat = useCallback((user: ChatUser) => {
-    console.log(user);
     setChatList((prev) =>
       prev.some((existingUser) => existingUser.chat_id === user.chat_id)
         ? prev
@@ -275,8 +274,8 @@ const DashboardProvider = ({
         'NewMessageSent',
         userId,
         (data: PusherMessage) => {
-          console.log(data);
-          // Always update the chat list for any new message
+
+          pdate the chat list for any new message
           queryClient.invalidateQueries({
             queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, chatId],
           });

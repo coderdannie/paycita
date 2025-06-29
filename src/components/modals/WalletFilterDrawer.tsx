@@ -63,9 +63,7 @@ const WalletFilterDrawer: React.FC<WalletFilterProps> = ({
     handleSubmit,
   } = form;
 
-  const onSubmit = (data: WalletFilterSchemaType) => {
-    console.log('Filtered values:', data);
-  };
+  const onSubmit = (data: WalletFilterSchemaType) => {};
 
   return (
     <AnimatePresence>

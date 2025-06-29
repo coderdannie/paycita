@@ -199,7 +199,6 @@ const EmployeeDetails = () => {
       guarantor_2_relationship: userDetails?.guarantors[1]?.relationship,
     };
 
-    console.log(payload);
     mutateAddEmployee(payload, {
       onSuccess: (res) => {
         dispatch(resetUserDetails());

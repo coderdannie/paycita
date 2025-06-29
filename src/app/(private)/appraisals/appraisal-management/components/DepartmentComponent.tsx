@@ -22,7 +22,6 @@ const DepartmentsComponent: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log(pathname);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -33,7 +32,6 @@ const DepartmentsComponent: FC = () => {
 
   const routeId = useMemo(() => pathname.split("/").pop() || "", [pathname]);
 
-  console.log("ID", routeId);
 
   const { appraisalByDepartment, isLoading } =
     useGetAppraisalsByDepartment(routeId);
@@ -109,7 +107,7 @@ const DepartmentsComponent: FC = () => {
       const department = departments.find(
         (dept: Department) => dept.department_id === id
       );
-      console.log("Department", department);
+
       if (department) {
         let urlPath = department.department_name
           .toLowerCase()
