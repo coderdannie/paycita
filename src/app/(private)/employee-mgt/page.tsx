@@ -256,7 +256,11 @@ const EmployeeMgt = () => {
               </TableRow>
             ))
           ) : (
-            <TableEmptyState headers={headers} />
+            <TableEmptyState
+              headers={headers}
+              messageTitle="No Employees Added Yet"
+              desc="Start by adding employee information to manage their details and payroll"
+            />
           )}
         </CustomTable>
 

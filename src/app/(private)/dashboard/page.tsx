@@ -48,7 +48,7 @@ const Page = () => {
     return colorMap[leaveType.toLowerCase()] || 'purple';
   };
 
-  const leaveMetrics: Metric[] = leaveOverview.map((item: LeaveOverview) => ({
+  const leaveMetrics: Metric[] = leaveOverview?.map((item: LeaveOverview) => ({
     label: formatLabel(item.leave_type),
     value: parseInt(item.total, 10),
     color: getColorForLeaveType(item.leave_type),

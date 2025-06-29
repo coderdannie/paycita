@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Asset } from '@/src/types/assets-management';
 import { TableCell, TableRow } from '@/src/components/ui/table';
 import CustomTable from '@/src/components/common/CustomTable';
+import TableEmptyState from '@/src/components/common/TableEmptyState';
 
 interface AssetTableProps {
   assets: Asset[];
@@ -57,11 +58,7 @@ export const AssetTable = ({ assets }: AssetTableProps) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={headers.length} className="text-center">
-                No assets found
-              </TableCell>
-            </TableRow>
+            <TableEmptyState headers={headers} messageTitle="No asset found" />
           )}
         </CustomTable>
       </div>
