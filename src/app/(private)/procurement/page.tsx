@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { useCallback, useState } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
 import ProcurementTable, {
   ProcurementData,
-} from '@/src/components/data/Procurement/ProcurementTable';
-import AddProcurement from '@/src/components/modals/AddProcurementDrawer';
-import ProcurementDetailDrawer from '@/src/components/modals/ProcurementDetailsDrawer';
-import { useSearchParams } from 'next/navigation';
-import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+} from "@/src/components/data/Procurement/ProcurementTable";
+import AddProcurement from "@/src/components/modals/AddProcurementDrawer";
+import ProcurementDetailDrawer from "@/src/components/modals/ProcurementDetailsDrawer";
+import { useSearchParams } from "next/navigation";
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import {
   useDeleteProcurement,
   useGetAllProcurements,
   useGetSingleProcurement,
-} from '@/src/hooks/procurement/useProcurement';
-import CustomPagination from '@/src/components/common/pagination/Pagination';
-import LoadingOverlay from '@/src/components/common/LoadingOverlay';
-import ConfirmationModal from '@/src/components/common/ConfirmationModal';
-import toast from 'react-hot-toast';
-import CommentModal from '@/src/components/modals/CommentModal';
-import { useAddApprovalComment } from '@/src/hooks/approvals/useApprovals';
-import { useQueryClient } from '@tanstack/react-query';
-import { Comments } from '@/src/types/procurement';
-import { AxiosError } from 'axios';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+} from "@/src/hooks/procurement/useProcurement";
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import LoadingOverlay from "@/src/components/common/LoadingOverlay";
+import ConfirmationModal from "@/src/components/common/ConfirmationModal";
+import toast from "react-hot-toast";
+import CommentModal from "@/src/components/modals/CommentModal";
+import { useAddApprovalComment } from "@/src/hooks/approvals/useApprovals";
+import { useQueryClient } from "@tanstack/react-query";
+import { Comments } from "@/src/types/procurement";
+import { AxiosError } from "axios";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 
 const Procurement = () => {
   const searchParams = useSearchParams();
@@ -32,7 +32,7 @@ const Procurement = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  const [procurementId, setProcurementId] = useState('');
+  const [procurementId, setProcurementId] = useState("");
   const [procurementToDelete, setProcurementToDelete] =
     useState<ProcurementData | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -40,7 +40,7 @@ const Procurement = () => {
 
   const [openModal, setOpenModal] = useState(false);
 
-  const currentPage = searchParams.get('page') || '1';
+  const currentPage = searchParams.get("page") || "1";
 
   const {
     procurements,
@@ -50,23 +50,22 @@ const Procurement = () => {
     page: currentPage.toString(),
   });
 
-  const { procurement, isFetching: isLoadingSingle } =
-    useGetSingleProcurement(procurementId);
+  const { procurement } = useGetSingleProcurement(procurementId);
 
   const currentComments: Comments[] =
     procurement?.comment_thread?.comments || [];
   const currentThreadId = procurement?.comment_thread?.thread_id;
 
   const { mutate: mutateAddComment, isPending: isAddingComment } =
-    useAddApprovalComment('add-procurement-comment');
+    useAddApprovalComment("add-procurement-comment");
 
   const handleSend = (message: string) => {
     if (!currentThreadId) {
-      toast.error('Cannot add comment: Thread ID is missing.');
+      toast.error("Cannot add comment: Thread ID is missing.");
       return;
     }
     if (!procurementId) {
-      toast.error('Cannot add comment: Procurement ID is missing.');
+      toast.error("Cannot add comment: Procurement ID is missing.");
       return;
     }
 
@@ -77,7 +76,7 @@ const Procurement = () => {
 
     mutateAddComment(payload, {
       onSuccess: () => {
-        toast.success('Comment added successfully');
+        toast.success("Comment added successfully");
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.GET_SINGLE_PROCUREMENT, procurementId],
         });
@@ -86,9 +85,9 @@ const Procurement = () => {
       onError: (error) => {
         if (error instanceof AxiosError)
           toast.error(
-            error?.response?.data?.message || 'Failed to add comment'
+            error?.response?.data?.message || "Failed to add comment"
           );
-        else toast.error('An unexpected error occurred while adding comment.');
+        else toast.error("An unexpected error occurred while adding comment.");
       },
     });
   };
@@ -117,17 +116,17 @@ const Procurement = () => {
     if (!procurementToDelete?.id) return;
     deleteProcurement(procurementToDelete.id, {
       onSuccess: () => {
-        toast.success('Procurement deleted successfully');
+        toast.success("Procurement deleted successfully");
         setIsDeleteModalOpen(false);
         setProcurementToDelete(null);
-        queryClient.invalidateQueries({ queryKey: ['procurements'] });
+        queryClient.invalidateQueries({ queryKey: ["procurements"] });
       },
       onError: (error) => {
         if (error instanceof AxiosError)
           toast.error(
-            error?.response?.data?.message || 'Failed to delete procurement'
+            error?.response?.data?.message || "Failed to delete procurement"
           );
-        else toast.error(error?.message || 'Failed to delete procurement');
+        else toast.error(error?.message || "Failed to delete procurement");
       },
     });
   };

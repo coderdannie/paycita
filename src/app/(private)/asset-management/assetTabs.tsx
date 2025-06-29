@@ -5,7 +5,7 @@ import { AssetTable } from './assetsTable';
 import { AssignedTable } from './assignedTable';
 import { AssetDetailModal } from './assetDetailModal';
 import { Asset, Employee, AssignedAsset } from '@/src/types/assets-management';
-import { Plus, Search, Sliders } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { AssignAssetModal } from './assignAssetsModal';
 import {
   useAssignAsset,
@@ -84,7 +84,7 @@ export const AssetTabs = ({
   };
 
   const { mutate, isLoading } = useRevokeAssets({
-    onSuccess: (res: any) => {
+    onSuccess: (res: { message: string }) => {
       toast.success(res?.message);
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_ASSIGNED_ASSETS],

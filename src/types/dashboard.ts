@@ -61,7 +61,7 @@ export interface UserBasicDetails {
   full_name: string;
   email: string;
   phone_number: string;
-  gender: 'male' | 'female' | 'other';
+  gender: "male" | "female" | "other";
   date_of_birth: string;
   marital_status: string;
   branch_id?: string;
@@ -117,7 +117,7 @@ export type ResolvedAccountDetails = {
 
 export type ErrorMeta = {
   nextStep?: string;
-  [key: string]: any;
+  [key: string]: string | undefined;
 };
 
 type AccountResolutionResult = {

@@ -60,7 +60,7 @@ interface ProcurementData {
 }
 
 interface Expenses {
-  id: any;
+  id: string;
   total_price: string;
   details: ProcurementDetails[];
 }
