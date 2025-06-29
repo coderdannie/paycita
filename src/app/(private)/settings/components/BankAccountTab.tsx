@@ -23,7 +23,7 @@ const BankAccountTab: React.FC = () => {
     profile.bank_account_name;
 
   const { banks } = useGetBanks();
-  console.log(banks);
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">

@@ -130,7 +130,7 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
         },
         onError: (error) => {
           toast.error(error.message);
-          console.error("Error changing password:", error);
+
         },
       }
     );

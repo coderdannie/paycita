@@ -13,7 +13,7 @@ interface State {
 
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -22,8 +22,6 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
     // Log to external service if needed
     // You can also report to your error tracking service here
   }
@@ -36,8 +34,10 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="text-center">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Oops! Something went wrong
-              </h2>              <p className="text-gray-600 mb-6">
-                We&apos;re sorry, but something unexpected happened. Please try refreshing the page.
+              </h2>{' '}
+              <p className="text-gray-600 mb-6">
+                We&apos;re sorry, but something unexpected happened. Please try
+                refreshing the page.
               </p>
               <button
                 onClick={() => {

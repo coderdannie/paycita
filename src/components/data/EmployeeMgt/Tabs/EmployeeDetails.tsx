@@ -149,7 +149,7 @@ const EmployeeDetails = ({
 
   const handleSavePayrollTax = (updatedData: CompensationDetails) => {
     // Handle the updated payroll tax data here
-    console.log('Updated payroll tax data:', updatedData);
+
     mutate(
       {
         userId: employeeId,
@@ -189,7 +189,6 @@ const EmployeeDetails = ({
 
   const handleSaveItemsGiven = (updatedItems: string[]) => {
     // Handle the updated items data here
-    console.log('Updated items given data:', updatedItems);
     // You would typically make an API call here to update the items given data
     // and then refresh the component or update the local state
   };

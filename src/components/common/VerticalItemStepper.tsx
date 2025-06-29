@@ -291,7 +291,6 @@ const formatDate = (dateString: string | null | undefined): string => {
       year: "numeric", // Add year if needed based on image context
     });
   } catch (error) {
-    console.error("Error formatting date:", dateString, error);
     return "Invalid Date";
   }
 };

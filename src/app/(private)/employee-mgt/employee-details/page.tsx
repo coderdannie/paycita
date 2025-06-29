@@ -199,7 +199,6 @@ const EmployeeDetails = () => {
       guarantor_2_relationship: userDetails?.guarantors[1]?.relationship,
     };
 
-    console.log(payload);
     mutateAddEmployee(payload, {
       onSuccess: (res) => {
         dispatch(resetUserDetails());
@@ -213,7 +212,7 @@ const EmployeeDetails = () => {
           };
         };
       }) => {
-        console.error('Error adding employee:', error);
+
         addToast(
           error?.response?.data?.message || 'Error adding employee',
           'error'

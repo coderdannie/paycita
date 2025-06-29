@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import GeneratePayroll from "@/src/components/modals/GeneatePayroll";
-import EmployeePayroll from "@/src/components/data/Payroll/EmployeePayroll";
-import Tax from "@/src/components/data/Payroll/EmployeePayrollTabs/Tax";
-import Pension from "@/src/components/data/Payroll/EmployeePayrollTabs/Pension";
-import toast from "react-hot-toast";
-import { useUploadPayroll } from "@/src/hooks/payroll/usePayroll";
-import { downloadPayrollTemplate } from "@/src/utils/helper";
+import GeneratePayroll from '@/src/components/modals/GeneatePayroll';
+import EmployeePayroll from '@/src/components/data/Payroll/EmployeePayroll';
+import Tax from '@/src/components/data/Payroll/EmployeePayrollTabs/Tax';
+import Pension from '@/src/components/data/Payroll/EmployeePayrollTabs/Pension';
+import toast from 'react-hot-toast';
+import { useUploadPayroll } from '@/src/hooks/payroll/usePayroll';
+import { downloadPayrollTemplate } from '@/src/utils/helper';
 
-const MY_PAYROLL_TABS = ["Salary", "Tax", "Pension"];
+const MY_PAYROLL_TABS = ['Salary', 'Tax', 'Pension'];
 
 const EmployeePayRoll = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,23 +18,23 @@ const EmployeePayRoll = () => {
 
   const headers = [
     {
-      label: "Period",
+      label: 'Period',
     },
     {
-      label: "Base Salary",
+      label: 'Base Salary',
     },
     {
-      label: "Date",
+      label: 'Date',
     },
     {
-      label: "Deductions",
+      label: 'Deductions',
     },
     {
-      label: "Net Pay",
+      label: 'Net Pay',
     },
 
     {
-      label: "",
+      label: '',
     },
   ];
 
@@ -45,15 +45,15 @@ const EmployeePayRoll = () => {
     if (!file) return;
     const formData = new FormData();
 
-    formData.append("payroll", file);
+    formData.append('payroll', file);
 
     mutateUploadPayroll(formData, {
       onSuccess: () => {
-        toast.success("Payroll uploaded successfully");
+        toast.success('Payroll uploaded successfully');
         setIsOpen(false);
       },
       onError: (error) => {
-        toast.error("Error uploading payroll: " + error.message);
+        toast.error('Error uploading payroll: ' + error.message);
       },
     });
   };
@@ -62,10 +62,9 @@ const EmployeePayRoll = () => {
     const result = downloadPayrollTemplate();
 
     if (result.success) {
-      toast.success("Payroll template downloaded successfully");
+      toast.success('Payroll template downloaded successfully');
     } else {
-      console.error("Error downloading template:", result.error);
-      toast.error("Failed to download template. Please try again.");
+      toast.error('Failed to download template. Please try again.');
     }
   };
   return (
@@ -111,8 +110,8 @@ const EmployeePayRoll = () => {
             key={i}
             className={`py-3 cursor-pointer ${
               tab === dat
-                ? "text-primary border-b-[3px] border-primary"
-                : "text-[#667085] "
+                ? 'text-primary border-b-[3px] border-primary'
+                : 'text-[#667085] '
             }`}
             onClick={() => setTab(dat)}
           >
@@ -121,9 +120,9 @@ const EmployeePayRoll = () => {
         ))}
       </ul>
       <div className=" mt-9">
-        {tab === "Salary" ? (
+        {tab === 'Salary' ? (
           <EmployeePayroll headers={headers} />
-        ) : tab === "Tax" ? (
+        ) : tab === 'Tax' ? (
           <Tax />
         ) : (
           <Pension />

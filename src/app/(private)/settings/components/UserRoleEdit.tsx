@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { FiArrowLeft } from "react-icons/fi";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { FiArrowLeft } from 'react-icons/fi';
 
 interface Permission {
   view: boolean;
@@ -13,42 +13,42 @@ interface Permission {
 interface UserRole {
   id: string;
   name: string;
-  status: "Active" | "Inactive";
+  status: 'Active' | 'Inactive';
   permissions: {
     [key: string]: Permission;
   };
 }
 
 interface UserRoleEditProps {
-  roleId?: string; 
+  roleId?: string;
 }
 
 const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
   const initialRole: UserRole = roleId
     ? {
         id: roleId,
-        name: "Superadmin",
-        status: "Active",
+        name: 'Superadmin',
+        status: 'Active',
         permissions: {
           Dashboard: { view: true, edit: false, delete: false },
           Attendance: { view: true, edit: true, delete: true },
           Payroll: { view: true, edit: true, delete: true },
-          "Purchase Request": { view: true, edit: true, delete: true },
-          "Employee Management": { view: true, edit: true, delete: true },
-          "Leave Management": { view: true, edit: true, delete: true },
+          'Purchase Request': { view: true, edit: true, delete: true },
+          'Employee Management': { view: true, edit: true, delete: true },
+          'Leave Management': { view: true, edit: true, delete: true },
         },
       }
     : {
-        id: "",
-        name: "",
-        status: "Active",
+        id: '',
+        name: '',
+        status: 'Active',
         permissions: {
           Dashboard: { view: false, edit: false, delete: false },
           Attendance: { view: false, edit: false, delete: false },
           Payroll: { view: false, edit: false, delete: false },
-          "Purchase Request": { view: false, edit: false, delete: false },
-          "Employee Management": { view: false, edit: false, delete: false },
-          "Leave Management": { view: false, edit: false, delete: false },
+          'Purchase Request': { view: false, edit: false, delete: false },
+          'Employee Management': { view: false, edit: false, delete: false },
+          'Leave Management': { view: false, edit: false, delete: false },
         },
       };
 
@@ -72,11 +72,9 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
   };
 
   const handleSave = () => {
-    
-    console.log("Saving role:", role);
     window.location.href = roleId
       ? `/settings/user-role/${roleId}`
-      : "/settings/user-role";
+      : '/settings/user-role';
   };
 
   return (
@@ -85,14 +83,14 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
         <div className="text-sm text-[#692E9F] mb-4">
           <Link href="/settings" className="hover:underline">
             Settings
-          </Link>{" "}
-          /{" "}
+          </Link>{' '}
+          /{' '}
           <Link href="/settings/user-role" className="hover:underline">
             User Role
-          </Link>{" "}
+          </Link>{' '}
           {roleId && (
             <>
-              /{" "}
+              /{' '}
               <Link
                 href={`/settings/user-role/${roleId}`}
                 className="hover:underline"
@@ -106,7 +104,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
         <div className="flex items-center mb-6">
           <Link
             href={
-              roleId ? `/settings/user-role/${roleId}` : "/settings/user-role"
+              roleId ? `/settings/user-role/${roleId}` : '/settings/user-role'
             }
             className="mr-2"
           >
@@ -140,18 +138,18 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
           <div className="flex items-center">
             <div
               className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-                role.status === "Active" ? "bg-[#692E9F]" : "bg-gray-300"
+                role.status === 'Active' ? 'bg-[#692E9F]' : 'bg-gray-300'
               }`}
               onClick={() =>
                 setRole({
                   ...role,
-                  status: role.status === "Active" ? "Inactive" : "Active",
+                  status: role.status === 'Active' ? 'Inactive' : 'Active',
                 })
               }
             >
               <div
                 className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${
-                  role.status === "Active" ? "translate-x-6" : "translate-x-0"
+                  role.status === 'Active' ? 'translate-x-6' : 'translate-x-0'
                 }`}
               ></div>
             </div>
@@ -187,7 +185,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                     type="checkbox"
                     checked={perms.view}
                     onChange={(e) =>
-                      handlePermissionChange(menuName, "view", e.target.checked)
+                      handlePermissionChange(menuName, 'view', e.target.checked)
                     }
                     className="w-5 h-5 text-[#692E9F] rounded focus:ring-purple-500"
                   />
@@ -197,7 +195,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                     type="checkbox"
                     checked={perms.edit}
                     onChange={(e) =>
-                      handlePermissionChange(menuName, "edit", e.target.checked)
+                      handlePermissionChange(menuName, 'edit', e.target.checked)
                     }
                     className="w-5 h-5 text-[#692E9F] rounded focus:ring-purple-500"
                   />
@@ -209,7 +207,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
                     onChange={(e) =>
                       handlePermissionChange(
                         menuName,
-                        "delete",
+                        'delete',
                         e.target.checked
                       )
                     }
@@ -225,7 +223,7 @@ const UserRoleEdit: React.FC<UserRoleEditProps> = ({ roleId }) => {
       <div className="flex justify-end mt-6 space-x-4">
         <Link
           href={
-            roleId ? `/settings/user-role/${roleId}` : "/settings/user-role"
+            roleId ? `/settings/user-role/${roleId}` : '/settings/user-role'
           }
           className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
         >

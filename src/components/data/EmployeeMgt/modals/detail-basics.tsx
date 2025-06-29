@@ -43,8 +43,6 @@ const EditBasicInformationModal: React.FC<EditBasicInformationModalProps> = ({
 }) => {
   const { allBranchesOptions } = useGetAllBranches();
 
-  console.log('id', employee.branch?.id);
-
   const [formData, setFormData] = useState({
     full_name: employee.full_name || '',
     job_title: employee.job_title || '',

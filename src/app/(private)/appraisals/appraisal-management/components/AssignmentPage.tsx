@@ -1,9 +1,8 @@
-"use client";
-import { FC, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { IoArrowBack } from "react-icons/io5";
-import SubmitModal from "./submitModal";
-
+'use client';
+import { FC, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { IoArrowBack } from 'react-icons/io5';
+import SubmitModal from './submitModal';
 
 interface CriteriaRating {
   id: string;
@@ -16,100 +15,99 @@ interface CriteriaRating {
 const AssignmentPage: FC = () => {
   const router = useRouter();
 
-
   const [ratings, setRatings] = useState<CriteriaRating[]>([
     {
-      id: "job-knowledge",
-      name: "Job Knowledge & Expertise",
+      id: 'job-knowledge',
+      name: 'Job Knowledge & Expertise',
       description:
-        "Understanding of duties and responsibilities\nTechnical skills related to the role\nAbility to apply knowledge to work effectively",
+        'Understanding of duties and responsibilities\nTechnical skills related to the role\nAbility to apply knowledge to work effectively',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "quality-of-work",
-      name: "Quality of Work",
+      id: 'quality-of-work',
+      name: 'Quality of Work',
       description:
-        "Accuracy and thoroughness\nAttention to detail\nConsistency in output\nMeets/exceeds quality standards",
+        'Accuracy and thoroughness\nAttention to detail\nConsistency in output\nMeets/exceeds quality standards',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "productivity",
-      name: "Productivity & Efficiency",
+      id: 'productivity',
+      name: 'Productivity & Efficiency',
       description:
-        "Timeliness in completing tasks\nAbility to manage workload\nMinimizes downtime\nTime management",
+        'Timeliness in completing tasks\nAbility to manage workload\nMinimizes downtime\nTime management',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "communication",
-      name: "Communication Skills",
+      id: 'communication',
+      name: 'Communication Skills',
       description:
-        "Clear verbal and written communication\nActive listening\nTimely and appropriate feedback\nAbility to communicate with colleagues, management, and customers",
+        'Clear verbal and written communication\nActive listening\nTimely and appropriate feedback\nAbility to communicate with colleagues, management, and customers',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "customer-service",
-      name: "Customer Service (for client-facing roles)",
+      id: 'customer-service',
+      name: 'Customer Service (for client-facing roles)',
       description:
-        "Response time to inquiries or issues\nCustomer satisfaction ratings\nProfessionalism in handling complaints\nResolution of customer issues",
+        'Response time to inquiries or issues\nCustomer satisfaction ratings\nProfessionalism in handling complaints\nResolution of customer issues',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "teamwork",
-      name: "Teamwork & Collaboration",
+      id: 'teamwork',
+      name: 'Teamwork & Collaboration',
       description:
-        "Cooperates with team members\nShares information and ideas\nOffers solutions and suggestions\nTakes ownership of tasks\nWorks well across departments",
+        'Cooperates with team members\nShares information and ideas\nOffers solutions and suggestions\nTakes ownership of tasks\nWorks well across departments',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "initiative",
-      name: "Initiative & Problem-Solving",
+      id: 'initiative',
+      name: 'Initiative & Problem-Solving',
       description:
-        "Proactively identifies problems\nOffers solutions and suggestions\nTakes ownership of tasks\nWillingness to go beyond the assigned duties",
+        'Proactively identifies problems\nOffers solutions and suggestions\nTakes ownership of tasks\nWillingness to go beyond the assigned duties',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "dependability",
-      name: "Dependability & Accountability",
-      description: "Meets deadlines\nReliable and punctual",
+      id: 'dependability',
+      name: 'Dependability & Accountability',
+      description: 'Meets deadlines\nReliable and punctual',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "adaptability",
-      name: "Adaptability & Flexibility",
+      id: 'adaptability',
+      name: 'Adaptability & Flexibility',
       description:
-        "Open to change and feedback\nAdjusts quickly to new responsibilities or shifts in priorities\nLearns new skills when required",
+        'Open to change and feedback\nAdjusts quickly to new responsibilities or shifts in priorities\nLearns new skills when required',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "leadership",
-      name: "Leadership & Supervision (For team leads/supervisors)",
+      id: 'leadership',
+      name: 'Leadership & Supervision (For team leads/supervisors)',
       description:
-        "Delegates tasks appropriately\nMotivates and guides team\nConflict resolution\nProvides feedback and support",
+        'Delegates tasks appropriately\nMotivates and guides team\nConflict resolution\nProvides feedback and support',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "company-policies",
-      name: "Adherence to Company Policies",
+      id: 'company-policies',
+      name: 'Adherence to Company Policies',
       description:
-        "Follows company procedures and rules\nMaintains confidentiality\nComplies with safety and operational guidelines",
+        'Follows company procedures and rules\nMaintains confidentiality\nComplies with safety and operational guidelines',
       score: 0,
       managerScore: 0,
     },
     {
-      id: "professionalism",
-      name: "Professionalism & Attitude",
+      id: 'professionalism',
+      name: 'Professionalism & Attitude',
       description:
-        "Respectful and courteous behavior\nPositive attitude towards work\nPresentation and grooming (where applicable)\nEthical conduct",
+        'Respectful and courteous behavior\nPositive attitude towards work\nPresentation and grooming (where applicable)\nEthical conduct',
       score: 0,
       managerScore: 0,
     },
@@ -117,7 +115,7 @@ const AssignmentPage: FC = () => {
 
   const [isFormComplete, setIsFormComplete] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [, setFinalComment] = useState("");
+  const [, setFinalComment] = useState('');
 
   useEffect(() => {
     const allRated = ratings.every(
@@ -151,11 +149,7 @@ const AssignmentPage: FC = () => {
     setFinalComment(comment);
     setIsModalOpen(false);
 
-    console.log("Submitting assignment:", {
-      ratings,
-      comment,
-    });
-    router.push("/appraisals");
+    router.push('/appraisals');
   };
 
   const handleCancel = () => {
@@ -201,8 +195,8 @@ const AssignmentPage: FC = () => {
                               className={`w-5 h-5 rounded-full border flex items-center justify-center 
                                 ${
                                   criteria.score === score
-                                    ? " bg-[#692E9F]"
-                                    : "border-gray-300"
+                                    ? ' bg-[#692E9F]'
+                                    : 'border-gray-300'
                                 }`}
                               onClick={() =>
                                 handleRatingChange(criteria.id, score)
@@ -213,16 +207,16 @@ const AssignmentPage: FC = () => {
                               )}
                             </div>
                             <span className="ml-3 text-sm text-gray-700">
-                              {score} -{" "}
+                              {score} -{' '}
                               {score === 1
-                                ? "Poor"
+                                ? 'Poor'
                                 : score === 2
-                                ? "Fair"
+                                ? 'Fair'
                                 : score === 3
-                                ? "Good"
+                                ? 'Good'
                                 : score === 4
-                                ? "Very Good"
-                                : "Excellent"}
+                                ? 'Very Good'
+                                : 'Excellent'}
                             </span>
                           </label>
                         </div>
@@ -242,8 +236,8 @@ const AssignmentPage: FC = () => {
                               className={`w-5 h-5 rounded-full border flex items-center justify-center 
                                 ${
                                   criteria.managerScore === score
-                                    ? " bg-[#692E9F]"
-                                    : "border-gray-300"
+                                    ? ' bg-[#692E9F]'
+                                    : 'border-gray-300'
                                 }`}
                               onClick={() =>
                                 handleManagerRatingChange(criteria.id, score)
@@ -254,16 +248,16 @@ const AssignmentPage: FC = () => {
                               )}
                             </div>
                             <span className="ml-3 text-sm text-gray-700">
-                              {score} -{" "}
+                              {score} -{' '}
                               {score === 1
-                                ? "Poor"
+                                ? 'Poor'
                                 : score === 2
-                                ? "Fair"
+                                ? 'Fair'
                                 : score === 3
-                                ? "Good"
+                                ? 'Good'
                                 : score === 4
-                                ? "Very Good"
-                                : "Excellent"}
+                                ? 'Very Good'
+                                : 'Excellent'}
                             </span>
                           </label>
                         </div>
@@ -286,8 +280,8 @@ const AssignmentPage: FC = () => {
               onClick={handleSubmit}
               className={`px-6 py-2 rounded-md text-white ${
                 isFormComplete
-                  ? "bg-[#692E9F] hover:bg-purple-800"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ? 'bg-[#692E9F] hover:bg-purple-800'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
               disabled={!isFormComplete}
             >

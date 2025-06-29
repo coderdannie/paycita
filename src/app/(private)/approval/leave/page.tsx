@@ -98,7 +98,6 @@ const LeavePage = () => {
   );
 
   const handleResetFilters = useCallback(() => {
-    console.log("Resetting filters...");
 
     setSearchTerm("");
     updateSearchParams({

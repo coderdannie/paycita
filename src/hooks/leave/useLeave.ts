@@ -3,12 +3,12 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import leaveService from "@/src/service/api/leave.service";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import leaveService from '@/src/service/api/leave.service';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
-import { LeaveRequestSchemaType } from "@/src/utils/validations";
+import { LeaveRequestSchemaType } from '@/src/utils/validations';
 
 export const useGetAllLeave = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending } = useQuery({
@@ -47,7 +47,7 @@ export const useCreateLeave = () => {
     },
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_LEAVE, "pending-leave-requests"],
+        queryKey: [QUERY_KEYS.GET_ALL_LEAVE, 'pending-leave-requests'],
       });
     },
     onError: (error: {
@@ -56,9 +56,7 @@ export const useCreateLeave = () => {
           message: string;
         };
       };
-    }) => {
-      console.error("Error adding employee:", error.response.data);
-    },
+    }) => {},
   });
   return {
     mutateCreateLeave,
@@ -123,9 +121,7 @@ export const useUpdateEmployeeLeave = () => {
           message: string;
         };
       };
-    }) => {
-      console.error("Error adding employee:", error.response.data);
-    },
+    }) => {},
   });
   return {
     mutateUpdateEmployeeLeave,
@@ -161,9 +157,7 @@ export const useDeleteLeaveRequest = () => {
           message: string;
         };
       };
-    }) => {
-      console.error("Error adding employee:", error.response.data);
-    },
+    }) => {},
   });
   return {
     mutateDeleteLeaveRequest,

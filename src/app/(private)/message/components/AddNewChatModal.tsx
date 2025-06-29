@@ -84,7 +84,7 @@ export const AddNewChatModal = ({
             setSearchTerm("");
           },
           onError: (error) => {
-            console.log(error);
+
           },
         }
       );

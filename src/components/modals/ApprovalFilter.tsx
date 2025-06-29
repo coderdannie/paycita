@@ -1,29 +1,29 @@
-"Use client";
+'Use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useState } from "react";
-import Calendar from "react-calendar";
-import { CustomFormSelect } from "../common/CustomInput";
-import { formatDate } from "@/src/utils/helper";
+import { motion, AnimatePresence } from 'framer-motion';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useState } from 'react';
+import Calendar from 'react-calendar';
+import { CustomFormSelect } from '../common/CustomInput';
+import { formatDate } from '@/src/utils/helper';
 import {
   approvalFilterSchema,
   ApprovalFilterSchemaType,
-} from "@/src/utils/validations";
-import { IoClose } from "react-icons/io5";
-import { Form } from "@/src/components/ui/form";
-import { useForm } from "react-hook-form";
+} from '@/src/utils/validations';
+import { IoClose } from 'react-icons/io5';
+import { Form } from '@/src/components/ui/form';
+import { useForm } from 'react-hook-form';
 
 const LEAVE_TYPES = [
-  { label: "Sick leave", value: "Sick leave" },
-  { label: "Casual leave", value: "Casual leave" },
-  { label: "Annual leave", value: "Annual leave" },
+  { label: 'Sick leave', value: 'Sick leave' },
+  { label: 'Casual leave', value: 'Casual leave' },
+  { label: 'Annual leave', value: 'Annual leave' },
 ];
 
 const STATUSES = [
-  { label: "Pending", value: "Pending" },
-  { label: "Approved", value: "Approved" },
-  { label: "Rejected", value: "Rejected" },
+  { label: 'Pending', value: 'Pending' },
+  { label: 'Approved', value: 'Approved' },
+  { label: 'Rejected', value: 'Rejected' },
 ];
 
 interface ApprovalFilterProps {
@@ -47,13 +47,13 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({
   const form = useForm<ApprovalFilterSchemaType>({
     resolver: zodResolver(approvalFilterSchema),
     defaultValues: {
-      leave_type: currentFilters?.leave_type || "",
-      status: currentFilters?.status || "",
-      start_date: currentFilters?.start_date || "",
-      end_date: currentFilters?.end_date || "",
+      leave_type: currentFilters?.leave_type || '',
+      status: currentFilters?.status || '',
+      start_date: currentFilters?.start_date || '',
+      end_date: currentFilters?.end_date || '',
     },
 
-    mode: "onTouched",
+    mode: 'onTouched',
   });
 
   const {
@@ -64,33 +64,32 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({
     handleSubmit,
   } = form;
 
-  const start_date = watch("start_date");
-  const end_date = watch("end_date");
+  const start_date = watch('start_date');
+  const end_date = watch('end_date');
 
   const handleStartDateChange = (value: Date | null) => {
     if (value instanceof Date) {
-      setValue("start_date", formatDate(value), { shouldValidate: true });
+      setValue('start_date', formatDate(value), { shouldValidate: true });
       setShowStartDate(false);
     }
   };
 
   const handleEndDateChange = (value: Date | null) => {
     if (value instanceof Date) {
-      setValue("end_date", formatDate(value), { shouldValidate: true });
+      setValue('end_date', formatDate(value), { shouldValidate: true });
       setShowEndDate(false);
     }
   };
 
   const onSubmit = (data: ApprovalFilterSchemaType) => {
     onApplyFilters(data);
-    console.log("Filtered values:", data);
   };
 
   const handleReset = useCallback(() => {
-    setValue("leave_type", "");
-    setValue("status", "");
-    setValue("start_date", "");
-    setValue("end_date", "");
+    setValue('leave_type', '');
+    setValue('status', '');
+    setValue('start_date', '');
+    setValue('end_date', '');
     onClose();
     handleResetFilters();
   }, [handleResetFilters, onClose, setValue]);
@@ -104,17 +103,17 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed inset-0 bg-black z-50"
             onClick={onClose}
           />
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[350px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
@@ -175,8 +174,8 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({
                           value={start_date ? new Date(start_date) : new Date()}
                           tileClassName={({ date }) =>
                             date.getDay() === 0 || date.getDay() === 6
-                              ? "weekend"
-                              : ""
+                              ? 'weekend'
+                              : ''
                           }
                         />
                       </div>
@@ -208,8 +207,8 @@ const ApprovalFilter: React.FC<ApprovalFilterProps> = ({
                           value={end_date ? new Date(end_date) : new Date()}
                           tileClassName={({ date }) =>
                             date.getDay() === 0 || date.getDay() === 6
-                              ? "weekend"
-                              : ""
+                              ? 'weekend'
+                              : ''
                           }
                         />
                       </div>

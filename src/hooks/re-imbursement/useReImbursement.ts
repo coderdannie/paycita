@@ -103,7 +103,6 @@ export const useCreateReimbursement = () => {
         err instanceof AxiosError
           ? err.response?.data?.message || "Failed to create reimbursement"
           : err.message || "An unexpected error occurred";
-      console.error("Error creating reimbursement:", errorMessage);
     },
     onSettled: () => {
       queryClient.invalidateQueries({

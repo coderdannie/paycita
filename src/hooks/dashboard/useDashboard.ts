@@ -139,9 +139,7 @@ export const useAddEmployee = () => {
           message: string;
         };
       };
-    }) => {
-      console.error('Error adding employee:', error.response.data);
-    },
+    }) => {},
   });
   return {
     mutateAddEmployee,
@@ -302,9 +300,7 @@ export const useOffBoardEmployee = () => {
           message: string;
         };
       };
-    }) => {
-      console.error('Error offboarding employee:', error.response.data.message);
-    },
+    }) => {},
   });
 
   return {

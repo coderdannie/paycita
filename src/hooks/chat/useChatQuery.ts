@@ -3,13 +3,13 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import chatService from "@/src/service/api/chat.service";
- 
-import { AxiosError } from "axios";
+import chatService from '@/src/service/api/chat.service';
+
+import { AxiosError } from 'axios';
 // import { playSentSound } from "@/src/utils/audio";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 export const useGetAllChat = () => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -82,7 +82,7 @@ export const useInitiateChat = () => {
 
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to create chat";
+          err.response?.data?.message || 'Failed to create chat';
         throw new Error(errorMessage);
       } else {
         throw err;
@@ -111,15 +111,13 @@ export const useComposeChat = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SINGLE_CHAT, variables.chat_id],
       });
-      
+
       // Also invalidate the chat list to update last message
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_CHAT],
       });
     },
-    onError: (error) => {
-      console.error('Error sending message:', error);
-    }
+    onError: (error) => {},
   });
 };
 

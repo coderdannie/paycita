@@ -3,11 +3,11 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from "@tanstack/react-query";
-import { AxiosError } from "axios";
+} from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
-import payslipService from "@/src/service/api/payslip.service";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import payslipService from '@/src/service/api/payslip.service';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 
 export const useGetMyPayslip = (options?: { enabled?: boolean }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -217,12 +217,10 @@ export const useUploadPayroll = () => {
     onError: (err) => {
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || "Failed to upload payroll";
+          err.response?.data?.message || 'Failed to upload payroll';
 
-        console.error("Payroll upload error:", errorMessage);
         throw new Error(errorMessage);
       } else {
-        console.error("Payroll upload error:", err);
         throw err;
       }
     },

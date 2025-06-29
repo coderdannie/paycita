@@ -7,17 +7,16 @@ let notificationSound: HTMLAudioElement;
 // Initialize audio context on user interaction
 export const initAudio = () => {
   if (!sound) {
-    sound = new Audio("/sounds/sound2.mp3");
+    sound = new Audio('/sounds/sound2.mp3');
     sound.load();
   }
 
   if (!notificationSound) {
-    notificationSound = new Audio("/sounds/sound1.mp3");
+    notificationSound = new Audio('/sounds/sound1.mp3');
     notificationSound.load();
   }
 
   if (audioContext) {
-    
     return;
   }
 
@@ -29,38 +28,32 @@ export const initAudio = () => {
 
     loadSounds();
   } catch (error) {
-    console.error("Web Audio API not supported:", error);
+    console.error('Web Audio API not supported:', error);
   }
 };
 
 // Load sound files
 const loadSounds = async () => {
   if (!audioContext) {
-    console.error("Cannot load sounds: Audio context not initialized");
     return;
   }
 
   try {
-    const sentResponse = await fetch("/sounds/sound2.mp3");
+    const sentResponse = await fetch('/sounds/sound2.mp3');
 
     const sentData = await sentResponse.arrayBuffer();
     sentBuffer = await audioContext.decodeAudioData(sentData);
-  } catch (error) {
-    console.error("Error loading sounds:", error);
-  }
+  } catch (error) {}
 };
 
 const playSound = async (buffer: AudioBuffer | null) => {
   if (!audioContext) {
-    console.error("Cannot play sound: Audio context not initialized");
     return;
   }
   if (!buffer) {
-    console.error("Cannot play sound: Buffer not loaded");
     return;
   }
   if (!hasInteracted) {
-    console.error("Cannot play sound: No user interaction yet");
     return;
   }
 
@@ -69,9 +62,7 @@ const playSound = async (buffer: AudioBuffer | null) => {
     source.buffer = buffer;
     source.connect(audioContext.destination);
     source.start(0);
-  } catch (error) {
-    console.error("Error playing sound:", error);
-  }
+  } catch (error) {}
 };
 
 export const playSentSound = () => {
@@ -83,7 +74,7 @@ export const playReceivedSound = async () => {
     if (!sound) initAudio();
     await sound.play();
   } catch (error) {
-    console.warn("Error playing notification sound:", error);
+    console.warn('Error playing notification sound:', error);
   }
 };
 
@@ -92,6 +83,6 @@ export const playMessageSound = async () => {
     if (!notificationSound) initAudio();
     await notificationSound.play();
   } catch (error) {
-    console.warn("Error playing notification sound:", error);
+    console.warn('Error playing notification sound:', error);
   }
 };
