@@ -212,7 +212,6 @@ const EmployeeDetails = () => {
           };
         };
       }) => {
-
         addToast(
           error?.response?.data?.message || 'Error adding employee',
           'error'
@@ -417,7 +416,7 @@ const EmployeeDetails = () => {
               <CustomFormField
                 name="company_email"
                 control={control}
-                label="Company email"
+                label="Company email (optional)"
                 placeholder="Enter Company Email"
                 error={errors.company_email?.message}
               />
