@@ -78,7 +78,6 @@ export const userDetailsSchema = z.object({
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({
-  employeeNumber: z.string().min(1, { message: 'Employee Number is required' }),
   job_title: z.string().min(1, { message: 'Job Title is required' }),
   job_level: z.string().min(1, { message: 'Job Level is required' }),
   role: z.string().min(1, { message: 'Role is required' }),
