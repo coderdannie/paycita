@@ -66,9 +66,8 @@ const PersonalInfo = () => {
         { fullName: '', address: '', phoneNumber: '', relationship: '' },
       ],
     },
-    mode: 'onTouched',
+    mode: 'onChange',
   });
-
   const { control, formState, setValue, reset, handleSubmit } = form;
   const { errors } = formState;
 
@@ -163,7 +162,37 @@ const PersonalInfo = () => {
 
   const handleAddGuarantor = () => {
     setShowGuarantorFields(true);
+    // Reset guarantor fields to ensure clean state
+    setValue('guarantors.0.fullName', '');
+    setValue('guarantors.0.address', '');
+    setValue('guarantors.0.phoneNumber', '');
+    setValue('guarantors.0.relationship', '');
+    setValue('guarantors.1.fullName', '');
+    setValue('guarantors.1.address', '');
+    setValue('guarantors.1.phoneNumber', '');
+    setValue('guarantors.1.relationship', '');
   };
+
+  const isFormValid = useMemo(() => {
+    // Check if basic required fields are filled
+    const basicFieldsValid =
+      form.watch('full_name') &&
+      form.watch('email') &&
+      form.watch('phone_number') &&
+      form.watch('gender') &&
+      form.watch('marital_status') &&
+      form.watch('address.country') &&
+      form.watch('address.residentialAddress') &&
+      form.watch('emergencyContact.emergency_contact_name') &&
+      form.watch('emergencyContact.emergency_contact_relationship') &&
+      form.watch('emergencyContact.emergency_contact_phone') &&
+      date_of_birth;
+
+    // Check if there are any validation errors
+    const hasErrors = Object.keys(errors).length > 0;
+
+    return basicFieldsValid && !hasErrors;
+  }, [form.watch(), errors, date_of_birth]);
 
   useEffect(() => {
     if (!userDetails) return;
@@ -546,10 +575,10 @@ const PersonalInfo = () => {
               <button
                 type="submit"
                 className={`btn-primary px-[30px] ${
-                  !formState.isValid &&
+                  !isFormValid &&
                   '!bg-gray-200 !text-[#98A2B3] !cursor-not-allowed'
                 }`}
-                disabled={!formState.isValid}
+                disabled={!isFormValid}
               >
                 Next
               </button>

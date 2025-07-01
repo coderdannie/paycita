@@ -30,21 +30,51 @@ export const userDetailsSchema = z.object({
   guarantors: z
     .array(
       z.object({
-        fullName: z.string().optional().default(''),
-        address: z.string().optional().default(''),
+        fullName: z.string(),
+        address: z.string(),
         phoneNumber: z
           .string()
-          .optional()
-          .refine((val) => !val || /^\d{10,15}$/.test(val), {
+          .refine((val) => !val || val === '' || /^\d{10,15}$/.test(val), {
             message: 'Invalid phone number format',
-          })
-          .default(''),
-        relationship: z.string().optional().default(''),
+          }),
+        relationship: z.string(),
       })
     )
-    .optional()
-    .default([]),
+    .refine(
+      (guarantors) => {
+        // If no guarantors are provided, it's valid
+        if (!guarantors || guarantors.length === 0) return true;
+
+        // Check if any guarantor has any field filled
+        const hasAnyGuarantorData = guarantors.some(
+          (guarantor) =>
+            guarantor.fullName ||
+            guarantor.address ||
+            guarantor.phoneNumber ||
+            guarantor.relationship
+        );
+
+        // If no guarantor data is provided, it's valid (optional)
+        if (!hasAnyGuarantorData) return true;
+
+        // If any guarantor has data, validate that at least the first guarantor is complete
+        const firstGuarantor = guarantors[0];
+        return (
+          firstGuarantor &&
+          firstGuarantor.fullName &&
+          firstGuarantor.address &&
+          firstGuarantor.phoneNumber &&
+          firstGuarantor.relationship
+        );
+      },
+      {
+        message:
+          'If adding guarantors, please complete at least the first guarantor information',
+      }
+    )
+    .optional(),
 });
+
 export type userDetailsSchemaType = z.infer<typeof userDetailsSchema>;
 
 export const employeeDetailsSchema = z.object({

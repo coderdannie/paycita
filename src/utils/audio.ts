@@ -27,9 +27,7 @@ export const initAudio = () => {
     hasInteracted = true;
 
     loadSounds();
-  } catch (error) {
-    console.error('Web Audio API not supported:', error);
-  }
+  } catch (error) {}
 };
 
 // Load sound files
