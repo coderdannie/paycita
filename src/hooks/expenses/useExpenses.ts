@@ -286,7 +286,6 @@ export const useResolveExpensesCommentThread = () => {
         error: AxiosError<{ message?: string }> | Error,
         threadId: string
       ) => {
-        console.error(`Error resolving comment thread ${threadId}:`, error);
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
