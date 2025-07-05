@@ -24,7 +24,6 @@ import {
   SecondGuarantor,
   UpdateBasicEmployeePayload,
 } from "@/src/types/dashboard";
-import toast from "react-hot-toast";
 
 const checkIsAuthenticated = (): boolean => {
   if (typeof window !== "undefined") {
@@ -453,11 +452,34 @@ export const useGetAllBranches = () => {
 };
 
 export const useBulkEmployeeOnboarding = () => {
-  const { mutate, isPending } = useMutation({
-    mutationFn: (payload: { files: UploadedFile[] }) =>
-      dashboardService.bulkEmployeeOnboarding(payload.files),
-    mutationKey: [QUERY_KEYS.BULK_EMPLOYEE_ONBOARDING],
+  const queryClient = useQueryClient();
+  const {
+    mutate: mutateBulkEmployeeOnboarding,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await dashboardService.bulkEmployeeOnboarding(data);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+      });
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {},
   });
-
-  return { mutate, isPending };
+  return {
+    mutateBulkEmployeeOnboarding,
+    isPending,
+    isSuccess,
+    isError,
+  };
 };
