@@ -5,7 +5,7 @@ import {
   SecondGuarantor,
   UserBasicDetails,
 } from '@/src/types/dashboard';
-import { api } from '.';
+import { api, api2 } from '.';
 import { AddEmployee } from '../../utils/validations';
 import { EmergencyContact } from '@/src/Redux/features/userDetailsSlice';
 
@@ -210,6 +210,17 @@ const updateEmployeeSalaryDetails = async (
   return res.data;
 };
 
+// /hr/bulk-employee-onboarding
+
+const bulkEmployeeOnboarding = (data: FormData) => {
+  return api2.post(`/hr/bulk-employee-onboarding`, data, {
+    headers: {
+      // Let browser set Content-Type with boundary for FormData
+      'Content-Type': undefined,
+    },
+  });
+};
+
 const dashboardService = {
   getAttendance,
   addEmployee,
@@ -228,6 +239,7 @@ const dashboardService = {
   updateEmployeeWorkDetails,
   updateEmployeeSalaryDetails,
   getAllBranches,
+  bulkEmployeeOnboarding,
 };
 
 export default dashboardService;

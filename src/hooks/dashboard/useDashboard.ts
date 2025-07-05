@@ -3,19 +3,19 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
-import dashboardService from '@/src/service/api/dashboard.service';
-import { safeLocalStorage } from '@/src/utils/safeLocalStorage';
+import dashboardService from "@/src/service/api/dashboard.service";
+import { safeLocalStorage } from "@/src/utils/safeLocalStorage";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import {
   setEmployeeAttendance,
   setEmployeeAttendancePagination,
-} from '@/src/Redux/features/dashboardSlice';
-import { useEffect, useState } from 'react';
-import { AddEmployee } from '@/src/utils/validations';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+} from "@/src/Redux/features/dashboardSlice";
+import { useEffect, useState } from "react";
+import { AddEmployee } from "@/src/utils/validations";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import {
   CompensationDetails,
   EmergencyContact,
@@ -23,11 +23,12 @@ import {
   JobDetails,
   SecondGuarantor,
   UpdateBasicEmployeePayload,
-} from '@/src/types/dashboard';
+} from "@/src/types/dashboard";
+import toast from "react-hot-toast";
 
 const checkIsAuthenticated = (): boolean => {
-  if (typeof window !== 'undefined') {
-    const token = safeLocalStorage.getItem('access_token');
+  if (typeof window !== "undefined") {
+    const token = safeLocalStorage.getItem("access_token");
     return !!token;
   }
   return false;
@@ -47,11 +48,11 @@ export const useGetAttendance = (filters: {
     const handleStorageChange = () => {
       setIsAuthenticated(checkIsAuthenticated());
     };
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     setIsAuthenticated(checkIsAuthenticated());
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -139,7 +140,9 @@ export const useAddEmployee = () => {
           message: string;
         };
       };
-    }) => {},
+    }) => {
+      toast.error(error.response.data.message || "Failed to add employee");
+    },
   });
   return {
     mutateAddEmployee,
@@ -300,7 +303,9 @@ export const useOffBoardEmployee = () => {
           message: string;
         };
       };
-    }) => {},
+    }) => {
+      toast.error(error.response.data.message || "Failed to offboard employee");
+    },
   });
 
   return {
@@ -401,7 +406,7 @@ export const useUpdateEmployeeWorkDetails = (options = {}) => {
         { userId: payload.userId },
         payload.data
       ),
-    mutationKey: ['UPDATE_WORK_DETAILS'],
+    mutationKey: ["UPDATE_WORK_DETAILS"],
     ...options,
   });
 
@@ -415,7 +420,7 @@ export const useUpdateEmployeeSalaryDetails = (options = {}) => {
         { userId: payload.userId },
         payload.data
       ),
-    mutationKey: ['UPDATE_SALARY_DETAILS'],
+    mutationKey: ["UPDATE_SALARY_DETAILS"],
     ...options,
   });
 
@@ -444,5 +449,40 @@ export const useGetAllBranches = () => {
     isSuccess,
     isError,
     isPending,
+  };
+};
+
+export const useBulkEmployeeOnboarding = () => {
+  const queryClient = useQueryClient();
+  const {
+    mutate: mutateBulkEmployeeOnboarding,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await dashboardService.bulkEmployeeOnboarding(data);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+      });
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response.data.message || "Failed to add employee");
+    },
+  });
+  return {
+    mutateBulkEmployeeOnboarding,
+    isPending,
+    isSuccess,
+    isError,
   };
 };

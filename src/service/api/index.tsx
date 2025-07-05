@@ -35,9 +35,7 @@ export const api = axios.create({
 
 export const api2 = axios.create({
   baseURL,
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
+  // Don't set Content-Type for multipart/form-data - let browser set it with boundary
 });
 
 api.interceptors.request.use(
