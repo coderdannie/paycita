@@ -20,6 +20,8 @@ import TableEmptyState from '@/src/components/common/TableEmptyState';
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import { useGetAllEmployees } from '@/src/hooks/dashboard/useDashboard';
 import { jobOptions, levelOptions } from '@/src/utils/constants';
+import { AddEmployee } from '@/src/components/modals/AddEmployee';
+import { BulkEmployeeUpload } from '@/src/components/modals/BulkEmployeeUploads';
 
 const statusOptions = [
   { value: '', label: 'All Status' },
@@ -83,6 +85,13 @@ interface FilterFormValues {
   job_level: string;
 }
 
+interface UploadedFile {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+}
+
 const EmployeeMgt = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -97,6 +106,24 @@ const EmployeeMgt = () => {
 
   const [searchTerm, setSearchTerm] = useState(search);
   const [isOpen, setIsOpen] = useState(false);
+  const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+
+  const handleUploadComplete = (file: UploadedFile) => {
+    setUploadedFiles((prev) => [...prev, file]);
+    console.log('File uploaded:', file);
+  };
+
+  const handleIndividualOnboarding = () => {
+    router.push('/employee-mgt/add-personal-info');
+  };
+
+  const handleBulkOnboarding = () => {
+    setIsDialogOpen(true);
+    setIsAddEmployeeOpen(false);
+  };
 
   // Memoize filters to prevent unnecessary recalculations
   const filters = useMemo(
@@ -220,7 +247,7 @@ const EmployeeMgt = () => {
 
         <button
           className="flex items-center gap-2 bg-primary text-white h-10 px-4 rounded-md text-sm whitespace-nowrap"
-          onClick={() => router.push('/employee-mgt/add-personal-info')}
+          onClick={() => setIsAddEmployeeOpen(true)}
         >
           <span>Add Employee</span>
           <AiOutlinePlus />
@@ -374,6 +401,19 @@ const EmployeeMgt = () => {
             </div>
           </div>
         </FilterDrawer>
+        <AddEmployee
+          open={isAddEmployeeOpen}
+          onOpenChange={setIsAddEmployeeOpen}
+          onIndividualOnboarding={handleIndividualOnboarding}
+          onBulkOnboarding={handleBulkOnboarding}
+        />
+        <BulkEmployeeUpload
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onUploadComplete={handleUploadComplete}
+          maxFileSize={10}
+          acceptedFileTypes={['.csv', '.xlsx', '.xls']}
+        />
       </div>
     </div>
   );
