@@ -213,7 +213,12 @@ const updateEmployeeSalaryDetails = async (
 // /hr/bulk-employee-onboarding
 
 const bulkEmployeeOnboarding = (data: FormData) => {
-  return api2.post(`/hr/bulk-employee-onboarding`, data);
+  return api2.post(`/hr/bulk-employee-onboarding`, data, {
+    headers: {
+      // Let browser set Content-Type with boundary for FormData
+      'Content-Type': undefined,
+    },
+  });
 };
 
 const dashboardService = {

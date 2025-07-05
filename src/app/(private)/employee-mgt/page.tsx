@@ -18,12 +18,15 @@ import CustomPagination from "@/src/components/common/pagination/Pagination";
 import FilterDrawer from "@/src/components/common/FilterDrawer";
 import TableEmptyState from "@/src/components/common/TableEmptyState";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useGetAllEmployees } from "@/src/hooks/dashboard/useDashboard";
+import {
+  useBulkEmployeeOnboarding,
+  useGetAllEmployees,
+} from "@/src/hooks/dashboard/useDashboard";
 import { jobOptions, levelOptions } from "@/src/utils/constants";
 import { AddEmployee } from "@/src/components/modals/AddEmployee";
 import { BulkEmployeeUpload } from "@/src/components/modals/BulkEmployeeUploads";
-import { Button } from "@material-tailwind/react";
-import { downloadBulkEmployeeTemplate } from "@/src/utils/helper";
+
+import toast from "react-hot-toast";
 
 const statusOptions = [
   { value: "", label: "All Status" },
@@ -87,13 +90,6 @@ interface FilterFormValues {
   job_level: string;
 }
 
-interface UploadedFile {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-}
-
 const EmployeeMgt = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -111,15 +107,33 @@ const EmployeeMgt = () => {
   const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
+  const { mutateBulkEmployeeOnboarding } = useBulkEmployeeOnboarding();
 
-  
-  const { mutate, isPending } = useBulkEmployeeOnboarding();
+  const handleUploadComplete = (file: File) => {
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel",
+      "text/csv",
+    ];
 
-  const handleUploadComplete = (file: UploadedFile) => {
-    setUploadedFiles((prev) => [...prev, file]);
-    console.log("File uploaded:", file);
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Please upload a valid Excel file (.xlsx, .xls) or CSV file");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("employee_upload", file, file.name);
+
+    mutateBulkEmployeeOnboarding(formData, {
+      onSuccess: (res) => {
+        toast.success(res.data?.message || "File uploaded successfully");
+        setIsDialogOpen(false);
+      },
+      onError: (error: { response?: { data?: { message?: string } } }) => {
+        toast.error(error?.response?.data?.message || "Failed to upload file");
+      },
+    });
   };
 
   const handleIndividualOnboarding = () => {
@@ -425,7 +439,7 @@ const EmployeeMgt = () => {
           onClose={() => setIsDialogOpen(false)}
           onUploadComplete={handleUploadComplete}
           maxFileSize={10}
-          acceptedFileTypes={[".csv", ".xlsx", ".xls"]}
+          acceptedFileTypes={[".xlsx", ".xls"]} // Only Excel files for now
         />
       </div>
     </div>

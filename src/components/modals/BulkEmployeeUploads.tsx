@@ -1,46 +1,39 @@
-import React, { useState, useCallback } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Upload, Download, Trash2 } from 'lucide-react';
-
-interface UploadedFile {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-}
+import React, { useState, useCallback } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Upload, Download, Trash2 } from "lucide-react";
 
 interface BulkEmployeeUploadProps {
   isOpen: boolean;
   onClose: () => void;
-  onUploadComplete: (file: UploadedFile) => void;
+  onUploadComplete: (file: File) => void; // Changed to File instead of UploadedFile
   maxFileSize?: number; // in MB
   acceptedFileTypes?: string[];
 }
 
 const fieldMap: { [key: string]: string } = {
-  'Full name': 'Name',
-  Email: 'Email',
-  'Phone number': 'Number',
-  'Birth date': 'D.O.B',
-  Gender: 'Gender',
-  'Marital status': 'Marital status',
-  Country: 'Country',
-  'Resident address': 'Address',
-  Emergency: 'Country',
-  'Job Title': 'Job',
-  'Employment Type': 'Employment',
-  Department: 'Dept',
-  'Company Email': 'Company Email',
-  Role: 'Role',
-  'Location Type': 'Location',
-  'Hire Date': 'Hire Date',
-  'Basic Salary': 'Salary',
-  'Tax Status': 'Tax Status',
-  'Tax Method': 'Tax Method',
-  'Tax Number': 'Tax Number',
-  'Item Given': 'Item',
-  'Offer Letter': 'Offer Letter',
+  "Full name": "Name",
+  Email: "Email",
+  "Phone number": "Number",
+  "Birth date": "D.O.B",
+  Gender: "Gender",
+  "Marital status": "Marital status",
+  Country: "Country",
+  "Resident address": "Address",
+  Emergency: "Country",
+  "Job Title": "Job",
+  "Employment Type": "Employment",
+  Department: "Dept",
+  "Company Email": "Company Email",
+  Role: "Role",
+  "Location Type": "Location",
+  "Hire Date": "Hire Date",
+  "Basic Salary": "Salary",
+  "Tax Status": "Tax Status",
+  "Tax Method": "Tax Method",
+  "Tax Number": "Tax Number",
+  "Item Given": "Item",
+  "Offer Letter": "Offer Letter",
 };
 
 export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
@@ -48,33 +41,36 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
   onClose,
   onUploadComplete,
   maxFileSize = 10,
-  acceptedFileTypes = ['.csv', '.xlsx', '.xls'],
+  acceptedFileTypes = [".csv", ".xlsx", ".xls"],
 }) => {
-  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null); // Changed to File
   const [isDragOver, setIsDragOver] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [showFieldMapping, setShowFieldMapping] = useState(false);
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const validateFile = (file: File): string | null => {
-    if (file.size > maxFileSize * 1024 * 1024) {
-      return `File size must be less than ${maxFileSize}MB`;
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (file.size > maxFileSize * 1024 * 1024) {
+        return `File size must be less than ${maxFileSize}MB`;
+      }
 
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!acceptedFileTypes.includes(fileExtension)) {
-      return `Only ${acceptedFileTypes.join(', ')} files are allowed`;
-    }
+      const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
+      if (!acceptedFileTypes.includes(fileExtension)) {
+        return `Only ${acceptedFileTypes.join(", ")} files are allowed`;
+      }
 
-    return null;
-  };
+      return null;
+    },
+    [maxFileSize, acceptedFileTypes]
+  );
 
   const handleFileSelect = useCallback(
     (file: File) => {
@@ -84,16 +80,10 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
         return;
       }
 
-      setError('');
-      const fileData: UploadedFile = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified,
-      };
-      setUploadedFile(fileData);
+      setError("");
+      setUploadedFile(file); // Store the actual File object
     },
-    [maxFileSize, acceptedFileTypes]
+    [validateFile]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -131,36 +121,35 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
 
   const handleRemoveFile = useCallback(() => {
     setUploadedFile(null);
-    setError('');
+    setError("");
   }, []);
 
   const handleCompleteUpload = useCallback(() => {
     if (uploadedFile) {
       onUploadComplete(uploadedFile);
       setUploadedFile(null);
-      setError('');
-      onClose();
+      setError("");
     }
-  }, [uploadedFile, onUploadComplete, onClose]);
+  }, [uploadedFile, onUploadComplete]);
 
   const handleDownloadTemplate = useCallback(() => {
     // Create CSV header row from fieldMap
-    const headers = Object.keys(fieldMap).join(',');
+    const headers = Object.keys(fieldMap).join(",");
     const sampleData = Object.values(fieldMap)
       .map((value) => {
-        if (value === 'D.O.B') return '1990-01-01';
-        if (value === 'Hire Date') return '2024-01-01';
-        if (value === 'Salary') return '50000';
-        return `sample_${value.toLowerCase().replace(' ', '_')}`;
+        if (value === "D.O.B") return "1990-01-01";
+        if (value === "Hire Date") return "2024-01-01";
+        if (value === "Salary") return "50000";
+        return `sample_${value.toLowerCase().replace(" ", "_")}`;
       })
-      .join(',');
+      .join(",");
 
     const csvContent = `${headers}\n${sampleData}`;
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'employee_bulk_upload_template.csv';
+    a.download = "employee_bulk_upload_template.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -185,8 +174,8 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               isDragOver
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -195,13 +184,13 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
             <Upload className="mx-auto h-8 w-8 text-gray-400 mb-4" />
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
-                Drop file here or{' '}
+                Drop file here or{" "}
                 <label className="text-primary hover:text-blue-800 cursor-pointer underline">
                   Click to upload
                   <input
                     type="file"
                     className="hidden"
-                    accept={acceptedFileTypes.join(',')}
+                    accept={acceptedFileTypes.join(",")}
                     onChange={handleFileInputChange}
                   />
                 </label>
@@ -286,7 +275,7 @@ export const BulkEmployeeUpload: React.FC<BulkEmployeeUploadProps> = ({
                 onClick={toggleFieldMapping}
                 className="text-primary"
               >
-                {showFieldMapping ? 'Hide Field Info' : 'Show Required Fields'}
+                {showFieldMapping ? "Hide Field Info" : "Show Required Fields"}
               </Button>
             </div>
             <Button

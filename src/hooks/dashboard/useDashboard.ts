@@ -24,6 +24,7 @@ import {
   SecondGuarantor,
   UpdateBasicEmployeePayload,
 } from "@/src/types/dashboard";
+import toast from "react-hot-toast";
 
 const checkIsAuthenticated = (): boolean => {
   if (typeof window !== "undefined") {
@@ -474,7 +475,9 @@ export const useBulkEmployeeOnboarding = () => {
           message: string;
         };
       };
-    }) => {},
+    }) => {
+      toast.error(error.response.data.message || "Failed to add employee");
+    },
   });
   return {
     mutateBulkEmployeeOnboarding,
