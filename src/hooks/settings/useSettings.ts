@@ -293,7 +293,6 @@ export const useAddBankDetails = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ALL_PROFILE],
       });
-      toast.success('Bank details added successfully');
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
