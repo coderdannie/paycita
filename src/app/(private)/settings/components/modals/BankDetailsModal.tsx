@@ -87,6 +87,7 @@ const BankDetailsModal: React.FC<BankDetailsModalProps> = ({
         bank_name: data.bank_name,
         bank_account_number: data.bank_account_number,
         account_name: data.bank_account_name,
+        bank_code: data.bank_code,
       },
       {
         onSuccess: () => {
