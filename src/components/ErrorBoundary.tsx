@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ReactNode } from "react";
 
 interface Props {
   children?: ReactNode;
@@ -21,11 +21,6 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log to external service if needed
-    // You can also report to your error tracking service here
-  }
-
   public render() {
     if (this.state.hasError) {
       return (
@@ -34,7 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="text-center">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Oops! Something went wrong
-              </h2>{' '}
+              </h2>{" "}
               <p className="text-gray-600 mb-6">
                 We&apos;re sorry, but something unexpected happened. Please try
                 refreshing the page.
@@ -48,7 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
               >
                 Refresh Page
               </button>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="mt-4 text-left">
                   <summary className="cursor-pointer text-sm text-gray-500">
                     Error Details (Development Only)

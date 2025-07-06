@@ -427,8 +427,8 @@ const EmployeeDetails = () => {
               <CustomFormField
                 name="salary"
                 control={control}
-                label="Basic Salary"
-                placeholder="Enter basic salary"
+                label="Monthly Gross Salary"
+                placeholder="Enter Monthly Gross Salary"
                 error={errors.salary?.message}
               />
 
