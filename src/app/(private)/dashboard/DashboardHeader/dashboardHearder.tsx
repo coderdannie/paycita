@@ -63,12 +63,12 @@ const DashboardHeader = () => {
     currentDateTime,
   } = useDashboard();
 
+  console.log(currentDateTime);
+
   const { user } = useAuthSelector();
 
   const isClockedIn = attendance?.is_clocked_in;
   const isLoading = isClockingIn || isClockingOut;
-
-   
 
   const handleToggle = () => {
     if (isLoading) return;

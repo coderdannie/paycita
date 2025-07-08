@@ -16,9 +16,10 @@ export const formatDate = (
   return `${day} ${month} ${year}`;
 };
 
-export const updateDateTime = (timeZone: string = 'UTC') => {
+export const updateDateTime = () => {
+  // Get timestamp in a timezone-neutral way
   const now = new Date();
-  // Use the provided timeZone to ensure consistent formatting
+
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',
     month: 'long',
@@ -27,17 +28,19 @@ export const updateDateTime = (timeZone: string = 'UTC') => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-    timeZone,
   };
 
-  const formattedDateTime = now
-    .toLocaleString('en-US', options)
+  // Format directly using the target timezone
+  let formattedDateTime = now.toLocaleString('en-US', options);
+
+  // Apply your formatting transformations
+  formattedDateTime = formattedDateTime
     .replace(/,([^,]*)$/, ' -$1')
     .replace(' AM', 'am')
     .replace(' PM', 'pm');
+
   return formattedDateTime;
 };
-
 export const formatTime = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
