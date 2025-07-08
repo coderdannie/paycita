@@ -151,6 +151,7 @@ const TableLayer = () => {
     []
   );
 
+  console.log(employeeAttendance);
   return (
     <div className="mt-10">
       <div className="flex items-center gap-4">
@@ -194,7 +195,7 @@ const TableLayer = () => {
                   <TableCell>{row.overtime}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{renderStatusBadge(row.status)}</TableCell>
-                </TableRow> 
+                </TableRow>
               ))
             : renderEmptyState}
         </CustomTable>
