@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   createContext,
   useCallback,
@@ -6,31 +6,33 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import useApiRequest from '../hooks/useApiRequest';
-import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+} from "react";
+import useApiRequest from "../hooks/useApiRequest";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import {
   updateAttendance,
   updateDashboardDetails,
-} from '../Redux/features/dashboardSlice';
-import { updateDateTime } from '../utils/helper';
-import { useGetAttendance } from '../hooks/dashboard/useDashboard';
-import { useDashboardSelector } from '../Redux/selectors';
-import { ToastProvider } from './ToastContext';
+} from "../Redux/features/dashboardSlice";
+import { updateDateTime } from "../utils/helper";
+import { useGetAttendance } from "../hooks/dashboard/useDashboard";
+import { useDashboardSelector } from "../Redux/selectors";
+import { ToastProvider } from "./ToastContext";
 import {
   PusherMessage,
   subscribeToChannel,
-} from '../service/api/pusher.service';
-import { useQueryClient } from '@tanstack/react-query';
-import { Message } from '../app/(private)/message/components/types';
-import { useGetSingleChat } from '../hooks/chat/useChatQuery';
+} from "../service/api/pusher.service";
+import { useQueryClient } from "@tanstack/react-query";
+import { Message } from "../app/(private)/message/components/types";
+import { useGetSingleChat } from "../hooks/chat/useChatQuery";
 // import { initAudio, playSentSound } from "../utils/audio";
-import isEqual from 'lodash.isequal';
-import { v4 as uuidv4 } from 'uuid';
-import { QUERY_KEYS } from '../service/tanstack-query/queryKey';
-import { useNotification } from './notificationContext';
-import { safeLocalStorage } from '../utils/safeLocalStorage';
+import isEqual from "lodash.isequal";
+import { v4 as uuidv4 } from "uuid";
+import { QUERY_KEYS } from "../service/tanstack-query/queryKey";
+import { useNotification } from "./notificationContext";
+import { safeLocalStorage } from "../utils/safeLocalStorage";
+import { getCurrentLocationSafe } from "../utils/locationUtils";
+import toast from "react-hot-toast";
 
 interface DashboardContextType {
   fetchDashboardDetails: () => Promise<void>;
@@ -78,48 +80,85 @@ const DashboardProvider = ({
   const { isPending: isEmployeeAttendanceLoading } = useGetAttendance(filters);
 
   const dispatch = useDispatch();
-  const [currentDateTime, setCurrentDateTime] = useState('');
+  const [currentDateTime, setCurrentDateTime] = useState("");
   const [isDashboardDetailsFetching, setIsDashboardDetailsFetching] =
     useState(false);
 
   const fetchDashboardDetails = useCallback(async () => {
     try {
       setIsDashboardDetailsFetching(true);
-      await getRequest('hr/dashboard', (response) => {
+      await getRequest("hr/dashboard", (response) => {
         if (response.success) {
           dispatch(updateDashboardDetails(response.data));
         }
       });
-    } catch (error) {
+    } catch {
+      // Error is handled by the API request hook
     } finally {
       setIsDashboardDetailsFetching(false);
     }
   }, [dispatch, getRequest]);
 
   const getAttendance = async () =>
-    await fetchAttendance('/hr/attendance', (data) => {
+    await fetchAttendance("/hr/attendance", (data) => {
       if (data.success) {
         dispatch(updateAttendance(data.data));
       }
     });
 
-  const handleClockOut = async () =>
-    await clockOut('/hr/attendance/clock-out', {}, (data) => {
-      if (data.success) {
-        getAttendance();
-      }
-    });
+  const handleClockOut = async () => {
+    try {
+      // Get current location
+      const location = await getCurrentLocationSafe((message) => {
+        toast.error(message);
+      });
 
-  const handleClockIn = async () =>
-    await clockIn('/hr/attendance/clock-in', {}, (data) => {
-      if (data.success) {
-        getAttendance();
-      }
-    });
+      const payload = location ? { lat: location.lat, lng: location.lng } : {};
+
+      await clockOut("/hr/attendance/clock-out", payload, (data) => {
+        if (data.success) {
+          getAttendance();
+          // if (location) {
+          //   toast.success("Clocked out successfully");
+          // } else {
+          //   toast.success("Clocked out successfully (location unavailable)");
+          // }
+        }
+      });
+    } catch (error) {
+      console.error("Clock out error:", error);
+      toast.error("Failed to clock out. Please try again.");
+    }
+  };
+
+  const handleClockIn = async () => {
+    try {
+      // Get current location
+      const location = await getCurrentLocationSafe((message) => {
+        toast.error(message);
+      });
+
+      const payload = location ? { lat: location.lat, lng: location.lng } : {};
+
+      await clockIn("/hr/attendance/clock-in", payload, (data) => {
+        if (data.success) {
+          getAttendance();
+          // if (location) {
+          //   toast.success("Clocked in successfully");
+          // } else {
+          //   toast.success("Clocked in successfully (location unavailable)");
+          // }
+        }
+      });
+    } catch (error) {
+      console.error("Clock in error:", error);
+      toast.error("Failed to clock in. Please try again.");
+    }
+  };
   const loadData = () => {
-    const token = safeLocalStorage.getItem('access_token');
+    const token = safeLocalStorage.getItem("access_token");
     if (!token) {
-      router.replace('/');
+      router.replace("/");
     } else {
       // handleGetAttendance();
       getAttendance();
@@ -129,7 +168,7 @@ const DashboardProvider = ({
 
   useEffect(() => {
     // Only run on client side
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     let timeoutId: NodeJS.Timeout;
 
@@ -152,7 +191,7 @@ const DashboardProvider = ({
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       loadData();
     }
   }, []);
@@ -203,14 +242,14 @@ const DashboardProvider = ({
     setConversations((prev) => {
       const chatMessages = prev[currentChat.chat_id] || [];
       const hasUnreadMessages = chatMessages.some(
-        (message) => message.type === 'received' && message.status !== 'read'
+        (message) => message.type === "received" && message.status !== "read"
       );
 
       if (!hasUnreadMessages) return prev;
 
       const updatedMessages = chatMessages.map((message) =>
-        message.type === 'received' && message.status !== 'read'
-          ? { ...message, status: 'read' as const }
+        message.type === "received" && message.status !== "read"
+          ? { ...message, status: "read" as const }
           : message
       );
 
@@ -244,8 +283,8 @@ const DashboardProvider = ({
       user_id: currentChat.user_id,
       message: content.trim(),
       created_at: new Date().toISOString(),
-      type: 'sent',
-      status: 'sent',
+      type: "sent",
+      status: "sent",
       updated_at: new Date().toISOString(),
       sender_id: currentChat.sender_id,
     };
@@ -270,7 +309,7 @@ const DashboardProvider = ({
 
       return subscribeToChannel(
         channelName,
-        'NewMessageSent',
+        "NewMessageSent",
         userId,
         (data: PusherMessage) => {
           queryClient.invalidateQueries({
@@ -299,7 +338,7 @@ const DashboardProvider = ({
 
       unsubscribeFunc = subscribeToChannel(
         `chat.${currentChat?.chat_id}`,
-        'NewMessageSent',
+        "NewMessageSent",
         currentChat.user_id,
         async () => {
           // Only update the chat list for any new message
