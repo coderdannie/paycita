@@ -6,6 +6,25 @@ import toast from "react-hot-toast";
 
 export const useLogOut = () => {
   const queryClient = useQueryClient();
+
+  const performClientSideLogout = () => {
+    // Remove all queries from the cache
+    queryClient.removeQueries();
+
+    // Clear localStorage
+    safeLocalStorage.clear();
+
+    // Cancel any ongoing queries
+    queryClient.cancelQueries();
+
+    // Reset the query client to clear any in-memory cache
+    queryClient.clear();
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 500);
+  };
+
   const {
     mutate: mutateLogOut,
     isPending,
@@ -18,20 +37,7 @@ export const useLogOut = () => {
     },
     onSuccess: (res) => {
       toast.success(res.data.message || "Logout Successfully");
-
-      // Remove all queries from the cache
-      queryClient.removeQueries();      // Clear localStorage
-      safeLocalStorage.clear();
-
-      // Cancel any ongoing queries
-      queryClient.cancelQueries();
-
-      // Reset the query client to clear any in-memory cache
-      queryClient.clear();
-
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
+      performClientSideLogout();
     },
     onError: (error: {
       response: {
@@ -40,9 +46,17 @@ export const useLogOut = () => {
         };
       };
     }) => {
-      toast.error(error.response.data.message || "Failed to logout");
+      // Even if server logout fails, still perform client-side cleanup
+      // User wants to logout regardless of server response
+      console.warn(
+        "Server logout failed, performing client-side logout:",
+        error
+      );
+      toast.error("Logout completed");
+      performClientSideLogout();
     },
   });
+
   return {
     mutateLogOut,
     isPending,

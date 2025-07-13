@@ -1,23 +1,23 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Manrope } from 'next/font/google';
-import MainWrapper from './main';
-import 'react-activity/dist/library.css';
-import { RefreshOnLoad } from '../components/RefreshOnload';
-import ChatNotification from './(private)/message/components/ChatNotification';
+import type { Metadata } from "next";
+import "./globals.css";
+import { Manrope } from "next/font/google";
+import MainWrapper from "./main";
+import "react-activity/dist/library.css";
+import { RefreshOnLoad } from "../components/RefreshOnload";
+import ChatNotification from "./(private)/message/components/ChatNotification";
 
 const manrope = Manrope({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-manrope',
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-manrope",
 });
 
 export const metadata: Metadata = {
-  title: 'PayCita',
+  title: "PayCita",
   description:
-    'Simplify business operations with PayCita—your all-in-one solution for payroll, attendance, invoicing, vendor management, and expenses. Streamline payments, manage leave, and boost efficiency. Unlock your team’s potential today!',
+    "Simplify business operations with PayCita—your all-in-one solution for payroll, attendance, invoicing, vendor management, and expenses. Streamline payments, manage leave, and boost efficiency. Unlock your team’s potential today!",
   icons: {
-    icon: '/logo',
+    icon: "/logo",
   },
 };
 
@@ -26,11 +26,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (    <html lang="en" suppressHydrationWarning>
+  return (
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
