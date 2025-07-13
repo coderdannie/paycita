@@ -17,6 +17,7 @@ import {
   ReimbursementIcon,
   AssetMgtIcon,
   AllExpensesIcon,
+  TaskMgtIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -213,6 +214,13 @@ export const sidebarData = [
     path: '/add-reimbursement',
   },
   {
+    title: 'Task Management',
+    icon: <TaskMgtIcon fill="#344054" />,
+    sec: <TaskMgtIcon fill="#692E9F" />,
+    hover: <TaskMgtIcon fill="#692E9F" />,
+    path: '/task-management',
+  },
+  {
     title: 'Settings',
     icon: <SettingsIcon fill="#344054" />,
     sec: <SettingsIcon fill="#692E9F" />,
@@ -365,3 +373,451 @@ export const statusOptions = [
   { value: 'rejected', label: 'Rejected' },
   { value: 'pending', label: 'Pending' },
 ] as const;
+
+export const priorities = [
+  { value: 'priority', label: 'Priority' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+];
+
+export const taskData = [
+  {
+    id: 1,
+    title: 'Audit petty cash usage',
+    description:
+      'Review petty cash logs. Check receipts and ensure amounts are accurate.',
+    priority: 'High',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'todo',
+    progress: 0,
+    assignees: [
+      {
+        id: 1,
+        name: 'Adewale dada',
+        avatar: 'https://i.pravatar.cc/32?img=1',
+        department: 'IT department',
+      },
+      {
+        id: 2,
+        name: 'Ewejide Taiwo',
+        avatar: 'https://i.pravatar.cc/32?img=2',
+        department: 'IT department',
+      },
+      {
+        id: 3,
+        name: 'Bunmi Tanny',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        department: 'IT department',
+      },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: 'Create login for new staff',
+    description:
+      'Set up system access for new hires and assign the correct role.',
+    priority: 'Medium',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'todo',
+    progress: 0,
+    assignees: [
+      {
+        id: 1,
+        name: 'Adewale dada',
+        avatar: 'https://i.pravatar.cc/32?img=1',
+        department: 'IT department',
+      },
+      {
+        id: 2,
+        name: 'Ewejide Taiwo',
+        avatar: 'https://i.pravatar.cc/32?img=2',
+        department: 'IT department',
+      },
+      {
+        id: 3,
+        name: 'Bunmi Tanny',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        department: 'IT department',
+      },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: 'Audit petty cash usage',
+    description:
+      'Review petty cash logs. Check receipts and ensure amounts are accurate.',
+    priority: 'Low',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'in progress',
+    progress: 75,
+    assignees: [
+      {
+        id: 1,
+        name: 'Adewale dada',
+        avatar: 'https://i.pravatar.cc/32?img=1',
+        department: 'IT department',
+      },
+      {
+        id: 2,
+        name: 'Ewejide Taiwo',
+        avatar: 'https://i.pravatar.cc/32?img=2',
+        department: 'IT department',
+      },
+      {
+        id: 3,
+        name: 'Bunmi Tanny',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        department: 'IT department',
+      },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: 'Audit petty cash usage',
+    description:
+      'Review petty cash logs. Check receipts and ensure amounts are accurate.',
+    priority: 'High',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'in progress',
+    progress: 50,
+    assignees: [
+      {
+        id: 1,
+        name: 'Adewale dada',
+        avatar: 'https://i.pravatar.cc/32?img=1',
+        department: 'IT department',
+      },
+      {
+        id: 2,
+        name: 'Ewejide Taiwo',
+        avatar: 'https://i.pravatar.cc/32?img=2',
+        department: 'IT department',
+      },
+      {
+        id: 3,
+        name: 'Bunmi Tanny',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        department: 'IT department',
+      },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+  {
+    id: 5,
+    title: 'Audit petty cash usage',
+    description:
+      'Review petty cash logs. Check receipts and ensure amounts are accurate.',
+    priority: 'High',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'completed',
+    progress: 100,
+    assignees: [
+      {
+        id: 1,
+        name: 'Adewale dada',
+        avatar: 'https://i.pravatar.cc/32?img=1',
+        department: 'IT department',
+      },
+      {
+        id: 2,
+        name: 'Ewejide Taiwo',
+        avatar: 'https://i.pravatar.cc/32?img=2',
+        department: 'IT department',
+      },
+      {
+        id: 3,
+        name: 'Bunmi Tanny',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        department: 'IT department',
+      },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+  {
+    id: 6,
+    title: 'Audit petty cash usage',
+    description:
+      'Review petty cash logs. Check receipts and ensure amounts are accurate.',
+    priority: 'Low',
+    startDate: '2/7/2025',
+    dueDate: '2/8/2025',
+    status: 'completed',
+    progress: 100,
+    assignees: [
+      { id: 1, name: 'John', avatar: 'https://i.pravatar.cc/32?img=1' },
+      { id: 2, name: 'Jane', avatar: 'https://i.pravatar.cc/32?img=2' },
+      { id: 3, name: 'Bob', avatar: 'https://i.pravatar.cc/32?img=3' },
+    ],
+    taskOutlines: [
+      {
+        id: 1,
+        text: 'This is the first requirement for this task',
+        completed: true,
+      },
+      {
+        id: 2,
+        text: 'This is the second requirement for this task',
+        completed: false,
+      },
+      {
+        id: 3,
+        text: 'This is the third requirement for this task',
+        completed: false,
+      },
+    ],
+    activities: [
+      {
+        id: 1,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'changed the status',
+        from: 'TO-DO',
+        to: 'In Progress',
+        timestamp: '5 minutes ago',
+        type: 'status',
+      },
+      {
+        id: 2,
+        user: 'Bunmi',
+        avatar: 'https://i.pravatar.cc/32?img=3',
+        action: 'Dropped a comment',
+        comment: 'Me did not understand this second requirement o',
+        timestamp: '5 minutes ago',
+        type: 'comment',
+      },
+    ],
+  },
+];
+
+export const allUsers = [
+  {
+    id: 1,
+    name: 'Adewale dada',
+    avatar: 'https://i.pravatar.cc/32?img=1',
+    department: 'IT department',
+  },
+  {
+    id: 2,
+    name: 'Ewejide Taiwo',
+    avatar: 'https://i.pravatar.cc/32?img=2',
+    department: 'IT department',
+  },
+  {
+    id: 3,
+    name: 'Bunmi Tanny',
+    avatar: 'https://i.pravatar.cc/32?img=3',
+    department: 'IT department',
+  },
+  {
+    id: 4,
+    name: 'Ademola',
+    avatar: 'https://i.pravatar.cc/32?img=4',
+    department: 'IT department',
+  },
+  {
+    id: 5,
+    name: 'Sarah',
+    avatar: 'https://i.pravatar.cc/32?img=5',
+    department: 'IT department',
+  },
+  {
+    id: 6,
+    name: 'Mike',
+    avatar: 'https://i.pravatar.cc/32?img=6',
+    department: 'IT department',
+  },
+];
