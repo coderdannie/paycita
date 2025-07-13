@@ -3,12 +3,11 @@ import { createContext, useContext } from "react";
 import useApiRequest from "../hooks/useApiRequest";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../Redux/features/authSlice";
+import { loginUser, setToken } from "../Redux/features/authSlice";
 import { LoginSchemaType } from "../utils/validations";
 import { useAuthSelector } from "../Redux/selectors";
 import { safeLocalStorage } from "../utils/safeLocalStorage";
 import { iPhoneDebug } from "../utils/iPhoneDebug";
-
 
 interface AuthContextType {
   handleLogin: (formData: LoginSchemaType) => void;
@@ -31,7 +30,7 @@ const AuthProvider = ({
   const handleLogin = async (formData: LoginSchemaType) => {
     iPhoneDebug.log("Starting login process", { email: formData.email });
     iPhoneDebug.checkEnvironment();
-    
+
     return await postRequest(
       "/login",
       formData,
@@ -40,17 +39,20 @@ const AuthProvider = ({
         data: { token: string; user: LoggedInUserProps };
       }) => {
         iPhoneDebug.log("Login response received", { success: data.success });
-        
+
         if (data.success && data.data) {
           const token = data?.data?.token;
           const user = data?.data?.user;
-          
-          iPhoneDebug.log("Attempting to store token", { tokenLength: token?.length });
+
+          iPhoneDebug.log("Attempting to store token", {
+            tokenLength: token?.length,
+          });
           safeLocalStorage.setItem("access_token", token);
-          
+          dispatch(setToken(token));
+
           iPhoneDebug.log("Dispatching user data to Redux");
           dispatch(loginUser(user));
-          
+
           iPhoneDebug.log("Navigating to dashboard");
           router.push("/dashboard");
         }

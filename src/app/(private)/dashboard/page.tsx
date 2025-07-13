@@ -1,21 +1,21 @@
-'use client';
-import { useDashboardSelector } from '@/src/Redux/selectors';
-import DashboardHeader from './DashboardHeader/dashboardHearder';
-import EmployeeTable from './EmployeeTable/employeeTable';
-import EventsCard from './EventsCard/eventsCard';
-import MetricCard from './MetricCard/metricCard';
-import { useDashboard } from '@/src/context/dashboardContext';
-import { DashboardResponse, LeaveOverview } from '@/src/types/dashboard';
-import { Skeleton } from '@/src/components/ui/skeleton';
-import { formatLabel } from '@/src/utils/helper';
+"use client";
+import { useDashboardSelector } from "@/src/Redux/selectors";
+import DashboardHeader from "./DashboardHeader/dashboardHearder";
+import EmployeeTable from "./EmployeeTable/employeeTable";
+import EventsCard from "./EventsCard/eventsCard";
+import MetricCard from "./MetricCard/metricCard";
+import { useDashboard } from "@/src/context/dashboardContext";
+import { DashboardResponse, LeaveOverview } from "@/src/types/dashboard";
+import { Skeleton } from "@/src/components/ui/skeleton";
+import { formatLabel } from "@/src/utils/helper";
 
 interface Metric {
   label: string;
   value: number;
-  color?: 'purple' | 'lightpurple' | 'gray';
+  color?: "purple" | "lightpurple" | "gray";
 }
-type AttendanceType = DashboardResponse['data']['attendance'];
-type LeaveType = DashboardResponse['data']['leave_overview'];
+type AttendanceType = DashboardResponse["data"]["attendance"];
+type LeaveType = DashboardResponse["data"]["leave_overview"];
 
 const Page = () => {
   const { dashboardDetails } = useDashboardSelector();
@@ -24,28 +24,28 @@ const Page = () => {
   const leaveOverview = dashboardDetails?.leave_overview as LeaveType;
 
   const attendanceMetrics: Metric[] = [
-    { label: 'On Time', value: attendance?.present, color: 'purple' },
+    { label: "On Time", value: attendance?.present, color: "purple" },
     {
-      label: 'Late Attendance',
+      label: "Late Attendance",
       value: attendance?.late,
-      color: 'lightpurple',
+      color: "lightpurple",
     },
     {
-      label: 'Missed Attendance',
+      label: "Missed Attendance",
       value: attendance?.absent,
-      color: 'gray',
+      color: "gray",
     },
   ];
 
   const getColorForLeaveType = (
     leaveType: string
-  ): 'purple' | 'lightpurple' | 'gray' => {
-    const colorMap: Record<string, 'purple' | 'lightpurple' | 'gray'> = {
-      'annual leave': 'purple',
-      'sick leave': 'gray',
-      'maternity leave': 'lightpurple',
+  ): "purple" | "lightpurple" | "gray" => {
+    const colorMap: Record<string, "purple" | "lightpurple" | "gray"> = {
+      "annual leave": "purple",
+      "sick leave": "gray",
+      "maternity leave": "lightpurple",
     };
-    return colorMap[leaveType.toLowerCase()] || 'purple';
+    return colorMap[leaveType.toLowerCase()] || "purple";
   };
 
   const leaveMetrics: Metric[] = leaveOverview?.map((item: LeaveOverview) => ({
