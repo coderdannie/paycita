@@ -12,7 +12,7 @@ import { FaPlus } from 'react-icons/fa6';
 import { Form } from '@/src/components/ui/form';
 import Calendar from 'react-calendar';
 import { FiCalendar } from 'react-icons/fi';
-import { formatDate } from '@/src/utils/helper';
+import { formatDate, formatDateToBackend } from '@/src/utils/helper';
 import { useEffect, useMemo, useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import { SingleValue } from '@/src/types/attendance';
@@ -142,7 +142,7 @@ const PersonalInfo = () => {
   const onSubmit = (values: userDetailsSchemaType) => {
     const dataWithDateOfBirth = {
       ...values,
-      date_of_birth: date_of_birth ? formatDate(date_of_birth) : null,
+      date_of_birth: date_of_birth ? formatDateToBackend(date_of_birth) : null,
     };
 
     dispatch(setUserDetails(dataWithDateOfBirth));
