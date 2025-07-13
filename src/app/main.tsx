@@ -14,6 +14,7 @@ import IPhoneDebugComponent from "../components/IPhoneDebugComponent";
 
 import LoadingOverlay from "../components/common/LoadingOverlay";
 import { Providers } from "./Providers";
+import { SessionProvider } from "../context/SessionContext";
 
 const MainWrapper = ({ children }: { children: ReactNode }) => {
   // Debug iPhone issues on app startup
@@ -30,12 +31,16 @@ const MainWrapper = ({ children }: { children: ReactNode }) => {
             <Providers>
               <GlobalProvider>
                 <AuthProvider>
-                  <NotificationProvider>                    <DashboardProvider>
-                      <IPhoneDebugComponent />
-                      <Toaster position="top-right" />
-                      {children}
-                    </DashboardProvider>
-                  </NotificationProvider>
+                  <SessionProvider>
+                    <NotificationProvider>
+                      {" "}
+                      <DashboardProvider>
+                        <IPhoneDebugComponent />
+                        <Toaster position="top-right" />
+                        {children}
+                      </DashboardProvider>
+                    </NotificationProvider>
+                  </SessionProvider>
                 </AuthProvider>
               </GlobalProvider>
             </Providers>

@@ -1,7 +1,3 @@
-import { api } from "@/src/service/api";
-
-const logoutUser = () => {
-  return api.post("/hr/logout");
-};
+import { logoutUser } from "./auth.service";
 
 export { logoutUser };
