@@ -213,13 +213,13 @@ export const sidebarData = [
     hover: <ReimbursementIcon fill="#692E9F" />,
     path: '/add-reimbursement',
   },
-  {
-    title: 'Task Management',
-    icon: <TaskMgtIcon fill="#344054" />,
-    sec: <TaskMgtIcon fill="#692E9F" />,
-    hover: <TaskMgtIcon fill="#692E9F" />,
-    path: '/task-management',
-  },
+  // {
+  //   title: 'Task Management',
+  //   icon: <TaskMgtIcon fill="#344054" />,
+  //   sec: <TaskMgtIcon fill="#692E9F" />,
+  //   hover: <TaskMgtIcon fill="#692E9F" />,
+  //   path: '/task-management',
+  // },
   {
     title: 'Settings',
     icon: <SettingsIcon fill="#344054" />,
