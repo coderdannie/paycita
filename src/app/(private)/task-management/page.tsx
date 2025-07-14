@@ -21,7 +21,7 @@ import { TaskTableView } from '@/src/components/data/TaskMgt/TaskTable';
 import { Task } from '@/src/types/tasksMgt';
 import { TaskDetailModal } from '../../../components/modals/TaskModalDetail';
 
-export const status = [
+const status = [
   { value: 'all-status', label: 'All Status' },
   { value: 'completed', label: 'Completed' },
   { value: 'in-progress', label: 'In Progress' },
