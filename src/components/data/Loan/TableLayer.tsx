@@ -46,6 +46,7 @@ export type loanData = {
       | 'success';
     created_at: string | null;
     updated_at: string | null;
+    pending_with?: string;
   }>;
 };
 const TableLayer = ({ loans }: { loans: loanData[] }) => {
