@@ -53,6 +53,7 @@ interface ExtendedLoanData {
   due_date?: string;
   total_paid?: number;
   repayment_history?: RepaymentHistoryItem[];
+  pending_with: string;
 }
 
 // Main API response interface
@@ -208,7 +209,14 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                   {loanData?.loan_type || 'N/A'}
                 </p>
               </div>
-
+              {loanData?.status?.toLocaleLowerCase() === 'pending' && (
+                <p className="font-bold text-sm">
+                  Pending with:{' '}
+                  <span className="text-orange-500">
+                    {loanData?.pending_with}
+                  </span>{' '}
+                </p>
+              )}
               {/* Comments section */}
               {setOpenComment && (
                 <div className="flex justify-end">
