@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Select,
@@ -6,18 +6,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/components/ui/select";
-import { useCallback, useMemo, useState } from "react";
-import { formatDate, parseDateString } from "@/src/utils/helper";
+} from '@/src/components/ui/select';
+import { useCallback, useMemo, useState } from 'react';
+import { formatDate, parseDateString } from '@/src/utils/helper';
 
-import Calendar from "react-calendar";
+import Calendar from 'react-calendar';
 
-import { LuCalendarDays } from "react-icons/lu";
-import LeaveHistoryTable from "../LeaveHistoryTable";
-import { useSearchParams } from "next/navigation";
-import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import CustomPagination from "@/src/components/common/pagination/Pagination";
-import { IoClose } from "react-icons/io5";
+import { LuCalendarDays } from 'react-icons/lu';
+import LeaveHistoryTable from '../LeaveHistoryTable';
+import { useSearchParams } from 'next/navigation';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import CustomPagination from '@/src/components/common/pagination/Pagination';
+import { IoClose } from 'react-icons/io5';
 export interface Leave {
   line_manager_status: string;
   id: number | string;
@@ -29,21 +29,22 @@ export interface Leave {
   request_date: string;
   start_date: string;
   status: string;
+  pending_with: string;
 }
 const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
   const updateSearchParams = useUpdateSearchParams();
   const searchParams = useSearchParams();
-  const [type, setType] = useState(searchParams.get("type") || "");
-  const [status, setStatus] = useState(searchParams.get("status") || "");
+  const [type, setType] = useState(searchParams.get('type') || '');
+  const [status, setStatus] = useState(searchParams.get('status') || '');
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const leaveType = ["Annual", "Sick", "Personal", "Maternity", "Unpaid"];
+  const leaveType = ['Annual', 'Sick', 'Personal', 'Maternity', 'Unpaid'];
 
   const limit = 10;
-  const currentPage = Number(searchParams.get("page") || 1);
-  const dateFilter = searchParams.get("date") || "";
-  const typeFilter = searchParams.get("type") || "";
-  const statusFilter = searchParams.get("status") || "";
+  const currentPage = Number(searchParams.get('page') || 1);
+  const dateFilter = searchParams.get('date') || '';
+  const typeFilter = searchParams.get('type') || '';
+  const statusFilter = searchParams.get('status') || '';
 
   const selectedDate = useMemo(() => {
     return dateFilter ? parseDateString(dateFilter) : null;
@@ -56,7 +57,7 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
         dateToSet.setHours(0, 0, 0, 0);
         updateSearchParams({
           date: formatDate(dateToSet),
-          page: "1",
+          page: '1',
         });
         setShowCalendar(false);
       }
@@ -68,8 +69,8 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
     (value: string) => {
       setType(value);
       updateSearchParams({
-        type: value === "all" ? "" : value,
-        page: "1",
+        type: value === 'all' ? '' : value,
+        page: '1',
       });
     },
     [updateSearchParams]
@@ -79,8 +80,8 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
     (value: string) => {
       setStatus(value);
       updateSearchParams({
-        status: value === "all" ? "" : value,
-        page: "1",
+        status: value === 'all' ? '' : value,
+        page: '1',
       });
     },
     [updateSearchParams]
@@ -95,8 +96,8 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
 
   const handleClearDate = useCallback(() => {
     updateSearchParams({
-      date: "",
-      page: "1",
+      date: '',
+      page: '1',
     });
   }, [updateSearchParams]);
 
@@ -147,7 +148,7 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
       <div className="flex  flex-wrap gap-5 max-w-[780px] items-center">
         <p className="text-[#1D2939] font-semibold flex-1">Leave History</p>
         <div className="flex-1">
-          <Select onValueChange={handleTypeChange} value={type || "all"}>
+          <Select onValueChange={handleTypeChange} value={type || 'all'}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="All Type" />
             </SelectTrigger>
@@ -162,13 +163,13 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
           </Select>
         </div>
         <div className="flex-1">
-          <Select onValueChange={handleStatusChange} value={status || "all"}>
+          <Select onValueChange={handleStatusChange} value={status || 'all'}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">All Status</SelectItem>
-              {["Approved", "Rejected", "Pending"].map((item) => (
+              {['Approved', 'Rejected', 'Pending'].map((item) => (
                 <SelectItem key={item} value={item}>
                   {item}
                 </SelectItem>
@@ -186,7 +187,7 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
             >
               <LuCalendarDays className="text-[#5B5B5B]" />
               <span className="text-sm text-[#292D32]">
-                {selectedDate ? formatDate(selectedDate) : "Select date"}
+                {selectedDate ? formatDate(selectedDate) : 'Select date'}
               </span>
               {selectedDate && (
                 <button
@@ -211,8 +212,8 @@ const LeaveHistory = ({ leave }: { leave: Leave[] }) => {
                   tileClassName={
                     ({ date }) =>
                       date.getDay() === 0 || date.getDay() === 6
-                        ? "weekend"
-                        : "" // Optional: Style weekends
+                        ? 'weekend'
+                        : '' // Optional: Style weekends
                   }
                 />
               </div>

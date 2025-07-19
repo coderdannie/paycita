@@ -1,11 +1,11 @@
-"use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { IoClose, IoCloudDownloadOutline } from "react-icons/io5";
-import { useState, useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { useGetReimbursementById } from "@/src/hooks/re-imbursement/useReImbursement";
-import Image from "next/image";
-import { Spinner } from "react-activity";
+'use client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoClose, IoCloudDownloadOutline } from 'react-icons/io5';
+import { useState, useCallback, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { useGetReimbursementById } from '@/src/hooks/re-imbursement/useReImbursement';
+import Image from 'next/image';
+import { Spinner } from 'react-activity';
 
 interface ReimbursementDetailsProps {
   isOpen: boolean;
@@ -37,11 +37,11 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
       <span
         className={`py-[5px] w-full text-sm text-center block px-[10px] rounded-md 
           ${
-            status === "approved"
-              ? "text-[#008000] bg-[#EDFCED]"
-              : status === "pending"
-              ? "text-[#5252FF] bg-[#EDEDFB]"
-              : "text-red-600 bg-[#FFF5F5]"
+            status === 'approved'
+              ? 'text-[#008000] bg-[#EDFCED]'
+              : status === 'pending'
+              ? 'text-[#5252FF] bg-[#EDEDFB]'
+              : 'text-red-600 bg-[#FFF5F5]'
           }`}
       >
         {status}
@@ -51,14 +51,14 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === 'Escape') onClose();
     };
 
-    document.body.style.overflow = isOpen ? "hidden" : "auto";
-    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "auto";
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'auto';
     };
   }, [isOpen, onClose]);
 
@@ -71,17 +71,17 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed inset-0 bg-black z-50"
             onClick={onClose}
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white shadow-xl z-50 rounded-lg flex flex-col"
           >
             {/* Header */}
@@ -114,7 +114,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                   <div>
                     <p className="text-sm text-gray-500">Employee Name</p>
                     <p className="font-semibold">
-                      {reimbursement?.employee_name}{" "}
+                      {reimbursement?.employee_name}{' '}
                     </p>
                   </div>
                   <div className="text-right">
@@ -134,6 +134,14 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                     {reimbursement?.description}
                   </p>
                 </div>
+                {reimbursement?.status?.toLocaleLowerCase() === 'pending' && (
+                  <p className="font-bold text-sm">
+                    Pending with:{' '}
+                    <span className="text-orange-500">
+                      {reimbursement?.pending_with}
+                    </span>{' '}
+                  </p>
+                )}
                 <div>
                   <p className="text-sm text-gray-500 mt-2 mb-1">Receipt</p>
                   <div className="relative rounded-md border border-gray-300 shadow-sm">
@@ -163,7 +171,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                         onClick={toggleImageExpansion}
                         alt="Receipt Preview"
                         className={`w-full h-auto object-cover transition-transform duration-300 ${
-                          isImageExpanded ? "scale-100" : "scale-105"
+                          isImageExpanded ? 'scale-100' : 'scale-105'
                         }`}
                       />
                     </div>
@@ -175,7 +183,7 @@ const ReimbursementDetails: React.FC<ReimbursementDetailsProps> = ({
                 <div className="border-t border-[#E4E7EC] p-4 bg-white">
                   <div className="grid grid-cols-2 gap-4">
                     <Button onClick={handleApprove} disabled={isLoading}>
-                      {isLoading ? <Spinner /> : "Approve"}
+                      {isLoading ? <Spinner /> : 'Approve'}
                     </Button>
                     <Button
                       type="button"

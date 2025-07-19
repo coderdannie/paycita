@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { IoCloseSharp } from "react-icons/io5";
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoCloseSharp } from 'react-icons/io5';
 import {
   Table,
   TableBody,
@@ -9,17 +9,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import StatusStepper from "../common/Stepper";
-import { useAuthSelector } from "@/src/Redux/selectors";
+} from '../../components/ui/table';
+import StatusStepper from '../common/Stepper';
+import { useAuthSelector } from '@/src/Redux/selectors';
 // import { ApprovalFlow } from "../common/ApprovalFlow";
-import { Button } from "../ui/button";
-import Image from "next/image";
-import { Approvals, CommentThread } from "@/src/types/procurement";
-import VerticalItemStepper from "../common/VerticalItemStepper";
-import { Spinner } from "react-activity";
-import { useResolveExpensesCommentThread } from "@/src/hooks/expenses/useExpenses";
-import toast from "react-hot-toast";
+import { Button } from '../ui/button';
+import Image from 'next/image';
+import { Approvals, CommentThread } from '@/src/types/procurement';
+import VerticalItemStepper from '../common/VerticalItemStepper';
+import { Spinner } from 'react-activity';
+import { useResolveExpensesCommentThread } from '@/src/hooks/expenses/useExpenses';
+import toast from 'react-hot-toast';
 
 interface ExpenseItem {
   id: string;
@@ -54,6 +54,7 @@ interface ExpenseDetails {
   id: string;
   procurement_number: string;
   status: string;
+  pending_with: string;
   total_cost: number;
   created_at: string;
   expected_delivery_date?: string;
@@ -69,15 +70,15 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
@@ -85,14 +86,14 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved":
-        return "text-green-500";
-      case "pending":
-        return "text-orange-500";
-      case "rejected":
-        return "text-red-500";
+      case 'approved':
+        return 'text-green-500';
+      case 'pending':
+        return 'text-orange-500';
+      case 'rejected':
+        return 'text-red-500';
       default:
-        return "text-gray-500";
+        return 'text-gray-500';
     }
   };
 
@@ -104,10 +105,10 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
   const handleResolveComment = () => {
     mutateResolveComment(expense.comment_thread.thread_id.toString(), {
       onSuccess: () => {
-        toast.success("Comments resolved successfully");
+        toast.success('Comments resolved successfully');
       },
       onError: () => {
-        toast.error("Failed to resolve comments");
+        toast.error('Failed to resolve comments');
       },
     });
   };
@@ -120,16 +121,16 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 overflow-y-auto rounded-tl-xl rounded-bl-xl  right-0 h-full w-full px-5 max-w-[573px] bg-white shadow-xl z-50"
           >
             <div className="flex flex-col h-full">
@@ -154,11 +155,11 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                       </p>
                       <div
                         className={`border-2 rounded-md bg-white ${
-                          expense.status === "approved"
-                            ? "border-green-400"
-                            : expense.status === "pending"
-                            ? "border-[#FFD384]"
-                            : "border-red-600"
+                          expense.status === 'approved'
+                            ? 'border-green-400'
+                            : expense.status === 'pending'
+                            ? 'border-[#FFD384]'
+                            : 'border-red-600'
                         }`}
                       >
                         <span
@@ -176,9 +177,17 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                     </p>
                   </div>
                   <p className="text-sm">
-                    {expense?.items?.length} Products • Order Placed on{" "}
+                    {expense?.items?.length} Products • Order Placed on{' '}
                     {orderDate}
-                  </p>
+                  </p>{' '}
+                  {expense?.status?.toLocaleLowerCase() === 'pending' && (
+                    <p className="font-bold text-sm">
+                      Pending with:{' '}
+                      <span className="text-orange-500">
+                        {expense?.pending_with}
+                      </span>{' '}
+                    </p>
+                  )}
                 </div>
 
                 {/* Stepper */}
@@ -216,7 +225,7 @@ const ExpenseMgtDetailDrawer: React.FC<ExpenseMgtDetailDrawerProps> = ({
                           disabled={isPending}
                         >
                           <span className="text-xs text-[#344054] text-semibold gap-1">
-                            {isPending ? <Spinner /> : "  Resolve Comments"}
+                            {isPending ? <Spinner /> : '  Resolve Comments'}
                           </span>
                         </button>
                       )}
