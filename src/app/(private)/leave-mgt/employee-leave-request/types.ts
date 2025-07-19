@@ -6,6 +6,6 @@ export interface LeaveRequestType {
   leaveType: string;
   leaveDate: string;
   duration: number;
-  pending_with: string;
+  pending_with?: string;
   status: 'Pending' | 'Approved' | 'Rejected';
 }

@@ -53,7 +53,7 @@ interface ExtendedLoanData {
   due_date?: string;
   total_paid?: number;
   repayment_history?: RepaymentHistoryItem[];
-  pending_with: string;
+  pending_with?: string;
 }
 
 // Main API response interface
