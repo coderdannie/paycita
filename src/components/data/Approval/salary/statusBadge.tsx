@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface StatusBadgeProps {
-  status: 'Approved' | 'Pending' | 'Rejected';
+export interface StatusBadgeProps {
+  status: "approved" | "pending" | "rejected" | string; // Allow unexpected strings too
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const statusConfig = {
+  const statusConfig: Record<string, string> = {
     Approved: 'gren',
     Pending: 'yello',
     Rejected: 'reid',
