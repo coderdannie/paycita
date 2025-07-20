@@ -208,13 +208,13 @@ export const sidebarData = [
         id: 4,
         title: "Loan",
         name: "Loan",
-        path: "/dashboard/approval/loan",
+        path: "/approval/loan",
       },
       {
         id: 5,
         title: "Payroll",
         name: "Payroll",
-        path: "/dashboard/approval/payroll",
+        path: "/approval/payroll",
       },
       {
         id: 6,
