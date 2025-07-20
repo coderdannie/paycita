@@ -6,7 +6,6 @@ import { persistor, store } from "../Redux/store";
 import GlobalProvider from "../context/appContext";
 import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "../context/notificationContext";
-import DashboardProvider from "../context/dashboardContext";
 import AuthProvider from "../context/authContext";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { iPhoneDebug } from "../utils/iPhoneDebug";
@@ -33,12 +32,9 @@ const MainWrapper = ({ children }: { children: ReactNode }) => {
                 <AuthProvider>
                   <SessionProvider>
                     <NotificationProvider>
-                      {" "}
-                      <DashboardProvider>
-                        <IPhoneDebugComponent />
-                        <Toaster position="top-right" />
-                        {children}
-                      </DashboardProvider>
+                      <IPhoneDebugComponent />
+                      <Toaster position="top-right" />
+                      {children}
                     </NotificationProvider>
                   </SessionProvider>
                 </AuthProvider>

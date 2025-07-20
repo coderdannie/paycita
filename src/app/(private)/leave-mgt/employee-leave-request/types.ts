@@ -1,4 +1,3 @@
-
 export interface LeaveRequestType {
   comment?: string;
   id: number;
@@ -7,5 +6,6 @@ export interface LeaveRequestType {
   leaveType: string;
   leaveDate: string;
   duration: number;
-  status: "Pending" | "Approved" | "Rejected";
+  pending_with?: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
 }

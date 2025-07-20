@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 
-import { IoCloseSharp } from "react-icons/io5";
+import { IoCloseSharp } from 'react-icons/io5';
 
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
-} from "../../components/ui/table";
-import StatusStepper from "../common/Stepper";
-import { formatDate } from "@/src/utils/helper";
-import { ProcurementData } from "@/src/types/procurement";
-import { useAuthSelector } from "@/src/Redux/selectors";
+} from '../../components/ui/table';
+import StatusStepper from '../common/Stepper';
+import { formatDate } from '@/src/utils/helper';
+import { ProcurementData } from '@/src/types/procurement';
+import { useAuthSelector } from '@/src/Redux/selectors';
 // import { ApprovalFlow } from "../common/ApprovalFlow";
-import Image from "next/image";
-import VerticalItemStepper from "../common/VerticalItemStepper";
-import { useResolveProcurementCommentThread } from "@/src/hooks/procurement/useProcurement";
-import { Spinner } from "react-activity";
-import toast from "react-hot-toast";
+import Image from 'next/image';
+import VerticalItemStepper from '../common/VerticalItemStepper';
+import { useResolveProcurementCommentThread } from '@/src/hooks/procurement/useProcurement';
+import { Spinner } from 'react-activity';
+import toast from 'react-hot-toast';
 
 interface ProcurementDetailDrawerProps {
   isOpen: boolean;
@@ -36,20 +36,20 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
 
   const orderDate = formatDate(procurement.created_at);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved":
-        return "text-green-500";
-      case "pending":
-        return "text-orange-500";
-      case "rejected":
-        return "text-red-500";
+      case 'approved':
+        return 'text-green-500';
+      case 'pending':
+        return 'text-orange-500';
+      case 'rejected':
+        return 'text-red-500';
       default:
-        return "text-gray-500";
+        return 'text-gray-500';
     }
   };
 
@@ -61,13 +61,15 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
   const handleResolveComment = () => {
     mutateResolveComment(procurement.comment_thread.thread_id.toString(), {
       onSuccess: () => {
-        toast.success("Comments resolved successfully");
+        toast.success('Comments resolved successfully');
       },
-      onError: () => { 
-        toast.error("Failed to resolve comments");
+      onError: () => {
+        toast.error('Failed to resolve comments');
       },
     });
   };
+
+  console.log(procurement);
 
   return (
     <AnimatePresence>
@@ -77,13 +79,13 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             className="fixed top-0 left-0 w-full h-full bg-black z-50"
             onClick={onClose}
           />
 
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -123,9 +125,17 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                     </p>
                   </div>
                   <p className="text-sm">
-                    {procurement?.items?.length} Products • Order Placed on{" "}
+                    {procurement?.items?.length} Products • Order Placed on{' '}
                     {orderDate}
                   </p>
+                  {procurement?.status?.toLocaleLowerCase() === 'pending' && (
+                    <p className="font-bold text-sm">
+                      Pending with:{' '}
+                      <span className="text-orange-500">
+                        {procurement?.pending_with}
+                      </span>{' '}
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-4"></div>
@@ -163,7 +173,7 @@ const ProcurementDetailsDrawer: React.FC<ProcurementDetailDrawerProps> = ({
                           disabled={isPending}
                         >
                           <span className="text-xs text-[#344054] text-semibold gap-1">
-                            {isPending ? <Spinner /> : "  Resolve Comments"}
+                            {isPending ? <Spinner /> : '  Resolve Comments'}
                           </span>
                         </button>
                       )}

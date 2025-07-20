@@ -3,11 +3,11 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+} from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
-import approvalService from '@/src/service/api/approvals.service';
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import approvalService from "@/src/service/api/approvals.service";
 
 // --- Query Hooks ---
 
@@ -65,7 +65,7 @@ export const useAddApprovalComment = (route: string) => {
     onError: (error) => {
       if (error instanceof AxiosError) {
         const errorMessage =
-          error.response?.data?.message || 'Failed to add comment';
+          error.response?.data?.message || "Failed to add comment";
         throw new Error(errorMessage);
       }
       throw error;
@@ -84,11 +84,11 @@ export const useUpdateApproval = (route: string) => {
 
   return useMutation({
     mutationFn: async (variables: {
-      id: string;
       data: { status: string; reason?: string };
+      id?: string;
     }) => {
       const { id, data } = variables;
-      const response = await approvalService.updateApproval(route, id, data);
+      const response = await approvalService.updateApproval(route, data, id);
       return response;
     },
 
@@ -154,7 +154,7 @@ export const useUpdateApproval = (route: string) => {
 
       if (err instanceof AxiosError) {
         const errorMessage =
-          err.response?.data?.message || 'Failed to update approval';
+          err.response?.data?.message || "Failed to update approval";
         throw new Error(errorMessage);
       }
       throw err;
@@ -186,17 +186,14 @@ export const useResolveCommentThread = (route: string) => {
           queryKey: [QUERY_KEYS.GET_ALL_APPROVALS],
         });
       },
-      onError: (
-        error: AxiosError<{ message?: string }> | Error,
-        threadId: string
-      ) => {
+      onError: (error: AxiosError<{ message?: string }> | Error) => {
         if (error instanceof AxiosError && error.response?.data?.message) {
           throw new Error(error.response.data.message);
         } else if (error instanceof Error) {
-          throw new Error(error.message || 'Failed to resolve comment thread');
+          throw new Error(error.message || "Failed to resolve comment thread");
         }
         throw new Error(
-          'An unknown error occurred while resolving the comment thread.'
+          "An unknown error occurred while resolving the comment thread."
         );
       },
       onSettled: () => {

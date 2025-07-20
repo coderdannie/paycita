@@ -57,6 +57,7 @@ interface ProcurementData {
   finance_manager_status: string;
   managment_status: string;
   items: ProcurementDetails[];
+  pending_with: string;
 }
 
 interface Expenses {

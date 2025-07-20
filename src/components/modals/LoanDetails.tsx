@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '../../components/ui/sheet';
-import { Button } from '../../components/ui/button';
-import { TableCell, TableRow } from '../../components/ui/table';
-import CustomTable from '../common/CustomTable';
-import { formatDate } from '@/src/utils/helper';
-import Image from 'next/image';
+} from "../../components/ui/sheet";
+import { Button } from "../../components/ui/button";
+import { TableCell, TableRow } from "../../components/ui/table";
+import CustomTable from "../common/CustomTable";
+import { formatDate } from "@/src/utils/helper";
+import Image from "next/image";
 
 interface LoanDetails {
   loan_number: string;
@@ -28,12 +28,12 @@ interface RepaymentHistoryItem {
   loan_number: string;
   amount: string;
   status:
-    | 'pending'
-    | 'approved'
-    | 'rejected'
-    | 'completed'
-    | 'paid'
-    | 'success';
+    | "pending"
+    | "approved"
+    | "rejected"
+    | "completed"
+    | "paid"
+    | "success";
   created_at: string | null;
   updated_at: string | null;
 }
@@ -53,6 +53,7 @@ interface ExtendedLoanData {
   due_date?: string;
   total_paid?: number;
   repayment_history?: RepaymentHistoryItem[];
+  pending_with?: string;
 }
 
 // Main API response interface
@@ -71,10 +72,10 @@ interface DrawerProps {
 }
 
 const loanHistoryHeaders = [
-  { label: 'NO' },
-  { label: 'Amount' },
-  { label: 'Date' },
-  { label: 'Status' },
+  { label: "NO" },
+  { label: "Amount" },
+  { label: "Date" },
+  { label: "Status" },
 ];
 
 const LoanDetailsDrawer: React.FC<DrawerProps> = ({
@@ -86,30 +87,30 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
   setOpenComment,
 }) => {
   const formatCurrency = (amount: number | string) => {
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
     return `₦${numAmount?.toLocaleString()}`;
   };
 
   const renderStatusBadge = useCallback((status: string) => {
     const statusLower = status?.toLowerCase();
-    let badgeClass = '';
+    let badgeClass = "";
 
     switch (statusLower) {
-      case 'pending':
-        badgeClass = 'text-[#FFA80A] bg-[#FFFCF5] border-[#FFD384]';
+      case "pending":
+        badgeClass = "text-[#FFA80A] bg-[#FFFCF5] border-[#FFD384]";
         break;
-      case 'success':
-      case 'paid':
-      case 'successful':
-      case 'completed':
-        badgeClass = 'text-[#16A34A] bg-[#F0FDF4] border-[#16A34A]';
+      case "success":
+      case "paid":
+      case "successful":
+      case "completed":
+        badgeClass = "text-[#16A34A] bg-[#F0FDF4] border-[#16A34A]";
         break;
-      case 'failed':
-      case 'rejected':
-        badgeClass = 'text-[#DC2626] bg-[#FEF2F2] border-[#DC2626]';
+      case "failed":
+      case "rejected":
+        badgeClass = "text-[#DC2626] bg-[#FEF2F2] border-[#DC2626]";
         break;
       default:
-        badgeClass = 'text-[#3D7AEA] bg-[#FFFF] border-[#3D7AEA]';
+        badgeClass = "text-[#3D7AEA] bg-[#FFFF] border-[#3D7AEA]";
     }
 
     return (
@@ -126,7 +127,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
       return details.repayment_history.map((item) => ({
         id: item.id,
         amount: formatCurrency(item.amount),
-        date: item.created_at ? formatDate(item.created_at) : 'N/A',
+        date: item.created_at ? formatDate(item.created_at) : "N/A",
         status: item.status,
       }));
     }
@@ -153,7 +154,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
               <div className="flex items-center justify-between">
                 <p className="font-medium text-[#344054]">Loan No</p>
                 <p className="text-[#1D2939] font-semibold">
-                  {details?.loan_details?.loan_number || 'N/A'}
+                  {details?.loan_details?.loan_number || "N/A"}
                 </p>
               </div>
 
@@ -161,7 +162,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                 <p className="font-medium text-[#344054]">Status</p>
                 <div>
                   {renderStatusBadge(
-                    loanData?.payment_status || loanData?.status || 'N/A'
+                    loanData?.payment_status || loanData?.status || "N/A"
                   )}
                 </div>
               </div>
@@ -171,14 +172,14 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                 <p className="text-[#1D2939] font-semibold">
                   {formatDate(
                     loanData?.created_at || details?.loan_details?.created_at
-                  ) || 'N/A'}
+                  ) || "N/A"}
                 </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <p className="font-medium text-[#344054]">Full Name</p>
                 <p className="text-[#1D2939] font-semibold">
-                  {loanData?.staff_name || 'N/A'}
+                  {loanData?.staff_name || "N/A"}
                 </p>
               </div>
 
@@ -188,7 +189,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                   {formatCurrency(
                     loanData?.loan_amount ||
                       details?.loan_details?.amount ||
-                      '0'
+                      "0"
                   )}
                 </p>
               </div>
@@ -198,17 +199,24 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                 <p className="text-[#1D2939] font-semibold">
                   {loanData?.loan_period ||
                     details?.loan_details?.repayment_period ||
-                    'N/A'}
+                    "N/A"}
                 </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <p className="font-medium text-[#344054]">Loan Purpose</p>
                 <p className="text-[#1D2939] font-semibold">
-                  {loanData?.loan_type || 'N/A'}
+                  {loanData?.loan_type || "N/A"}
                 </p>
               </div>
-
+              {loanData?.status?.toLocaleLowerCase() === "pending" && (
+                <p className="font-bold text-sm">
+                  Pending with:{" "}
+                  <span className="text-orange-500">
+                    {loanData?.pending_with}
+                  </span>{" "}
+                </p>
+              )}
               {/* Comments section */}
               {setOpenComment && (
                 <div className="flex justify-end">
@@ -254,7 +262,7 @@ const LoanDetailsDrawer: React.FC<DrawerProps> = ({
                         >
                           <TableCell className="font-medium">
                             {index + 1}
-                          </TableCell>{' '}
+                          </TableCell>
                           <TableCell className="whitespace-nowrap">
                             {item.amount}
                           </TableCell>
