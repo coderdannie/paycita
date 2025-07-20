@@ -324,15 +324,22 @@ export const downloadBulkEmployeeTemplate = () => {
 export function formatDateToBackend(
   inputDate: string | Date = new Date()
 ): string {
-  const date = typeof inputDate === 'string' ? new Date(inputDate) : inputDate;
+  const date = typeof inputDate === "string" ? new Date(inputDate) : inputDate;
 
   if (isNaN(date.getTime())) {
-    throw new Error('Invalid date input');
+    throw new Error("Invalid date input");
   }
 
   const year: number = date.getFullYear();
-  const month: string = String(date.getMonth() + 1).padStart(2, '0');
-  const day: string = String(date.getDate()).padStart(2, '0');
+  const month: string = String(date.getMonth() + 1).padStart(2, "0");
+  const day: string = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
+
+export const formatCurrency = (number: number, currency = "NGN") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(number);
+};

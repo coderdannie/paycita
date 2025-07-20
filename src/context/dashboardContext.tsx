@@ -8,7 +8,6 @@ import {
   useState,
 } from "react";
 import useApiRequest from "../hooks/useApiRequest";
-import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   updateAttendance,
@@ -75,7 +74,6 @@ const DashboardProvider = ({
   const { postRequest: clockOut, loading: isClockingOut } = useApiRequest();
   const { getRequest } = useApiRequest();
   const { filters } = useDashboardSelector();
-  const router = useRouter();
 
   const { isPending: isEmployeeAttendanceLoading } = useGetAttendance(filters);
 
@@ -99,12 +97,13 @@ const DashboardProvider = ({
     }
   }, [dispatch, getRequest]);
 
-  const getAttendance = async () =>
+  const getAttendance = async () => {
     await fetchAttendance("/hr/attendance", (data) => {
       if (data.success) {
         dispatch(updateAttendance(data.data));
       }
     });
+  };
 
   const handleClockOut = async () => {
     try {
@@ -155,16 +154,6 @@ const DashboardProvider = ({
       toast.error("Failed to clock in. Please try again.");
     }
   };
-  const loadData = () => {
-    const token = safeLocalStorage.getItem("access_token");
-    if (!token) {
-      router.replace("/");
-    } else {
-      // handleGetAttendance();
-      getAttendance();
-      fetchDashboardDetails();
-    }
-  };
 
   useEffect(() => {
     // Only run on client side
@@ -192,8 +181,38 @@ const DashboardProvider = ({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      loadData();
+      const token = safeLocalStorage.getItem("access_token");
+      if (!token) {
+        // Don't make API calls if user is not authenticated
+        console.log("No access token found, skipping dashboard data fetch");
+        return;
+      }
+
+      // Only make API calls if user is authenticated
+      // Call attendance API
+      fetchAttendance("/hr/attendance", (data) => {
+        if (data.success) {
+          dispatch(updateAttendance(data.data));
+        }
+      });
+
+      // Call dashboard details API
+      (async () => {
+        try {
+          setIsDashboardDetailsFetching(true);
+          await getRequest("hr/dashboard", (response) => {
+            if (response.success) {
+              dispatch(updateDashboardDetails(response.data));
+            }
+          });
+        } catch {
+          // Error is handled by the API request hook
+        } finally {
+          setIsDashboardDetailsFetching(false);
+        }
+      })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const queryClient = useQueryClient();
@@ -229,11 +248,14 @@ const DashboardProvider = ({
 
   const { resetChatNotification } = useNotification();
 
-  const selectChat = useCallback((user: ChatUser) => {
-    setCurrentChat(user);
-    // Reset notifications when entering chat
-    resetChatNotification(user.chat_id);
-  }, []);
+  const selectChat = useCallback(
+    (user: ChatUser) => {
+      setCurrentChat(user);
+      // Reset notifications when entering chat
+      resetChatNotification(user.chat_id);
+    },
+    [resetChatNotification]
+  );
 
   // Mark messages as read in a separate effect
   useEffect(() => {

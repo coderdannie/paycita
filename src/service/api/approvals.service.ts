@@ -1,4 +1,4 @@
-import { api } from '.';
+import { api } from ".";
 
 const getAllApprovals = (route: string) => {
   return api.get(`/hr/${route}`);
@@ -16,13 +16,14 @@ const addApprovalComment = (
 
 const updateApproval = (
   route: string,
-  id: string,
   data: {
     status: string;
     reason?: string;
-  }
+  },
+  id?: string
 ) => {
-  return api.post(`/hr/${route}/${id}`, data);
+  const url = id ? `/hr/${route}/${id}` : `/hr/${route}`;
+  return api.post(url, data);
 };
 
 const resolveCommentThread = (route: string, id: string) => {
@@ -30,13 +31,13 @@ const resolveCommentThread = (route: string, id: string) => {
 };
 
 const resendApprovalOtp = async (query: { id: string }) => {
-  const GET_RESEND_OTP = (id = '') => `/hr/resend-otp/${id}`;
+  const GET_RESEND_OTP = (id = "") => `/hr/resend-otp/${id}`;
   const res = await api.get(GET_RESEND_OTP(query.id));
   return res.data;
 };
 
 const verifyApprovalOtp = async (body: { otp: string }) => {
-  const res = await api.post('/hr/verify-payment-otp', body);
+  const res = await api.post("/hr/verify-payment-otp", body);
   return res.data;
 };
 

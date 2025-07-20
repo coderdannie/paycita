@@ -94,6 +94,9 @@ const ActionModal: React.FC<ActionModalProps> = ({
             onClick={handleConfirm}
             disabled={loading}
           >
+            {loading && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            )}
             {actionType === "approve" ? "Approve" : "Reject"}
           </button>
         </div>
