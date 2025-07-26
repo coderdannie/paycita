@@ -27,10 +27,7 @@ const NoDataState: React.FC<NoDataStateProps> = ({
       {button?.component ? (
         button.component
       ) : button?.onClick && button.label ? (
-        <Button
-          onClick={button.onClick}
-          className="mt-2 px-6 py-2 bg-pry text-white rounded-lg"
-        >
+        <Button onClick={button.onClick} className="mt-2 px-6 py-2  rounded-lg">
           {button.label}
         </Button>
       ) : null}

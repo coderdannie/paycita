@@ -5,7 +5,7 @@ import { IoClose } from 'react-icons/io5';
 interface PayrollTaxData {
   salary: string;
   tax_status?: string;
-  tax_number?: string;
+  pension_number?: string;
   tax_method?: string;
   pension_company?: string;
 }
@@ -24,6 +24,10 @@ interface EmployeeData {
   bank_name: string | null;
   bank_account_number: string | null;
   bank_account_name: string | null;
+  pension_number: string | null;
+  tax_status: string | null;
+  pension_company?: string;
+
   department: {
     id: number;
     name: string;
@@ -48,7 +52,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
   const [formData, setFormData] = useState<PayrollTaxData>({
     salary: '',
     tax_status: '',
-    tax_number: '',
+    pension_number: '',
     tax_method: '',
     pension_company: '',
   });
@@ -58,10 +62,10 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
     if (isOpen) {
       setFormData({
         salary: employee.salary || '',
-        tax_status: '',
-        tax_number: '',
+        tax_status: employee.tax_status,
+        pension_number: employee.pension_number,
         tax_method: '',
-        pension_company: '',
+        pension_company: employee.pension_company,
       });
     }
   }, [isOpen]);
@@ -86,7 +90,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
     setFormData({
       salary: employee.salary || '',
       tax_status: 'Active Taxpayer',
-      tax_number: '121379847343539',
+      pension_number: '121379847343539',
       tax_method: 'Gross',
       pension_company: 'ARM Pensions',
     });
@@ -177,9 +181,9 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               </label>
               <input
                 type="text"
-                value={formData.tax_number}
+                value={formData.pension_number}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange('tax_number', e.target.value)
+                  handleInputChange('pension_number', e.target.value)
                 }
                 placeholder="121379847343539"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import TableHeader from "./tableHeader";
-import StatusBadge, { StatusBadgeProps } from "./statusBadge";
+import React, { useEffect, useState } from 'react';
+import TableHeader from './tableHeader';
+import StatusBadge, { StatusBadgeProps } from './statusBadge';
 
-import { PayrollEntry } from "@/src/types/payrollEntry";
-import useApiRequest from "@/src/hooks/useApiRequest";
-import { Button } from "@/components/ui/button";
-import { formatDate } from "@/src/utils/helper";
+import { PayrollEntry } from '@/src/types/payrollEntry';
+import useApiRequest from '@/src/hooks/useApiRequest';
+import { Button } from '@/components/ui/button';
+import { formatDate } from '@/src/utils/helper';
 
 interface BulkPayrollResponse {
   requires_otp?: boolean;
@@ -27,8 +27,8 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [actionType, setActionType] = useState<"approve" | "reject">("approve");
-  const [rejectReason, setRejectReason] = useState("");
+  const [actionType, setActionType] = useState<'approve' | 'reject'>('approve');
+  const [rejectReason, setRejectReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
   const { postRequest } = useApiRequest();
@@ -37,7 +37,7 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
     try {
       setIsLoading(true);
       await postRequest(
-        "/admin/update-bulk-payroll-requests",
+        '/admin/update-bulk-payroll-requests',
         {
           status,
           payroll_id: selectedRows,
@@ -50,7 +50,7 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
             } else {
               setSelectedRows([]);
               setSelectAll(false);
-              setRejectReason("");
+              setRejectReason('');
               setIsConfirmModalOpen(false);
               setIsRejectModalOpen(false);
             }
@@ -59,15 +59,15 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
       );
       // Clear selections after successful action
     } catch (error) {
-      console.error("Error updating bulk payroll requests:", error);
+      console.error('Error updating bulk payroll requests:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleBulkAction = (type: "approve" | "reject") => {
+  const handleBulkAction = (type: 'approve' | 'reject') => {
     setActionType(type);
-    if (type === "reject") {
+    if (type === 'reject') {
       setIsRejectModalOpen(true);
     } else {
       setIsConfirmModalOpen(true);
@@ -75,10 +75,10 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
   };
 
   const handleConfirmAction = () => {
-    if (actionType === "approve") {
-      handleStatusAll("approved");
+    if (actionType === 'approve') {
+      handleStatusAll('approved');
     } else {
-      handleStatusAll("rejected", rejectReason);
+      handleStatusAll('rejected', rejectReason);
     }
   };
 
@@ -110,8 +110,8 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
   }, [selectedRows, data.length]);
 
   const formatCurrency = (amount: number | string) => {
-    if (typeof amount === "string") {
-      amount = parseFloat(amount.replace(/,/g, ""));
+    if (typeof amount === 'string') {
+      amount = parseFloat(amount.replace(/,/g, ''));
     }
     return `₦${Number(amount)?.toLocaleString()}`;
   };
@@ -121,21 +121,22 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
       {selectedRows?.length > 0 && (
         <div className="flex flex-col md:flex-row gap-2 w-full lg:items-end lg:justify-end">
           <Button
-            className="bg-pry p-3 px-6 capitalize font-normal text-base"
-            onClick={() => handleBulkAction("approve")}
+            className="bg-primary p-3 px-6 capitalize font-normal text-base"
+            onClick={() => handleBulkAction('approve')}
             disabled={isLoading}
           >
             {isLoading
-              ? "Processing..."
+              ? 'Processing...'
               : `Approve all (${selectedRows?.length})`}
           </Button>
           <Button
-            className="bg-transparent border-2 text-red_pry border-red_pry p-3 px-6 capitalize font-normal text-base"
-            onClick={() => handleBulkAction("reject")}
+            variant="outline"
+            className=" p-3 px-6 capitalize font-normal text-base"
+            onClick={() => handleBulkAction('reject')}
             disabled={isLoading}
           >
             {isLoading
-              ? "Processing..."
+              ? 'Processing...'
               : `Reject all (${selectedRows?.length})`}
           </Button>
         </div>
@@ -177,11 +178,11 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
                   />
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(entry.date).split(" ")[0]}{" "}
-                  {formatDate(entry.date).split(" ")[1].replace(",", "")}
+                  {formatDate(entry.date).split(' ')[0]}{' '}
+                  {formatDate(entry.date).split(' ')[1].replace(',', '')}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {entry.staff_name || "N/A"}
+                  {entry.staff_name || 'N/A'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   {formatCurrency(entry.gross_income)}
@@ -195,13 +196,13 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
                 <td className="px-4 py-4 whitespace-nowrap">
                   <StatusBadge
                     status={
-                      entry.status.toLowerCase() as StatusBadgeProps["status"]
+                      entry.status.toLowerCase() as StatusBadgeProps['status']
                     }
                   />
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {entry.status.toLowerCase() === "pending" ||
-                  entry.status.toLowerCase() === "awaiting_otp" ? (
+                  {entry.status.toLowerCase() === 'pending' ||
+                  entry.status.toLowerCase() === 'awaiting_otp' ? (
                     <div className="flex space-x-2">
                       <button
                         onClick={() => onApprove(entry)}
@@ -250,7 +251,7 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
                 className="px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? "Processing..." : "Confirm"}
+                {isLoading ? 'Processing...' : 'Confirm'}
               </button>
             </div>
           </div>
@@ -285,7 +286,7 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
               <button
                 onClick={() => {
                   setIsRejectModalOpen(false);
-                  setRejectReason("");
+                  setRejectReason('');
                 }}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                 disabled={isLoading}
@@ -297,7 +298,7 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? "Processing..." : "Reject"}
+                {isLoading ? 'Processing...' : 'Reject'}
               </button>
             </div>
           </div>
