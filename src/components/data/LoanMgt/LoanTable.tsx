@@ -94,11 +94,6 @@ const LoanTable = () => {
     );
   }, []);
 
-  const handleOpen = useCallback((row: any) => {
-    console.log('Opening details for:', row);
-    // Add your logic here
-  }, []);
-
   return (
     <CustomTable headers={headers}>
       {loans?.length ? (
@@ -114,7 +109,6 @@ const LoanTable = () => {
             <TableCell>
               <div className="flex items-center gap-2">
                 <Link
-                  onClick={() => handleOpen(row)}
                   href={`/loan-management/${rowIndex}`}
                   className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
                 >
