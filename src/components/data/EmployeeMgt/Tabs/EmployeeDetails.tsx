@@ -67,6 +67,7 @@ const EmployeeDetails = ({
   const queryClient = useQueryClient();
   const currency = userData?.user?.currency || 'NGN';
 
+  console.log('details', userDetails);
   // Prepare employee data for the EditBasicInformationModal
   const employeeDataForModal = {
     id: 1, // You might want to pass this as a prop or get it from userDetails
@@ -82,7 +83,9 @@ const EmployeeDetails = ({
     bank_name: userDetails?.bank_name || null,
     bank_account_number: userDetails?.bank_account_number || null,
     bank_account_name: userDetails?.bank_account_name || null,
-
+    pension_number: userDetails?.pension_number || null,
+    tax_status: userDetails?.tax_status,
+    pension_company: userDetails?.pension_company,
     department: {
       id: userDetails?.department?.id,
       name: userDetails?.department?.name,
