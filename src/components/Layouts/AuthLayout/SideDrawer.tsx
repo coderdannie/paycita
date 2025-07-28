@@ -9,6 +9,8 @@ import Image from 'next/image';
 import logoutIcon from '../../../../public/assets/logout.svg';
 import { useLogOut } from '@/src/hooks/useLogOut';
 import { useAuthSelector } from '@/src/Redux/selectors';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/src/Redux/store';
 
 interface SidebarProps {
   isDrawerOpen: boolean;
@@ -27,6 +29,10 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
 
   const { mutateLogOut: logout } = useLogOut();
 
+  const subscription = useSelector(
+    (state: RootState) => state.auth.user.subscription_plan
+  );
+
   const handleLogout = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -34,7 +40,35 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
       setIsLoading(false);
     }, 1000);
   };
+
+  // Function to check if a feature is available for the current subscription
+  const isFeatureAvailable = (featureName: string) => {
+    // Features available only for premium plan
+    const premiumOnlyFeatures = [
+      'Payroll',
+      'Asset Management',
+      'Event',
+      'Loan Management',
+      'Message',
+      'Appraisals',
+      'Invoicing',
+      'Task Management',
+    ];
+
+    // If it's a premium-only feature and user has core plan, hide it
+    if (premiumOnlyFeatures.includes(featureName) && subscription === 'core') {
+      return false;
+    }
+
+    return true;
+  };
+
   const filteredSidebarData = sidebarData.filter((item) => {
+    // Check subscription plan restrictions first
+    if (!isFeatureAvailable(item.title)) {
+      return false;
+    }
+
     // Exclude Loan if not visible
     if (item.title === 'Loan' && !isVisible) {
       return false;

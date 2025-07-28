@@ -8,4 +8,5 @@ export interface LoggedInUserProps {
   id: string;
   phone_number: string;
   role: string;
-} 
+  subscription_plan: string;
+}

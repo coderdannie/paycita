@@ -1,7 +1,7 @@
 type Feature = {
-  employee_loan: string | null
-  utility_request: string | null
-} | null
+  employee_loan: string | null;
+  utility_request: string | null;
+} | null;
 
 interface LoggedInUserProps {
   approvals: string[];
@@ -15,4 +15,5 @@ interface LoggedInUserProps {
   id: string;
   phone_number: string;
   role: string;
+  subscription_plan: string;
 }

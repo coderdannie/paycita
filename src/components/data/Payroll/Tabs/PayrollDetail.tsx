@@ -1,5 +1,5 @@
-import { useAuthSelector } from "@/src/Redux/selectors";
-import { formatDate, numberToWords } from "@/src/utils/helper";
+import { useAuthSelector } from '@/src/Redux/selectors';
+import { formatDate, numberToWords } from '@/src/utils/helper';
 
 const PayrollDetail = ({
   details,
@@ -35,18 +35,18 @@ const PayrollDetail = ({
 }) => {
   const userData = useAuthSelector();
 
-  const currency = userData?.user?.currency || "NGN";
+  const currency = userData?.user?.currency || 'NGN';
   const netPayInWords = details?.net_pay
-    ? numberToWords(+details?.net_pay.replace(/,/g, ""))
-    : "";
+    ? numberToWords(+details?.net_pay.replace(/,/g, ''))
+    : '';
   return (
     <div className="min-h-screen ">
       <div className="bg-white rounded-lg border border-[#E4E7EC] mx-auto ">
         {/* Header */}
         <div className="flex justify-between gap-4 flex-wrap px-4 md:px-8 pt-8 ">
           <p className="text-lg font-semibold">
-            Payslip of{" "}
-            {formatDate(details?.date).split(" ").slice(1, 3).join(" ")}
+            Payslip of{' '}
+            {formatDate(details?.date).split(' ').slice(1, 3).join(' ')}
           </p>
           <p>Date: {formatDate(details?.date)}</p>
         </div>
@@ -54,7 +54,7 @@ const PayrollDetail = ({
           <div className="flex-1 mb-4 md:mb-0">
             <div className="flex items-center  ">
               <div className="bg-gray-200 p-2 rounded mr-4">
-                {" "}
+                {' '}
                 {details?.profile_picture && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -70,7 +70,7 @@ const PayrollDetail = ({
                 </p>
                 <div className="text-[#667085] pt-4">
                   <p className="text-sm">
-                    {details?.bank_name} <br /> Account number:{" "}
+                    {details?.bank_name} <br /> Account number:{' '}
                     {details?.bank_account_number}
                   </p>
                   <p className="text-xs">
@@ -93,10 +93,6 @@ const PayrollDetail = ({
         <div className="flex flex-col border-t border-[#E4E7EC] md:flex-row justify-between mb-8 pt-9 px-4 md:px-8">
           <div className="flex-1 p-4 mb-4 md:mb-0 md:mr-4">
             <h2 className="font-semibold mb-4">Earnings</h2>
-            <div className="border-b border-[#E4E7EC] pt-2 pb-5 flex justify-between">
-              <p>Gross Salary </p>
-              <p className="text-right">$3,000</p>
-            </div>
 
             <table className="w-full">
               <tbody>
@@ -200,7 +196,7 @@ const PayrollDetail = ({
             <div className="pt-5 mt-5  border-t border-[#E4E7EC] font-semibold flex justify-between">
               <p>Total Deduction</p>
               <p className="text-right">
-                {" "}
+                {' '}
                 {currency}
                 {details?.deductions}
               </p>
@@ -216,7 +212,7 @@ const PayrollDetail = ({
           <div>
             <p className="font-semibold">
               {currency}
-              {details?.net_pay}{" "}
+              {details?.net_pay}{' '}
             </p>
             <p className=" text-gray-600 capitalize max-w-96">
               ({netPayInWords})
