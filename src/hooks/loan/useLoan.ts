@@ -8,7 +8,7 @@ import {
 import loanService from '@/src/service/api/loan.service';
 import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
 import { AxiosError } from 'axios';
-import { Loan } from '@/src/types/loan';
+import { Loan, LoanPolicyData } from '@/src/types/loan';
 
 export const useGetAllLoan = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -319,6 +319,126 @@ export const useGetLoanHistory = (id: string) => {
     isFetching,
     loanHistory: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
+    rawData: data,
+  };
+};
+
+export const useCreateLoanPolicy = () => {
+  return useMutation({
+    mutationFn: async (loanData: LoanPolicyData) => {
+      const response = await loanService.createLoanPolicy(loanData);
+      return response;
+    },
+  });
+};
+
+export const useDeleteLoanPolicy = () => {
+  const queryClient = useQueryClient();
+  const {
+    mutate: mutateDeleteLoanPolicy,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await loanService.deleteLoanPolicy(id);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_LOAN_POLICY],
+      });
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {},
+  });
+  return {
+    mutateDeleteLoanPolicy,
+    isPending,
+    isSuccess,
+    isError,
+  };
+};
+
+export const useGetAllLoanPolicy = () => {
+  const { isError, isSuccess, data, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_LOAN_POLICY],
+    queryFn: async () => {
+      const response = await loanService.getAllLoanPolicy();
+
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+  });
+
+  const loanPolicy = data?.data?.data || [];
+  const pagination = data?.data?.pagination || {};
+  return {
+    isError,
+    isSuccess,
+    isPending,
+    loanPolicy,
+    pagination,
+  };
+};
+
+export const useGetAllLoanRequest = (filters?: { page: string }) => {
+  const { isError, isSuccess, data, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_LOAN_REQUEST, filters],
+    queryFn: async () => {
+      const response = await loanService.getAllLoanRequest(filters);
+
+      return response;
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+  });
+
+  const loanRequests = data?.data?.data || [];
+  const pagination = data?.data?.pagination || {};
+  return {
+    isError,
+    isSuccess,
+    isPending,
+    loanRequests,
+    pagination,
+  };
+};
+
+export const useGetLoanRepaymentHistoryById = (id: string) => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery({
+    queryKey: [QUERY_KEYS.GET_LOAN_REPAYMENT_HISTORY, id],
+    queryFn: async () => {
+      const response = await loanService.getLoanRepaymentHistoryById(id);
+      return response;
+    },
+    enabled: !!id,
+    retry: (
+      failureCount,
+      error: {
+        response: {
+          status: number;
+        };
+      }
+    ) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+  });
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending && !isFetching,
+    isFetching,
+    history: data?.data?.data || null,
     rawData: data,
   };
 };

@@ -10,14 +10,19 @@ import NoDataState from '@/src/components/common/NoDataState';
 import Image from 'next/image';
 import { TbEdit } from 'react-icons/tb';
 import { DeleteModal } from '@/src/components/modals/DeleteLoanPolicy';
+import {
+  useCreateLoanPolicy,
+  useDeleteLoanPolicy,
+  useGetAllLoanPolicy,
+} from '@/src/hooks/loan/useLoan';
+import { useToast } from '@/src/context/ToastContext';
+import { LoanPolicyData } from '@/src/types/loan';
+import { toast } from 'react-hot-toast';
+import LoadingOverlay from '@/src/components/common/LoadingOverlay';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
 
 const tabItems = ['Loan', 'Loan Policy'];
-interface LoanPolicyData {
-  policyName: string;
-  eligibility: string;
-  maxLoanLimit: string;
-  repaymentMethod: string;
-}
 
 type ModalMode = 'add' | 'edit';
 
@@ -26,24 +31,33 @@ const LoanMgt = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const { addToast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<ModalMode>('edit');
   const [loanId, setLoanId] = useState<number>();
   const [loanPolicies, setLoanPolicies] = useState<LoanPolicyData[]>([
     {
-      policyName: 'Staff Emergency Loan Policy',
+      policy_name: 'Staff Emergency Loan Policy',
       eligibility: 'Must have completed 6 months of employment',
-      maxLoanLimit: '₦150,000',
-      repaymentMethod: 'Payroll Deduction',
+      loan_limit: '₦150,000',
+      repayment_period: 'Payroll Deduction',
     },
     {
-      policyName: 'Senior Staff Loan Policy',
+      policy_name: 'Senior Staff Loan Policy',
       eligibility: 'Must be in senior position for 2+ years',
-      maxLoanLimit: '₦500,000',
-      repaymentMethod: 'Bank Transfer',
+      loan_limit: '₦500,000',
+      repayment_period: 'Bank Transfer',
     },
   ]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const { mutate: mutateCreateLoanPolicy, isPending: isPendingCreateEvent } =
+    useCreateLoanPolicy();
+
+  const { mutateDeleteLoanPolicy, isPending: isDeletingLoanPolicy } =
+    useDeleteLoanPolicy();
+
+  const { loanPolicy, isPending } = useGetAllLoanPolicy();
 
   const handleOpenAddModal = (): void => {
     setModalMode('add');
@@ -62,6 +76,8 @@ const LoanMgt = () => {
     setEditingIndex(null);
   };
 
+  const queryClient = useQueryClient();
+
   const handleSubmitLoanPolicy = (data: LoanPolicyData): void => {
     console.log(
       `${modalMode === 'add' ? 'Added' : 'Updated'} loan policy data:`,
@@ -69,7 +85,23 @@ const LoanMgt = () => {
     );
 
     if (modalMode === 'add') {
-      setLoanPolicies((prev) => [...prev, data]);
+      mutateCreateLoanPolicy(data, {
+        onSuccess: (res) => {
+          addToast(
+            res.data.message || 'Loan Requested Successfully',
+            'success'
+          );
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_ALL_LOAN_POLICY],
+            exact: false,
+          });
+          setTab('Loan Policy');
+          setIsModalOpen(false);
+        },
+        onError: (error) => {
+          addToast(error.message, 'error');
+        },
+      });
     } else if (editingIndex !== null) {
       setLoanPolicies((prev) =>
         prev.map((policy, index) => (index === editingIndex ? data : policy))
@@ -83,7 +115,18 @@ const LoanMgt = () => {
 
   const handleDeletePolicy = () => {
     setLoanPolicies((prev) => prev.filter((_, i) => i !== loanId));
-    setIsDeleteModalOpen(false);
+    if (loanId) {
+      mutateDeleteLoanPolicy(loanId.toString(), {
+        onSuccess: () => {
+          toast.success('Loan policy deleted successfully');
+          setIsDeleteModalOpen(false);
+          setLoanId(null);
+        },
+        onError: () => {
+          toast.error('Failed to delete loan policy');
+        },
+      });
+    }
   };
 
   const handleOpenDeleteModal = (index: number): void => {
@@ -94,6 +137,10 @@ const LoanMgt = () => {
   const getCurrentEditData = (): LoanPolicyData | undefined => {
     return editingIndex !== null ? loanPolicies[editingIndex] : undefined;
   };
+
+  if (isPending) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <div>
@@ -134,7 +181,7 @@ const LoanMgt = () => {
           <LoanTable />
         ) : (
           <>
-            {loanPolicies.length === 0 ? (
+            {loanPolicy?.length === 0 ? (
               <NoDataState
                 icon={
                   <Image
@@ -149,9 +196,9 @@ const LoanMgt = () => {
               />
             ) : (
               <div className="space-y-4">
-                {loanPolicies.map((policy, index) => (
+                {loanPolicy?.map((policy) => (
                   <div
-                    key={index}
+                    key={policy?.policy_name}
                     className="bg-white rounded-lg border border-gray-200 p-6"
                   >
                     <div className="flex justify-between items-start">
@@ -165,7 +212,8 @@ const LoanMgt = () => {
                             </div>
                             <div className="flex-1">
                               <span className="text-sm  text-gray-900 font-semibold">
-                                {policy.policyName || `Policy #${index + 1}`}
+                                {policy?.policy_name ||
+                                  `Policy #${policy?.id + 1}`}
                               </span>
                             </div>
                           </div>
@@ -178,7 +226,7 @@ const LoanMgt = () => {
                             </div>
                             <div className="flex-1">
                               <span className="text-sm text-gray-900 font-semibold">
-                                {policy.eligibility || 'Not set'}
+                                {policy?.eligibility || 'Not set'}
                               </span>
                             </div>
                           </div>
@@ -191,7 +239,7 @@ const LoanMgt = () => {
                             </div>
                             <div className="flex-1">
                               <span className="text-sm font-semibold text-gray-900">
-                                {policy.maxLoanLimit || 'Not set'}
+                                ₦{policy?.maximum_loan_limit || 'Not set'}
                               </span>
                             </div>
                           </div>
@@ -204,7 +252,7 @@ const LoanMgt = () => {
                             </div>
                             <div className="flex-1">
                               <span className="text-sm text-gray-900 font-semibold">
-                                {policy.repaymentMethod || 'Not set'}
+                                {policy?.repayment_method || 'Not set'}
                               </span>
                             </div>
                           </div>
@@ -213,19 +261,19 @@ const LoanMgt = () => {
 
                       <div className="flex space-x-2 ml-4">
                         <button
-                          onClick={() => handleOpenDeleteModal(index)}
+                          onClick={() => handleOpenDeleteModal(policy?.id)}
                           className="p-2 border text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                           title="Delete policy"
                         >
                           <Trash2 className="h-4 w-4 text-[#667085]" />
                         </button>
-                        <button
-                          onClick={() => handleOpenEditModal(index)}
+                        {/* <button
+                          onClick={() => handleOpenEditModal(policy?.id)}
                           className="p-2 border text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
                           title="Edit policy"
                         >
                           <TbEdit className="h-4 w-4 text-[#667085]" />
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
@@ -241,6 +289,7 @@ const LoanMgt = () => {
         onSubmit={handleSubmitLoanPolicy}
         mode={modalMode}
         initialData={getCurrentEditData()}
+        isPendingCreateEvent={isPendingCreateEvent}
       />
       <DeleteModal
         isOpen={isDeleteModalOpen}
@@ -248,6 +297,7 @@ const LoanMgt = () => {
         description="This action is permanent and cannot be undone. Are you really want to delete this loan policy ?"
         onCancel={handleCancel}
         onDelete={handleDeletePolicy}
+        isDeleting={isDeletingLoanPolicy}
       />
     </div>
   );

@@ -14,6 +14,7 @@ interface DeleteModalProps {
   description: string;
   onCancel: () => void;
   onDelete: () => void;
+  isDeleting: boolean;
 }
 
 export const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -22,6 +23,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
   description,
   onCancel,
   onDelete,
+  isDeleting,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
@@ -51,7 +53,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
             onClick={onDelete}
             className="flex-1 py-2  bg-[#EA3D3D] text-white font-medium hover:bg-red-700 transition-colors"
           >
-            Delete
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </DialogContent>

@@ -22,8 +22,7 @@ const Sidebar = () => {
   const subscription = useSelector(
     (state: RootState) => state.auth.user.subscription_plan
   );
-  console.log('user', subscription);
-
+ 
   const companyLogo = userData?.user?.company_logo;
 
   const [showMenu, setShowMenu] = useState(false);
