@@ -47,12 +47,7 @@ const LoanPolicyModal: React.FC<LoanPolicyModalProps> = ({
   const [lastOpenState, setLastOpenState] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const repaymentOptions: string[] = [
-    'Payroll Deduction',
-    'Bank Transfer',
-    'Cash Payment',
-    'Check Payment',
-  ];
+  const repaymentOptions: string[] = ['Payroll Deduction'];
 
   // Only update form data when modal is opened, not on every render
   useEffect(() => {

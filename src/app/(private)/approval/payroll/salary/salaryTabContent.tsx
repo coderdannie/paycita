@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import ApiPagination from "@/src/components/common/General/TanTable/apiPagination";
-import ActionModal from "@/src/components/data/Approval/salary/actionModal";
-import { FilterValues } from "@/src/components/data/Approval/salary/filter";
-import SalaryTable from "@/src/components/data/Approval/salary/salaryTable";
-import { useUpdateApproval } from "@/src/hooks/approvals/useApprovals";
-import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { PayrollEntry } from "@/src/types/payrollEntry";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import ApiPagination from '@/src/components/common/General/TanTable/apiPagination';
+import ActionModal from '@/src/components/data/Approval/salary/actionModal';
+import { FilterValues } from '@/src/components/data/Approval/salary/filter';
+import SalaryTable from '@/src/components/data/Approval/salary/salaryTable';
+import { useUpdateApproval } from '@/src/hooks/approvals/useApprovals';
+import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import { PayrollEntry } from '@/src/types/payrollEntry';
+import { useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface SalaryTabContentProps {
   //   isFilterOpen: boolean;
@@ -23,11 +23,11 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
   //   isFilterOpen,
   //   setIsFilterOpen,
   salaryData,
-  searchTerm: externalSearchTerm = "",
+  searchTerm: externalSearchTerm = '',
 }) => {
   const queryClient = useQueryClient();
   const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
-    useUpdateApproval("update-payroll-requests");
+    useUpdateApproval('update-payroll-requests');
 
   // State for modals
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -58,7 +58,7 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
   const filteredAndSearchedData = useMemo(() => {
     let processedData = payrollData || [];
 
-    if (externalSearchTerm.trim() !== "") {
+    if (externalSearchTerm.trim() !== '') {
       const lowerSearchTerm = externalSearchTerm.toLowerCase();
 
       processedData = processedData.filter((entry) => {
@@ -72,18 +72,18 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
       });
     }
     if (activeFilters) {
-      if (activeFilters.status && activeFilters.status !== "All") {
+      if (activeFilters.status && activeFilters.status !== 'All') {
         processedData = processedData.filter(
           (entry) => entry.status === activeFilters.status
         );
       }
 
-      if (activeFilters.period && activeFilters.period !== "") {
+      if (activeFilters.period && activeFilters.period !== '') {
         processedData = processedData.filter((entry) => {
           // Convert the entry date to match the period format (e.g., "Feb, 2025")
           const entryDate = new Date(entry.date);
-          const entryMonth = entryDate.toLocaleDateString("en-US", {
-            month: "short",
+          const entryMonth = entryDate.toLocaleDateString('en-US', {
+            month: 'short',
           });
           const entryYear = entryDate.getFullYear();
           const entryPeriod = `${entryMonth}, ${entryYear}`;
@@ -124,27 +124,27 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
       const payload = {
         id: selectedEntry.id.toString() as string,
         data: {
-          status: "approved" as const,
+          status: 'approved' as const,
         },
       };
 
       mutateUpdateApprovalStatus(payload, {
         onSuccess: (res) => {
-          toast.success(res.data.message || "Entry approved successfully");
+          toast.success(res.data.message || 'Entry approved successfully');
           if (res.data.data.requires_otp) {
             // setIsOTPModalOpen(true);
           }
           queryClient.invalidateQueries({
             queryKey: [
               QUERY_KEYS.GET_ALL_APPROVALS,
-              "pending-approval-salary-requests",
+              'pending-approval-salary-requests',
             ],
           });
         },
         onError: (error) => {
           if (error instanceof AxiosError) {
             const errorMessage =
-              error.response?.data?.message || "Failed to update approval";
+              error.response?.data?.message || 'Failed to update approval';
             toast.error(errorMessage);
           }
         },
@@ -158,25 +158,25 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
       const payload = {
         id: selectedEntry.id.toString() as string,
         data: {
-          status: "rejected" as const,
+          status: 'rejected' as const,
           ...(comment && { reason: comment }),
         },
       };
 
       mutateUpdateApprovalStatus(payload, {
         onSuccess: (res) => {
-          toast.success(res.data.message || "Entry rejected successfully");
+          toast.success(res.data.message || 'Entry rejected successfully');
           queryClient.invalidateQueries({
             queryKey: [
               QUERY_KEYS.GET_ALL_APPROVALS,
-              "pending-approval-salary-requests",
+              'pending-approval-salary-requests',
             ],
           });
         },
         onError: (error) => {
           if (error instanceof AxiosError) {
             const errorMessage =
-              error.response?.data?.message || "Failed to reject entry";
+              error.response?.data?.message || 'Failed to reject entry';
             toast.error(errorMessage);
           }
         },
@@ -231,13 +231,13 @@ const SalaryTabContent: React.FC<SalaryTabContentProps> = ({
             </svg>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No results found
-            </h3>{" "}
+            </h3>{' '}
             <p className="text-gray-500 mb-4">
               {externalSearchTerm || activeFilters
                 ? `No payroll entries match your ${
-                    externalSearchTerm ? "search" : "filter"
+                    externalSearchTerm ? 'search' : 'filter'
                   } criteria.`
-                : "No payroll entries available."}
+                : 'No payroll entries available.'}
             </p>
             {(externalSearchTerm || activeFilters) && (
               <button
