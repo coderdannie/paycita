@@ -1,15 +1,16 @@
 export const initialUser: LoggedInUserProps = {
   birthday: false,
-  company_logo: "",
-  currency: "",
-  email: "",
+  company_logo: '',
+  currency: '',
+  email: '',
   feature: null,
-  full_name: "",
-  id: "",
-  phone_number: "",
-  role: "",
+  full_name: '',
+  id: '',
+  phone_number: '',
+  role: '',
   approvals: [],
   line_manager: false,
+  subscription_plan: '',
 };
 
 export const initialAttendanceData: AttendanceSummary = {

@@ -4,6 +4,10 @@ import { TableCell, TableRow } from '../../ui/table';
 import { Info } from 'lucide-react';
 import TableEmptyState from '../../common/TableEmptyState';
 import Link from 'next/link';
+import { useGetAllLoanRequest } from '@/src/hooks/loan/useLoan';
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
+import { useSearchParams } from 'next/navigation';
+import CustomPagination from '../../common/pagination/Pagination';
 
 const LoanTable = () => {
   const headers = useMemo(
@@ -18,54 +22,36 @@ const LoanTable = () => {
     []
   );
 
+  const { loanRequests, isPending } = useGetAllLoanRequest({
+    page: '1',
+  });
+
+  console.log('loan request', loanRequests);
   // Dummy data based on your screenshot
-  const loans = useMemo(
-    () => [
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'Finance',
-        loan_amount: '20,000',
-        loan_period: '4 months',
-        payment_status: 'pending',
-      },
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'Human Resources',
-        loan_amount: '10,000',
-        loan_period: '4 months',
-        payment_status: 'approved',
-      },
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'IT Support',
-        loan_amount: '20,000',
-        loan_period: '4 months',
-        payment_status: 'rejected',
-      },
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'Marketing',
-        loan_amount: '20,000',
-        loan_period: '4 months',
-        payment_status: 'repaid',
-      },
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'Human Resources',
-        loan_amount: '20,000',
-        loan_period: '4 months',
-        payment_status: 'rejected',
-      },
-      {
-        loan_number: 'Sarah Johnson',
-        department: 'Finance',
-        loan_amount: '20,000',
-        loan_period: '4 months',
-        payment_status: 'repaid',
-      },
-    ],
-    []
+
+  const updateSearchParams = useUpdateSearchParams();
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get('page') || 1);
+
+  const leavesPerPage = 5;
+
+  const goToPage = useCallback(
+    (page: number) => {
+      updateSearchParams({ page: page.toString() }, { scroll: true });
+    },
+    [updateSearchParams]
   );
+
+  const paginatedData = useMemo(() => {
+    return loanRequests?.slice(
+      (currentPage - 1) * leavesPerPage,
+      currentPage * leavesPerPage
+    );
+  }, [loanRequests, currentPage, leavesPerPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(loanRequests.length / leavesPerPage);
+  }, [loanRequests, leavesPerPage]);
 
   const renderStatusBadge = useCallback((status: string) => {
     const getStatusStyles = (status: string) => {
@@ -95,33 +81,44 @@ const LoanTable = () => {
   }, []);
 
   return (
-    <CustomTable headers={headers}>
-      {loans?.length ? (
-        loans.map((row, rowIndex) => (
-          <TableRow key={rowIndex} className="text-[#1D2939] text-sm">
-            <TableCell className="py-5">
-              <div className="flex gap-2">{row.loan_number}</div>
-            </TableCell>
-            <TableCell>{row.department}</TableCell>
-            <TableCell>₦{row.loan_amount}</TableCell>
-            <TableCell>{row.loan_period}</TableCell>
-            <TableCell>{renderStatusBadge(row.payment_status)}</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Link
-                  href={`/loan-management/${rowIndex}`}
-                  className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
-                >
-                  <Info className="w-4 h-4" />
-                </Link>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))
-      ) : (
-        <TableEmptyState headers={headers} />
+    <div>
+      <CustomTable headers={headers} isLoading={isPending}>
+        {paginatedData?.length ? (
+          paginatedData?.map((row) => (
+            <TableRow key={row?.id} className="text-[#1D2939] text-sm">
+              <TableCell className="py-5">
+                <div className="flex gap-2">{row?.employee_name}</div>
+              </TableCell>
+              <TableCell>{row?.department}</TableCell>
+              <TableCell>₦{Number(row?.amount).toLocaleString()}</TableCell>
+              <TableCell>{row?.months}</TableCell>
+              <TableCell>{renderStatusBadge(row?.status)}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/loan-management/${row?.id}`}
+                    className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-lg border border-gray-200"
+                  >
+                    <Info className="w-4 h-4" />
+                  </Link>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableEmptyState headers={headers} />
+        )}
+      </CustomTable>
+      {totalPages > 1 && (
+        <div className="mt-6">
+          <CustomPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            goToPage={goToPage}
+          />
+        </div>
       )}
-    </CustomTable>
+    </div>
   );
 };
 
