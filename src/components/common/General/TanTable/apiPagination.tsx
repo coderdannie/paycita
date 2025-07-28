@@ -1,6 +1,6 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { Button, IconButton } from "@material-tailwind/react";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Button, IconButton } from '@material-tailwind/react';
 
 const ApiPagination = ({
   pagination,
@@ -84,7 +84,7 @@ const ApiPagination = ({
       }
 
       if (startPage > 2) {
-        pageNumbers.push("...");
+        pageNumbers.push('...');
       }
 
       for (let i = startPage; i <= endPage; i++) {
@@ -92,7 +92,7 @@ const ApiPagination = ({
       }
 
       if (endPage < total_pages - 1) {
-        pageNumbers.push("...");
+        pageNumbers.push('...');
       }
 
       pageNumbers.push(total_pages);
@@ -130,14 +130,14 @@ const ApiPagination = ({
         <div className="flex items-center gap-1">
           {pageNumbers.map((page, index) => (
             <React.Fragment key={index}>
-              {page === "..." ? (
+              {page === '...' ? (
                 <span className="px-2">...</span>
               ) : (
                 <Button
-                  variant={current_page === page ? "filled" : "text"}
+                  variant={current_page === page ? 'filled' : 'text'}
                   size="sm"
                   className={`w-8 h-8 p-0 ${
-                    current_page === page ? "bg-pry text-white" : ""
+                    current_page === page ? 'bg-primary text-white' : ''
                   }`}
                   onClick={() =>
                     setCurrentPage && setCurrentPage(page as number)
