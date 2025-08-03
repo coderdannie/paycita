@@ -22,7 +22,9 @@ const Sidebar = () => {
   const subscription = useSelector(
     (state: RootState) => state.auth.user.subscription_plan
   );
- 
+
+  console.log('subscription', subscription);
+
   const companyLogo = userData?.user?.company_logo;
 
   const [showMenu, setShowMenu] = useState(false);
@@ -61,26 +63,56 @@ const Sidebar = () => {
     }
   };
 
-  // Function to check if a feature is available for the current subscription
   const isFeatureAvailable = (featureName: string) => {
-    // Features available only for premium plan
-    const premiumOnlyFeatures = [
-      'Payroll',
-      'Asset Management',
-      'Event',
-      'Loan Management',
-      'Message',
-      'Appraisals',
-      'Invoicing',
-      'Task Management',
-    ];
+    const plan = subscription?.toUpperCase();
 
-    // If it's a premium-only feature and user has core plan, hide it
-    if (premiumOnlyFeatures.includes(featureName) && subscription === 'core') {
+    if (!plan) {
       return false;
     }
 
-    return true;
+    const allowedFeatures = {
+      GROWTH: [
+        'Dashboard',
+        'Leave Management',
+        'Attendance',
+        'Expense Management',
+        'Payroll',
+        'Employee Management',
+        'Procurement',
+        'Bill Payment',
+        'Query Management',
+        'Onboarding Documents',
+        'Approval',
+        'Settings',
+      ],
+      PREMIUM: [
+        'Dashboard',
+        'Leave Management',
+        'Attendance',
+        'Expense Management',
+        'Payroll',
+        'Employee Management',
+        'Procurement',
+        'Event',
+        'Query Management',
+        'Task Management',
+        'Asset Management',
+        'Loan Management',
+        'Appraisals',
+        'Message',
+        'Onboarding Documents',
+        'Approval',
+        'Settings',
+      ],
+    };
+
+    // If plan doesn't have allowed features defined, allow all features (ENTERPRISE case)
+    if (!allowedFeatures[plan]) {
+      return true;
+    }
+
+    // Check if the feature is in the allowed list for the current plan
+    return allowedFeatures[plan].includes(featureName);
   };
 
   const filteredSidebarData = sidebarData.filter((item) => {
@@ -89,18 +121,22 @@ const Sidebar = () => {
       return false;
     }
 
-    // Exclude Loan if not visible
+    // Exclude Loan if not visible (existing business logic)
     if (item.title === 'Loan' && !isVisible) {
       return false;
     }
-    // Exclude Approval if not a line manager
+
+    // Exclude Approval if not a line manager (existing business logic)
     if (item.title === 'Approval' && userApprovals.length < 1) {
       return false;
     }
 
+    // Exclude Wallet if not a line manager (existing business logic)
     if (item.title === 'Wallet' && !isLineManager) {
       return false;
     }
+
+    // Exclude All Expenses if not a line manager (existing business logic)
     if (item.title === 'All Expenses' && !isLineManager) {
       return false;
     }

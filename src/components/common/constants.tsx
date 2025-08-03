@@ -19,7 +19,7 @@ import {
   AllExpensesIcon,
   QueryMgtIcon,
   OnboardingDocIcon,
-  // TaskMgtIcon,
+  TaskMgtIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
