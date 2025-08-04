@@ -17,7 +17,9 @@ import {
   ReimbursementIcon,
   AssetMgtIcon,
   AllExpensesIcon,
-  // TaskMgtIcon,
+  QueryMgtIcon,
+  OnboardingDocIcon,
+  TaskMgtIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -81,6 +83,13 @@ export const sidebarData = [
     hover: <EmployeeMgtIcon fill="#692E9F" />,
     path: '/employee-mgt',
   },
+  // {
+  //   title: 'Onboarding Documents',
+  //   icon: <OnboardingDocIcon fill="#344054" />,
+  //   sec: <OnboardingDocIcon fill="#692E9F" />,
+  //   hover: <OnboardingDocIcon fill="#692E9F" />,
+  //   path: '/onboarding-documents',
+  // },
   {
     title: 'Asset Management',
     icon: <AssetMgtIcon fill="#344054" />,
@@ -237,6 +246,13 @@ export const sidebarData = [
     sec: <ReimbursementIcon fill="#692E9F" />,
     hover: <ReimbursementIcon fill="#692E9F" />,
     path: '/add-reimbursement',
+  },
+  {
+    title: 'Query Management',
+    icon: <QueryMgtIcon fill="#344054" />,
+    sec: <QueryMgtIcon fill="#692E9F" />,
+    hover: <QueryMgtIcon fill="#692E9F" />,
+    path: '/query-management',
   },
   // {
   //   title: 'Task Management',
