@@ -168,6 +168,7 @@ type CustomFormSelectProps<T extends FieldValues> = {
   labelText?: string;
   error?: string;
   holder?: string;
+  onChange?: (value: string) => void; // Added onChange prop
 };
 
 export function CustomFormSelect<T extends FieldValues>({
@@ -177,6 +178,7 @@ export function CustomFormSelect<T extends FieldValues>({
   labelText,
   error,
   holder,
+  onChange, // Added onChange parameter
 }: CustomFormSelectProps<T>) {
   return (
     <>
@@ -189,7 +191,13 @@ export function CustomFormSelect<T extends FieldValues>({
               {labelText || String(name)}
             </FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(value) => {
+                  field.onChange(value); // React Hook Form's handler
+                  onChange?.(value); // Custom handler, if provided
+                }}
+                value={field.value}
+              >
                 <SelectTrigger
                   className={`bg-white ${
                     error ? 'border-red-500' : 'border-[#E4E7EC]'
