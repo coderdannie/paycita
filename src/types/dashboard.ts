@@ -61,7 +61,7 @@ export interface UserBasicDetails {
   full_name: string;
   email: string;
   phone_number: string;
-  gender: "male" | "female" | "other";
+  gender: 'male' | 'female' | 'other';
   date_of_birth: string;
   marital_status: string;
   branch_id?: string;
@@ -136,3 +136,12 @@ export type ResolveAccountNameResponse = {
   data: AccountResolutionResult[];
   pagination: null;
 };
+
+export interface BenefitFormData {
+  benefit_name: string;
+  description: string;
+  benefit_type: string;
+  unit: string;
+  allocation: string;
+  recurring: string;
+}
