@@ -43,20 +43,12 @@ interface BenefitFormData {
   recurring: string;
 }
 
-const benefitNameOptions = [
-  { value: 'paid_leave', label: 'Paid Leave' },
-  { value: 'maternity_grant', label: 'Maternity Grant' },
-  { value: 'meal_voucher', label: 'Meal Voucher' },
-  { value: 'transport_voucher', label: 'Transport Voucher' },
-  { value: 'health_insurance', label: 'Health Insurance' },
-];
-
 const benefitTypeOptions = [
   { value: 'leave', label: 'Leave' },
-  { value: 'monetary_allowance', label: 'Monetary Allowance' },
-  { value: 'meal_voucher', label: 'Meal Voucher' },
-  { value: 'transportation_voucher', label: 'Transportation Voucher' },
-  { value: 'insurance', label: 'Insurance' },
+  { value: 'Monetary Allowance', label: 'Monetary Allowance' },
+  { value: 'Meal Voucher', label: 'Meal Voucher' },
+  { value: 'Transportation Voucher', label: 'Transportation Voucher' },
+  { value: 'Insurance', label: 'Insurance' },
 ];
 
 const unitOptions = [
@@ -140,10 +132,7 @@ const AddBenefitModal = ({
   // Populate form when editing
   useEffect(() => {
     if (isEditMode && editingBenefit) {
-      setValue(
-        'benefit_name',
-        mapApiToFormValue(editingBenefit.benefit_name, benefitNameOptions)
-      );
+      setValue('benefit_name', editingBenefit.benefit_name); // Direct string assignment
       setValue('description', editingBenefit.description);
       setValue(
         'benefit_type',
@@ -162,26 +151,26 @@ const AddBenefitModal = ({
 
   // Auto-change unit based on benefit type using useEffect
   useEffect(() => {
-    if (!isEditMode && watchedBenefitType) {
+    if (watchedBenefitType) {
       switch (watchedBenefitType) {
         case 'leave':
           setValue('unit', 'days');
           break;
-        case 'monetary_allowance':
+        case 'Monetary Allowance':
           setValue('unit', 'amount');
           break;
-        case 'meal_voucher':
-        case 'transportation_voucher':
+        case 'Meal Voucher':
+        case 'Transportation Voucher':
           setValue('unit', 'vouchers');
           break;
-        case 'insurance':
+        case 'Insurance':
           setValue('unit', 'policy');
           break;
         default:
           setValue('unit', '');
       }
     }
-  }, [watchedBenefitType, isEditMode, setValue]);
+  }, [watchedBenefitType, setValue]);
 
   const handleFormSubmit = (data: BenefitFormData) => {
     onSubmit?.(data);
@@ -204,12 +193,11 @@ const AddBenefitModal = ({
         <Form {...form}>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             {/* Benefit Name */}
-            <CustomFormSelect
+            <CustomFormField
               name="benefit_name"
               control={control}
-              items={benefitNameOptions}
-              labelText="Benefit Name"
-              holder="Select benefit name"
+              label="Benefit Name"
+              placeholder="Enter benefit name e.g Paid Leave"
               error={errors.benefit_name?.message}
             />
 
@@ -235,13 +223,16 @@ const AddBenefitModal = ({
             />
 
             {/* Unit and Unit Default Allocation */}
-            <div className="grid grid-cols-2 gap-4">
-              <CustomFormSelect
+            <div
+              style={{ gridTemplateColumns: '1fr 2fr' }}
+              className="grid  gap-4"
+            >
+              <CustomFormField
                 name="unit"
                 control={control}
-                items={unitOptions}
-                labelText="Unit"
-                holder="Select unit"
+                label="Unit"
+                placeholder="Auto-selected based on type"
+                readOnly={true}
                 error={errors.unit?.message}
               />
 
@@ -252,8 +243,7 @@ const AddBenefitModal = ({
                 placeholder={
                   watchedBenefitType === 'leave'
                     ? 'Enter number of days'
-                    : watchedBenefitType === 'monetary_allowance' ||
-                      watchedBenefitType === 'allowance'
+                    : watchedBenefitType === 'Monetary Allowance'
                     ? 'Enter amount'
                     : 'Enter allocation'
                 }

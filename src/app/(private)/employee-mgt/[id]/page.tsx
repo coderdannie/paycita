@@ -13,6 +13,7 @@ import LoadingOverlay from '@/src/components/common/LoadingOverlay';
 import Documents from '@/src/components/data/EmployeeMgt/Tabs/Documents';
 import OffBoarding from '@/src/components/data/EmployeeMgt/Tabs/OffBoarding';
 import Password from '@/src/components/data/EmployeeMgt/Tabs/Password';
+import EmployeeBenefits from '@/src/components/data/EmployeeMgt/Tabs/EmployeeBenefits';
 
 const EmployeeDetails = () => {
   const [tab, setTab] = useState(employeeDetailsTabs[0]);
@@ -22,6 +23,7 @@ const EmployeeDetails = () => {
 
   const { employee, isPending } = useGetEmployeeById(employeeId || '');
 
+  console.log('employee', employee);
   if (isPending) {
     return <LoadingOverlay />;
   }
@@ -64,6 +66,11 @@ const EmployeeDetails = () => {
       <div className=" mt-9">
         {tab.includes('Personal') ? (
           <PersonalInfo user={employee?.employee} />
+        ) : tab.includes('Employee Benefits') ? (
+          <EmployeeBenefits
+            benefits={employee?.benefits}
+            name={employee?.employee?.full_name}
+          />
         ) : tab.includes('Employee') ? (
           <EmployeeDetail userDetails={employee?.employee} />
         ) : tab.includes('Attendance') ? (

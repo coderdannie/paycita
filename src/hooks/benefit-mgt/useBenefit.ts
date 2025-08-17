@@ -38,6 +38,7 @@ export const useGetBenefits = (filters?: { page: string }) => {
     isSuccess,
     isLoading: isPending && !isFetching, // Distinguish between initial load and background refresh
     isFetching,
+    isPending,
     benefits: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
     rawData: data, // Provide access to raw response if needed
@@ -119,6 +120,72 @@ export const useDeleteBenefit = () => {
         queryKey: [QUERY_KEYS.GET_BENEFITS], // ✅ correct key for benefits
       });
       toast.success('Benefit deleted successfully!');
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response?.data?.message || 'Failed to delete benefit');
+    },
+  });
+};
+
+export const useAssignBenefit = () => {
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: mutateAssignBenefit,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (data: {
+      employee_id: string;
+      benefit_ids: string[];
+    }) => {
+      const response = await benefitMgtService.assignBenefit(data);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+      });
+      toast.success('Benefit assigned successfully!');
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response.data.message || 'Failed to assign benefit');
+    },
+  });
+
+  return {
+    mutateAssignBenefit,
+    isPending,
+    isSuccess,
+    isError,
+  };
+};
+
+export const useDeleteBenefitAssigned = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await benefitMgtService.deleteBenefitAssigned(id);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+      });
     },
     onError: (error: {
       response: {

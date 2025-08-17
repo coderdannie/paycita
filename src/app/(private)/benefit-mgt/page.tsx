@@ -20,7 +20,6 @@ import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import { DeleteModal } from '@/src/components/modals/DeleteLoanPolicy';
 import toast from 'react-hot-toast';
 import {
-  benefitNameOptions,
   benefitTypeOptions,
   renewalCycleOptions,
   unitOptions,
@@ -46,13 +45,10 @@ interface Benefit {
 }
 
 interface FilterFormValues {
-  benefit_name: string;
   benefit_type: string;
   unit: string;
   recurring: string;
 }
-
-// Filter options
 
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
@@ -108,9 +104,8 @@ const BenefitMgt = () => {
   const searchParams = useSearchParams();
   const updateSearchParams = useUpdateSearchParams();
 
-  // Get query params with defaults
+  // Get query params with defaults (removed benefit_name)
   const search = searchParams.get('search') || '';
-  const benefitName = searchParams.get('benefit_name') || '';
   const benefitType = searchParams.get('benefit_type') || '';
   const unit = searchParams.get('unit') || '';
   const recurring = searchParams.get('recurring') || '';
@@ -137,11 +132,7 @@ const BenefitMgt = () => {
     []
   );
 
-  const {
-    benefits,
-    pagination,
-    isLoading: isPending,
-  } = useGetBenefits({
+  const { benefits, pagination, isPending } = useGetBenefits({
     page: currentPage.toString(),
   });
 
@@ -156,12 +147,11 @@ const BenefitMgt = () => {
   const filters = useMemo(
     () => ({
       search: searchTerm,
-      benefit_name: benefitName,
       benefit_type: benefitType,
       unit: unit,
       recurring: recurring,
     }),
-    [searchTerm, benefitName, benefitType, unit, recurring]
+    [searchTerm, benefitType, unit, recurring]
   );
 
   const goToPage = useCallback(
@@ -176,7 +166,6 @@ const BenefitMgt = () => {
 
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      benefit_name: benefitName,
       benefit_type: benefitType,
       unit: unit,
       recurring: recurring,
@@ -197,7 +186,6 @@ const BenefitMgt = () => {
     form.reset();
     updateSearchParams({
       search: searchTerm,
-      benefit_name: '',
       benefit_type: '',
       unit: '',
       recurring: '',
@@ -298,10 +286,6 @@ const BenefitMgt = () => {
     setEditingBenefit(null);
   }, []);
 
-  const formatLabel = (value: string) => {
-    return value.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
-  };
-
   return (
     <div className="container mx-auto px-4 py-6">
       <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl mb-10">
@@ -342,9 +326,11 @@ const BenefitMgt = () => {
             benefits.map((benefit: Benefit) => (
               <TableRow key={benefit.id} className="text-[#1D2939] text-sm">
                 <TableCell className="font-medium">
-                  {formatLabel(benefit.benefit_name)}
+                  {benefit.benefit_name}
                 </TableCell>
-                <TableCell>{benefit.description}</TableCell>
+                <TableCell className=" line-clamp-3 ">
+                  {benefit.description}
+                </TableCell>
                 <TableCell>{benefit.benefit_type}</TableCell>
                 <TableCell className="capitalize">{benefit.unit}</TableCell>
                 <TableCell>{benefit.allocation}</TableCell>
@@ -404,38 +390,6 @@ const BenefitMgt = () => {
           onSubmit={onSubmit}
         >
           <div className="mt-6 space-y-4">
-            <div>
-              <label className="block text-sm font-semibold pb-2">
-                Benefit Name
-              </label>
-              <Controller
-                name="benefit_name"
-                control={form.control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={benefitNameOptions}
-                    value={
-                      benefitNameOptions.find(
-                        (opt) => opt.value === field.value
-                      ) || null
-                    }
-                    onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || '');
-                    }}
-                    styles={customStyles}
-                    placeholder="Select benefit name"
-                    components={{
-                      IndicatorSeparator: () => null,
-                      DropdownIndicator: () => (
-                        <IoIosArrowDown size={15} color="#667085" />
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-semibold pb-2">Type</label>
               <Controller
