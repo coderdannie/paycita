@@ -20,6 +20,7 @@ import {
   QueryMgtIcon,
   OnboardingDocIcon,
   TaskMgtIcon,
+  BenefitMgtIcon,
 } from '@/src/assets/Icons';
 import { MyAttendanceRecord } from '@/src/types/attendance';
 
@@ -83,13 +84,13 @@ export const sidebarData = [
     hover: <EmployeeMgtIcon fill="#692E9F" />,
     path: '/employee-mgt',
   },
-  // {
-  //   title: 'Onboarding Documents',
-  //   icon: <OnboardingDocIcon fill="#344054" />,
-  //   sec: <OnboardingDocIcon fill="#692E9F" />,
-  //   hover: <OnboardingDocIcon fill="#692E9F" />,
-  //   path: '/onboarding-documents',
-  // },
+  {
+    title: 'Onboarding Documents',
+    icon: <OnboardingDocIcon fill="#344054" />,
+    sec: <OnboardingDocIcon fill="#692E9F" />,
+    hover: <OnboardingDocIcon fill="#692E9F" />,
+    path: '/onboarding-documents',
+  },
   {
     title: 'Asset Management',
     icon: <AssetMgtIcon fill="#344054" />,
@@ -262,6 +263,13 @@ export const sidebarData = [
   //   path: '/task-management',
   // },
   {
+    title: 'Benefit Management',
+    icon: <BenefitMgtIcon fill="#344054" />,
+    sec: <BenefitMgtIcon fill="#692E9F" />,
+    hover: <BenefitMgtIcon fill="#692E9F" />,
+    path: '/benefit-mgt',
+  },
+  {
     title: 'Settings',
     icon: <SettingsIcon fill="#344054" />,
     sec: <SettingsIcon fill="#692E9F" />,
@@ -355,6 +363,7 @@ export const employeeDetailsTabs = [
   'Leave History',
   'Documents',
   'Password',
+  'Employee Benefits',
   'Off Boarding',
 ];
 
@@ -862,3 +871,37 @@ export const allUsers = [
     department: 'IT department',
   },
 ];
+
+export const benefitNameOptions = [
+  { value: '', label: 'All Benefits' },
+  { value: 'paid_leave', label: 'Paid Leave' },
+  { value: 'maternity_grant', label: 'Maternity Grant' },
+  { value: 'meal_voucher', label: 'Meal Voucher' },
+  { value: 'transport_voucher', label: 'Transport Voucher' },
+  { value: 'health_insurance', label: 'Health Insurance' },
+] as const;
+
+export const benefitTypeOptions = [
+  { value: '', label: 'All Types' },
+  { value: 'leave', label: 'Leave' },
+  { value: 'monetary_allowance', label: 'Monetary Allowance' },
+  { value: 'meal_voucher', label: 'Meal Voucher' },
+  { value: 'transportation_voucher', label: 'Transportation Voucher' },
+  { value: 'insurance', label: 'Insurance' },
+] as const;
+
+export const unitOptions = [
+  { value: '', label: 'All Units' },
+  { value: 'days', label: 'Days' },
+  { value: 'amount', label: 'Amount' },
+  { value: 'vouchers', label: 'Vouchers' },
+  { value: 'policy', label: 'Policy' },
+] as const;
+
+export const renewalCycleOptions = [
+  { value: '', label: 'All Cycles' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'yearly', label: 'Yearly' },
+  { value: 'none', label: 'None' },
+] as const;

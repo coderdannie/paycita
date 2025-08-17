@@ -84,6 +84,7 @@ const Sidebar = () => {
         'Onboarding Documents',
         'Approval',
         'Settings',
+        'Benefit Management',
       ],
       PREMIUM: [
         'Dashboard',
@@ -103,6 +104,7 @@ const Sidebar = () => {
         'Onboarding Documents',
         'Approval',
         'Settings',
+        'Benefit Management',
       ],
     };
 

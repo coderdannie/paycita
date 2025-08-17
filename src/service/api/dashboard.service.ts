@@ -221,6 +221,21 @@ const bulkEmployeeOnboarding = (data: FormData) => {
   });
 };
 
+const uploadOnboardingDocument = (data: FormData) => {
+  return api2.post(`/hr/onboarding-document`, data, {
+    headers: {
+      'Content-Type': undefined,
+    },
+  });
+};
+
+export const deleteOnboardingDocument = (documentId: number) => {
+  return api.delete(`/hr/onboarding-document/${documentId}`);
+};
+
+export const getOnboardingDocuments = () => {
+  return api.get(`/hr/onboarding-document`);
+};
 const dashboardService = {
   getAttendance,
   addEmployee,
@@ -240,6 +255,9 @@ const dashboardService = {
   updateEmployeeSalaryDetails,
   getAllBranches,
   bulkEmployeeOnboarding,
+  uploadOnboardingDocument,
+  getOnboardingDocuments,
+  deleteOnboardingDocument,
 };
 
 export default dashboardService;
