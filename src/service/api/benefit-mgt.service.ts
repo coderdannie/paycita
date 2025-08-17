@@ -68,11 +68,23 @@ const deleteBenefit = (id: string) => {
   return api.delete(`/hr/benefit/${id}`);
 };
 
+const assignBenefit = (data: {
+  employee_id: string;
+  benefit_ids: string[];
+}) => {
+  return api.post('/hr/assign-benefit', data);
+};
+
+const deleteBenefitAssigned = (id: string) => {
+  return api.delete(`/hr/assign-benefit/${id}`);
+};
 const benefitMgtService = {
   getBenefits,
   addBenefit,
   updateBenefit,
   deleteBenefit,
+  assignBenefit,
+  deleteBenefitAssigned,
 };
 
 export default benefitMgtService;

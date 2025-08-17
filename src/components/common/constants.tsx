@@ -363,6 +363,7 @@ export const employeeDetailsTabs = [
   'Leave History',
   'Documents',
   'Password',
+  'Employee Benefits',
   'Off Boarding',
 ];
 
