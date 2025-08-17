@@ -80,7 +80,6 @@ const EmployeeBenefits = ({ benefits, name }: BenefitsProp) => {
       },
       {
         onSuccess: () => {
-          toast.success('Benefits assigned successfully!');
           setSelectedBenefits([]);
           setDialogOpen(false);
         },
@@ -138,7 +137,7 @@ const EmployeeBenefits = ({ benefits, name }: BenefitsProp) => {
         </div>
 
         <div className="p-6">
-          {assignedBenefits.length !== 0 ? (
+          {assignedBenefits.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 italic">No benefits assigned yet</p>
             </div>
