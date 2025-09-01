@@ -110,7 +110,7 @@ const MonthlyPayrollTable = ({
                 <div className="flex"></div>
               </TableCell>
               <TableCell>
-                  {renderStatusBadge(formateStatus(row.status))}
+                  {renderStatusBadge(formatStatus(row?.status))}
                 </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
