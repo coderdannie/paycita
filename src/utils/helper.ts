@@ -343,3 +343,6 @@ export const formatCurrency = (number: number, currency = "NGN") => {
     currency: currency,
   }).format(number);
 };
+
+
+

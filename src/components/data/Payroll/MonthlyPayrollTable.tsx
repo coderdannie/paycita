@@ -6,6 +6,9 @@ import { TableCell, TableRow } from '../../ui/table';
 import Image from 'next/image';
 import Link from 'next/link';
 import TableEmptyState from '../../common/TableEmptyState';
+import {useCallback} from 'react';
+
+
 
 const MonthlyPayrollTable = ({
   payrollByMonthData,
@@ -18,6 +21,7 @@ const MonthlyPayrollTable = ({
     paye: number;
     deductions: number;
     net_pay: number;
+    payment_status: string;
   }[];
 }) => {
   const userData = useAuthSelector();
@@ -42,9 +46,35 @@ const MonthlyPayrollTable = ({
     },
     {
       label: 'Net Pay',
+    },    {
+      label: 'Status',
     },
     { label: '' },
   ];
+
+  const renderStatusBadge = useCallback(
+    (status: string) => (
+      <span
+        className={`py-[5px]  text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
+        ${
+          status?.toLowerCase() === "paid"
+            ? "text-green-600 border-[#89D8A9] bg-[#F5FFFA]"
+            : "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+        }`}
+      >
+        {status}
+      </span>
+    ),
+    []
+  );
+
+  const formatStatus = (status: string) => {
+    return status
+      ?.replace('_', ' ')        
+      .replace(/\b\w/g, c => c.toUpperCase()); 
+  };
+  
+  console.log(payrollByMonthData)
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers} center>
@@ -79,7 +109,9 @@ const MonthlyPayrollTable = ({
                 {row.net_pay}
                 <div className="flex"></div>
               </TableCell>
-
+              <TableCell>
+                  {renderStatusBadge(formatStatus(row?.payment_status))}
+                </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
