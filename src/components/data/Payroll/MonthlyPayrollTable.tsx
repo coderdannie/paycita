@@ -21,7 +21,7 @@ const MonthlyPayrollTable = ({
     paye: number;
     deductions: number;
     net_pay: number;
-    status: string;
+    payment_status: string;
   }[];
 }) => {
   const userData = useAuthSelector();
@@ -70,11 +70,11 @@ const MonthlyPayrollTable = ({
 
   const formatStatus = (status: string) => {
     return status
-      .replace('_', ' ')        
+      ?.replace('_', ' ')        
       .replace(/\b\w/g, c => c.toUpperCase()); 
   };
   
-  
+  console.log(payrollByMonthData)
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers} center>
@@ -110,7 +110,7 @@ const MonthlyPayrollTable = ({
                 <div className="flex"></div>
               </TableCell>
               <TableCell>
-                  {renderStatusBadge(formatStatus(row?.status))}
+                  {renderStatusBadge(formatStatus(row?.payment_status))}
                 </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
