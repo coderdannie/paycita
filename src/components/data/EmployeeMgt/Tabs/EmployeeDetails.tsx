@@ -304,7 +304,7 @@ const EmployeeDetails = ({
           <div className="flex font-semibold text-sm flex-col space-y-2 max-w-[300px]">
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">
-                Basic Salary
+                Netpay
               </strong>
               {formatLongCurrency(+userDetails?.salary, currency) ?? 'N/A'}
             </p>
