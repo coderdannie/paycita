@@ -74,7 +74,7 @@ const MonthlyPayrollTable = ({
       .replace(/\b\w/g, c => c.toUpperCase()); 
   };
   
-  console.log(payrollByMonthData)
+ 
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers} center>
