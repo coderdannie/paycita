@@ -1,5 +1,5 @@
-import { Procurement } from "@/src/types/procurement";
-import { api } from ".";
+import { Procurement } from '@/src/types/procurement';
+import { api } from '.';
 
 const getAllProcurements = (filters?: { page: string }) => {
   const queryParams = new URLSearchParams();
@@ -7,16 +7,16 @@ const getAllProcurements = (filters?: { page: string }) => {
   if (
     filters.page !== null &&
     filters.page !== undefined &&
-    filters.page !== ""
+    filters.page !== ''
   ) {
-    queryParams.append("page", filters.page);
+    queryParams.append('page', filters.page);
   }
 
   return api.get(`/hr/procurement?${queryParams.toString()}`);
 };
 
 const createProcurements = (data: Procurement) => {
-  return api.post("/hr/procurement", data);
+  return api.post('/hr/procurement', data);
 };
 const getSingleProcurement = (id: string) => {
   return api.get(`/hr/procurement/${id}`);
@@ -27,7 +27,7 @@ export const deleteProcurement = (procurementId: string) => {
 };
 
 export const getVendors = () => {
-  return api.get("/hr/vendors");
+  return api.get('/hr/vendors');
 };
 
 const resolveProcurementCommentThread = (id: string) => {

@@ -14,21 +14,27 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import GeneratePayroll from '@/src/components/modals/GeneatePayroll';
 import { usePathname } from 'next/navigation';
 import {
+  useDeletePayroll,
   useGetPayRollByMonth,
   useUploadPayroll,
 } from '@/src/hooks/payroll/usePayroll';
 import toast from 'react-hot-toast';
+import { DeleteModal } from '@/src/components/modals/DeleteLoanPolicy';
 
 const SingleTablePayroll = () => {
   const pathname = usePathname();
   const date = pathname.split('/').pop();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [payrollToDelete, setPayrollToDelete] = useState('');
 
   const payload = {
     date: date,
   };
 
   const { payrollByMonthData } = useGetPayRollByMonth(payload);
+  const { mutate: mutateDeletePayroll, isPending: isDeleting } =
+    useDeletePayroll();
 
   const [status, setStatus] = useState('This Month');
 
@@ -50,6 +56,25 @@ const SingleTablePayroll = () => {
       },
       onError: (error) => {
         toast.error('Error uploading payroll: ' + error.message);
+      },
+    });
+  };
+  const handleDelete = (id: string) => {
+    setPayrollToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setPayrollToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!payrollToDelete) return;
+    mutateDeletePayroll(payrollToDelete, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        setPayrollToDelete(null);
       },
     });
   };
@@ -86,13 +111,25 @@ const SingleTablePayroll = () => {
           <AiOutlinePlus />
         </button>
       </div>
-      <MonthlyPayrollTable payrollByMonthData={payrollByMonthData} />
+      <MonthlyPayrollTable
+        payrollByMonthData={payrollByMonthData}
+        handleDelete={handleDelete}
+      />
 
       <GeneratePayroll
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onUpload={handleUpload}
         isLoading={isUploading}
+      />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        title="Delete Payroll"
+        description={`Are you sure you want to delete this payroll ? This action cannot be undone.`}
+        onCancel={handleCancelDelete}
+        onDelete={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

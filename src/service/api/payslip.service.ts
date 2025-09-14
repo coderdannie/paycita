@@ -1,4 +1,4 @@
-import { api, api2 } from ".";
+import { api, api2 } from '.';
 
 const getMyPayslip = () => {
   return api.get(`/hr/payslip`);
@@ -48,6 +48,10 @@ const getAllStaffPension = (company: string, date: string) => {
   return api.get(`/hr/all-staff-pension?company_name=${company}&date=${date}`);
 };
 
+const deletePayroll = (id: string) => {
+  return api.delete(`/hr/delete-payroll/${id}`);
+};
+
 const payslipService = {
   getMyPayslip,
   getMyPension,
@@ -61,6 +65,7 @@ const payslipService = {
   getEmployeePension,
   getEmployeePensionByCompany,
   getAllStaffPension,
+  deletePayroll,
 };
 
 export default payslipService;

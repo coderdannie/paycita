@@ -8,6 +8,7 @@ import { AxiosError } from 'axios';
 
 import payslipService from '@/src/service/api/payslip.service';
 import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+import toast from 'react-hot-toast';
 
 export const useGetMyPayslip = (options?: { enabled?: boolean }) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
@@ -348,4 +349,30 @@ export const useGetAllStaffPension = (
     allStaffPensionData: data?.data?.data || [],
     rawData: data,
   };
+};
+
+export const useDeletePayroll = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await payslipService.deletePayroll(id);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_PAYROLL_BY_MONTH],
+      });
+      toast.success('Payroll successfully deleted');
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response?.data?.message || 'Failed to delete payroll');
+    },
+  });
 };
