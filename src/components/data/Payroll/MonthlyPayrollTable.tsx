@@ -6,13 +6,10 @@ import { TableCell, TableRow } from '../../ui/table';
 import Image from 'next/image';
 import Link from 'next/link';
 import TableEmptyState from '../../common/TableEmptyState';
-import {useCallback} from 'react';
+import { useCallback } from 'react';
+import { AiOutlineDelete } from 'react-icons/ai';
 
-
-
-const MonthlyPayrollTable = ({
-  payrollByMonthData,
-}: {
+interface Props {
   payrollByMonthData: {
     id: string;
     employee_name: string;
@@ -23,7 +20,10 @@ const MonthlyPayrollTable = ({
     net_pay: number;
     payment_status: string;
   }[];
-}) => {
+  handleDelete: (value: string) => void;
+}
+
+const MonthlyPayrollTable = ({ payrollByMonthData, handleDelete }: Props) => {
   const userData = useAuthSelector();
 
   const currency = userData?.user?.currency || 'NGN';
@@ -46,7 +46,8 @@ const MonthlyPayrollTable = ({
     },
     {
       label: 'Net Pay',
-    },    {
+    },
+    {
       label: 'Status',
     },
     { label: '' },
@@ -57,9 +58,9 @@ const MonthlyPayrollTable = ({
       <span
         className={`py-[5px]  text-center block px-[10px] relative border-2 rounded-md cursor-pointer 
         ${
-          status?.toLowerCase() === "paid"
-            ? "text-green-600 border-[#89D8A9] bg-[#F5FFFA]"
-            : "text-red-600 border-[#F49E9E] bg-[#FFF5F5]"
+          status?.toLowerCase() === 'paid'
+            ? 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]'
+            : 'text-red-600 border-[#F49E9E] bg-[#FFF5F5]'
         }`}
       >
         {status}
@@ -69,12 +70,9 @@ const MonthlyPayrollTable = ({
   );
 
   const formatStatus = (status: string) => {
-    return status
-      ?.replace('_', ' ')        
-      .replace(/\b\w/g, c => c.toUpperCase()); 
+    return status?.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   };
-  
- 
+
   return (
     <div className="mt-[20px]">
       <CustomTable headers={headers} center>
@@ -110,8 +108,8 @@ const MonthlyPayrollTable = ({
                 <div className="flex"></div>
               </TableCell>
               <TableCell>
-                  {renderStatusBadge(formatStatus(row?.payment_status))}
-                </TableCell>
+                {renderStatusBadge(formatStatus(row?.payment_status))}
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
@@ -125,6 +123,13 @@ const MonthlyPayrollTable = ({
                       height={15}
                     />
                   </Link>{' '}
+                  <button
+                    title="delete"
+                    className="border-2 grid place-items-center cursor-pointer border-[#E4E7EC] w-6 aspect-square rounded"
+                    onClick={() => handleDelete(row.id)}
+                  >
+                    <AiOutlineDelete />
+                  </button>{' '}
                 </div>
               </TableCell>
             </TableRow>
