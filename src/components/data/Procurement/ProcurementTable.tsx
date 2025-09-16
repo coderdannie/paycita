@@ -43,7 +43,7 @@ const ProcurementTable: React.FC<ProcurementTableProps> = ({
   ];
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'successful':
+      case 'approved':
         return 'text-green-600 border-[#89D8A9] bg-[#F5FFFA]';
       case 'pending':
         return 'text-yellow-600 border-[#F4D03F] bg-[#FEF9E7]';

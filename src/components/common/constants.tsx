@@ -237,7 +237,7 @@ export const sidebarData = [
         id: 6,
         title: 'Procurement',
         name: 'Procurement',
-        path: '/dashboard/approval/procurement',
+        path: '/approval/procurement',
       },
     ],
   },
