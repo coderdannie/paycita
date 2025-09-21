@@ -122,9 +122,12 @@ export const topupSchema = z
   .object({
     network: z.string().min(1, 'Network provider is required'),
     phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-    topupType: z.enum(['airtime', 'data']).default('airtime'),
+    topupType: z.enum(['airtime', 'data', 'electricity']).default('airtime'),
     amount: z.string().optional(),
     dataPlan: z.string().optional(),
+    electricityProvider: z.string().optional(),
+    meterNumber: z.string().optional(),
+    electricityAmount: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // For airtime, amount is required but dataPlan should be ignored
@@ -145,6 +148,24 @@ export const topupSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Data plan is required for data',
           path: ['dataPlan'],
+        });
+      }
+    }
+
+    // For electricity, electricityProvider and meterNumber are required
+    if (data.topupType === 'electricity') {
+      if (!data.electricityProvider) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Electricity provider is required',
+          path: ['electricityProvider'],
+        });
+      }
+      if (!data.meterNumber) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Meter number is required',
+          path: ['meterNumber'],
         });
       }
     }
