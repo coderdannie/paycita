@@ -9,6 +9,7 @@ import {
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import { AxiosResponse } from "axios";
 import assetService from "@/src/service/api/asset-management.service";
+import toast from "react-hot-toast";
 
 const useGetAllAssets = (filters?: { page: string }) => {
   const { isError, isSuccess, data, isPending } = useQuery({
@@ -37,7 +38,7 @@ const useCreateAsset = (
   options?: UseMutationOptions<
     AxiosResponse<{ message: string }>,
     Error,
-    { name: string; category: string; quantity: number; status: string }
+    { name: string; category: string; quantity: number }
   >
 ) => {
   const queryClient = useQueryClient();
@@ -152,6 +153,32 @@ export const useRevokeAssets = (options = {}) => {
   });
 
   return { mutate, isLoading, data };
+};
+
+export const useDeleteAsset = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await assetService.deleteAsset(id);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_ASSETS],
+      });
+      toast.success("Asset deleted successfully!");
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response?.data?.message || "Failed to delete asset");
+    },
+  });
 };
 
 export {

@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { AssetEmptyState } from './emptyState';
-import { AssetTabs } from './assetTabs';
-import { Asset, Employee } from '@/src/types/assets-management';
+import { useEffect, useState } from "react";
+import { AssetEmptyState } from "./emptyState";
+import { AssetTabs } from "./assetTabs";
+import { Asset, Employee } from "@/src/types/assets-management";
 import {
   useCreateAsset,
   useGetAllAssets,
   useGetAllAssignedAssets,
   useGetAllUsers,
-} from '@/src/hooks/asset-management/useAssetManagement';
-import { AxiosError } from 'axios';
-import toast from 'react-hot-toast';
-import { AssetFormValues } from '@/src/utils/validations';
+} from "@/src/hooks/asset-management/useAssetManagement";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { AssetFormValues } from "@/src/utils/validations";
 
 export const AssetManagementDashboard = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -32,12 +32,12 @@ export const AssetManagementDashboard = () => {
   }, [users]);
   const { mutate: createAsset, isPending } = useCreateAsset({
     onSuccess: () => {
-      toast.success('Asset created successfully');
+      toast.success("Asset created successfully");
       setIsAddModalOpen(false);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || 'Something went wrong');
+        toast.error(error?.response?.data?.message || "Something went wrong");
       }
     },
   });
@@ -47,16 +47,15 @@ export const AssetManagementDashboard = () => {
       name: formValues.name,
       category: formValues.category,
       quantity: parseInt(formValues.quantity) || 0,
-      status: formValues.status,
     };
     createAsset(asset);
   };
   const { allAssets } = useGetAllAssets({
-    page: '1',
+    page: "1",
   });
 
   const { assignedAssets } = useGetAllAssignedAssets({
-    page: '1',
+    page: "1",
   });
 
   return (

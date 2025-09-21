@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -9,15 +9,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/src/components/ui/form';
-import { useGetAllCategory } from '@/src/hooks/asset-management/useAssetManagement';
+} from "@/src/components/ui/form";
+import { useGetAllCategory } from "@/src/hooks/asset-management/useAssetManagement";
 import {
   CustomFormSelect,
   CustomFormField,
-} from '@/src/components/common/CustomInput';
-import { assetSchema, AssetFormValues } from '@/src/utils/validations';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
+} from "@/src/components/common/CustomInput";
+import { assetSchema, AssetFormValues } from "@/src/utils/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 
 interface AddAssetModalProps {
   isOpen: boolean;
@@ -42,10 +42,9 @@ export const AddAssetModal = ({
   const form = useForm<AssetFormValues>({
     resolver: zodResolver(assetSchema),
     defaultValues: {
-      name: '',
-      category: '',
-      quantity: '',
-      status: 'In Stock',
+      name: "",
+      category: "",
+      quantity: "",
     },
   });
 
@@ -64,9 +63,9 @@ export const AddAssetModal = ({
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
 
@@ -78,14 +77,14 @@ export const AddAssetModal = ({
 
   const getStatusStyles = (statusValue: string) => {
     switch (statusValue) {
-      case 'In Stock':
-        return 'border border-[#89D8A9] text-[#00AA4F]';
-      case 'Out of Stock':
-        return 'border border-red-500 text-red-600';
-      case 'On Order':
-        return 'border border-yellow-500 text-yellow-600';
+      case "In Stock":
+        return "border border-[#89D8A9] text-[#00AA4F]";
+      case "Out of Stock":
+        return "border border-red-500 text-red-600";
+      case "On Order":
+        return "border border-yellow-500 text-yellow-600";
       default:
-        return 'border border-green-500 text-green-600';
+        return "border border-green-500 text-green-600";
     }
   };
 
@@ -143,72 +142,6 @@ export const AddAssetModal = ({
               error={errors.quantity?.message}
             />
 
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#1D2939] mb-1">
-                    Status
-                  </FormLabel>
-                  <div className="relative" ref={dropdownRef}>
-                    <FormControl>
-                      <div
-                        className="border rounded-md p-2 flex items-center justify-between cursor-pointer"
-                        onClick={() =>
-                          setStatusDropdownOpen(!statusDropdownOpen)
-                        }
-                      >
-                        <div
-                          className={`px-1 py-1 rounded ${getStatusStyles(
-                            field.value
-                          )}`}
-                        >
-                          {field.value}
-                        </div>
-
-                        <div className="flex items-center px-2">
-                          <svg
-                            className="w-5 h-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 9l-7 7-7-7"
-                            ></path>
-                          </svg>
-                        </div>
-                      </div>
-                    </FormControl>
-                    {statusDropdownOpen && (
-                      <div className="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
-                        {['In Stock', 'Out of Stock', 'On Order'].map(
-                          (status) => (
-                            <div
-                              key={status}
-                              className="p-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => {
-                                field.onChange(status);
-                                setStatusDropdownOpen(false);
-                              }}
-                            >
-                              {status}
-                            </div>
-                          )
-                        )}
-                      </div>
-                    )}
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-
             <div className="flex space-x-4 pt-4">
               <button
                 type="button"
@@ -225,7 +158,7 @@ export const AddAssetModal = ({
                 type="submit"
                 className="flex-1 px-4 py-2 bg-[#692E9F] text-white rounded-md hover:bg-purple-800"
               >
-                {isPending ? 'Creating...' : 'Create Asset'}
+                {isPending ? "Creating..." : "Create Asset"}
               </Button>
             </div>
           </form>
