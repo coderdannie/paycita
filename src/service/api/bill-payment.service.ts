@@ -33,10 +33,19 @@ const getNetworkDataPlans = (network: string) => {
   return api.get(`/hr/data-plans?network=${network}`);
 };
 
+const buyElectricity = (data: {
+  provider: string;
+  meter_number: string;
+  amount: string;
+}) => {
+  return api.post(`/hr/electricity`, data);
+};
+
 const billPaymentService = {
   getTransactionHistory,
   buyAirtime,
   buyData,
+  buyElectricity,
   getNetworkDataPlans,
 };
 
