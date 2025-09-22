@@ -50,8 +50,11 @@ export const useBuyAirtime = () => {
     Error,
     { amount: string; phone_number: string; network: string }
   >({
-    mutationFn: (data: { amount: string; phone_number: string; network: string }) =>
-      billPaymentService.buyAirtime(data),
+    mutationFn: (data: {
+      amount: string;
+      phone_number: string;
+      network: string;
+    }) => billPaymentService.buyAirtime(data),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
@@ -88,6 +91,36 @@ export const useBuyData = () => {
     }) => billPaymentService.buyData(data),
     onSuccess: () => {
       // Invalidate and refetch
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
+      });
+    },
+    onError: (error: AxiosError) => {
+      if (error instanceof AxiosError && error.response?.status === 404) return;
+    },
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 2;
+    },
+    mutationKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
+  });
+};
+
+export const useBuyElectricity = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AxiosResponse<{ message: string; token?: string }>,
+    Error,
+    { provider: string; meter_number: string; amount: string }
+  >({
+    mutationFn: (data: {
+      provider: string;
+      meter_number: string;
+      amount: string;
+    }) => billPaymentService.buyElectricity(data),
+    onSuccess: () => {
+      // Invalidate and refetch transaction history
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
       });

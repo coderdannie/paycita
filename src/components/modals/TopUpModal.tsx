@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { topupSchema, TopupSchemaType } from "@/src/utils/validations";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
@@ -43,7 +43,14 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
     useBuyAirtime();
   const { mutate: mutateBuyData, isPending: isBuyingData } = useBuyData();
 
-  const [topupType, setTopupType] = useState<"airtime" | "data">("airtime");
+  const [topupType, setTopupType] = useState<
+    "airtime" | "data" | "electricity"
+  >("airtime");
+  const [electricityStep, setElectricityStep] = useState<
+    "provider" | "amount" | "success"
+  >("provider");
+  const [meterOwner, setMeterOwner] = useState<string>("");
+  const [electricityToken, setElectricityToken] = useState<string>("");
   const form = useForm<TopupSchemaType & { network_id?: string }>({
     resolver: zodResolver(topupSchema),
     defaultValues: {
@@ -53,6 +60,9 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
       dataPlan: "",
       network_id: "",
       topupType: "airtime",
+      electricityProvider: "",
+      meterNumber: "",
+      electricityAmount: "",
     },
     mode: "onChange",
   });
@@ -64,14 +74,45 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
 
   const { networkDataPlans } = useGetNetworkDataPlans(watchNetwork);
 
+  // Watch for meter number changes and automatically fetch meter owner
+  const meterNumber = watch("meterNumber");
+
+  useEffect(() => {
+    if (
+      topupType === "electricity" &&
+      meterNumber &&
+      meterNumber.length >= 10
+    ) {
+      // Simulate API call to fetch meter owner
+      // make an API call here
+      setTimeout(() => {
+        setMeterOwner("Tanimonure Oluwabunmi");
+      }, 500);
+    } else if (!meterNumber || meterNumber.length < 10) {
+      setMeterOwner("");
+    }
+  }, [meterNumber, topupType]);
+
   // Handle topup type change
-  const handleTopupTypeChange = (type: "airtime" | "data") => {
+  const handleTopupTypeChange = (type: "airtime" | "data" | "electricity") => {
     setTopupType(type);
-    setValue("topupType", type);
+    setValue("topupType", type as "airtime" | "data");
     if (type === "airtime") {
       resetField("dataPlan");
-    } else {
+      resetField("electricityProvider");
+      resetField("meterNumber");
+      resetField("electricityAmount");
+      setElectricityStep("provider");
+    } else if (type === "data") {
       resetField("amount");
+      resetField("electricityProvider");
+      resetField("meterNumber");
+      resetField("electricityAmount");
+      setElectricityStep("provider");
+    } else {
+      resetField("dataPlan");
+      resetField("amount");
+      setElectricityStep("provider");
     }
   };
 
@@ -138,7 +179,7 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
           variants={modalVariants}
           transition={{ duration: 0.3 }}
         >
-          <div className="bg-white rounded-lg p-6 w-96 mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
             {/* Modal Header */}
             <div className="flex justify-end mb-10">
               <button onClick={onClose}>
@@ -147,8 +188,8 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="bg-[#F0EAF5] rounded-md text-[#3A1957] border-2 border-[#D1BEE1] p-4">
               <h2 className="text-sm">
-                Topup your staff airtime or internet subscriptions from your
-                favorite internet providers
+                Top up staff airtime and internet subscriptions, and
+                conveniently pay electricity bills.
               </h2>
             </div>
 
@@ -183,12 +224,30 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
               >
                 <Image
                   src="/assets/data.svg"
-                  alt="phone icon"
+                  alt="data icon"
                   className="w-[25px] sm:w-[40px]"
                   width={100}
                   height={100}
                 />
                 <span>Data</span>
+              </button>
+              <button
+                className={`px-4 w-full font-medium gap-2 sm:gap-4 border-2 flex items-center py-2 rounded-md ${
+                  topupType === "electricity"
+                    ? "border-primary text-primary"
+                    : "border-[#E5E5E5]"
+                }`}
+                onClick={() => handleTopupTypeChange("electricity")}
+                type="button"
+              >
+                <Image
+                  src="/assets/electricity.svg"
+                  alt="electricity icon"
+                  className="w-[25px] sm:w-[40px]"
+                  width={100}
+                  height={100}
+                />
+                <span>Electricity</span>
               </button>
             </div>
 
@@ -198,22 +257,26 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className=" grid gap-5"
               >
-                <CustomFormSelect
-                  name="network"
-                  control={control}
-                  items={["MTN", "Airtel", "Glo", "9mobile"]}
-                  labelText="Network Provider"
-                  holder="Select Network Provider"
-                  error={errors.network?.message}
-                />
+                {topupType !== "electricity" && (
+                  <>
+                    <CustomFormSelect
+                      name="network"
+                      control={control}
+                      items={["MTN", "Airtel", "Glo", "9mobile"]}
+                      labelText="Network Provider"
+                      holder="Select Network Provider"
+                      error={errors.network?.message}
+                    />
 
-                <CustomFormField
-                  label="Phone Number"
-                  name="phone"
-                  control={control}
-                  placeholder="Enter phone number"
-                  error={errors.phone?.message}
-                />
+                    <CustomFormField
+                      label="Phone Number"
+                      name="phone"
+                      control={control}
+                      placeholder="Enter phone number"
+                      error={errors.phone?.message}
+                    />
+                  </>
+                )}
 
                 {topupType === "airtime" && (
                   <CustomFormField
@@ -270,16 +333,153 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                   </>
                 )}
 
-                {/* Confirm Button */}
-                <button
-                  type="submit"
-                  className="w-full bg-primary text-white rounded-md py-2 mt-4"
-                  disabled={isBuyingAirtime || isBuyingData}
-                >
-                  {isBuyingAirtime || isBuyingData
-                    ? "Processing..."
-                    : "Confirm"}
-                </button>
+                {topupType === "electricity" &&
+                  electricityStep === "provider" && (
+                    <>
+                      <CustomFormSelect
+                        name="electricityProvider"
+                        control={control}
+                        items={[
+                          "IBEDC",
+                          "EKEDC",
+                          "AEDC",
+                          "KEDCO",
+                          "PHED",
+                          "JEDCO",
+                        ]}
+                        labelText="Electricity Provider"
+                        holder="Select your electricity provider"
+                        error={errors.electricityProvider?.message}
+                      />
+
+                      <CustomFormField
+                        label="Meter Number"
+                        name="meterNumber"
+                        control={control}
+                        placeholder="Enter your meter number"
+                        error={errors.meterNumber?.message}
+                      />
+
+                      {meterOwner && (
+                        <div className="text-sm text-primary font-medium mt-2">
+                          Meter Owner: {meterOwner}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                {topupType === "electricity" &&
+                  electricityStep === "amount" && (
+                    <CustomFormField
+                      label="Amount"
+                      name="electricityAmount"
+                      control={control}
+                      placeholder="Enter the amount you want to recharge"
+                      error={errors.electricityAmount?.message}
+                    />
+                  )}
+
+                {topupType === "electricity" &&
+                  electricityStep === "success" && (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg
+                          className="w-8 h-8 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold text-[#1D2939] mb-2">
+                        Electricity payment
+                      </h3>
+                      <h3 className="text-xl font-semibold text-[#1D2939] mb-4">
+                        successful!
+                      </h3>
+                      <p className="text-sm text-[#1D2939] mb-6">
+                        Your token is{" "}
+                        <span className="font-bold">{electricityToken}</span>.
+                        Enter this on your meter to restore power.
+                      </p>
+                    </div>
+                  )}
+
+                {/* Action Buttons */}
+                {topupType === "electricity" &&
+                electricityStep === "success" ? (
+                  <button
+                    type="button"
+                    className="w-full bg-primary text-white rounded-md py-2 mt-4"
+                    onClick={() => {
+                      setElectricityStep("provider");
+                      setMeterOwner("");
+                      setElectricityToken("");
+                      onClose();
+                    }}
+                  >
+                    Go Back to Home Page
+                  </button>
+                ) : topupType === "electricity" ? (
+                  <button
+                    type="button"
+                    className="w-full bg-primary text-white rounded-md py-2 mt-4"
+                    onClick={() => {
+                      if (electricityStep === "provider") {
+                        // Validate meter number before proceeding
+                        const meterNumber = form.getValues("meterNumber");
+                        const electricityProvider = form.getValues(
+                          "electricityProvider"
+                        );
+
+                        if (!electricityProvider) {
+                          toast.error("Please select an electricity provider");
+                          return;
+                        }
+
+                        if (!meterNumber || meterNumber.length < 10) {
+                          toast.error(
+                            "Please enter a valid meter number (at least 10 digits)"
+                          );
+                          return;
+                        }
+
+                        if (!meterOwner) {
+                          toast.error(
+                            "Please wait for meter validation to complete"
+                          );
+                          return;
+                        }
+
+                        // Move to amount step
+                        setElectricityStep("amount");
+                      } else if (electricityStep === "amount") {
+                        // Simulate payment processing and show success
+                        setElectricityToken("1234 5678 9012 3456");
+                        setElectricityStep("success");
+                        toast.success("Electricity payment successful");
+                      }
+                    }}
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full bg-primary text-white rounded-md py-2 mt-4"
+                    disabled={isBuyingAirtime || isBuyingData}
+                  >
+                    {isBuyingAirtime || isBuyingData
+                      ? "Processing..."
+                      : "Confirm"}
+                  </button>
+                )}
               </form>
             </Form>
           </div>
