@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { sidebarData } from '../../common/constants';
-import Image from 'next/image';
-import logoutIcon from '../../../../public/assets/logout.svg';
-import { useLogOut } from '@/src/hooks/useLogOut';
-import { useAuthSelector } from '@/src/Redux/selectors';
-import { RootState } from '@/src/Redux/store';
-import { useSelector } from 'react-redux';
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { sidebarData } from "../../common/constants";
+import Image from "next/image";
+import logoutIcon from "../../../../public/assets/logout.svg";
+import { useLogOut } from "@/src/hooks/useLogOut";
+import { useAuthSelector } from "@/src/Redux/selectors";
+import { RootState } from "@/src/Redux/store";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const userData = useAuthSelector();
 
-  const isVisible = userData?.user?.feature?.employee_loan === '1';
+  const isVisible = userData?.user?.feature?.employee_loan === "1";
   const isLineManager = userData?.user?.line_manager;
   const userApprovals = userData?.user?.approvals || [];
 
   const subscription = useSelector(
-    (state: RootState) => state.auth.user.subscription_plan
+    (state: RootState) => state?.auth?.user?.subscription_plan
   );
 
-  console.log('subscription', subscription);
+  console.log("subscription", subscription);
 
   const companyLogo = userData?.user?.company_logo;
 
   const [showMenu, setShowMenu] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<string>('');
+  const [currentIndex, setCurrentIndex] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const pathname = usePathname();
@@ -59,7 +59,7 @@ const Sidebar = () => {
     } else {
       router.push(item.path);
       setShowMenu(false);
-      setCurrentIndex('');
+      setCurrentIndex("");
     }
   };
 
@@ -72,39 +72,40 @@ const Sidebar = () => {
 
     const allowedFeatures = {
       GROWTH: [
-        'Dashboard',
-        'Leave Management',
-        'Attendance',
-        'Expense Management',
-        'Payroll',
-        'Employee Management',
-        'Procurement',
-        'Bill Payment',
-        'Query Management',
-        'Onboarding Documents',
-        'Approval',
-        'Settings',
-        'Benefit Management',
+        "Dashboard",
+        "Leave Management",
+        "Attendance",
+        "Expense Management",
+        "Payroll",
+        "Employee Management",
+        "Procurement",
+        "Bill Payment",
+        "Query Management",
+        "Onboarding Documents",
+        "Approval",
+        "Settings",
+        "Benefit Management",
       ],
       PREMIUM: [
-        'Dashboard',
-        'Leave Management',
-        'Attendance',
-        'Expense Management',
-        'Payroll',
-        'Employee Management',
-        'Procurement',
-        'Event',
-        'Query Management',
-        'Task Management',
-        'Asset Management',
-        'Loan Management',
-        'Appraisals',
-        'Message',
-        'Onboarding Documents',
-        'Approval',
-        'Settings',
-        'Benefit Management',
+        "Dashboard",
+        "Leave Management",
+        "Attendance",
+        "Expense Management",
+        "Payroll",
+        "Employee Management",
+        "Procurement",
+        "Event",
+        "Query Management",
+        "Task Management",
+        "Asset Management",
+        "Loan Management",
+        "Appraisals",
+        "Message",
+        "Onboarding Documents",
+        "Approval",
+        "Settings",
+        "Benefit Management",
+        "Bill Payment",
       ],
     };
 
@@ -124,22 +125,22 @@ const Sidebar = () => {
     }
 
     // Exclude Loan if not visible (existing business logic)
-    if (item.title === 'Loan' && !isVisible) {
+    if (item.title === "Loan" && !isVisible) {
       return false;
     }
 
     // Exclude Approval if not a line manager (existing business logic)
-    if (item.title === 'Approval' && userApprovals.length < 1) {
+    if (item.title === "Approval" && userApprovals.length < 1) {
       return false;
     }
 
     // Exclude Wallet if not a line manager (existing business logic)
-    if (item.title === 'Wallet' && !isLineManager) {
+    if (item.title === "Wallet" && !isLineManager) {
       return false;
     }
 
     // Exclude All Expenses if not a line manager (existing business logic)
-    if (item.title === 'All Expenses' && !isLineManager) {
+    if (item.title === "All Expenses" && !isLineManager) {
       return false;
     }
 
@@ -151,7 +152,7 @@ const Sidebar = () => {
       {/* Fixed Header */}
       <div className="sticky top-0 bg-white z-10 pt-[40px] pl-5 pb-4 max-h-32">
         <Image
-          src={companyLogo || '/assets/logo.jpg'}
+          src={companyLogo || "/assets/logo.jpg"}
           alt="logo"
           width={100}
           height={100}
@@ -169,7 +170,7 @@ const Sidebar = () => {
                 className={`flex items-center px-4 py-3 cursor-pointer transition-colors duration-300 relative ${
                   pathname === item.path
                     ? 'bg-[#F0EAF5] text-primary before:content-[""] before:absolute before:top-0 before:right-[10px] before:h-[50%] before:translate-y-[45%] before:w-[4px] before:bg-primary'
-                    : 'bg-transparent text-[#616161] hover:bg-[#F0EAF5]'
+                    : "bg-transparent text-[#616161] hover:bg-[#F0EAF5]"
                 }`}
                 onClick={() => handleMainMenuClick(item)}
               >
@@ -198,10 +199,10 @@ const Sidebar = () => {
                         title?: string;
                       }) => {
                         // If the main item is "Approval", filter based on userApprovals
-                        if (item.title === 'Approval') {
+                        if (item.title === "Approval") {
                           return userApprovals.some(
                             (approval) =>
-                              approval.toLowerCase().replaceAll('-', '') ===
+                              approval.toLowerCase().replaceAll("-", "") ===
                               subItem.title.toLowerCase()
                           );
                         }
@@ -214,8 +215,8 @@ const Sidebar = () => {
                         href={subItem.path}
                         className={`py-2 px-3 rounded-lg text-sm flex items-center gap-2 ${
                           pathname.includes(subItem.path)
-                            ? 'text-primary'
-                            : 'text-[#757575] hover:text-primary'
+                            ? "text-primary"
+                            : "text-[#757575] hover:text-primary"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent event bubbling to parent

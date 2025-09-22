@@ -1,23 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { AssetTable } from './assetsTable';
-import { AssignedTable } from './assignedTable';
-import { AssetDetailModal } from './assetDetailModal';
-import { Asset, Employee, AssignedAsset } from '@/src/types/assets-management';
-import { Plus, Search } from 'lucide-react';
-import { AssignAssetModal } from './assignAssetsModal';
+import { useState } from "react";
+import { AssetTable } from "./assetsTable";
+import { AssignedTable } from "./assignedTable";
+import { AssetDetailModal } from "./assetDetailModal";
+import { Asset, Employee, AssignedAsset } from "@/src/types/assets-management";
+import { Plus, Search } from "lucide-react";
+import { AssignAssetModal } from "./assignAssetsModal";
 import {
   useAssignAsset,
+  useDeleteAsset,
   useRevokeAssets,
-} from '@/src/hooks/asset-management/useAssetManagement';
-import toast from 'react-hot-toast';
-import { AxiosError } from 'axios';
-import { AddAssetModal } from './addAssetsModal';
-import { AssetFormValues } from '@/src/utils/validations';
-import RevokeAsset from '@/src/components/modals/RevokeAsset';
-import { useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+} from "@/src/hooks/asset-management/useAssetManagement";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { AddAssetModal } from "./addAssetsModal";
+import { AssetFormValues } from "@/src/utils/validations";
+import RevokeAsset from "@/src/components/modals/RevokeAsset";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { DeleteModal } from "@/src/components/modals/DeleteLoanPolicy";
 
 interface AssetTabsProps {
   assets: Asset[];
@@ -34,32 +36,36 @@ export const AssetTabs = ({
   isPending,
   handleAddAsset,
 }: AssetTabsProps) => {
-  const [activeTab, setActiveTab] = useState<'assets' | 'assigned'>('assets');
+  const [activeTab, setActiveTab] = useState<"assets" | "assigned">("assets");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [masterCheckbox, setMasterCheckbox] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [assignId, setAssignId] = useState('');
+  const [assignId, setAssignId] = useState("");
   const queryClient = useQueryClient();
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [assetToDelete, setAssetToDelete] = useState<Asset | null>(null);
   const {
     mutate: assignAsset,
     isPending: isAssigning,
     isSuccess,
   } = useAssignAsset({
     onSuccess: () => {
-      toast.success('Asset assigned successfully');
+      toast.success("Asset assigned successfully");
       setIsAssignModalOpen(false);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || 'Something went wrong');
+        toast.error(error?.response?.data?.message || "Something went wrong");
       }
     },
   });
+
+  const { mutate: mutateDelete, isPending: isDeleting } = useDeleteAsset();
 
   const filteredAssets = assets.filter((asset) => {
     const query = searchQuery.toLowerCase();
@@ -93,7 +99,7 @@ export const AssetTabs = ({
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || 'Something went wrong');
+        toast.error(error?.response?.data?.message || "Something went wrong");
       }
     },
   });
@@ -105,13 +111,33 @@ export const AssetTabs = ({
   };
 
   // Prevent body scroll when modals are open
-  if (typeof document !== 'undefined') {
+  if (typeof document !== "undefined") {
     if (isAddModalOpen || isAssignModalOpen || isDetailModalOpen) {
-      document.body.classList.add('overflow-hidden');
+      document.body.classList.add("overflow-hidden");
     } else {
-      document.body.classList.remove('overflow-hidden');
+      document.body.classList.remove("overflow-hidden");
     }
   }
+
+  const handleDelete = (benefit: Asset) => {
+    setAssetToDelete(benefit);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setAssetToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!assetToDelete) return;
+    mutateDelete(assetToDelete.id, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        setAssetToDelete(null);
+      },
+    });
+  };
 
   return (
     <div>
@@ -137,7 +163,7 @@ export const AssetTabs = ({
         </div>
 
         <div className="w-full md:w-auto md:ml-auto">
-          {activeTab === 'assets' ? (
+          {activeTab === "assets" ? (
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-3 py-2 bg-[#692E9F] text-white rounded-md flex items-center gap-2 hover:bg-purple-800 w-full md:w-auto"
@@ -160,21 +186,21 @@ export const AssetTabs = ({
       <div className="border-b mb-4">
         <nav className="-mb-px flex" aria-label="Tabs">
           <button
-            onClick={() => setActiveTab('assets')}
+            onClick={() => setActiveTab("assets")}
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'assets'
-                ? 'border-[#692E9F] text-[#692E9F]'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              activeTab === "assets"
+                ? "border-[#692E9F] text-[#692E9F]"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } mr-8`}
           >
             Assets
           </button>
           <button
-            onClick={() => setActiveTab('assigned')}
+            onClick={() => setActiveTab("assigned")}
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'assigned'
-                ? 'border-[#692E9F] text-[#692E9F]'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              activeTab === "assigned"
+                ? "border-[#692E9F] text-[#692E9F]"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             Assigned
@@ -183,11 +209,13 @@ export const AssetTabs = ({
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'assets' ? (
+      {activeTab === "assets" ? (
         <AssetTable
           assets={filteredAssets}
           masterCheckbox={masterCheckbox}
           onMasterCheckboxChange={handleMasterCheckboxChange}
+          handleDelete={handleDelete}
+          isDeleting={isDeleting}
         />
       ) : (
         <AssignedTable
@@ -198,7 +226,7 @@ export const AssetTabs = ({
           setAssignId={setAssignId}
           onInfoClick={(asset: Asset, action: string) => {
             setSelectedAsset(asset);
-            if (action.includes('Revoke')) {
+            if (action.includes("Revoke")) {
               setIsOpen(true);
             } else {
               setIsDetailModalOpen(true);
@@ -246,6 +274,14 @@ export const AssetTabs = ({
         setIsOpen={setIsOpen}
         handleRevoke={handleRevoke}
         isPending={isLoading}
+      />
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        title="Delete Asset"
+        description={`Are you sure you want to delete this asset ? This action cannot be undone.`}
+        onCancel={handleCancelDelete}
+        onDelete={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

@@ -1,22 +1,18 @@
 "use client";
 
-import LoadingPage from "@/src/app/loading";
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-
 
 interface CommentModalProps {
   title: string;
   onClose: () => void;
   onSubmit: (comment: string) => void;
-  isLoading: boolean;
 }
 
 export default function CommentModal({
   title,
   onClose,
   onSubmit,
-  isLoading,
 }: CommentModalProps) {
   const [comment, setComment] = useState("");
 
@@ -27,10 +23,6 @@ export default function CommentModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
       <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-4">
-        {isLoading && (
-          <LoadingPage fullPage={false} size="small" text="Submitting..." />
-        )}
-
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">{title}</h2>
           <button
@@ -53,10 +45,9 @@ export default function CommentModal({
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            disabled={isLoading}
-            className="px-6 py-2 bg-[#692E9F] flex items-center justify-center gap-2 text-white rounded text-sm hover:bg-purple-800 w-full"
+            className="px-6 py-2 bg-[#692E9F] text-white rounded text-sm hover:bg-purple-800 w-full"
           >
-            {isLoading ? "Submitting..." : "Submit"}
+            Submit
           </button>
         </div>
       </div>

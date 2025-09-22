@@ -24,9 +24,7 @@ export const useGetAllApprovals = (
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      const response = await approvalService.getAllApprovals(
-        route /*, filters */
-      );
+      const response = await approvalService.getAllApprovals(route);
       return response;
     },
     placeholderData: keepPreviousData,
@@ -36,6 +34,11 @@ export const useGetAllApprovals = (
         return false;
       return failureCount < 2;
     },
+    // Add these options for fresh data
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 0, // Data is immediately stale
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   return {
@@ -43,6 +46,7 @@ export const useGetAllApprovals = (
     isSuccess,
     isLoading: isPending && !isFetching,
     isFetching,
+    isPending,
     approvals: data?.data?.data || [],
     pagination: data?.data?.pagination || {},
     rawData: data,

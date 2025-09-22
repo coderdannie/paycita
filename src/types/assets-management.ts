@@ -7,7 +7,7 @@ export interface Asset {
   name: string;
   category: string;
   quantity: number;
-  status: string;
+  status?: string;
   id?: string;
   assignedTo?: Employee;
   avatarUrl?: string;
