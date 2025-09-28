@@ -107,36 +107,6 @@ export const useBuyData = () => {
   });
 };
 
-export const useBuyElectricity = () => {
-  const queryClient = useQueryClient();
-  return useMutation<
-    AxiosResponse<{ message: string; token?: string }>,
-    Error,
-    { provider: string; meter_number: string; amount: string }
-  >({
-    mutationFn: (data: {
-      provider: string;
-      meter_number: string;
-      amount: string;
-    }) => billPaymentService.buyElectricity(data),
-    onSuccess: () => {
-      // Invalidate and refetch transaction history
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
-      });
-    },
-    onError: (error: AxiosError) => {
-      if (error instanceof AxiosError && error.response?.status === 404) return;
-    },
-    retry: (failureCount, error) => {
-      if (error instanceof AxiosError && error.response?.status === 404)
-        return false;
-      return failureCount < 2;
-    },
-    mutationKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
-  });
-};
-
 export const useGetNetworkDataPlans = (network: string) => {
   const { isError, isSuccess, data, isPending, isFetching } = useQuery({
     queryKey: [QUERY_KEYS.GET_NETWORK_DATA_PLANS, network],
@@ -167,4 +137,106 @@ export const useGetNetworkDataPlans = (network: string) => {
     networkDataPlans: data?.data?.data?.network?.plans || [],
     rawData: data,
   };
+};
+
+interface ElectricityProvider {
+  service_provider_code?: string;
+  code?: string;
+  service_provider?: string;
+  name?: string;
+}
+
+type ElectricityProviderList = ElectricityProvider[] | ElectricityProvider[][];
+
+export const useGetElectricityProviders = () => {
+  const { isError, isSuccess, data, isPending, isFetching } = useQuery<
+    AxiosResponse<{ data: ElectricityProviderList }>,
+    AxiosError
+  >({
+    queryKey: [QUERY_KEYS.GET_ELECTRICITY_PROVIDERS],
+    queryFn: async () => billPaymentService.getElectricityProviders(),
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 404) return false;
+      return failureCount < 2;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  // Normalize providers into a flat { code, name }[] list
+  const rawData = data?.data?.data as ElectricityProviderList | undefined;
+  const raw = rawData ?? [];
+  const inner = Array.isArray(raw)
+    ? Array.isArray(raw[0])
+      ? (raw[0] as ElectricityProvider[])
+      : (raw as ElectricityProvider[])
+    : [];
+  const providers = Array.isArray(inner)
+    ? inner.map((p: ElectricityProvider) => ({
+        // Ensure these are strings to match Material Tailwind Select expectations
+        code: String(p?.service_provider_code ?? p?.code ?? ""),
+        name: String(p?.service_provider ?? p?.name ?? ""),
+      }))
+    : [];
+
+  return {
+    isError,
+    isSuccess,
+    isLoading: isPending,
+    isFetching,
+    providers,
+    rawData: data,
+  };
+};
+
+export const useValidateElectricityNumber = () => {
+  return useMutation<
+    AxiosResponse<{ message: string; token?: string }>,
+    Error,
+    {
+      meter_number: string;
+      meter_type: "prepaid" | "postpaid" | string;
+      amount: string;
+      service_provider_code: string;
+    }
+  >({
+    mutationFn: (payload) =>
+      billPaymentService.validateElectricityNumber(payload),
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      // Allow exactly one retry on non-404 errors
+      return failureCount < 0;
+    },
+  });
+};
+
+export const useBuyElectricity = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AxiosResponse<{ message: string; token?: string }>,
+    Error,
+    {
+      meter_number: string;
+      meter_type: "prepaid" | "postpaid" | string;
+      amount: string;
+      service_provider_code: string;
+      customer_name: string;
+      // wallet_pin: string;
+    }
+  >({
+    mutationFn: (payload) => billPaymentService.buyElectricity(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_TRANSACTION_HISTORY],
+      });
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError && error.response?.status === 404) return;
+    },
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404)
+        return false;
+      return failureCount < 1;
+    },
+  });
 };
