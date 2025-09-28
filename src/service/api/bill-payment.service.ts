@@ -33,20 +33,45 @@ const getNetworkDataPlans = (network: string) => {
   return api.get(`/hr/data-plans?network=${network}`);
 };
 
-const buyElectricity = (data: {
-  provider: string;
+// const buyElectricity = (data: {
+//   provider: string;
+//   meter_number: string;
+//   amount: string;
+// }) => {
+//   return api.post(`/hr/electricity`, data);
+// };
+
+const getElectricityProviders = () => {
+  return api.get(`/hr/electricity-service`);
+};
+
+const validateElectricityNumber = (data: {
   meter_number: string;
+  meter_type: "prepaid" | "postpaid" | string;
   amount: string;
+  service_provider_code: string;
 }) => {
-  return api.post(`/hr/electricity`, data);
+  return api.post(`/hr/validate-electricity-number`, data);
+};
+
+const buyElectricity = (data: {
+  meter_number: string;
+  meter_type: "prepaid" | "postpaid" | string;
+  amount: string;
+  service_provider_code: string;
+  customer_name: string; 
+}) => {
+  return api.post(`/hr/buy-electricity`, data);
 };
 
 const billPaymentService = {
   getTransactionHistory,
   buyAirtime,
   buyData,
-  buyElectricity,
   getNetworkDataPlans,
+  buyElectricity,
+  getElectricityProviders,
+  validateElectricityNumber,
 };
 
 export default billPaymentService;

@@ -128,6 +128,7 @@ export const topupSchema = z
     electricityProvider: z.string().optional(),
     meterNumber: z.string().optional(),
     electricityAmount: z.string().optional(),
+    meterType: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // For airtime, amount is required but dataPlan should be ignored
@@ -166,6 +167,13 @@ export const topupSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Meter number is required',
           path: ['meterNumber'],
+        });
+      }
+      if (!data.meterType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Meter type is required',
+          path: ['meterType'],
         });
       }
     }
