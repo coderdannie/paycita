@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { topupSchema, TopupSchemaType } from "@/src/utils/validations";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
@@ -20,6 +20,9 @@ import {
   useBuyAirtime,
   useBuyData,
   useGetNetworkDataPlans,
+  useGetElectricityProviders,
+  useValidateElectricityNumber,
+  useBuyElectricity,
 } from "@/src/hooks/bill-payment/useBillPayments";
 import {
   Select,
@@ -36,6 +39,34 @@ interface TopupModalProps {
   onClose: () => void;
 }
 
+interface ElectricityValidationDetails {
+  customer_name?: string;
+  customerName?: string;
+  address?: string;
+  account_number?: string;
+  minimum_amount?: number;
+  outstanding_balance?: number | null;
+  debt_amount?: number | null;
+  minimum_debt?: number | null;
+}
+
+type ElectricityValidationResponseData = {
+  success?: boolean;
+  message?: string;
+  data?:
+    | ElectricityValidationDetails[]
+    | Record<string, ElectricityValidationDetails>
+    | null;
+};
+
+type ElectricityPurchaseResponseData = {
+  message?: string;
+  token?: string;
+  data?: {
+    token?: string;
+  };
+};
+
 const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   const [networkId, setNetworkId] = useState<string | null>(null);
   const [planId, setPlanId] = useState<string | null>(null);
@@ -51,6 +82,19 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   >("provider");
   const [meterOwner, setMeterOwner] = useState<string>("");
   const [electricityToken, setElectricityToken] = useState<string>("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [validationDetails, setValidationDetails] =
+    useState<ElectricityValidationDetails | null>(null);
+  const [isMeterValidated, setIsMeterValidated] = useState(false);
+  const {
+    providers,
+    isLoading: isFetchingProviders,
+    isError: isProvidersError,
+  } = useGetElectricityProviders();
+  const { mutate: mutateValidateElectricity, isPending: isValidatingMeter } =
+    useValidateElectricityNumber();
+  const { mutate: mutateBuyElectricity, isPending: isBuyingElectricity } =
+    useBuyElectricity();
   const form = useForm<TopupSchemaType & { network_id?: string }>({
     resolver: zodResolver(topupSchema),
     defaultValues: {
@@ -63,6 +107,7 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
       electricityProvider: "",
       meterNumber: "",
       electricityAmount: "",
+      meterType: "",
     },
     mode: "onChange",
   });
@@ -74,45 +119,75 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
 
   const { networkDataPlans } = useGetNetworkDataPlans(watchNetwork);
 
-  // Watch for meter number changes and automatically fetch meter owner
   const meterNumber = watch("meterNumber");
+  const electricityProvider = watch("electricityProvider");
+  const meterType = watch("meterType");
+  const electricityAmount = watch("electricityAmount");
 
-  useEffect(() => {
-    if (
-      topupType === "electricity" &&
-      meterNumber &&
-      meterNumber.length >= 10
-    ) {
-      // Simulate API call to fetch meter owner
-      // make an API call here
-      setTimeout(() => {
-        setMeterOwner("Tanimonure Oluwabunmi");
-      }, 500);
-    } else if (!meterNumber || meterNumber.length < 10) {
-      setMeterOwner("");
+  const providerOptions = useMemo(
+    () =>
+      (providers || []).map((provider) => ({
+        value: provider.code,
+        label: provider.name || provider.code,
+      })),
+    [providers]
+  );
+
+  const selectedProvider = useMemo(
+    () =>
+      providerOptions.find((option) => option.value === electricityProvider) ||
+      null,
+    [providerOptions, electricityProvider]
+  );
+
+  const isProcessingElectricity = isValidatingMeter || isBuyingElectricity;
+
+  const shouldShowValidationSection =
+    topupType === "electricity" &&
+    electricityStep === "provider" &&
+    (!!meterNumber ||
+      !!validationError ||
+      isMeterValidated ||
+      !!validationDetails);
+
+  const deriveValidationMessage = (message?: string) => {
+    if (!message) return "Validation failed";
+    const normalized = message.toLowerCase();
+    if (normalized.includes("invalid")) {
+      return "The meter number you entered appears to be invalid.";
     }
-  }, [meterNumber, topupType]);
+    if (normalized.includes("not found")) {
+      return "We couldn't find this meter number. Please confirm and try again.";
+    }
+    if (normalized.includes("required")) {
+      return "Please provide all required meter details.";
+    }
+    return message;
+  };
 
   // Handle topup type change
   const handleTopupTypeChange = (type: "airtime" | "data" | "electricity") => {
     setTopupType(type);
-    setValue("topupType", type as "airtime" | "data");
+    setValue("topupType", type);
+    setElectricityStep("provider");
+    setMeterOwner("");
+    setElectricityToken("");
+    setValidationError(null);
+    setValidationDetails(null);
+    setIsMeterValidated(false);
+
+    resetField("electricityProvider");
+    resetField("meterNumber");
+    resetField("electricityAmount");
+    resetField("meterType");
+
     if (type === "airtime") {
       resetField("dataPlan");
-      resetField("electricityProvider");
-      resetField("meterNumber");
-      resetField("electricityAmount");
-      setElectricityStep("provider");
     } else if (type === "data") {
       resetField("amount");
-      resetField("electricityProvider");
-      resetField("meterNumber");
-      resetField("electricityAmount");
-      setElectricityStep("provider");
     } else {
       resetField("dataPlan");
       resetField("amount");
-      setElectricityStep("provider");
     }
   };
 
@@ -339,17 +414,45 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                       <CustomFormSelect
                         name="electricityProvider"
                         control={control}
-                        items={[
-                          "IBEDC",
-                          "EKEDC",
-                          "AEDC",
-                          "KEDCO",
-                          "PHED",
-                          "JEDCO",
-                        ]}
+                        items={providerOptions}
                         labelText="Electricity Provider"
-                        holder="Select your electricity provider"
+                        holder={
+                          isFetchingProviders
+                            ? "Loading providers..."
+                            : "Select your electricity provider"
+                        }
                         error={errors.electricityProvider?.message}
+                        onChange={() => {
+                          setMeterOwner("");
+                          setElectricityToken("");
+                          setValidationError(null);
+                          setValidationDetails(null);
+                          setIsMeterValidated(false);
+                        }}
+                      />
+
+                      {!isFetchingProviders && isProvidersError && (
+                        <p className="text-sm text-red-500">
+                          Unable to load electricity providers. Please try again
+                          later.
+                        </p>
+                      )}
+
+                      <CustomFormSelect
+                        name="meterType"
+                        control={control}
+                        items={[
+                          { label: "Prepaid", value: "prepaid" },
+                          { label: "Postpaid", value: "postpaid" },
+                        ]}
+                        labelText="Meter Type"
+                        holder="Select meter type"
+                        error={errors.meterType?.message}
+                        onChange={() => {
+                          setValidationError(null);
+                          setValidationDetails(null);
+                          setIsMeterValidated(false);
+                        }}
                       />
 
                       <CustomFormField
@@ -358,6 +461,243 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                         control={control}
                         placeholder="Enter your meter number"
                         error={errors.meterNumber?.message}
+                        onChange={() => {
+                          setValidationError(null);
+                          setValidationDetails(null);
+                          setIsMeterValidated(false);
+                          setMeterOwner("");
+                        }}
+                      />
+
+                      <div className="flex items-center gap-3 mt-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const providerCode = form.getValues(
+                              "electricityProvider"
+                            );
+                            const meterNumberValue =
+                              form.getValues("meterNumber");
+                            const meterTypeValue = form.getValues("meterType");
+                            const amountValue =
+                              form.getValues("electricityAmount") || "1000";
+
+                            setValidationError(null);
+
+                            if (!providerCode) {
+                              toast.error(
+                                "Please select an electricity provider"
+                              );
+                              return;
+                            }
+
+                            if (!meterTypeValue) {
+                              toast.error("Please choose your meter type");
+                              return;
+                            }
+
+                            if (
+                              !meterNumberValue ||
+                              meterNumberValue.length < 10
+                            ) {
+                              toast.error(
+                                "Please enter a valid meter number (at least 10 digits)"
+                              );
+                              return;
+                            }
+
+                            mutateValidateElectricity(
+                              {
+                                meter_number: meterNumberValue,
+                                meter_type: meterTypeValue,
+                                amount: amountValue,
+                                service_provider_code: providerCode,
+                              },
+                              {
+                                onSuccess: (res) => {
+                                  const payload =
+                                    (res?.data as
+                                      | ElectricityValidationResponseData
+                                      | undefined) ?? {};
+                                  if (payload.success === false) {
+                                    const msg = deriveValidationMessage(
+                                      payload.message
+                                    );
+                                    setValidationError(msg);
+                                    setValidationDetails(null);
+                                    setIsMeterValidated(false);
+                                    setMeterOwner("");
+                                    return;
+                                  }
+
+                                  let details: ElectricityValidationDetails | null =
+                                    null;
+                                  if (Array.isArray(payload.data)) {
+                                    details = payload.data[0] ?? null;
+                                  } else if (
+                                    payload.data &&
+                                    typeof payload.data === "object"
+                                  ) {
+                                    const firstKey = Object.keys(
+                                      payload.data
+                                    )[0];
+                                    details = firstKey
+                                      ? (
+                                          payload.data as Record<
+                                            string,
+                                            ElectricityValidationDetails
+                                          >
+                                        )[firstKey]
+                                      : null;
+                                  }
+
+                                  const customerName =
+                                    details?.customer_name ||
+                                    details?.customerName ||
+                                    "";
+
+                                  setMeterOwner(customerName);
+                                  setValidationDetails(details);
+                                  setValidationError(null);
+                                  setIsMeterValidated(true);
+
+                                  if (details?.minimum_amount) {
+                                    setValue(
+                                      "electricityAmount",
+                                      String(details.minimum_amount)
+                                    );
+                                  }
+                                },
+                                onError: (err) => {
+                                  const apiMessage = deriveValidationMessage(
+                                    err instanceof AxiosError
+                                      ? err.response?.data?.message ||
+                                          err.message
+                                      : (err as Error)?.message
+                                  );
+                                  setValidationError(apiMessage);
+                                  setValidationDetails(null);
+                                  setIsMeterValidated(false);
+                                  setMeterOwner("");
+                                },
+                              }
+                            );
+                          }}
+                          disabled={
+                            isValidatingMeter ||
+                            !electricityProvider ||
+                            !meterType ||
+                            !meterNumber ||
+                            meterNumber.length < 10
+                          }
+                          className="px-4 py-2 bg-primary text-white rounded-md text-sm disabled:opacity-60"
+                        >
+                          {isValidatingMeter ? "Validating..." : "Validate"}
+                        </button>
+                        {isMeterValidated && !validationError && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">
+                            Validated
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                {shouldShowValidationSection && (
+                  <div className="space-y-3">
+                    {meterOwner && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-primary font-medium text-sm sm:text-base">
+                          Meter Owner: {meterOwner}
+                        </p>
+                        {isMeterValidated && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">
+                            Validated
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {validationError && (
+                      <p className="text-red-600 text-sm">{validationError}</p>
+                    )}
+
+                    {validationDetails && (
+                      <div className="border border-gray-200 rounded-md p-3 text-sm text-gray-700 space-y-2 bg-gray-50">
+                        {validationDetails.address && (
+                          <div className="flex justify-between gap-4">
+                            <span className="font-medium">Address:</span>
+                            <span className="text-right max-w-[60%]">
+                              {validationDetails.address}
+                            </span>
+                          </div>
+                        )}
+                        {validationDetails.account_number && (
+                          <div className="flex justify-between gap-4">
+                            <span className="font-medium">Account No:</span>
+                            <span>{validationDetails.account_number}</span>
+                          </div>
+                        )}
+                        {typeof validationDetails.minimum_amount !==
+                          "undefined" && (
+                          <div className="flex justify-between gap-4">
+                            <span className="font-medium">Minimum Amount:</span>
+                            <span>₦{validationDetails.minimum_amount}</span>
+                          </div>
+                        )}
+                        {typeof validationDetails.outstanding_balance !==
+                          "undefined" &&
+                          validationDetails.outstanding_balance !== null && (
+                            <div className="flex justify-between gap-4">
+                              <span className="font-medium">
+                                Outstanding Balance:
+                              </span>
+                              <span>
+                                ₦{validationDetails.outstanding_balance}
+                              </span>
+                            </div>
+                          )}
+                        {typeof validationDetails.debt_amount !== "undefined" &&
+                          validationDetails.debt_amount !== null && (
+                            <div className="flex justify-between gap-4">
+                              <span className="font-medium">Debt Amount:</span>
+                              <span>₦{validationDetails.debt_amount}</span>
+                            </div>
+                          )}
+                        {typeof validationDetails.minimum_debt !==
+                          "undefined" &&
+                          validationDetails.minimum_debt !== null && (
+                            <div className="flex justify-between gap-4">
+                              <span className="font-medium">Minimum Debt:</span>
+                              <span>₦{validationDetails.minimum_debt}</span>
+                            </div>
+                          )}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!isMeterValidated) return;
+                        setElectricityStep("amount");
+                      }}
+                      className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-sm disabled:opacity-50"
+                      disabled={!isMeterValidated}
+                    >
+                      Continue
+                    </button>
+                  </div>
+                )}
+
+                {topupType === "electricity" &&
+                  electricityStep === "amount" && (
+                    <>
+                      <CustomFormField
+                        label="Amount"
+                        name="electricityAmount"
+                        control={control}
+                        placeholder="Enter the amount you want to recharge"
+                        error={errors.electricityAmount?.message}
                       />
 
                       {meterOwner && (
@@ -366,17 +706,6 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                     </>
-                  )}
-
-                {topupType === "electricity" &&
-                  electricityStep === "amount" && (
-                    <CustomFormField
-                      label="Amount"
-                      name="electricityAmount"
-                      control={control}
-                      placeholder="Enter the amount you want to recharge"
-                      error={errors.electricityAmount?.message}
-                    />
                   )}
 
                 {topupType === "electricity" &&
@@ -403,8 +732,30 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                       <h3 className="text-xl font-semibold text-[#1D2939] mb-4">
                         successful!
                       </h3>
+                      {selectedProvider?.label && (
+                        <p className="text-sm text-[#1D2939] mb-2">
+                          Provider:{" "}
+                          <span className="font-bold">
+                            {selectedProvider.label}
+                          </span>
+                        </p>
+                      )}
+                      {meterOwner && (
+                        <p className="text-sm text-[#1D2939] mb-2">
+                          Meter Owner:{" "}
+                          <span className="font-bold">{meterOwner}</span>
+                        </p>
+                      )}
+                      {electricityAmount && (
+                        <p className="text-sm text-[#1D2939] mb-4">
+                          Amount Paid:{" "}
+                          <span className="font-bold">
+                            ₦{electricityAmount}
+                          </span>
+                        </p>
+                      )}
                       <p className="text-sm text-[#1D2939] mb-6">
-                        Your token is{" "}
+                        Your{" "}
                         <span className="font-bold">{electricityToken}</span>.
                         Enter this on your meter to restore power.
                       </p>
@@ -421,53 +772,111 @@ const TopUpModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
                       setElectricityStep("provider");
                       setMeterOwner("");
                       setElectricityToken("");
+                      setValidationError(null);
+                      setValidationDetails(null);
+                      setIsMeterValidated(false);
                       onClose();
                     }}
                   >
                     Go Back to Home Page
                   </button>
-                ) : topupType === "electricity" ? (
+                ) : topupType === "electricity" &&
+                  electricityStep === "amount" ? (
                   <button
                     type="button"
-                    className="w-full bg-primary text-white rounded-md py-2 mt-4"
+                    className="w-full bg-primary text-white rounded-md py-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                    disabled={isProcessingElectricity || !isMeterValidated}
                     onClick={() => {
-                      if (electricityStep === "provider") {
-                        // Validate meter number before proceeding
-                        const meterNumber = form.getValues("meterNumber");
-                        const electricityProvider = form.getValues(
-                          "electricityProvider"
-                        );
-
-                        if (!electricityProvider) {
-                          toast.error("Please select an electricity provider");
-                          return;
-                        }
-
-                        if (!meterNumber || meterNumber.length < 10) {
-                          toast.error(
-                            "Please enter a valid meter number (at least 10 digits)"
-                          );
-                          return;
-                        }
-
-                        if (!meterOwner) {
-                          toast.error(
-                            "Please wait for meter validation to complete"
-                          );
-                          return;
-                        }
-
-                        // Move to amount step
-                        setElectricityStep("amount");
-                      } else if (electricityStep === "amount") {
-                        // Simulate payment processing and show success
-                        setElectricityToken("1234 5678 9012 3456");
-                        setElectricityStep("success");
-                        toast.success("Electricity payment successful");
+                      if (isProcessingElectricity) {
+                        return;
                       }
+
+                      if (!isMeterValidated) {
+                        toast.error(
+                          "Please validate the meter before continuing"
+                        );
+                        return;
+                      }
+
+                      const amountValue = form.getValues("electricityAmount");
+                      const providerCode = electricityProvider;
+                      const meterTypeValue = meterType;
+
+                      if (!providerCode) {
+                        toast.error("Please select an electricity provider");
+                        return;
+                      }
+
+                      if (!meterTypeValue) {
+                        toast.error("Please choose your meter type");
+                        return;
+                      }
+
+                      if (!meterNumber || meterNumber.length < 10) {
+                        toast.error(
+                          "Please enter a valid meter number (at least 10 digits)"
+                        );
+                        return;
+                      }
+
+                      if (!amountValue || Number(amountValue) <= 0) {
+                        toast.error("Please enter a valid amount");
+                        return;
+                      }
+
+                      setElectricityToken("");
+
+                      mutateBuyElectricity(
+                        {
+                          meter_number: meterNumber,
+                          meter_type: meterTypeValue,
+                          amount: amountValue,
+                          service_provider_code: providerCode,
+                          customer_name:
+                            meterOwner ||
+                            validationDetails?.customer_name ||
+                            validationDetails?.customerName ||
+                            "Electricity customer",
+                        },
+                        {
+                          onSuccess: (purchaseResponse) => {
+                            const purchaseData =
+                              (purchaseResponse?.data as
+                                | ElectricityPurchaseResponseData
+                                | undefined) ?? {};
+                            const token =
+                              purchaseData?.token ||
+                              purchaseData?.data?.token ||
+                              "";
+
+                            setElectricityToken(
+                              token ||
+                                "Token will be shared shortly. Kindly check your notifications."
+                            );
+
+                            toast.success(
+                              purchaseData?.message ||
+                                "Electricity payment successful"
+                            );
+                            setElectricityStep("success");
+                          },
+                          onError: (error) => {
+                            if (error instanceof AxiosError) {
+                              toast.error(
+                                error?.response?.data?.message ||
+                                  "Failed to complete electricity purchase"
+                              );
+                            } else {
+                              toast.error(
+                                "Failed to complete electricity purchase"
+                              );
+                            }
+                          },
+                        }
+                      );
                     }}
                   >
-                    Continue
+                    {isProcessingElectricity ? "Processing..." : "Pay"}
                   </button>
                 ) : (
                   <button
