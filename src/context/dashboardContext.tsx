@@ -23,7 +23,7 @@ import {
 } from "../service/api/pusher.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message } from "../app/(private)/message/components/types";
-import { useGetSingleChat } from "../hooks/chat/useChatQuery";
+import { useGetAllChat, useGetSingleChat } from "../hooks/chat/useChatQuery";
 // import { initAudio, playSentSound } from "../utils/audio";
 import isEqual from "lodash.isequal";
 import { v4 as uuidv4 } from "uuid";
@@ -46,6 +46,7 @@ interface DashboardContextType {
   currentDateTime: string;
 
   chatList: ChatUser[];
+  isChatListLoading: boolean;
   conversations: Record<string, ChatMessage[]>;
   currentChat?: ChatUser;
   selectChat: (user: ChatUser) => void;
@@ -217,11 +218,47 @@ const DashboardProvider = ({
 
   const queryClient = useQueryClient();
 
+  const {
+    allChats,
+    isLoading: isChatListInitialLoading,
+    isFetching: isChatListFetching,
+  } = useGetAllChat();
+
   const [chatList, setChatList] = useState<ChatUser[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatUser | null>(null);
   const [conversations, setConversations] = useState<
     Record<string, ChatMessage[]>
   >({});
+
+  useEffect(() => {
+    if (!Array.isArray(allChats)) return;
+
+    const normalizedChats: ChatUser[] = allChats.map((chat) => ({
+      chat_id: chat?.chat_id,
+      user_id: chat?.user_id?.id ?? "",
+      sender_id: chat?.user_id?.id ?? "",
+      full_name: chat?.user_id?.full_name ?? "",
+      email: chat?.user_id?.email ?? "",
+      profile_picture: chat?.user_id?.profile_picture ?? "",
+      created_at: chat?.created_at ?? new Date().toISOString(),
+      updated_at:
+        chat?.updated_at ??
+        chat?.created_at ??
+        chat?.last_message?.updated_at ??
+        chat?.last_message?.created_at ??
+        new Date().toISOString(),
+    }));
+
+    setChatList((prev) =>
+      isEqual(prev, normalizedChats) ? prev : normalizedChats
+    );
+  }, [allChats]);
+
+  useEffect(() => {
+    if (chatList.length === 0 || currentChat) return;
+
+    setCurrentChat(chatList[0]);
+  }, [chatList, currentChat]);
 
   const prevMessagesRef = useRef<Record<string, Message[]>>({});
   const { singleChat, isLoading: ChatLoading } = useGetSingleChat(
@@ -247,15 +284,16 @@ const DashboardProvider = ({
   }, [singleChat?.messages, currentChat?.chat_id]);
 
   const { resetChatNotification } = useNotification();
+  const resetChatNotificationRef = useRef(resetChatNotification);
 
-  const selectChat = useCallback(
-    (user: ChatUser) => {
-      setCurrentChat(user);
-      // Reset notifications when entering chat
-      resetChatNotification(user.chat_id);
-    },
-    [resetChatNotification]
-  );
+  useEffect(() => {
+    resetChatNotificationRef.current = resetChatNotification;
+  }, [resetChatNotification]);
+
+  const selectChat = useCallback((user: ChatUser) => {
+    setCurrentChat(user);
+    resetChatNotificationRef.current?.(user.chat_id);
+  }, []);
 
   // Mark messages as read in a separate effect
   useEffect(() => {
@@ -390,6 +428,7 @@ const DashboardProvider = ({
     fetchDashboardDetails,
     isEmployeeAttendanceLoading,
     chatList,
+    isChatListLoading: isChatListInitialLoading || isChatListFetching,
     conversations,
     ChatLoading,
     selectChat,
