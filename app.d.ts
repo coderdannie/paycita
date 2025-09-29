@@ -47,6 +47,9 @@ interface ChatUser {
   full_name: string;
   profile_picture: string;
   isOnline?: boolean;
+  email?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface ChatMessage {

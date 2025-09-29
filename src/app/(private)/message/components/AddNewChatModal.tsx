@@ -18,14 +18,7 @@ export const AddNewChatModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  allChats?: {
-    chat_id: string;
-    user_id: string;
-    full_name: string;
-    email: string;
-    profile_picture: string;
-    created_at: string;
-  }[];
+  allChats?: ChatUser[];
 }) => {
   const queryClient = useQueryClient();
   const { addNewChat } = useDashboard();
@@ -83,8 +76,8 @@ export const AddNewChatModal = ({
             setSelectedUser(null);
             setSearchTerm("");
           },
-          onError: (error) => {
-
+          onError: () => {
+            // Error handling covered by mutation hook toast elsewhere
           },
         }
       );
