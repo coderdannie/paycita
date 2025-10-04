@@ -5,12 +5,22 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { sidebarData } from "../../common/constants";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/src/Redux/store';
+import { selectNormalizedFeatureSet } from '@/src/Redux/selectors/featureSelectors';
+import { hasBackendFeature, isFeatureAllowedByPlan } from '@/src/config/featureAccess';
 import Image from "next/image";
 import logoutIcon from "../../../../public/assets/logout.svg";
 import { useLogOut } from "@/src/hooks/useLogOut";
 import { useAuthSelector } from "@/src/Redux/selectors";
-import { useSelector } from "react-redux";
-import { RootState } from "@/src/Redux/store";
+// Helper to normalize approval keys (e.g. "Approval-Loan" -> "loan") and collapse plurals
+const normalizeApproval = (val: string) => {
+  if (!val) return '';
+  let base = val.replace(/^Approval-/i, '').toLowerCase().replaceAll(/[-_\s]/g, '');
+  if (base === 'expenses') base = 'expense';
+  if (base === 'reimbursements') base = 'reimbursement';
+  return base;
+};
 
 interface SidebarProps {
   isDrawerOpen: boolean;
@@ -23,6 +33,13 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
   const isVisible = userData?.user?.feature?.employee_loan === "1";
   const isLineManager = userData?.user?.line_manager;
   const userApprovals = userData?.user?.approvals || [];
+  const subscriptionFeatureApprovals: string[] = (userData?.user?.subscription_features || [])
+    .flatMap((f: { approvals?: string[] | null }) => f?.approvals || [])
+    .filter(Boolean as unknown as (x: unknown) => x is string);
+  const userApprovalSet = new Set(userApprovals.map(normalizeApproval));
+  const featureApprovalSet = new Set(subscriptionFeatureApprovals.map(normalizeApproval));
+  const effectiveApprovalSet = new Set<string>([...userApprovalSet, ...featureApprovalSet]);
+  const displayApprovalSet = userApprovalSet.size > 0 ? userApprovalSet : featureApprovalSet;
 
   const subscription = useSelector(
     (state: RootState) => state.auth.user.subscription_plan
@@ -66,85 +83,20 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
     }
   };
 
-  const isFeatureAvailable = (featureName: string) => {
-    const plan = subscription?.toUpperCase();
-
-    if (!plan) {
-      return false;
-    }
-
-    const allowedFeatures = {
-      GROWTH: [
-        "Dashboard",
-        "Leave Management",
-        "Attendance",
-        "Expense Management",
-        "Payroll",
-        "Employee Management",
-        "Procurement",
-        "Bill Payment",
-        "Query Management",
-        "Onboarding Documents",
-        "Approval",
-        "Settings",
-      ],
-      PREMIUM: [
-        "Dashboard",
-        "Leave Management",
-        "Attendance",
-        "Expense Management",
-        "Payroll",
-        "Employee Management",
-        "Procurement",
-        "Event",
-        "Query Management",
-        "Task Management",
-        "Asset Management",
-        "Loan Management",
-        "Appraisals",
-        "Message",
-        "Bill Payment",
-        "Onboarding Documents",
-        "Approval",
-        "Settings",
-      ],
-    };
-
-    // If plan doesn't have allowed features defined, allow all features (ENTERPRISE case)
-    if (!allowedFeatures[plan]) {
-      return true;
-    }
-
-    // Check if the feature is in the allowed list for the current plan
-    return allowedFeatures[plan].includes(featureName);
-  };
+  const featureNameSet = useSelector(selectNormalizedFeatureSet);
 
   const filteredSidebarData = sidebarData.filter((item) => {
-    // Check subscription plan restrictions first
-    if (!isFeatureAvailable(item.title)) {
-      return false;
+    const isApproval = item.title === 'Approval';
+    if (!isFeatureAllowedByPlan(subscription, item.title)) {
+      if (!(isApproval && effectiveApprovalSet.size > 0)) return false;
     }
-
-    // Exclude Loan if not visible (existing business logic)
-    if (item.title === "Loan" && !isVisible) {
-      return false;
+    if (!hasBackendFeature(item.title, featureNameSet)) {
+      if (!(isApproval && effectiveApprovalSet.size > 0)) return false;
     }
-
-    // Exclude Approval if not a line manager (existing business logic)
-    if (item.title === "Approval" && userApprovals.length < 1) {
-      return false;
-    }
-
-    // Exclude Wallet if not a line manager (existing business logic)
-    if (item.title === "Wallet" && !isLineManager) {
-      return false;
-    }
-
-    // Exclude All Expenses if not a line manager (existing business logic)
-    if (item.title === "All Expenses" && !isLineManager) {
-      return false;
-    }
-
+    if (item.title === 'Loan' && !isVisible) return false;
+    if (isApproval && effectiveApprovalSet.size < 1) return false;
+    if (item.title === 'Wallet' && !isLineManager) return false;
+    if (item.title === 'All Expenses' && !isLineManager) return false;
     return true;
   });
 
@@ -196,24 +148,13 @@ const SideDrawer = ({ isDrawerOpen, toggleDrawer }: SidebarProps) => {
                   {item.sub && showMenu && currentIndex === item.title && (
                     <div className="mt-2 pl-8">
                       {item.sub
-                        .filter(
-                          (subItem: {
-                            id: number;
-                            name: string;
-                            path: string;
-                            title?: string;
-                          }) => {
-                            // If the main item is "Approval", filter based on userApprovals
-                            if (item.title === "Approval") {
-                              return userApprovals.some(
-                                (approval) =>
-                                  approval.toLowerCase().replaceAll("-", "") ===
-                                  subItem.title.toLowerCase()
-                              );
-                            }
-                            return true;
+                        .filter((subItem: { id: number; name: string; path: string; title?: string }) => {
+                          if (item.title === "Approval") {
+                            const key = normalizeApproval(subItem.title || subItem.name);
+                            return displayApprovalSet.has(key);
                           }
-                        )
+                          return true;
+                        })
                         .map((subItem) => (
                           <Link
                             key={subItem.id}

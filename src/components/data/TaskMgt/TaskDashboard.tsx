@@ -7,28 +7,21 @@ import { TaskActionsDropdown } from './TaskActionsDropdown';
 
 interface TaskDashboardProps {
   tasks: Task[];
-  allUsers: Array<{
-    id: number;
-    name: string;
-    avatar: string;
-    department: string;
-  }>;
   isLoading?: boolean;
   onEditTask?: (id: number) => void;
   onMarkInProgress?: (id: number) => void;
   onMarkCompleted?: (id: number) => void;
-  setTasks?: (tasks: Task[]) => void;
   onTaskClick?: (id: number) => void;
+  onDeleteTask?: (id: number) => void;
 }
 
 export default function TaskDashBoard({
   tasks,
-  allUsers,
-  setTasks,
   onEditTask,
   onMarkInProgress,
   onMarkCompleted,
   onTaskClick,
+  onDeleteTask,
 }: TaskDashboardProps) {
   const columns = [
     { id: 'todo', title: 'To do', status: 'todo' },
@@ -36,7 +29,7 @@ export default function TaskDashBoard({
     { id: 'completed', title: 'Completed', status: 'completed' },
   ];
 
-  const handleRowClick = (taskId: number, event: React.MouseEvent) => {
+  const handleRowClick = (taskId: number) => {
     onTaskClick?.(taskId);
   };
 
@@ -73,7 +66,7 @@ export default function TaskDashBoard({
   const TaskCard = ({ task }) => (
     <div
       className="bg-white rounded-lg shadow-sm cursor-pointer border border-gray-200 p-4 mb-4"
-      onClick={(e) => handleRowClick(task.id, e)}
+  onClick={() => handleRowClick(task.id)}
     >
       <div className="flex items-center justify-between mb-3">
         <div
@@ -93,6 +86,7 @@ export default function TaskDashBoard({
           onEditTask={onEditTask}
           onMarkInProgress={onMarkInProgress}
           onMarkCompleted={onMarkCompleted}
+          onDeleteTask={onDeleteTask}
         />
       </div>
 
@@ -135,7 +129,7 @@ export default function TaskDashBoard({
         </div>
       )}
       <div onClick={(e) => e.stopPropagation()}>
-        <TaskEmployeeAvatars assignees={task.assignees} allUsers={allUsers} />
+  <TaskEmployeeAvatars assignees={task.assignees} />
       </div>
     </div>
   );
