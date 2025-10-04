@@ -87,7 +87,7 @@ export const createTask = async <T = TaskEntity, P = unknown>(
 
 // List Tasks
 export const listTasks = async <T = TaskEntity[], P = unknown>(): Promise<ApiBaseResponse<T, P>> => {
-  const url = '/hr/task-management';
+  const url = '/hr/get-user-tasks';
   const response = await api.get(url);
   return response.data;
 };
