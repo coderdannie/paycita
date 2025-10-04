@@ -1,75 +1,70 @@
-import { useMemo } from 'react';
-import CustomTable from '@/src/components/common/CustomTable';
-import { TableRow, TableCell } from '../../ui/table';
-import TableEmptyState from '@/src/components/common/TableEmptyState';
-import { TaskEmployeeAvatars } from './TaskEmployeeAvatar';
-import { TaskActionsDropdown } from './TaskActionsDropdown';
-import { TaskStatusBadge } from './TaskStatusBadge';
-import { Task } from '@/src/types/tasksMgt';
+import { useMemo } from "react";
+import CustomTable from "@/src/components/common/CustomTable";
+import { TableRow, TableCell } from "../../ui/table";
+import TableEmptyState from "@/src/components/common/TableEmptyState";
+import { TaskEmployeeAvatars } from "./TaskEmployeeAvatar";
+import { TaskActionsDropdown } from "./TaskActionsDropdown";
+import { TaskStatusBadge } from "./TaskStatusBadge";
+import { Task } from "@/src/types/tasksMgt";
 
 interface TaskTableViewProps {
   tasks: Task[];
-  allUsers: Array<{
-    id: number;
-    name: string;
-    avatar: string;
-    department: string;
-  }>;
   isLoading?: boolean;
   onEditTask?: (id: number) => void;
   onMarkInProgress?: (id: number) => void;
   onMarkCompleted?: (id: number) => void;
   onTaskClick?: (id: number) => void;
+  onDeleteTask?: (id: number) => void;
 }
 
 export const TaskTableView = ({
   tasks,
-  allUsers,
   isLoading = false,
   onEditTask,
   onMarkInProgress,
   onMarkCompleted,
   onTaskClick,
+  onDeleteTask,
 }: TaskTableViewProps) => {
   const headers = useMemo(
     () => [
-      { label: 'Task Title' },
-      { label: 'Priority' },
-      { label: 'Employees' },
-      { label: 'Date' },
-      { label: 'Status' },
-      { label: '' },
+      { label: "Task Title" },
+      { label: "Priority" },
+      { label: "Employees" },
+      { label: "Date" },
+      { label: "Status" },
+      { label: "" },
     ],
     []
   );
 
-  const handleRowClick = (taskId: number, event: React.MouseEvent) => {
+  const handleRowClick = (taskId: number) => {
     onTaskClick?.(taskId);
   };
 
   const getPriorityDotColor = (priority: string) => {
     switch (priority) {
-      case 'High':
-        return 'bg-red-500';
-      case 'Medium':
-        return 'bg-orange-400';
-      case 'Low':
-        return 'bg-green-500';
+      case "High":
+        return "bg-red-500";
+      case "Medium":
+        return "bg-orange-400";
+      case "Low":
+        return "bg-green-500";
       default:
-        return 'bg-gray-400';
+        return "bg-gray-400";
     }
   };
 
   const getPriorityStyles = (priority: string) => {
     switch (priority) {
-      case 'High':
-        return 'bg-red-100 text-red-600 border-red-200';
-      case 'Medium':
-        return 'bg-orange-100 text-orange-600 border-orange-200';
-      case 'Low':
-        return 'bg-green-100 text-green-600 border-green-200';
+      case "High":
+        return "bg-red-100 text-red-600 border-red-200";
+      case "Medium":
+        return "bg-orange-100 text-orange-600 border-orange-200";
+      case "Low":
+        return "bg-green-100 text-green-600 border-green-200";
       default:
-        return 'bg-gray-100 text-gray-600 border-gray-200';
+        return "bg-gray-100 text-gray-600 border-gray-200";
     }
   };
 
@@ -80,7 +75,7 @@ export const TaskTableView = ({
           <TableRow
             key={task.id}
             className="text-[#1D2939] text-sm hover:bg-gray-50 cursor-pointer transition-colors"
-            onClick={(e) => handleRowClick(task.id, e)}
+            onClick={() => handleRowClick(task.id)}
           >
             <TableCell>
               <div>
@@ -106,10 +101,7 @@ export const TaskTableView = ({
             </TableCell>
             <TableCell>
               <div onClick={(e) => e.stopPropagation()}>
-                <TaskEmployeeAvatars
-                  assignees={task.assignees}
-                  allUsers={allUsers}
-                />
+                <TaskEmployeeAvatars assignees={task.assignees} />
               </div>
             </TableCell>
             <TableCell className="text-gray-600">{task.dueDate}</TableCell>
@@ -123,6 +115,7 @@ export const TaskTableView = ({
                   onEditTask={onEditTask}
                   onMarkInProgress={onMarkInProgress}
                   onMarkCompleted={onMarkCompleted}
+                  onDeleteTask={onDeleteTask}
                 />
               </div>
             </TableCell>

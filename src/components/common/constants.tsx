@@ -255,13 +255,13 @@ export const sidebarData = [
     hover: <QueryMgtIcon fill="#692E9F" />,
     path: "/query-management",
   },
-  // {
-  //   title: 'Task Management',
-  //   icon: <TaskMgtIcon fill="#344054" />,
-  //   sec: <TaskMgtIcon fill="#692E9F" />,
-  //   hover: <TaskMgtIcon fill="#692E9F" />,
-  //   path: '/task-management',
-  // },
+  {
+    title: "Task Management",
+    icon: <TaskMgtIcon fill="#344054" />,
+    sec: <TaskMgtIcon fill="#692E9F" />,
+    hover: <TaskMgtIcon fill="#692E9F" />,
+    path: "/task-management",
+  },
   {
     title: "Benefit Management",
     icon: <BenefitMgtIcon fill="#344054" />,
@@ -426,6 +426,7 @@ export const statusOptions = [
 
 export const priorities = [
   { value: "priority", label: "Priority" },
+  { value: "critical", label: "Critical" },
   { value: "high", label: "High" },
   { value: "medium", label: "Medium" },
   { value: "low", label: "Low" },
