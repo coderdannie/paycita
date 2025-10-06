@@ -4,7 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Edit, PlayCircle, CheckCircle } from 'lucide-react';
+import { Edit, PlayCircle, CheckCircle, Trash2 } from 'lucide-react';
 import { RiMore2Fill } from 'react-icons/ri';
 
 interface TaskActionsDropdownProps {
@@ -12,6 +12,7 @@ interface TaskActionsDropdownProps {
   onEditTask?: (id: number) => void;
   onMarkInProgress?: (id: number) => void;
   onMarkCompleted?: (id: number) => void;
+  onDeleteTask?: (id: number) => void;
 }
 
 export const TaskActionsDropdown = ({
@@ -19,6 +20,7 @@ export const TaskActionsDropdown = ({
   onEditTask,
   onMarkInProgress,
   onMarkCompleted,
+  onDeleteTask,
 }: TaskActionsDropdownProps) => {
   const handleTriggerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -58,6 +60,13 @@ export const TaskActionsDropdown = ({
         >
           <CheckCircle size={14} className="mr-2" />
           Mark as completed
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => handleMenuItemClick(e, () => onDeleteTask?.(taskId))}
+          className="text-red-600 focus:text-red-700"
+        >
+          <Trash2 size={14} className="mr-2" />
+          Delete Task
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -16,4 +16,9 @@ interface LoggedInUserProps {
   phone_number: string;
   role: string;
   subscription_plan: string;
+  // Raw features array coming from backend used to drive dynamic sidebar
+  subscription_features?: Array<{
+    name: string;
+    approvals: string[] | null;
+  }>;
 }

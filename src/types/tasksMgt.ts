@@ -25,9 +25,10 @@ export interface TaskOutline {
 
 export interface Task {
   id: number;
+  backendId?: string | number; // original API id for mutations
   title: string;
   description: string;
-  priority: 'High' | 'Medium' | 'Low'; // must match exactly
+  priority: 'Critical' | 'High' | 'Medium' | 'Low'; // must match exactly
   status: 'todo' | 'in progress' | 'completed';
   startDate: string;
   dueDate: string;
