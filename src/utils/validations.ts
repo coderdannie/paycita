@@ -103,7 +103,13 @@ export type AddEmployee = userDetailsSchemaType | EmployeeDetailsSchemaType;
 
 export const loginSchema = z
   .object({
-    email: z.string().email({ message: "Invalid email address" }),
+    email: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .includes("@", { message: "Invalid email address" })
+      .refine((email) => email.split("@")[1]?.includes("."), {
+        message: "Invalid email address",
+      }),
     password: z.string().min(1, { message: "Password is required" }),
   })
   .required();
@@ -120,9 +126,9 @@ export type ResumptionDetailsSchemaType = z.infer<
 
 export const topupSchema = z
   .object({
-    network: z.string().min(1, 'Network provider is required'),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-    topupType: z.enum(['airtime', 'data', 'electricity']).default('airtime'),
+    network: z.string().min(1, "Network provider is required"),
+    phone: z.string().min(10, "Phone number must be at least 10 digits"),
+    topupType: z.enum(["airtime", "data", "electricity"]).default("airtime"),
     amount: z.string().optional(),
     dataPlan: z.string().optional(),
     electricityProvider: z.string().optional(),
@@ -154,26 +160,26 @@ export const topupSchema = z
     }
 
     // For electricity, electricityProvider and meterNumber are required
-    if (data.topupType === 'electricity') {
+    if (data.topupType === "electricity") {
       if (!data.electricityProvider) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Electricity provider is required',
-          path: ['electricityProvider'],
+          message: "Electricity provider is required",
+          path: ["electricityProvider"],
         });
       }
       if (!data.meterNumber) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Meter number is required',
-          path: ['meterNumber'],
+          message: "Meter number is required",
+          path: ["meterNumber"],
         });
       }
       if (!data.meterType) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Meter type is required',
-          path: ['meterType'],
+          message: "Meter type is required",
+          path: ["meterType"],
         });
       }
     }
