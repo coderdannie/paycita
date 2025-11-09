@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Calendar, ChevronDown, Check } from "lucide-react";
+import { X, Calendar, ChevronDown, Check, Upload } from "lucide-react";
 import { SubmitHandler, UseFormReturn } from "react-hook-form";
 import { LeaveRequestSchemaType } from "@/src/utils/validations";
 import { Spinner } from "react-activity";
@@ -9,7 +9,7 @@ import { Spinner } from "react-activity";
 interface LeaveRequestModalProps {
   onClose: () => void;
   onSubmit: SubmitHandler<LeaveRequestSchemaType>;
-  leaveTypes: string[];
+  leaveTypes: any;
   form: UseFormReturn<LeaveRequestSchemaType>;
   isPending: boolean;
 }
@@ -28,6 +28,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState<string>("");
 
   const leave_type = watch("leave_type");
   const start_date = watch("start_date");
@@ -39,7 +40,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
     // Set the default leave type if not set
     if (!leave_type && leaveTypes.length > 0) {
-      setValue("leave_type", leaveTypes[0]);
+      setValue("leave_type", leaveTypes[0].leave_name);
     }
 
     return () => {
@@ -80,14 +81,12 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   };
 
   const handleDateSelection = (date: Date, isStartDate: boolean) => {
-    // Create a new date in local timezone to avoid timezone issues
     const localDate = new Date(
       date.getFullYear(),
       date.getMonth(),
       date.getDate()
     );
 
-    // Format as YYYY-MM-DD without timezone information
     const year = localDate.getFullYear();
     const month = String(localDate.getMonth() + 1).padStart(2, "0");
     const day = String(localDate.getDate()).padStart(2, "0");
@@ -99,6 +98,14 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     } else {
       setValue("end_date", formattedDate, { shouldValidate: true });
       setShowEndDatePicker(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setValue("leave_document", file);
+      setSelectedFileName(file.name);
     }
   };
 
@@ -159,7 +166,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
               <button
                 type="button"
                 onClick={toggleYearDropdown}
-                className="flex items-center px-2 py-1 text-sm hover:text-purple-600"
+                className="flex items-center px-2 py-1 text-sm hover:text-primary"
               >
                 <span>{year}</span>
                 <ChevronDown className="w-3 h-3 ml-1" />
@@ -224,7 +231,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
                     key={dayIndex}
                     className={`cursor-pointer text-center py-1 px-2 text-sm hover:bg-gray-100 rounded ${
                       isSelected
-                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                        ? "bg-primary text-white hover:bg-purple-700"
                         : ""
                     }`}
                     onClick={() => handleDateSelection(date, isStartDate)}
@@ -266,7 +273,7 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
             {/* Leave Type Dropdown */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Leave Type
+                Leave Type <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <button
@@ -284,27 +291,33 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
                 {showDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md max-h-60 overflow-auto">
-                    {leaveTypes.map((type) => (
-                      <div
-                        key={type}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                        onClick={() => selectLeaveType(type)}
-                      >
-                        {type}
-                        {type === leave_type && (
-                          <Check className="w-4 h-4 text-purple-600" />
-                        )}
-                      </div>
-                    ))}
+                    {leaveTypes.length > 0 &&
+                      leaveTypes?.map((type: any) => (
+                        <div
+                          key={type?.leave_name}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                          onClick={() => selectLeaveType(type.leave_name)}
+                        >
+                          {type?.leave_name}
+                          {type?.leave_name === leave_type && (
+                            <Check className="w-4 h-4 text-primary" />
+                          )}
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
+              {form.formState.errors.leave_type && (
+                <p className="text-red-500 text-xs">
+                  {form.formState.errors.leave_type.message as string}
+                </p>
+              )}
             </div>
 
             {/* Start Date Picker */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Start Date
+                Start Date <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div
@@ -327,12 +340,17 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
                   <div className="mt-1">{renderCalendar(true)}</div>
                 )}
               </div>
+              {form.formState.errors.start_date && (
+                <p className="text-red-500 text-xs">
+                  {form.formState.errors.start_date.message as string}
+                </p>
+              )}
             </div>
 
             {/* End Date Picker */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                End Date
+                End Date <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div
@@ -355,14 +373,79 @@ const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
                   <div className="mt-1">{renderCalendar(false)}</div>
                 )}
               </div>
+              {form.formState.errors.end_date && (
+                <p className="text-red-500 text-xs">
+                  {form.formState.errors.end_date.message as string}
+                </p>
+              )}
+            </div>
+
+            {/* Message Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Message (Optional)
+              </label>
+              <textarea
+                id="message"
+                {...register("message")}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 resize-none text-sm"
+                placeholder="Enter your leave reason or additional information..."
+              />
+              {form.formState.errors.message && (
+                <p className="text-red-500 text-xs">
+                  {form.formState.errors.message.message as string}
+                </p>
+              )}
+            </div>
+
+            {/* File Upload Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="leave_document"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Supporting Document (Optional)
+              </label>
+              <div className="relative">
+                <input
+                  id="leave_document"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="leave_document"
+                  className="w-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg px-3 py-3 cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-colors"
+                >
+                  <Upload className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-sm text-gray-600">
+                    {selectedFileName || "Choose file or drag here"}
+                  </span>
+                </label>
+                {selectedFileName && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Selected: {selectedFileName}
+                  </p>
+                )}
+              </div>
+              {form.formState.errors.leave_document?.message && (
+                <p className="text-red-500 text-xs">
+                  {form.formState.errors.leave_document.message as string}
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 border-t">
             <button
               type="submit"
               disabled={!leave_type || !start_date || !end_date || isPending}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+              className="w-full bg-primary hover:bg-purple-700 disabled:bg-purple-300 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
             >
               {isPending && <Spinner className="w-4 h-4 mr-2" />} Submit
             </button>

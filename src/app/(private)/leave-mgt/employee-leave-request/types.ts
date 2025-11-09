@@ -7,5 +7,7 @@ export interface LeaveRequestType {
   leaveDate: string;
   duration: number;
   pending_with?: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: "Pending" | "Approved" | "Rejected";
+  document?: string;
+  message?: string;
 }
