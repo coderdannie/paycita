@@ -223,6 +223,13 @@ export const leaveRequestSchema = z.object({
   leave_type: z.string().min(1, { message: "Leave Type is required" }),
   start_date: z.string().min(1, { message: "Start Date is required" }),
   end_date: z.string().min(1, { message: "End Date is required" }),
+  message: z.string().optional(),
+  leave_document: z
+    .any()
+    .refine((file) => !file || file instanceof File, {
+      message: "Please upload a valid file",
+    })
+    .optional(),
 });
 
 export type LeaveRequestSchemaType = z.infer<typeof leaveRequestSchema>;

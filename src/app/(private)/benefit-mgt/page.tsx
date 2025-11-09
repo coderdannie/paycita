@@ -1,38 +1,39 @@
-'use client';
+"use client";
 
-import SearchInput from '@/src/components/ui/SearchInput';
-import CustomTable from '@/src/components/common/CustomTable';
-import { TableCell, TableRow } from '@/src/components/ui/table';
-import TableEmptyState from '@/src/components/common/TableEmptyState';
-import AddBenefitModal from '@/src/components/modals/AddBenefitModal';
-import FilterDrawer from '@/src/components/common/FilterDrawer';
-import { useMemo, useState, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Controller, useForm } from 'react-hook-form';
-import Select, { StylesConfig } from 'react-select';
-import { SingleValue } from '@/src/types/attendance';
-import { PiSlidersHorizontal } from 'react-icons/pi';
-import { AiOutlinePlus } from 'react-icons/ai';
-import { HiOutlinePencil } from 'react-icons/hi2';
-import { RiDeleteBin6Line } from 'react-icons/ri';
-import { IoIosArrowDown } from 'react-icons/io';
-import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
-import { DeleteModal } from '@/src/components/modals/DeleteLoanPolicy';
-import toast from 'react-hot-toast';
+import SearchInput from "@/src/components/ui/SearchInput";
+import CustomTable from "@/src/components/common/CustomTable";
+import { TableCell, TableRow } from "@/src/components/ui/table";
+import TableEmptyState from "@/src/components/common/TableEmptyState";
+import AddBenefitModal from "@/src/components/modals/AddBenefitModal";
+import FilterDrawer from "@/src/components/common/FilterDrawer";
+import { useMemo, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import Select, { StylesConfig } from "react-select";
+import { SingleValue } from "@/src/types/attendance";
+import { PiSlidersHorizontal } from "react-icons/pi";
+import { AiOutlinePlus } from "react-icons/ai";
+import { HiOutlinePencil } from "react-icons/hi2";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { IoIosArrowDown } from "react-icons/io";
+import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
+import { DeleteModal } from "@/src/components/modals/DeleteLoanPolicy";
+import toast from "react-hot-toast";
 import {
   benefitTypeOptions,
   renewalCycleOptions,
   unitOptions,
-} from '@/src/components/common/constants';
+} from "@/src/components/common/constants";
 import {
   useAddBenefit,
   useGetBenefits,
   useUpdateBenefit,
   useDeleteBenefit,
-} from '@/src/hooks/benefit-mgt/useBenefit';
+} from "@/src/hooks/benefit-mgt/useBenefit";
 
-import CustomPagination from '@/src/components/common/pagination/Pagination';
-import { BenefitFormData } from '@/src/types/dashboard';
+import CustomPagination from "@/src/components/common/pagination/Pagination";
+import { BenefitFormData } from "@/src/types/dashboard";
+import { useGetAllLeaveTypes } from "@/src/hooks/leave/useLeave";
 
 interface Benefit {
   id: string;
@@ -53,49 +54,49 @@ interface FilterFormValues {
 const customStyles: StylesConfig<SingleValue, false> = {
   control: (provided) => ({
     ...provided,
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    border: '2px solid #E4E7EC',
-    borderRadius: '8px',
-    boxShadow: 'none',
-    minHeight: '40px',
-    padding: '0 12px',
-    fontSize: '14px',
-    color: '#1D2939',
-    outline: 'none',
-    '&:hover': {
-      borderColor: '#692E9F',
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    border: "2px solid #E4E7EC",
+    borderRadius: "8px",
+    boxShadow: "none",
+    minHeight: "40px",
+    padding: "0 12px",
+    fontSize: "14px",
+    color: "#1D2939",
+    outline: "none",
+    "&:hover": {
+      borderColor: "#692E9F",
     },
-    '&:focus': {
-      borderColor: 'transparent',
-      outline: 'none',
+    "&:focus": {
+      borderColor: "transparent",
+      outline: "none",
     },
   }),
   placeholder: (provided) => ({
     ...provided,
-    fontSize: '12px',
-    color: '#b3b3b3',
+    fontSize: "12px",
+    color: "#b3b3b3",
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: '10px',
-    marginTop: '4px',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    borderRadius: "10px",
+    marginTop: "4px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
     zIndex: 10,
   }),
   indicatorSeparator: () => ({
-    display: 'none',
+    display: "none",
   }),
   option: (base, state) => ({
     ...base,
-    backgroundColor: state.isFocused ? '#F0EAF5' : 'transparent',
-    color: '#333333',
-    fontSize: '12px',
-    padding: '10px 8px',
-    cursor: 'pointer',
-    '&:active': {
-      backgroundColor: '#EAEAEA',
+    backgroundColor: state.isFocused ? "#F0EAF5" : "transparent",
+    color: "#333333",
+    fontSize: "12px",
+    padding: "10px 8px",
+    cursor: "pointer",
+    "&:active": {
+      backgroundColor: "#EAEAEA",
     },
   }),
 };
@@ -105,11 +106,11 @@ const BenefitMgt = () => {
   const updateSearchParams = useUpdateSearchParams();
 
   // Get query params with defaults (removed benefit_name)
-  const search = searchParams.get('search') || '';
-  const benefitType = searchParams.get('benefit_type') || '';
-  const unit = searchParams.get('unit') || '';
-  const recurring = searchParams.get('recurring') || '';
-  const currentPage = searchParams.get('page') || '1';
+  const search = searchParams.get("search") || "";
+  const benefitType = searchParams.get("benefit_type") || "";
+  const unit = searchParams.get("unit") || "";
+  const recurring = searchParams.get("recurring") || "";
+  const currentPage = searchParams.get("page") || "1";
 
   const [searchTerm, setSearchTerm] = useState(search);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -118,16 +119,19 @@ const BenefitMgt = () => {
   const [benefitToDelete, setBenefitToDelete] = useState<Benefit | null>(null);
   const [editingBenefit, setEditingBenefit] = useState<Benefit | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { leaveTypes } = useGetAllLeaveTypes({
+    page: "1",
+  });
 
   const headers = useMemo(
     () => [
-      { label: 'Benefit Name' },
-      { label: 'Description' },
-      { label: 'Type' },
-      { label: 'Unit' },
-      { label: 'Unit Default Allocation' },
-      { label: 'Renewal Cycle' },
-      { label: 'Action' },
+      { label: "Benefit Name" },
+      { label: "Description" },
+      { label: "Type" },
+      { label: "Unit" },
+      { label: "Unit Default Allocation" },
+      { label: "Renewal Cycle" },
+      { label: "Action" },
     ],
     []
   );
@@ -186,9 +190,9 @@ const BenefitMgt = () => {
     form.reset();
     updateSearchParams({
       search: searchTerm,
-      benefit_type: '',
-      unit: '',
-      recurring: '',
+      benefit_type: "",
+      unit: "",
+      recurring: "",
     });
   }, [form, updateSearchParams, searchTerm]);
 
@@ -240,7 +244,7 @@ const BenefitMgt = () => {
           },
           {
             onSuccess: () => {
-              toast.success('Benefit added successfully!');
+              toast.success("Benefit added successfully!");
               setIsEditMode(false);
               setEditingBenefit(null);
               setIsAddBenefitOpen(false);
@@ -405,7 +409,7 @@ const BenefitMgt = () => {
                       ) || null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || '');
+                      field.onChange(selectedOption?.value || "");
                     }}
                     styles={customStyles}
                     placeholder="Select benefit type"
@@ -434,7 +438,7 @@ const BenefitMgt = () => {
                       null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || '');
+                      field.onChange(selectedOption?.value || "");
                     }}
                     styles={customStyles}
                     placeholder="Select unit"
@@ -466,7 +470,7 @@ const BenefitMgt = () => {
                       ) || null
                     }
                     onChange={(selectedOption) => {
-                      field.onChange(selectedOption?.value || '');
+                      field.onChange(selectedOption?.value || "");
                     }}
                     styles={customStyles}
                     placeholder="Select renewal cycle"
@@ -491,6 +495,7 @@ const BenefitMgt = () => {
           isAdding={isUpdating || isAdding}
           isEditMode={isEditMode}
           editingBenefit={editingBenefit}
+          leaveTypes={leaveTypes}
         />
 
         <DeleteModal

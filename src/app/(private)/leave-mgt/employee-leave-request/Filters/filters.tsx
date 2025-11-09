@@ -1,11 +1,10 @@
-
 import React from "react";
 import { Search, ChevronsUpDown } from "lucide-react";
 
 interface FiltersProps {
   onSearchChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
-  onStatusChange: (value: string) => void;
+  onTypeChange?: (value: string) => void;
+  onStatusChange?: (value: string) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({
