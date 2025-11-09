@@ -1,23 +1,24 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import CustomTable from '../../common/CustomTable';
-import { TableCell, TableRow } from '../../ui/table';
-import TableEmptyState from '../../common/TableEmptyState';
-import { Button } from '@/components/ui/button';
-import RejectModal from '../../modals/RejectModal';
-import StatusModal from '../../modals/StatusModal';
+import { useCallback, useMemo, useState } from "react";
+import CustomTable from "../../common/CustomTable";
+import { TableCell, TableRow } from "../../ui/table";
+import TableEmptyState from "../../common/TableEmptyState";
+import { Button } from "@/components/ui/button";
+import RejectModal from "../../modals/RejectModal";
+import StatusModal from "../../modals/StatusModal";
 import {
   useResendApprovalOtp,
   useUpdateApproval,
   useVerifyApprovalOtp,
-} from '@/src/hooks/approvals/useApprovals';
-import { AxiosError } from 'axios';
-import toast from 'react-hot-toast';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
-import { useQueryClient } from '@tanstack/react-query';
-import { Spinner } from 'react-activity';
-import ApprovalModal from '../../modals/VerifyOtpModal';
+} from "@/src/hooks/approvals/useApprovals";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
+import { useQueryClient } from "@tanstack/react-query";
+import { Spinner } from "react-activity";
+import ApprovalModal from "../../modals/VerifyOtpModal";
+import { ExternalLink, FileText } from "lucide-react";
 
 const LeaveTable = ({
   approvals,
@@ -34,28 +35,30 @@ const LeaveTable = ({
     expenses_id: string;
     expenses_number: string;
     status: string;
+    message: string;
+    document: string;
   }>;
 }) => {
   const queryClient = useQueryClient();
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('Approved');
-  const [approvalId, setApprovalId] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("Approved");
+  const [approvalId, setApprovalId] = useState("");
   const [isShow, setIsShow] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(180);
 
   const { mutate: mutateUpdateApprovalStatus, isPending: isUpdatePending } =
-    useUpdateApproval('update-leave-requests');
+    useUpdateApproval("update-leave-requests");
   const headers = useMemo(
     () => [
-      { label: 'Employee' },
-      { label: 'Leave Type' },
-      { label: 'Start Date' },
-      { label: 'End Date' },
-      { label: 'Status' },
-      // { label: "Applied Date" },
-      // { label: "Action Time" },
-      { label: 'Action' },
+      { label: "Employee" },
+      { label: "Leave Type" },
+      { label: "Start Date" },
+      { label: "End Date" },
+      { label: "Message" },
+      { label: "Document" },
+      { label: "Status" },
+      { label: "Action" },
     ],
     []
   );
@@ -65,11 +68,11 @@ const LeaveTable = ({
       <span
         className={`py-[5px] block px-[10px] rounded-md 
         ${
-          status === 'approved'
-            ? 'text-[#008000] bg-[#EDFCED]'
-            : status === 'pending'
-            ? 'text-[#5252FF] bg-[#EDEDFB]'
-            : 'text-red-600 bg-[#FFF5F5]'
+          status === "approved"
+            ? "text-[#008000] bg-[#EDFCED]"
+            : status === "pending"
+            ? "text-[#5252FF] bg-[#EDEDFB]"
+            : "text-red-600 bg-[#FFF5F5]"
         }`}
       >
         {status}
@@ -104,15 +107,15 @@ const LeaveTable = ({
         }, 200);
 
         queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
         });
 
         setIsStatusModalOpen(false);
-        setApprovalId('');
+        setApprovalId("");
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
@@ -131,7 +134,7 @@ const LeaveTable = ({
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
@@ -143,7 +146,7 @@ const LeaveTable = ({
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || 'Something went wrong');
+        toast.error(error?.response?.data?.message || "Something went wrong");
       }
     },
   });
@@ -165,22 +168,22 @@ const LeaveTable = ({
       const payload = {
         id: approvalId,
         data: {
-          status: 'approved',
+          status: "approved",
         },
       };
       mutateUpdateApprovalStatus(payload, {
         onSuccess: () => {
-          toast.success('Status updated successfully');
+          toast.success("Status updated successfully");
           queryClient.refetchQueries({
-            queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
+            queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
           });
           // setIsOpen("");
-          setApprovalId('');
+          setApprovalId("");
         },
         onError: (error) => {
           if (error instanceof AxiosError) {
             toast.error(
-              error?.response?.data?.message || 'Something went wrong'
+              error?.response?.data?.message || "Something went wrong"
             );
           }
         },
@@ -192,13 +195,13 @@ const LeaveTable = ({
   const renderActionButtons = useCallback(
     (item: { status: string; approval_status_id: string }) => {
       switch (item.status.toLowerCase()) {
-        case 'approved':
+        case "approved":
           return (
             <Button onClick={() => handleOpenStatusModal(item)}>
               Change status
             </Button>
           );
-        case 'pending':
+        case "pending":
           return (
             <div className="flex gap-2">
               <Button
@@ -218,7 +221,7 @@ const LeaveTable = ({
               </button>
             </div>
           );
-        case 'rejected':
+        case "rejected":
           return (
             <button
               onClick={() => handleOpenStatusModal(item)}
@@ -239,24 +242,30 @@ const LeaveTable = ({
     const payload = {
       id: approvalId,
       data: {
-        status: 'rejected',
+        status: "rejected",
         reason: comment,
       },
     };
     mutateUpdateApprovalStatus(payload, {
       onSuccess: () => {
-        toast.success('Status updated successfully');
+        toast.success("Status updated successfully");
         queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, 'pending-leave-requests'],
+          queryKey: [QUERY_KEYS.GET_ALL_APPROVALS, "pending-leave-requests"],
         });
         setIsRejectOpen(false);
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
+          toast.error(error?.response?.data?.message || "Something went wrong");
         }
       },
     });
+  };
+
+  const handleDocumentClick = (document: string) => {
+    if (document) {
+      window.open(document, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (
@@ -269,6 +278,30 @@ const LeaveTable = ({
               <TableCell>{row.leave_type}</TableCell>
               <TableCell>{row.start_date}</TableCell>
               <TableCell>{row.end_date}</TableCell>
+              <TableCell>{row.message || "N/A"}</TableCell>
+              <TableCell>
+                {row.document ? (
+                  <div className="pt-2">
+                    {/* <label className="text-gray-500 text-sm block mb-2">
+                      Document
+                    </label> */}
+                    <button
+                      onClick={() => handleDocumentClick(row.document)}
+                      className="w-full flex items-center justify-between bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg p-3 transition-colors"
+                    >
+                      <div className="flex items-center">
+                        {/* <FileText className="w-5 h-5 text-purple-600 mr-2" /> */}
+                        <span className="text-sm text-purple-700 font-medium">
+                          View Document
+                        </span>
+                      </div>
+                      {/* <ExternalLink className="w-4 h-4 text-purple-600" /> */}
+                    </button>
+                  </div>
+                ) : (
+                  "N/A"
+                )}
+              </TableCell>
               <TableCell>{renderStatusBadge(row.status)}</TableCell>
               {/* <TableCell>{row.applied_date}</TableCell>
               <TableCell>{row.action_time}</TableCell> */}

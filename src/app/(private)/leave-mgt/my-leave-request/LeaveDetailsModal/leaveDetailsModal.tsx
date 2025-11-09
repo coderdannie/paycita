@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
-import { Leave } from '@/src/components/data/EmployeeMgt/Tabs/LeaveHistory';
+import React, { useEffect } from "react";
+import { X } from "lucide-react";
+import { Leave } from "@/src/components/data/EmployeeMgt/Tabs/LeaveHistory";
 
 interface LeaveDetailsModalProps {
   leave: Leave;
@@ -15,12 +15,14 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
 }) => {
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.overflow = originalStyle;
     };
   }, []);
+
+  console.log("leave details", leave);
 
   const leaveStart = leave?.start_date ? new Date(leave.start_date) : null;
   const leaveEnd = leave?.end_date ? new Date(leave.end_date) : null;
@@ -72,9 +74,9 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
             <span className="text-gray-500">Approval Status</span>
             <span
               className={`font-medium px-2 py-1 text-xs rounded capitalize ${
-                leave?.status?.toLowerCase() === 'approved'
-                  ? 'border border-[#89D8A9] text-[#00AA4F] bg-[#89D8A9]/10'
-                  : 'border border-[#F49E9E] text-[#EA3D3D] bg-[#F49E9E]/10'
+                leave?.status?.toLowerCase() === "approved"
+                  ? "border border-[#89D8A9] text-[#00AA4F] bg-[#89D8A9]/10"
+                  : "border border-[#F49E9E] text-[#EA3D3D] bg-[#F49E9E]/10"
               }`}
             >
               {leave.status}
@@ -82,13 +84,13 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500">Comment</span>
-            <span className="font-medium">{leave.comment ?? 'N/A'}</span>
+            <span className="font-medium">{leave.comment ?? "N/A"}</span>
           </div>
         </div>
-        {leave?.status?.toLocaleLowerCase() === 'pending' && (
+        {leave?.status?.toLocaleLowerCase() === "pending" && (
           <p className="font-bold text-sm">
-            Pending with:{' '}
-            <span className="text-orange-500">{leave?.pending_with}</span>{' '}
+            Pending with:{" "}
+            <span className="text-orange-500">{leave?.pending_with}</span>{" "}
           </p>
         )}
         <div className="p-4 flex justify-end">
