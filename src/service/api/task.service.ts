@@ -1,9 +1,14 @@
-import { api } from './index';
+import { api } from "./index";
 
 // ------------------ Types ------------------
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'blocked';
+export type TaskPriority = "low" | "medium" | "high" | "critical";
+export type TaskStatus = "pending" | "in_progress" | "completed" | "blocked";
 
+export interface Employee {
+  id: string;
+  full_name: string;
+  [key: string]: any;
+}
 export interface TaskEntity {
   id: string;
   name: string;
@@ -12,7 +17,7 @@ export interface TaskEntity {
   priority: TaskPriority;
   status: TaskStatus;
   start_date: string; // ISO date
-  end_date: string;   // ISO date
+  end_date: string; // ISO date
   employees?: string[]; // assigned employee IDs
   created_at?: string;
   updated_at?: string;
@@ -66,34 +71,46 @@ export const updateTaskStatus = async <T = unknown, P = unknown>(
 
 // ------------------ New Endpoints ------------------
 
-// Create Task
 export interface CreateTaskPayload {
   name: string;
-  description: string;
-  outline: string[]; // incoming array form
-  priority: TaskPriority;
-  start_date: string; // YYYY-MM-DD
-  end_date: string;   // YYYY-MM-DD
-  employee_ids: string[];
+  description?: string;
+  outline?: string[];
+  priority?: string;
+  start_date?: string;
+  end_date?: string;
+  employee_ids?: Array<string | number>;
+  [key: string]: unknown;
 }
 
 export const createTask = async <T = TaskEntity, P = unknown>(
   payload: CreateTaskPayload
 ): Promise<ApiBaseResponse<T, P>> => {
-  const url = '/hr/task-management';
+  const url = "/hr/task-management";
   const response = await api.post(url, payload);
   return response.data;
 };
 
+export const AddTask = (data: CreateTaskPayload) => {
+  if (!data?.name) {
+    throw new Error("Task name is required.");
+  }
+
+  return api.post(`/hr/task-management`, data);
+};
+
 // List Tasks
-export const listTasks = async <T = TaskEntity[], P = unknown>(): Promise<ApiBaseResponse<T, P>> => {
-  const url = '/hr/get-user-tasks';
+export const listTasks = async <T = TaskEntity[], P = unknown>(): Promise<
+  ApiBaseResponse<T, P>
+> => {
+  const url = "/hr/get-user-tasks";
   const response = await api.get(url);
   return response.data;
 };
 
 // Get Single Task
-export const getTask = async <T = TaskEntity, P = unknown>(taskId: string | number): Promise<ApiBaseResponse<T, P>> => {
+export const getTask = async <T = TaskEntity, P = unknown>(
+  taskId: string | number
+): Promise<ApiBaseResponse<T, P>> => {
   const url = `/hr/task-management/${taskId}`;
   const response = await api.get(url);
   return response.data;
@@ -130,7 +147,9 @@ export const deleteTask = async <T = { id: string | number }, P = unknown>(
 };
 
 // Add Comment to Task
-export interface AddCommentPayload { comment: string; }
+export interface AddCommentPayload {
+  comment: string;
+}
 
 export const addTaskComment = async <T = TaskComment, P = unknown>(
   taskId: string | number,
@@ -142,7 +161,9 @@ export const addTaskComment = async <T = TaskComment, P = unknown>(
 };
 
 // Update existing comment
-export interface UpdateCommentPayload { comment: string; }
+export interface UpdateCommentPayload {
+  comment: string;
+}
 
 export const updateTaskComment = async <T = TaskComment, P = unknown>(
   commentId: string | number,
@@ -151,4 +172,9 @@ export const updateTaskComment = async <T = TaskComment, P = unknown>(
   const url = `/hr/update-comment/${commentId}`;
   const response = await api.put(url, payload);
   return response.data;
+};
+
+export const getAllEmployees = async () => {
+  const res = await api.get<Employee[]>(`/hr/all-employee`);
+  return res.data;
 };

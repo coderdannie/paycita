@@ -15,14 +15,30 @@ import { IoListSharp } from "react-icons/io5";
 import TaskDashboard from "@/src/components/data/TaskMgt/TaskDashboard";
 import { TaskTableView } from "@/src/components/data/TaskMgt/TaskTable";
 import { Task } from "@/src/types/tasksMgt";
-import { TaskEntity } from "@/src/service/api/task.service";
+import { CreateTaskPayload, TaskEntity } from "@/src/service/api/task.service";
 import useUpdateTaskStatusMutation from "@/src/hooks/task/useUpdateTaskStatusMutation";
 import useDeleteTaskMutation from "@/src/hooks/task/useDeleteTaskMutation";
 import TaskDeleteConfirmModal from "@/src/components/modals/TaskDeleteConfirmModal";
 import useTasksQuery from "@/src/hooks/task/useTasksQuery";
 import useTaskQuery from "@/src/hooks/task/useTaskQuery";
 import { TaskDetailModal } from "../../../components/modals/TaskModalDetail";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import TaskFormModal from "@/src/components/modals/TaskFormModal";
+import toast from "react-hot-toast";
+import { useCreateTask } from "@/src/hooks/task/useCreateTask";
 
+export type ModalType =
+  | "infoDropdown"
+  | "moreEmployees"
+  | "taskDetails"
+  | "taskForm"
+  | null;
+export interface ModalState {
+  type: ModalType;
+  data: any;
+  taskId?: number | string;
+}
 const status = [
   { value: "all-status", label: "All Status" },
   { value: "completed", label: "Completed" },
@@ -34,6 +50,7 @@ const TaskMgt = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { data: apiTasks = [], isLoading, error } = useTasksQuery();
+
   const [tasks, setTasks] = useState<Task[]>([]); // local overlay for status changes
   const [selectedStatus, setSelectedStatus] = useState("all-status");
   const [selectedPriority, setSelectedPriority] = useState("priority");
@@ -109,9 +126,14 @@ const TaskMgt = () => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [selectedBackendId, setSelectedBackendId] = useState<string | number | null>(null);
+  const [selectedBackendId, setSelectedBackendId] = useState<
+    string | number | null
+  >(null);
   const [detailRefreshSeq, setDetailRefreshSeq] = useState(0); // increments each open to force refetch
-  const { data: singleTaskEntity, isLoading: isSingleLoading } = useTaskQuery(selectedBackendId || undefined, detailRefreshSeq);
+  const { data: singleTaskEntity, isLoading: isSingleLoading } = useTaskQuery(
+    selectedBackendId || undefined,
+    detailRefreshSeq
+  );
 
   // Map freshly fetched single task entity (if any) to UI Task shape
   const mappedSingleTask: Task | null = useMemo(() => {
@@ -119,10 +141,10 @@ const TaskMgt = () => {
     const t = singleTaskEntity as TaskEntity;
     const outlineArr: string[] = Array.isArray(t.outline)
       ? (t.outline as string[])
-      : typeof t.outline === 'string'
-        ? (t.outline as string).split(/\n+/).filter(Boolean)
-        : [];
-    const cleaned = outlineArr.filter(o => o && o.trim() !== '---');
+      : typeof t.outline === "string"
+      ? (t.outline as string).split(/\n+/).filter(Boolean)
+      : [];
+    const cleaned = outlineArr.filter((o) => o && o.trim() !== "---");
     type RawEmp = { full_name?: string; name?: string; department?: string };
     const rawEmployees = (t as unknown as { employees?: RawEmp[] }).employees;
     // Comments -> activities mapping (only for single task fetch since list API may omit comments)
@@ -136,14 +158,14 @@ const TaskMgt = () => {
     const activities = Array.isArray(rawComments)
       ? rawComments.map((c) => ({
           id: Number(c.id) || Math.random(),
-          user: c.user?.full_name || 'Unknown User',
-          avatar: '/assets/avatar.jpeg',
-          action: 'commented',
+          user: c.user?.full_name || "Unknown User",
+          avatar: "/assets/avatar.jpeg",
+          action: "commented",
           comment: c.comment,
           timestamp: c.created_at
             ? new Date(c.created_at).toLocaleString()
-            : 'Just now',
-          type: 'comment' as const,
+            : "Just now",
+          type: "comment" as const,
         }))
       : [];
     return {
@@ -151,32 +173,42 @@ const TaskMgt = () => {
       backendId: t.id,
       title: t.name,
       description: t.description,
-      priority: ((): Task['priority'] => {
+      priority: ((): Task["priority"] => {
         const p = t.priority?.toLowerCase();
-        if (p === 'critical') return 'Critical';
-        if (p === 'high') return 'High';
-        if (p === 'medium') return 'Medium';
-        if (p === 'low') return 'Low';
-        return 'Low';
+        if (p === "critical") return "Critical";
+        if (p === "high") return "High";
+        if (p === "medium") return "Medium";
+        if (p === "low") return "Low";
+        return "Low";
       })(),
-      status: ((): Task['status'] => {
+      status: ((): Task["status"] => {
         switch (t.status) {
-          case 'in_progress': return 'in progress';
-          case 'completed': return 'completed';
-          case 'pending': return 'todo';
-          default: return 'todo';
+          case "in_progress":
+            return "in progress";
+          case "completed":
+            return "completed";
+          case "pending":
+            return "todo";
+          default:
+            return "todo";
         }
       })(),
       startDate: t.start_date,
       dueDate: t.end_date,
-      progress: t.status === 'completed' ? 100 : 0,
-      assignees: Array.isArray(rawEmployees) ? rawEmployees.map((emp, idx) => ({
+      progress: t.status === "completed" ? 100 : 0,
+      assignees: Array.isArray(rawEmployees)
+        ? rawEmployees.map((emp, idx) => ({
+            id: idx + 1,
+            name: emp.full_name || emp.name || `User ${idx + 1}`,
+            avatar: "/assets/avatar.jpeg",
+            department: emp.department,
+          }))
+        : [],
+      taskOutlines: cleaned.map((text, idx) => ({
         id: idx + 1,
-        name: emp.full_name || emp.name || `User ${idx + 1}`,
-        avatar: '/assets/avatar.jpeg',
-        department: emp.department,
-      })) : [],
-      taskOutlines: cleaned.map((text, idx) => ({ id: idx + 1, text, completed: false })),
+        text,
+        completed: false,
+      })),
       activities,
     };
   }, [singleTaskEntity]);
@@ -184,7 +216,7 @@ const TaskMgt = () => {
   // When a fresh single task arrives, replace selectedTask (preserve optimistic fields if needed later)
   useEffect(() => {
     if (mappedSingleTask) {
-      setSelectedTask(prev => {
+      setSelectedTask((prev) => {
         if (!prev) return mappedSingleTask;
         // If same backendId, merge to retain potential local progress updates
         if (prev.backendId === mappedSingleTask.backendId) {
@@ -301,18 +333,61 @@ const TaskMgt = () => {
     setSelectedBackendId(null);
   };
 
+  const [globalModalState, setGlobalModalState] = useState<ModalState>({
+    type: null,
+    data: null,
+  });
+
+  const openModal = (type: ModalType, data: any, taskId?: number | string) => {
+    setGlobalModalState({ type, data, taskId });
+  };
+
+  const closeModal = () => {
+    setGlobalModalState({ type: null, data: null });
+  };
+
+  const openTaskForm = () => {
+    openModal("taskForm", null);
+  };
+
+  const { mutateAsync: createTaskAsync, isPending: isCreating } = useCreateTask(
+    {
+      onSuccess: () => {
+        toast.success("Task created successfully");
+        closeModal();
+      },
+      onError: (error) => {
+        const apiMessage = error.response?.data?.message;
+        const errorMessage = Array.isArray(apiMessage)
+          ? apiMessage[0]
+          : apiMessage ?? error.message ?? "Failed to create task";
+        toast.error(errorMessage);
+      },
+    }
+  );
+
+  const handleCreateTaskSubmit = async (payload: CreateTaskPayload) => {
+    await createTaskAsync(payload);
+  };
+
   return (
     <div>
       <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl mb-10">
         Task Management
       </h2>
-      <div className="w-full sm:w-64 h-10">
-        <SearchInput
-          placeholder="Search Task title"
-          value={searchTerm}
-          setValue={handleSearchChange}
-        />
+      <div className="flex items-center justify-between">
+        <div className="w-full sm:w-64 h-10">
+          <SearchInput
+            placeholder="Search Task title"
+            value={searchTerm}
+            setValue={handleSearchChange}
+          />
+        </div>
+        <Button className="font-medium" onClick={openTaskForm}>
+          <Plus size={14} /> <span>Create Task</span>
+        </Button>
       </div>
+
       {isLoading && (
         <p className="text-sm text-gray-500 mt-2">Loading tasks...</p>
       )}
@@ -380,7 +455,6 @@ const TaskMgt = () => {
           </button>
         </div>
       </div>
-
       {viewMode === "grid" ? (
         <TaskDashboard
           tasks={filteredTasks}
@@ -401,7 +475,13 @@ const TaskMgt = () => {
         />
       )}
 
-      {/* Task Detail Modal */}
+      {globalModalState.type === "taskForm" && (
+        <TaskFormModal
+          onClose={closeModal}
+          onSubmit={handleCreateTaskSubmit}
+          isSubmitting={isCreating}
+        />
+      )}
       <TaskDetailModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
