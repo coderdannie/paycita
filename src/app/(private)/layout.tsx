@@ -29,7 +29,7 @@ export default function RootLayout({
             {/* Header */}
             <Header />
 
-            {/* Children container with position relative to allow chat to be positioned absolutely */}
+           
             <div
               className={cn(
                 'flex-1 pb-6 max-w-[1277px] bg-[#F4F5F6] relative',
