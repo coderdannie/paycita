@@ -79,7 +79,6 @@ const LoadingPage: React.FC<LoadingPageProps> = ({
       </div>
     );
   }
-
   // Inline loading component
   return (
     <div className="flex flex-col items-center justify-center p-4">
