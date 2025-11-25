@@ -55,49 +55,55 @@ export const BenefitsDialog: React.FC<BenefitsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <div className="flex items-center ">
+      <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
+          <div className="flex items-center">
             <DialogTitle>Assign Benefits to {employeeName}</DialogTitle>
           </div>
         </DialogHeader>
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600 mb-6">
+        <div className="flex flex-col flex-1 min-h-0 px-6">
+          <p className="text-sm text-gray-600 mb-4 flex-shrink-0">
             Select one or more benefits to assign:
           </p>
-          <div className="space-y-4">
-            {availableBenefits.map((benefit) => (
-              <div key={benefit.id} className="border rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <button
-                    onClick={() => handleBenefitToggle(benefit.id)}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
-                      selectedBenefits.includes(benefit.id)
-                        ? 'bg-primary border-primary text-white'
-                        : 'border-gray-300 hover:border-purple-400'
-                    }`}
-                  >
-                    {selectedBenefits.includes(benefit.id) && (
-                      <Check className="h-3 w-3" />
-                    )}
-                  </button>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">
-                      {benefit.benefit_name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {benefit.description}
-                    </p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                      <span>Type: {benefit.benefit_type}</span>
-                      <span>Allocation: {benefit.allocation}</span>
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2">
+            {availableBenefits.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No benefits available</p>
+              </div>
+            ) : (
+              availableBenefits.map((benefit) => (
+                <div key={benefit.id} className="border rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <button
+                      onClick={() => handleBenefitToggle(benefit.id)}
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 flex-shrink-0 ${
+                        selectedBenefits.includes(benefit.id)
+                          ? 'bg-primary border-primary text-white'
+                          : 'border-gray-300 hover:border-purple-400'
+                      }`}
+                    >
+                      {selectedBenefits.includes(benefit.id) && (
+                        <Check className="h-3 w-3" />
+                      )}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900">
+                        {benefit.benefit_name}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {benefit.description}
+                      </p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">
+                        <span>Type: {benefit.benefit_type}</span>
+                        <span>Allocation: {benefit.allocation}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 pb-6 flex-shrink-0 border-t mt-4">
             <button
               onClick={() => onOpenChange(false)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
