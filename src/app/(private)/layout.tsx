@@ -28,8 +28,7 @@ export default function RootLayout({
           <div className="h-screen flex flex-col">
             {/* Header */}
             <Header />
-
-           
+            
             <div
               className={cn(
                 'flex-1 pb-6 max-w-[1277px] bg-[#F4F5F6] relative',
