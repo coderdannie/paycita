@@ -61,7 +61,7 @@ export interface UserBasicDetails {
   full_name: string;
   email: string;
   phone_number: string;
-  gender: 'male' | 'female' | 'other';
+  gender: "male" | "female" | "other";
   date_of_birth: string;
   marital_status: string;
   branch_id?: string;
@@ -100,6 +100,8 @@ export interface JobDetails {
   employment_type: string;
   job_location: string;
   hire_date: string;
+  division_id: number;
+  unit_id: number;
 }
 
 export interface CompensationDetails {
@@ -107,6 +109,7 @@ export interface CompensationDetails {
   tax_status: string;
   pension_number: string;
   pension_company: string;
+  employee_payee_id: string;
 }
 
 export type ResolvedAccountDetails = {

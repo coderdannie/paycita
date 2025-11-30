@@ -1,6 +1,6 @@
-import { useGetPensionCompanies } from '@/src/hooks/dashboard/useDashboard';
-import React, { useState, useEffect } from 'react';
-import { IoClose } from 'react-icons/io5';
+import { useGetPensionCompanies } from "@/src/hooks/dashboard/useDashboard";
+import React, { useState, useEffect } from "react";
+import { IoClose } from "react-icons/io5";
 
 interface PayrollTaxData {
   salary: string;
@@ -8,6 +8,7 @@ interface PayrollTaxData {
   pension_number?: string;
   tax_method?: string;
   pension_company?: string;
+  payee_id?: string;
 }
 
 interface EmployeeData {
@@ -27,7 +28,7 @@ interface EmployeeData {
   pension_number: string | null;
   tax_status: string | null;
   pension_company?: string;
-
+  payee_id: string;
   department: {
     id: number;
     name: string;
@@ -50,22 +51,23 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
   isUpdating,
 }) => {
   const [formData, setFormData] = useState<PayrollTaxData>({
-    salary: '',
-    tax_status: '',
-    pension_number: '',
-    tax_method: '',
-    pension_company: '',
+    salary: "",
+    tax_status: "",
+    pension_number: "",
+    tax_method: "",
+    pension_company: "",
   });
   const { pensionCompanyOptions } = useGetPensionCompanies();
 
   useEffect(() => {
     if (isOpen) {
       setFormData({
-        salary: employee.salary || '',
+        salary: employee.salary || "",
         tax_status: employee.tax_status,
         pension_number: employee.pension_number,
-        tax_method: '',
+        tax_method: "",
         pension_company: employee.pension_company,
+        payee_id: employee.payee_id,
       });
     }
   }, [isOpen]);
@@ -80,7 +82,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
   const handleSave = () => {
     const updatedData = {
       ...formData,
-      salary: formData.salary.replace(/[^0-9.]/g, ''),
+      salary: formData.salary.replace(/[^0-9.]/g, ""),
     };
     onSave(updatedData);
   };
@@ -88,23 +90,23 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
   const handleCancel = () => {
     // Reset form data to original values
     setFormData({
-      salary: employee.salary || '',
-      tax_status: 'Active Taxpayer',
-      pension_number: '121379847343539',
-      tax_method: 'Gross',
-      pension_company: 'ARM Pensions',
+      salary: employee.salary || "",
+      tax_status: "Active Taxpayer",
+      pension_number: "121379847343539",
+      tax_method: "Gross",
+      pension_company: "ARM Pensions",
     });
     onClose();
   };
 
   const formatSalaryInput = (value: string) => {
     // Remove non-numeric characters except decimal point
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    const numericValue = value.replace(/[^0-9.]/g, "");
     // Add dollar sign and format
-    return numericValue ? `$${numericValue}` : '';
+    return numericValue ? `$${numericValue}` : "";
   };
 
-  const taxStatusOptions = ['Taxable', 'Non-Taxable'];
+  const taxStatusOptions = ["Taxable", "Non-Taxable"];
 
   // const taxMethodOptions = ['Gross', 'Net', 'PAYE', 'Fixed Rate'];
 
@@ -146,7 +148,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
                 value={formData.salary}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const formatted = formatSalaryInput(e.target.value);
-                  handleInputChange('salary', formatted);
+                  handleInputChange("salary", formatted);
                 }}
                 placeholder="Enter Amount"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
@@ -161,7 +163,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               <select
                 value={formData.tax_status}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleInputChange('tax_status', e.target.value)
+                  handleInputChange("tax_status", e.target.value)
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               >
@@ -183,13 +185,27 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
                 type="text"
                 value={formData.pension_number}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange('pension_number', e.target.value)
+                  handleInputChange("pension_number", e.target.value)
                 }
                 placeholder="121379847343539"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               />
             </div>
-
+            {/* payee id */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Payee ID
+              </label>
+              <input
+                type="text"
+                value={formData.payee_id}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange("payee_id", e.target.value)
+                }
+                placeholder="121379847343539"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              />
+            </div>
             {/* Tax Method */}
             {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,7 +235,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               <select
                 value={formData.pension_company}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleInputChange('pension_company', e.target.value)
+                  handleInputChange("pension_company", e.target.value)
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               >
@@ -248,11 +264,11 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               disabled={isUpdating}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                 isUpdating
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-[#692E9F] text-white hover:bg-[#5a2585]'
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-[#692E9F] text-white hover:bg-[#5a2585]"
               }`}
             >
-              {isUpdating ? 'Updating...' : 'Update'}
+              {isUpdating ? "Updating..." : "Update"}
             </button>
           </div>
         </div>
