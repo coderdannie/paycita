@@ -3,19 +3,19 @@ import {
   keepPreviousData,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
-import dashboardService from '@/src/service/api/dashboard.service';
-import { safeLocalStorage } from '@/src/utils/safeLocalStorage';
+import dashboardService from "@/src/service/api/dashboard.service";
+import { safeLocalStorage } from "@/src/utils/safeLocalStorage";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import {
   setEmployeeAttendance,
   setEmployeeAttendancePagination,
-} from '@/src/Redux/features/dashboardSlice';
-import { useEffect, useState } from 'react';
-import { AddEmployee } from '@/src/utils/validations';
-import { QUERY_KEYS } from '@/src/service/tanstack-query/queryKey';
+} from "@/src/Redux/features/dashboardSlice";
+import { useEffect, useState } from "react";
+import { AddEmployee } from "@/src/utils/validations";
+import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
 import {
   CompensationDetails,
   EmergencyContact,
@@ -23,12 +23,12 @@ import {
   JobDetails,
   SecondGuarantor,
   UpdateBasicEmployeePayload,
-} from '@/src/types/dashboard';
-import toast from 'react-hot-toast';
+} from "@/src/types/dashboard";
+import toast from "react-hot-toast";
 
 const checkIsAuthenticated = (): boolean => {
-  if (typeof window !== 'undefined') {
-    const token = safeLocalStorage.getItem('access_token');
+  if (typeof window !== "undefined") {
+    const token = safeLocalStorage.getItem("access_token");
     return !!token;
   }
   return false;
@@ -48,11 +48,11 @@ export const useGetAttendance = (filters: {
     const handleStorageChange = () => {
       setIsAuthenticated(checkIsAuthenticated());
     };
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     setIsAuthenticated(checkIsAuthenticated());
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -141,7 +141,7 @@ export const useAddEmployee = () => {
         };
       };
     }) => {
-      toast.error(error.response.data.message || 'Failed to add employee');
+      toast.error(error.response.data.message || "Failed to add employee");
     },
   });
   return {
@@ -171,6 +171,54 @@ export const useGetDepartments = () => {
 
   return {
     departmentOptions,
+    isSuccess,
+    isError,
+    isPending,
+  };
+};
+
+export const useGetAllUnits = () => {
+  const { data, isSuccess, isError, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_UNITS],
+    queryFn: async () => {
+      const response = await dashboardService.getAllUnits();
+      return response;
+    },
+  });
+
+  const allUnits = data?.data?.data || [];
+  const unitOptions = allUnits.map((unit: { id: string; name: string }) => ({
+    label: unit.name,
+    value: unit.id,
+  }));
+
+  return {
+    unitOptions,
+    isSuccess,
+    isError,
+    isPending,
+  };
+};
+
+export const useGetAllDivision = () => {
+  const { data, isSuccess, isError, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_DIVISION],
+    queryFn: async () => {
+      const response = await dashboardService.getAllDivision();
+      return response;
+    },
+  });
+
+  const allDivision = data?.data?.data || [];
+  const divisionOptions = allDivision.map(
+    (division: { id: string; name: string }) => ({
+      label: division.name,
+      value: division.id,
+    })
+  );
+
+  return {
+    divisionOptions,
     isSuccess,
     isError,
     isPending,
@@ -304,12 +352,53 @@ export const useOffBoardEmployee = () => {
         };
       };
     }) => {
-      toast.error(error.response.data.message || 'Failed to offboard employee');
+      toast.error(error.response.data.message || "Failed to offboard employee");
     },
   });
 
   return {
     offBoardEmployee, // Mutation function to trigger the offboarding
+    isPending, // Loading state
+    isSuccess, // Success state
+    isError, // Error state
+  };
+};
+
+export const useReactivateEmployee = () => {
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: reactivateEmployee,
+    isPending,
+    isSuccess,
+    isError,
+  } = useMutation({
+    mutationFn: async (data: { employee_id: string }) => {
+      const response = await dashboardService.reactivateEmployee(data);
+      return response;
+    },
+    onSuccess: () => {
+      // Refetch the employee list or any relevant queries after successful offboarding
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_EMPLOYEES],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_EMPLOYEE_BY_ID],
+      });
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      toast.error(error.response.data.message || "Failed to offboard employee");
+    },
+  });
+
+  return {
+    reactivateEmployee, // Mutation function to trigger the offboarding
     isPending, // Loading state
     isSuccess, // Success state
     isError, // Error state
@@ -406,7 +495,7 @@ export const useUpdateEmployeeWorkDetails = (options = {}) => {
         { userId: payload.userId },
         payload.data
       ),
-    mutationKey: ['UPDATE_WORK_DETAILS'],
+    mutationKey: ["UPDATE_WORK_DETAILS"],
     ...options,
   });
 
@@ -420,7 +509,7 @@ export const useUpdateEmployeeSalaryDetails = (options = {}) => {
         { userId: payload.userId },
         payload.data
       ),
-    mutationKey: ['UPDATE_SALARY_DETAILS'],
+    mutationKey: ["UPDATE_SALARY_DETAILS"],
     ...options,
   });
 
@@ -476,7 +565,7 @@ export const useBulkEmployeeOnboarding = () => {
         };
       };
     }) => {
-      toast.error(error.response.data.message || 'Failed to add employee');
+      toast.error(error.response.data.message || "Failed to add employee");
     },
   });
   return {
@@ -504,7 +593,7 @@ export const useUploadOnboardingDocument = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ONBOARDING_DOCUMENTS],
       });
-      toast.success('Document uploaded successfully!');
+      toast.success("Document uploaded successfully!");
     },
     onError: (error: {
       response: {
@@ -513,7 +602,7 @@ export const useUploadOnboardingDocument = () => {
         };
       };
     }) => {
-      toast.error(error.response?.data?.message || 'Failed to upload document');
+      toast.error(error.response?.data?.message || "Failed to upload document");
     },
   });
 
@@ -540,7 +629,7 @@ export const useDeleteOnboardingDocument = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_ONBOARDING_DOCUMENTS],
       });
-      toast.success('Document deleted successfully!');
+      toast.success("Document deleted successfully!");
     },
     onError: (error: {
       response: {
@@ -549,7 +638,7 @@ export const useDeleteOnboardingDocument = () => {
         };
       };
     }) => {
-      toast.error(error.response?.data?.message || 'Failed to delete document');
+      toast.error(error.response?.data?.message || "Failed to delete document");
     },
   });
 };
