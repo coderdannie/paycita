@@ -13,7 +13,6 @@ import {
 import { useToast } from "@/src/context/ToastContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/src/service/tanstack-query/queryKey";
-import { CompensationDetails } from "@/src/types/dashboard";
 
 interface EmployeeDetailsProps {
   office_items_given: string[];
@@ -22,6 +21,8 @@ interface EmployeeDetailsProps {
   pension_number: string;
   tax_status: string;
   salary: string;
+  rent?: string;
+  proof_of_rent?: string;
   employee_number?: string;
   full_name?: string;
   email?: string;
@@ -114,6 +115,8 @@ const EmployeeDetails = ({
     },
 
     payee_id: userDetails?.payee_id,
+    rent: userDetails?.rent || "",
+    proof_of_rent: userDetails?.proof_of_rent || "",
   };
 
   const { addToast } = useToast();
@@ -159,7 +162,7 @@ const EmployeeDetails = ({
         onError: () => {
           addToast("Update failed", "error");
         },
-      }
+      },
     );
   };
 
@@ -172,19 +175,57 @@ const EmployeeDetails = ({
     setIsEditPayrollTaxModalOpen(false);
   };
 
-  const handleSavePayrollTax = (updatedData: any) => {
+  const handleSavePayrollTax = (updatedData: {
+    salary: string;
+    tax_status?: string;
+    pension_number?: string;
+    pension_company?: string;
+    payee_id?: string;
+    rent?: string;
+    proof_of_rent?: File | null;
+  }) => {
     // Handle the updated payroll tax data here
 
-    mutate(
-      {
-        userId: employeeId,
-        data: {
-          salary: updatedData.salary,
+    const sanitizedSalary = updatedData.salary
+      .toString()
+      .replace(/[^0-9.]/g, "") as `${number}`;
+    const sanitizedRent = updatedData.rent
+      ? (updatedData.rent.toString().replace(/[^0-9.]/g, "") as `${number}`)
+      : undefined;
+
+    const shouldUploadProof =
+      typeof window !== "undefined" &&
+      updatedData.proof_of_rent instanceof File;
+
+    const payloadData = shouldUploadProof
+      ? (() => {
+          const formData = new FormData();
+          formData.append("salary", sanitizedSalary);
+          if (updatedData.tax_status)
+            formData.append("tax_status", updatedData.tax_status);
+          if (updatedData.pension_number)
+            formData.append("pension_number", updatedData.pension_number);
+          if (updatedData.pension_company)
+            formData.append("pension_company", updatedData.pension_company);
+          if (updatedData.payee_id)
+            formData.append("employee_payee_id", updatedData.payee_id);
+          if (sanitizedRent) formData.append("rent", sanitizedRent);
+          formData.append("proof_of_rent", updatedData.proof_of_rent as File);
+          return formData;
+        })()
+      : {
+          salary: sanitizedSalary,
           tax_status: updatedData.tax_status,
           pension_number: updatedData.pension_number,
           pension_company: updatedData.pension_company,
           employee_payee_id: updatedData.payee_id,
-        },
+          rent: sanitizedRent,
+        };
+
+    mutate(
+      {
+        userId: employeeId,
+        data: payloadData,
       },
       {
         onSuccess: () => {
@@ -200,7 +241,7 @@ const EmployeeDetails = ({
         onError: () => {
           addToast("Update failed", "error");
         },
-      }
+      },
     );
   };
 
@@ -214,6 +255,7 @@ const EmployeeDetails = ({
   };
 
   const handleSaveItemsGiven = (updatedItems: string[]) => {
+    console.log(updatedItems);
     // Handle the updated items data here
     // You would typically make an API call here to update the items given data
     // and then refresh the component or update the local state
@@ -337,6 +379,12 @@ const EmployeeDetails = ({
               {formatLongCurrency(+userDetails?.salary, currency) ?? "N/A"}
             </p>
             <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">Rent</strong>
+              {userDetails?.rent
+                ? formatLongCurrency(Number(userDetails.rent), currency)
+                : "N/A"}
+            </p>
+            <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">Tax Status</strong>
               <span className="font-semibold">
                 {userDetails?.tax_status ?? "N/A"}
@@ -355,6 +403,23 @@ const EmployeeDetails = ({
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">Payee ID</strong>
               {userDetails?.payee_id ?? "N/A"}
+            </p>
+            <p className="flex gap-6">
+              <strong className="text-[#667085] font-normal">
+                Proof of Rent
+              </strong>
+              {userDetails?.proof_of_rent ? (
+                <a
+                  href={userDetails.proof_of_rent}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline"
+                >
+                  View
+                </a>
+              ) : (
+                "N/A"
+              )}
             </p>
             <p className="flex gap-6">
               <strong className="text-[#667085] font-normal">
@@ -384,7 +449,7 @@ const EmployeeDetails = ({
                       {item}
                     </strong>
                   </p>
-                )
+                ),
               )}
             </div>
           ) : (

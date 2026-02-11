@@ -33,7 +33,7 @@ type UseApiRequestResult = {
 
   postRequest: (
     url: string,
-    formData: any,
+    data: unknown,
     callback?: (data: DataProps) => void,
     options?: {
       invalidateCache?: string[];
@@ -42,7 +42,7 @@ type UseApiRequestResult = {
 
   patchRequest: (
     url: string,
-    formData: any,
+    data: unknown,
     callback?: (data: DataProps) => void,
     options?: {
       invalidateCache?: string[];
@@ -51,7 +51,7 @@ type UseApiRequestResult = {
 
   putRequest: (
     url: string,
-    formData: any,
+    data: unknown,
     callback?: (data: DataProps) => void,
     options?: {
       invalidateCache?: string[];

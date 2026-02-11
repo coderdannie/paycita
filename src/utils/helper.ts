@@ -53,6 +53,27 @@ export const formatTime = (dateString: string) => {
   return date.toLocaleString("en-US", options);
 };
 
+// Formats a backend timestamp (usually ISO with timezone like `...Z`) without
+// converting it into the user's local timezone.
+export const formatBackendTime = (
+  dateString: string | null | undefined,
+  fallback: string = ""
+) => {
+  if (!dateString) return fallback;
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return fallback;
+
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZone: "UTC",
+  };
+
+  return date.toLocaleString("en-US", options);
+};
+
 export const parseDateString = (dateString: string): Date => {
   if (!dateString) return new Date();
 

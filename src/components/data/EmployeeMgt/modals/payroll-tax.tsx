@@ -4,6 +4,8 @@ import { IoClose } from "react-icons/io5";
 
 interface PayrollTaxData {
   salary: string;
+  rent?: string;
+  proof_of_rent?: File | null;
   tax_status?: string;
   pension_number?: string;
   tax_method?: string;
@@ -29,6 +31,8 @@ interface EmployeeData {
   tax_status: string | null;
   pension_company?: string;
   payee_id: string;
+  rent?: string | null;
+  proof_of_rent?: string | null;
   department: {
     id: number;
     name: string;
@@ -39,7 +43,15 @@ interface EditPayrollTaxModalProps {
   isOpen: boolean;
   onClose: () => void;
   employee: EmployeeData;
-  onSave: (updatedData: Partial<EmployeeData>) => void;
+  onSave: (updatedData: {
+    salary: string;
+    rent?: string;
+    tax_status?: string;
+    pension_number?: string;
+    pension_company?: string;
+    payee_id?: string;
+    proof_of_rent?: File | null;
+  }) => void;
   isUpdating: boolean;
 }
 
@@ -52,6 +64,8 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<PayrollTaxData>({
     salary: "",
+    rent: "",
+    proof_of_rent: null,
     tax_status: "",
     pension_number: "",
     tax_method: "",
@@ -63,19 +77,31 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
     if (isOpen) {
       setFormData({
         salary: employee.salary || "",
-        tax_status: employee.tax_status,
-        pension_number: employee.pension_number,
+        rent: employee.rent || "",
+        proof_of_rent: null,
+        tax_status: employee.tax_status ?? "",
+        pension_number: employee.pension_number ?? "",
         tax_method: "",
-        pension_company: employee.pension_company,
-        payee_id: employee.payee_id,
+        pension_company: employee.pension_company ?? "",
+        payee_id: employee.payee_id ?? "",
       });
     }
   }, [isOpen]);
 
-  const handleInputChange = (field: keyof PayrollTaxData, value: string) => {
+  const handleInputChange = (
+    field: Exclude<keyof PayrollTaxData, "proof_of_rent">,
+    value: string,
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const handleProofOfRentChange = (file: File | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      proof_of_rent: file,
     }));
   };
 
@@ -83,6 +109,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
     const updatedData = {
       ...formData,
       salary: formData.salary.replace(/[^0-9.]/g, ""),
+      rent: formData.rent?.replace(/[^0-9.]/g, ""),
     };
     onSave(updatedData);
   };
@@ -91,10 +118,13 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
     // Reset form data to original values
     setFormData({
       salary: employee.salary || "",
-      tax_status: "Active Taxpayer",
-      pension_number: "121379847343539",
-      tax_method: "Gross",
-      pension_company: "ARM Pensions",
+      rent: employee.rent || "",
+      proof_of_rent: null,
+      tax_status: employee.tax_status ?? "",
+      pension_number: employee.pension_number ?? "",
+      tax_method: "",
+      pension_company: employee.pension_company ?? "",
+      payee_id: employee.payee_id ?? "",
     });
     onClose();
   };
@@ -145,7 +175,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               </label>
               <input
                 type="text"
-                value={formData.salary}
+                value={formData.salary ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const formatted = formatSalaryInput(e.target.value);
                   handleInputChange("salary", formatted);
@@ -155,13 +185,63 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               />
             </div>
 
+            {/* Rent */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rent
+              </label>
+              <input
+                type="text"
+                value={formData.rent ?? ""}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const formatted = formatSalaryInput(e.target.value);
+                  handleInputChange("rent", formatted);
+                }}
+                placeholder="Enter Amount"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              />
+            </div>
+
+            {/* Proof of Rent */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Proof of Rent
+              </label>
+              {employee?.proof_of_rent ? (
+                <a
+                  href={employee.proof_of_rent}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline text-sm"
+                >
+                  View current proof
+                </a>
+              ) : (
+                <p className="text-sm text-gray-500">No proof uploaded</p>
+              )}
+
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleProofOfRentChange(e.target.files?.[0] ?? null)
+                }
+                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              />
+              {formData.proof_of_rent ? (
+                <p className="text-xs text-gray-500 mt-1">
+                  Selected: {formData.proof_of_rent.name}
+                </p>
+              ) : null}
+            </div>
+
             {/* Tax Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tax Status
               </label>
               <select
-                value={formData.tax_status}
+                value={formData.tax_status ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleInputChange("tax_status", e.target.value)
                 }
@@ -183,7 +263,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               </label>
               <input
                 type="text"
-                value={formData.pension_number}
+                value={formData.pension_number ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleInputChange("pension_number", e.target.value)
                 }
@@ -198,7 +278,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
               </label>
               <input
                 type="text"
-                value={formData.payee_id}
+                value={formData.payee_id ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleInputChange("payee_id", e.target.value)
                 }
@@ -233,7 +313,7 @@ const EditPayrollTaxModal: React.FC<EditPayrollTaxModalProps> = ({
                 Pension Company
               </label>
               <select
-                value={formData.pension_company}
+                value={formData.pension_company ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleInputChange("pension_company", e.target.value)
                 }
