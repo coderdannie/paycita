@@ -5,7 +5,7 @@ import { TableCell, TableRow } from '../../ui/table';
 import Image from 'next/image';
 import { useDashboardSelector } from '@/src/Redux/selectors';
 import { useDashboard } from '@/src/context/dashboardContext';
-import { formatDate, formatTime } from '@/src/utils/helper';
+import { formatBackendTime, formatDate } from '@/src/utils/helper';
 import SearchInput from '../../ui/SearchInput';
 import { PiSlidersHorizontal } from 'react-icons/pi';
 import FilterDrawer from '../../modals/FilterDrawer';
@@ -150,8 +150,7 @@ const TableLayer = () => {
     ),
     []
   );
-
-  console.log(employeeAttendance);
+ 
   return (
     <div className="mt-10">
       <div className="flex items-center gap-4">
@@ -184,11 +183,11 @@ const TableLayer = () => {
                   <TableCell>{row.employee_name}</TableCell>
                   <TableCell>{row.job_title}</TableCell>
                   <TableCell>
-                    {row.clock_in ? formatTime(row.clock_in) : 'N/A'}
+                    {row.clock_in ? formatBackendTime(row.clock_in) : 'N/A'}
                   </TableCell>
 
                   <TableCell>
-                    {row.clock_out ? formatTime(row.clock_out) : 'N/A'}
+                    {row.clock_out ? formatBackendTime(row.clock_out) : 'N/A'}
                   </TableCell>
                   <TableCell>{row.clock_out_comment ?? 'N/A'}</TableCell>
                   <TableCell>{row.hours_worked ?? 'N/A'}</TableCell>

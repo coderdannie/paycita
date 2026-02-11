@@ -211,14 +211,22 @@ const updateEmployeeWorkDetails = async (
 
 const updateEmployeeSalaryDetails = async (
   query: { userId: string },
-  data: CompensationDetails
+  data: CompensationDetails | FormData
 ) => {
   const UPDATE_EMPLOYEE_SALARY_DETAILS = (userId = "") =>
     `/hr/change-employee-salary-details/${userId}`;
-  const res = await api.post(
-    UPDATE_EMPLOYEE_SALARY_DETAILS(query.userId),
-    data
-  );
+
+  const isFormData =
+    typeof FormData !== "undefined" && data instanceof FormData;
+
+  const res = isFormData
+    ? await api2.post(UPDATE_EMPLOYEE_SALARY_DETAILS(query.userId), data, {
+        headers: {
+          // Let the browser set Content-Type with boundary
+          "Content-Type": undefined,
+        },
+      })
+    : await api.post(UPDATE_EMPLOYEE_SALARY_DETAILS(query.userId), data);
   return res.data;
 };
 

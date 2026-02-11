@@ -110,6 +110,8 @@ export interface CompensationDetails {
   pension_number: string;
   pension_company: string;
   employee_payee_id: string;
+  rent?: `${number}`;
+  proof_of_rent?: string;
 }
 
 export type ResolvedAccountDetails = {

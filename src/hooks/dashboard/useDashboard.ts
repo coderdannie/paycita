@@ -504,7 +504,10 @@ export const useUpdateEmployeeWorkDetails = (options = {}) => {
 
 export const useUpdateEmployeeSalaryDetails = (options = {}) => {
   const { mutate, isPending, ...rest } = useMutation({
-    mutationFn: (payload: { userId: string; data: CompensationDetails }) =>
+    mutationFn: (payload: {
+      userId: string;
+      data: CompensationDetails | FormData;
+    }) =>
       dashboardService.updateEmployeeSalaryDetails(
         { userId: payload.userId },
         payload.data
