@@ -36,13 +36,15 @@ const SalaryTable: React.FC<SalaryTableProps> = ({
   const handleStatusAll = async (status: string, reason?: string) => {
     try {
       setIsLoading(true);
+
+      const payload = new FormData();
+      payload.append('status', status);
+      selectedRows.forEach((id) => payload.append('payroll_id[]', id));
+      if (reason) payload.append('reason', reason);
+
       await postRequest(
         '/admin/update-bulk-payroll-requests',
-        {
-          status,
-          payroll_id: selectedRows,
-          reason,
-        },
+        payload,
         (res) => {
           if (res.success) {
             if (res.data && (res.data as BulkPayrollResponse)?.requires_otp) {

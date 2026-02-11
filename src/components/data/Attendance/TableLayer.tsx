@@ -3,7 +3,7 @@
 import CustomTable from '../../common/CustomTable';
 import { TableCell, TableRow } from '../../ui/table';
 
-import { formatDate, formatTime } from '@/src/utils/helper';
+import { formatBackendTime, formatDate } from '@/src/utils/helper';
 import { EmployeeAttendanceData } from '@/src/types/attendance';
 import TableEmptyState from '../../common/TableEmptyState';
 
@@ -44,10 +44,10 @@ const TableLayer = ({
                 {formatDate(row.created_at)}
               </TableCell>
               <TableCell>
-                {row.clock_in ? formatTime(row.clock_in) : 'N/A'}
+                {row.clock_in ? formatBackendTime(row.clock_in) : 'N/A'}
               </TableCell>
               <TableCell>
-                {row.clock_out ? formatTime(row.clock_out) : 'N/A'}
+                {row.clock_out ? formatBackendTime(row.clock_out) : 'N/A'}
               </TableCell>
               <TableCell>{row?.location}</TableCell>
               <TableCell>
