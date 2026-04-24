@@ -30,7 +30,7 @@ const EmployeePayRoll = () => {
       label: 'Deductions',
     },
     {
-      label: 'Net Pay',
+      label: 'Net Salary',
     },
 
     {
@@ -73,7 +73,7 @@ const EmployeePayRoll = () => {
         <h2 className="text-[#1D2939] font-bold text-lg md:text-2xl">
           Payrolls
         </h2>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <button
             onClick={handleDownloadTemplate}
             className="gap-2 bg-white border border-gray-300 text-gray-700 h-[40px] px-4 rounded-md text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center"
@@ -102,7 +102,7 @@ const EmployeePayRoll = () => {
           >
             Upload Payroll
           </button>
-        </div>
+        </div> */}
       </div>
       <ul className="pt-5  flex flex-col md:flex-row items-center gap-5 text-sm border-[#E4E7EC] border-b">
         {MY_PAYROLL_TABS.map((dat, i) => (

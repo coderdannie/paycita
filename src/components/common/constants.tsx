@@ -148,12 +148,7 @@ export const sidebarData = [
       },
     ],
   },
-  {
-    title: "Appraisals",
-    icon: <AppraisalIcon fill="#344054" />,
-    hover: <AppraisalIcon fill="#692E9F" />,
-    path: "/appraisals",
-  },
+ 
   {
     title: "Event",
     icon: <EventIcon fill="#344054" />,
@@ -236,7 +231,7 @@ export const sidebarData = [
       {
         id: 6,
         title: "Procurement",
-        name: "Procurement",
+        name: "Procurement", 
         path: "/approval/procurement",
       },
     ],
